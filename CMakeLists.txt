@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 project(basic)
 include(${PROJECT_SOURCE_DIR}/FindBISON.cmake)
 include(${PROJECT_SOURCE_DIR}/FindFLEX.cmake)
+include(${PROJECT_SOURCE_DIR}/FindLLVM.cmake)
 
 #SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(Boost_USE_MULTITHREADED      OFF)
@@ -28,8 +29,10 @@ include_directories(
     ${CMAKE_SOURCE_DIR}
 )
 
-add_definitions(-D__STDC_LIMIT_MACROS=1)
-add_definitions(-D__STDC_CONSTANT_MACROS=1)
+link_directories(${LLVM_LIBDIR})
+link_libraries("${LLVM_LIBRARIES}")
+
+SET(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} ${LLVM_CPPFLAGS} ")
 
 add_executable(llvm-qbc ast.cpp main.cpp
 	${BISON_QBParse_OUTPUTS} ${FLEX_QBLex_OUTPUTS}

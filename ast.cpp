@@ -17,8 +17,17 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#include <boost/lexical_cast.hpp>
+#include <llvm/DerivedTypes.h>
+#include <llvm/Constants.h>
+#include <llvm/Constant.h>
+#include <llvm/LLVMContext.h>
+#include <llvm/Module.h>
+#include <llvm/Analysis/Verifier.h>
 
 #include "ast.h"
+
+#define debug printf
 
 AST::~AST()
 {
@@ -39,4 +48,12 @@ LetStatementAST::LetStatementAST(VariableRefExprASTPtr l, ExprASTPtr r)
 llvm::Value* LetStatementAST::Codegen()
 {
     
+}
+
+// 为立即数生成 IR
+llvm::Value* ConstExprAST::Codegen()
+{
+	debug("%s\n",__func__);
+	long v = boost::lexical_cast<long>(this->constval);
+    return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(64,v,1));
 }

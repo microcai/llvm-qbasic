@@ -119,8 +119,8 @@ class ConstExprAST:public ExprAST
 {
 public:
 	std::string constval;
-
-	ConstExprAST(const std::string * val);	
+	ConstExprAST(const std::string * val);
+	virtual	llvm::Value *Codegen();
 };
 
 class VariableRefExprAST:public ExprAST
