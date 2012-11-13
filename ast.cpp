@@ -34,6 +34,13 @@
 
 llvm::Module * AST::module ;
 
+
+AST::AST()
+	:next()
+{
+
+}
+
 AST::~AST()
 {
 }
@@ -51,6 +58,7 @@ LetStatementAST::LetStatementAST(VariableRefExprASTPtr l, ExprASTPtr r)
 // nop 语句
 llvm::Value* StatementAST::Codegen()
 {
+	debug("empty statementn\n");
 	llvm::Value * l = llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt());
 	llvm::Value * r = llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt());
 	return llvm::BinaryOperator::CreateNUWSub(l,r);
@@ -86,4 +94,9 @@ llvm::Value* PrintAST::Codegen()
 	//llvm::Function * printf = llvm::Function::get(
 
 	//builder.CreateCall();
+}
+
+PrintAST::PrintAST(FunctionParameterListAST args):
+	printlist(args)
+{    
 }

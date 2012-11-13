@@ -26,16 +26,24 @@
 
 #include "ast.h"
     
-    StatementsAST *programBlock; /* the top level root node of our final AST */
+AST *programBlock; /* the top level root node of our final AST */
 
-    extern int yylex();
-    void yyerror(const char *s) { printf("ERROR: %s\n", s); }
+extern int yylex();
+void yyerror(const char *s) { printf("ERROR: %s\n", s); }
+
+
+inline void addtail(StatementAST* l,StatementAST* p) {
+	AST* _p =l;//->next;//.get() ;
+	while(_p->next)//.get())
+		_p = _p->next.get();
+	_p->next.reset(p);
+}
+
 %}
 
 %union {
 	AST *ast;
 	StatementAST *stmt;
-	StatementsAST * stmts;
 	PrintAST * printstmt;
 	FunctionParameterListAST	*parameterlist;
 	VariableRefExprAST * var;
@@ -55,7 +63,7 @@
 %token <token> TQBNOT TQBAND
 %token <token> TPRINT
 %token <token> IF THEN ELSE ENDIF LET
-%token <token> NEWLINE WHITESPACE
+%token <token> NEWLINE WHITESPACE TEOF
 
 
 /* Define the type of node our nonterminal symbols represent.
@@ -65,7 +73,7 @@
  */
 
 %type <ast> program
-%type <stmts> stmts
+%type <stmt> stmts
 %type <stmt> stmt 
 %type <stmt> letstmt
 %type <printstmt> printstmt
@@ -81,18 +89,18 @@
 
 %%
 
-program : stmts { programBlock = $<stmts>1; }
+program : stmts { programBlock = $$ = $1; }
         ;
 
-stmts : stmt {
-		$$ = new StatementsAST();
-		$$->push_back( StatementASTPtr($<stmt>1)    );
+stmts : stmt 
+    | stmt stmts  {
+		$1->next.reset($2);
+		$$ = $1;
 	}
-    | stmts stmt { $1->push_back( StatementASTPtr( $<stmt>2 ) ); }
-      ;
+	;
 
-stmt : letstmt { $$ = $1; }
-	| printstmt { $$ = $1; }
+stmt : letstmt 
+	| printstmt
 	| NEWLINE { $$ = new StatementAST(); }
      ;
 
@@ -101,18 +109,20 @@ letstmt : [LET] var TQBEQUAL expr NEWLINE {
 	}
 	;
 
-expr: expr TPLUS expr { ; }
+expr: expr WHITESPACE TPLUS WHITESPACE expr { ; }
 	| numeric { ;}
 	;
 
-printstmt : TPRINT printlist NEWLINE {	}
+printstmt : TPRINT WHITESPACE printlist NEWLINE {
+		$$ = new PrintAST(*$3);
+	}
 	;
 
 printlist : numeric {
 		$$ = new FunctionParameterListAST ;
 		$$->push_back( ExprASTPtr( $1 ) );
 	}
-	| printlist numeric { $1->push_back( ExprASTPtr ( $2) );  }
+	| printlist WHITESPACE numeric { $1->push_back( ExprASTPtr ( $3) );  }
 	;
 
 var : 	TIDENTIFIER { }

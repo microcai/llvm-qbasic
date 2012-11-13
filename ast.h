@@ -71,11 +71,15 @@ enum ReferenceType{
 // allow us to use shared ptr to manage the memory
 class AST // :public boost::enable_shared_from_this<AST>
 {
-	boost::shared_ptr<AST> next; //下一条语句
 public:
+	AST();
+	boost::shared_ptr<AST> next; //下一条语句
 	virtual llvm::Value *Codegen() = 0;
 	virtual ~AST();
 	static llvm::Module * module;
+private:
+	AST( const AST &  );
+	AST & operator =( const AST &  );
 };
 
 class DimAST: public AST
@@ -213,7 +217,6 @@ public:
 };
 
 typedef boost::shared_ptr<StatementAST>	StatementASTPtr;
-typedef std::list<StatementASTPtr> StatementsAST;
 
 //左值和右值, 把右值赋给左值
 class LetStatementAST: public StatementAST
@@ -231,8 +234,8 @@ public:
 class IFExprAST:public StatementAST
 {
 	ExprASTPtr ifexpresion;
-	StatementsAST THEN;
-	StatementsAST ELSE;
+	StatementAST THEN;
+	StatementAST ELSE;
 };
 
 // loop XXX until
@@ -246,15 +249,21 @@ class LoopExprAST: public StatementAST
 //函数调用语句
 class CallStatmentAST: public StatementAST
 {
+public:
+//	CallStatmentAST( CalcExprASTPtr );
 	CalcExprASTPtr tocall;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 //内建函数语句. PRINT , 为 PRINT 生成特殊的函数调用:)
 ////////////////////////////////////////////////////////////////////////////////
-class PrintAST: public CallStatmentAST
+class PrintAST: public StatementAST
 {
+public:
+	PrintAST(FunctionParameterListAST);
     virtual llvm::Value* Codegen();
+
+	FunctionParameterListAST printlist;
 };
 
 #endif // __AST_H__

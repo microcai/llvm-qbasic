@@ -11,9 +11,9 @@ namespace fs=boost::filesystem;
 
 
 extern FILE *yyin;
-extern StatementsAST *programBlock;
+extern AST *programBlock;
 
-static void generate(StatementsAST * ast,std::string );
+static void generate(AST * ast);
 
 static std::list<std::string> argv_getinputfiles(int argc, char **argv)
 {
@@ -74,7 +74,10 @@ int main(int argc, char **argv)
 		outfilename = fs::basename( fs::path(input)) + ".o";
 	}
 
-	generate(programBlock,outfilename);
+	AST::module = new llvm::Module( outfilename.c_str(), llvm::getGlobalContext());
+
+
+	generate(programBlock);
 
 	//compile to excuteable if -c not specified
 	if(vm.count("c")){
@@ -86,20 +89,14 @@ int main(int argc, char **argv)
 }
 
 // generate llvm IR
-static void generate(StatementsAST * ast, std::string outname)
+static void generate(AST * ast)
 {
 	//首先生成全局可用的外部辅助函数
-
-	llvm::LLVMContext & context = llvm::getGlobalContext();
-	AST::module = new llvm::Module( outname.c_str(), context);
-
-	llvm::IRBuilder<> builder(context);
+	llvm::IRBuilder<> builder(llvm::getGlobalContext());
 
 	//开始生成代码
-	for( std::list< StatementASTPtr >::iterator it = ast->begin();
-	    it != ast->end();
-		it ++ )
-	{
-		(*it)->Codegen();
-	}
+	do{
+		ast->Codegen();
+		ast = ast->next.get();
+	}while(ast);
 }
