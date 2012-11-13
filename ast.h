@@ -18,9 +18,10 @@
 */
 
 
-#ifndef AST_H
-#define AST_H
+#ifndef __AST_H__
+#define __AST_H__
 
+#include <string>
 #include <list>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -75,9 +76,7 @@ typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
 
 class VariableExprAST:public ExprAST
 {
-	ExprType type; // 变量类型
 	std::string	name; //变量名字
-
 };
 
 typedef 	boost::shared_ptr<VariableExprAST> VariableExprASTPtr;
@@ -168,4 +167,4 @@ class LoopExprAST: public StatementAST
 	
 };
 
-#endif // AST_H
+#endif // __AST_H__
