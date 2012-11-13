@@ -1,5 +1,5 @@
 /*
-    <one line to give the library's name and an idea of what it does.>
+    defination of QBASIC Abstruct Syntax Tree
     Copyright (C) 2012  microcai <microcai@fedoraproject.org>
 
     This library is free software; you can redistribute it and/or
