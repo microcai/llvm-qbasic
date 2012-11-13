@@ -68,11 +68,11 @@ enum ReferenceType{
 	BYREF,	//引用，实质就是指针了. 函数的默认参数是传引用
 };
 // allow us to use shared ptr to manage the memory
-class AST :public boost::enable_shared_from_this<AST>
+class AST // :public boost::enable_shared_from_this<AST>
 {
 	boost::shared_ptr<AST> next; //下一条语句
 public:
-	virtual ~AST(){} ;
+	virtual ~AST();
 };
 
 class DimAST: public AST
@@ -119,9 +119,7 @@ class ConstExprAST:public ExprAST
 public:
 	std::string constval;
 
-	ConstExprAST(const std::string * val)
-		:constval(*val){}
-	
+	ConstExprAST(const std::string * val);	
 };
 
 class VariableRefExprAST:public ExprAST
@@ -171,14 +169,36 @@ class CalcExprAST:public ExprAST
 	enum MathOperator op;
 };
 
+// 前向函数声明
+class FunctionDeclarAST: public DimAST
+{
+	Linkage		linkage; //链接类型。static? extern ?
+	ExprType		type; //返回值
+	std::string	name; //函数名字
+	std::list<VariableDimASTPtr> args_type; //checked by CallExpr
+};
+
+//函数体
+class FunctionDimAST: public FunctionDeclarAST
+{
+	std::list<VariableDimAST> args; //定义的参数
+
+	AST * body; //函数体
+
+//	std::list<DimAST>	dims;//定义的本地变量
+
+//	StatementsAST		body;//函数体
+};
+
+typedef std::list<ExprASTPtr>	FunctionParameterListAST;
 // CALL Sub Functions , 函数调用也是表达式之一，返回值是表达式嘛
 class CallExprAST:public ExprAST
 {
 	//参数，参数是一个表达式列表
-	std::list<ExprASTPtr>	args;
+	FunctionParameterListAST	args;
 };
 
-
+typedef boost::shared_ptr<CalcExprAST> CalcExprASTPtr;
 
 // 语句
 class StatementAST: public AST
@@ -195,13 +215,13 @@ typedef std::list<StatementASTPtr> StatementsAST;
 class LetStatementAST: public StatementAST
 {
 public:
-	LetStatementAST(VariableRefExprASTPtr l , ExprASTPtr r):
-		lval(l),rval(r){}
+	LetStatementAST(VariableRefExprASTPtr lval , ExprASTPtr rval);
 
 	VariableRefExprASTPtr lval;//注意，左值只能是变量表达式
 	ExprASTPtr rval; // 右值可以是任意的表达式。注意，需要可以相互转化的。
 
 };
+
 
 // IF XX THEN xx ELSE xx ENDIF
 class IFExprAST:public StatementAST
@@ -218,31 +238,17 @@ class LoopExprAST: public StatementAST
 	
 };
 
-// 前向函数声明
-class FunctionDeclarAST: public DimAST
+
+//函数调用语句
+class CallStatmentAST: public StatementAST
 {
-	Linkage		linkage; //链接类型。static? extern ?
-	ExprType		type; //返回值
-	std::string	name; //函数名字
-	std::list<VariableDimASTPtr> args_type; //checked by CallExpr	
-};
-
-//函数体
-class FunctionDimAST: public FunctionDeclarAST
-{
-	std::list<VariableDimAST> args; //定义的参数
-
-	AST * body; //函数体
-
-//	std::list<DimAST>	dims;//定义的本地变量
-
-//	StatementsAST		body;//函数体
+	CalcExprASTPtr tocall;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 //内建函数语句. PRINT , 为 PRINT 生成特殊的函数调用:)
 ////////////////////////////////////////////////////////////////////////////////
-class PrintAST: public CallExprAST
+class PrintAST: public CallStatmentAST
 {
 	
 };

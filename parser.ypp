@@ -34,6 +34,8 @@
 	AST *ast;
 	StatementAST *stmt;
 	StatementsAST * stmts;
+	PrintAST * printstmt;
+	FunctionParameterListAST	*parameterlist;
 	VariableRefExprAST * var;
 	ExprAST* expr;
 	ConstExprAST *numeric;
@@ -49,9 +51,9 @@
 %token <string> TIDENTIFIER TINTEGER TDOUBLE
 %token <token> TQBEQUAL TQBNOTEQUAL  TQBLESS TQBLESSEQU TQBGREATER TQBGREATEREQU
 %token <token> TQBNOT TQBAND
-%token <token> PRINT
+%token <token> TPRINT
 %token <token> IF THEN ELSE ENDIF LET
-%token <token> NEWLINE
+%token <token> NEWLINE WHITESPACE
 
 
 /* Define the type of node our nonterminal symbols represent.
@@ -64,6 +66,8 @@
 %type <stmts> stmts
 %type <stmt> stmt 
 %type <stmt> letstmt
+%type <printstmt> printstmt
+%type <parameterlist> printlist
 %type <numeric> numeric
 %type <var> var
 %type <expr> expr
@@ -75,7 +79,7 @@
 
 %%
 
-program : stmts { programBlock = $1; }
+program : stmts { programBlock = $<stmts>1; }
         ;
 
 stmts : stmt {
@@ -85,7 +89,8 @@ stmts : stmt {
       | stmts stmt { $1->push_back( StatementASTPtr( $<stmt>2 ) ); }
       ;
 
-stmt : letstmt { $$ = $1;}
+stmt : letstmt { $$ = $1; }
+	| printstmt { $$ = $1; }
      ;
 
 letstmt : [LET] var TQBEQUAL expr NEWLINE {
@@ -96,9 +101,19 @@ letstmt : [LET] var TQBEQUAL expr NEWLINE {
 expr: expr TPLUS expr { ; }
 	| numeric { ;}
 	;
-	
+
+printstmt : TPRINT printlist NEWLINE {	}
+	;
+
+printlist : numeric {
+		$$ = new FunctionParameterListAST ;
+		$$->push_back( ExprASTPtr( $1 ) );
+	}
+	| printlist numeric { $1->push_back( ExprASTPtr ( $2) );  }
+	;
+
 var : 	TIDENTIFIER { }
 	;
 
-numeric: 	TINTEGER { $$ = new ConstExprAST($1); }
+numeric: 	TINTEGER { $$ = new ConstExprAST($<string>1); }
 	;

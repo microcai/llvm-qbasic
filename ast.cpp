@@ -20,4 +20,17 @@
 
 #include "ast.h"
 
+AST::~AST()
+{
+}
 
+ConstExprAST::ConstExprAST(const std::string* val)
+{
+	constval = val->c_str();
+}
+
+LetStatementAST::LetStatementAST(VariableRefExprASTPtr l, ExprASTPtr r)
+	:lval(l),rval(r)
+{
+		
+}

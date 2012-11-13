@@ -9,13 +9,25 @@ extern "C" int yywrap() { }
 
 %%
 
-[ \t\n]                 ;
+[\r\n]				{return TOKEN(NEWLINE);}
+
+[ ]*					;
+
+asdfsdfskdjhfksf	 return WHITESPACE;
+
+PRINT 		{return TOKEN(TPRINT);}
+print  		{return TOKEN(TPRINT);}
+
+LET				{return TOKEN(LET);}
+
+
 [a-zA-Z_][a-zA-Z0-9_]*  SAVE_TOKEN; return TIDENTIFIER;
 [0-9]+\.[0-9]*          SAVE_TOKEN; return TDOUBLE;
 [0-9]+                  SAVE_TOKEN; return TINTEGER;
 ;
 
+
 "="                     return TOKEN(TQBEQUAL);
-.                       printf("Unknown token!\n"); yyterminate();
+.                       printf("Unknown token : %s!\n",yytext); yyterminate();
 
 %%
