@@ -88,11 +88,12 @@ stmts : stmt {
 		$$ = new StatementsAST();
 		$$->push_back( StatementASTPtr($<stmt>1)    );
 	}
-      | stmts stmt { $1->push_back( StatementASTPtr( $<stmt>2 ) ); }
+    | stmts stmt { $1->push_back( StatementASTPtr( $<stmt>2 ) ); }
       ;
 
 stmt : letstmt { $$ = $1; }
 	| printstmt { $$ = $1; }
+	| NEWLINE { $$ = new StatementAST(); }
      ;
 
 letstmt : [LET] var TQBEQUAL expr NEWLINE {

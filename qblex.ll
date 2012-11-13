@@ -11,7 +11,8 @@ extern "C" int yywrap() { }
 
 [\r\n]				{return TOKEN(NEWLINE);}
 
-[ ]*					;
+[ \t]*					;
+\0177 return TOKEN(NEWLINE);
 
 asdfsdfskdjhfksf	 return WHITESPACE;
 
@@ -28,6 +29,6 @@ LET				{return TOKEN(LET);}
 
 
 "="                     return TOKEN(TQBEQUAL);
-.                       printf("Unknown token : %s!\n",yytext); yyterminate();
+.	printf("Unknown token : (%s)(%d)@%d\n",yytext,yytext[0],(int)yyleng);yyterminate();
 
 %%

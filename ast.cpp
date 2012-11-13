@@ -24,10 +24,15 @@
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
 #include <llvm/Analysis/Verifier.h>
+#include <llvm/Instructions.h>
+#include <llvm/Instruction.h>
+#include <llvm/Support/IRBuilder.h>
 
 #include "ast.h"
 
 #define debug printf
+
+llvm::Module * AST::module ;
 
 AST::~AST()
 {
@@ -43,11 +48,23 @@ LetStatementAST::LetStatementAST(VariableRefExprASTPtr l, ExprASTPtr r)
 {
 
 }
+// nop 语句
+llvm::Value* StatementAST::Codegen()
+{
+	llvm::Value * l = llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt());
+	llvm::Value * r = llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt());
+	return llvm::BinaryOperator::CreateNUWSub(l,r);
+}
 
 // 为 LET A=XX 赋值语句生成IR代码
 llvm::Value* LetStatementAST::Codegen()
 {
-    
+	//TODO 只能为简单类型生成赋值语句
+	//TODO 复杂类型实质是要调用 operator ==
+	
+    llvm::Value * r = this->rval->Codegen();
+	llvm::Value * l = this->lval->Codegen();
+//	return llvm::
 }
 
 // 为立即数生成 IR
@@ -56,4 +73,17 @@ llvm::Value* ConstExprAST::Codegen()
 	debug("%s\n",__func__);
 	long v = boost::lexical_cast<long>(this->constval);
     return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(64,v,1));
+}
+
+//TODO 为 print 语句生成,
+llvm::Value* PrintAST::Codegen()
+{
+    debug("call PRINT\n");
+	
+	//llvm::CallInst::Create();
+	llvm::IRBuilder<> builder(llvm::getGlobalContext());
+
+	//llvm::Function * printf = llvm::Function::get(
+
+	//builder.CreateCall();
 }

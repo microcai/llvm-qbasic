@@ -25,6 +25,7 @@
 #include <list>
 #include <boost/shared_ptr.hpp>
 #include <llvm/Value.h>
+#include <llvm/Module.h>
 
 enum CompOperator{
 	Equl = 1, // == , =
@@ -74,6 +75,7 @@ class AST // :public boost::enable_shared_from_this<AST>
 public:
 	virtual llvm::Value *Codegen() = 0;
 	virtual ~AST();
+	static llvm::Module * module;
 };
 
 class DimAST: public AST
@@ -204,9 +206,10 @@ typedef boost::shared_ptr<CalcExprAST> CalcExprASTPtr;
 // 语句
 class StatementAST: public AST
 {
+public:
 	std::string	LABEL;	// label , if there is. then we can use goto
 						// must be uniq among function bodys
-
+	virtual llvm::Value* Codegen();
 };
 
 typedef boost::shared_ptr<StatementAST>	StatementASTPtr;
@@ -251,7 +254,7 @@ class CallStatmentAST: public StatementAST
 ////////////////////////////////////////////////////////////////////////////////
 class PrintAST: public CallStatmentAST
 {
-	
+    virtual llvm::Value* Codegen();
 };
 
 #endif // __AST_H__
