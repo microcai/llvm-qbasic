@@ -5,6 +5,8 @@
 #include <boost/program_options.hpp>
 #include <boost/make_shared.hpp>
 #include "ast.h"
+#include "parser.hpp"
+
 namespace po = boost::program_options;
 
 int main(int argc, char **argv)
@@ -22,7 +24,7 @@ int main(int argc, char **argv)
 	// usage llvmqbc input.bas -o a.out
 	// ./a.out
 	//std::ifstream input();
-	
+	yyparse();
 //    std::cout << "Hello, world!" << std::endl;
     return 0;
 }
