@@ -119,12 +119,6 @@ class CalcExprAST:public ExprAST
 	enum MathOperator op;
 };
 
-class DimAST: public AST
-{
-	//ExprType type; // the type of the expresion
-	VariableExprAST var; //定义的变量
-};
-
 // CALL Sub Functions , 函数调用也是表达式之一，返回值是表达式嘛
 class CallExpr:public ExprAST
 {
@@ -165,6 +159,31 @@ class LoopExprAST: public StatementAST
 {
 	
 	
+};
+
+class DimAST: public AST
+{
+
+};
+
+class VariableDimAST : public DimAST
+{
+	//ExprType type; // the type of the expresion
+	VariableExprAST var; //定义的变量
+};
+
+//函数体
+class FunctionDimAST: public DimAST
+{
+	ExprType		type; //返回值
+	std::string	name; //函数名字
+
+	std::list<ExprType> args_type; //checked by
+	std::list<VariableDimAST> args; //定义的参数
+
+	std::list<DimAST>	dims;//定义的本地变量
+
+	StatementsAST		body;//函数体
 };
 
 #endif // __AST_H__
