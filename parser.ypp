@@ -18,6 +18,8 @@
 */
 
 %{
+
+
 #include <stdio.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
@@ -115,5 +117,5 @@ printlist : numeric {
 var : 	TIDENTIFIER { }
 	;
 
-numeric: 	TINTEGER { $$ = new ConstExprAST($<string>1); }
+numeric: 	TINTEGER { $$ = new ConstExprAST($<string>1); delete $1; }
 	;

@@ -24,7 +24,7 @@
 #include <string>
 #include <list>
 #include <boost/shared_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
+#include <llvm/Value.h>
 
 enum CompOperator{
 	Equl = 1, // == , =
@@ -72,6 +72,7 @@ class AST // :public boost::enable_shared_from_this<AST>
 {
 	boost::shared_ptr<AST> next; //下一条语句
 public:
+	virtual llvm::Value *Codegen() = 0;
 	virtual ~AST();
 };
 
@@ -219,7 +220,7 @@ public:
 
 	VariableRefExprASTPtr lval;//注意，左值只能是变量表达式
 	ExprASTPtr rval; // 右值可以是任意的表达式。注意，需要可以相互转化的。
-
+	virtual	llvm::Value *Codegen();
 };
 
 

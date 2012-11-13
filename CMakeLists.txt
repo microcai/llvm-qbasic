@@ -28,6 +28,9 @@ include_directories(
     ${CMAKE_SOURCE_DIR}
 )
 
+add_definitions(-D__STDC_LIMIT_MACROS=1)
+add_definitions(-D__STDC_CONSTANT_MACROS=1)
+
 add_executable(llvm-qbc ast.cpp main.cpp
 	${BISON_QBParse_OUTPUTS} ${FLEX_QBLex_OUTPUTS}
 )

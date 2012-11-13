@@ -1,15 +1,21 @@
 
 #include <boost/shared_ptr.hpp>
-
-
 #include <boost/program_options.hpp>
 #include <boost/make_shared.hpp>
+#include <ulimit.h>
+#include <limits>
+
+
 #include "ast.h"
 #include "parser.hpp"
+
+
 extern FILE *yyin;
 extern StatementsAST *programBlock;
 
 namespace po = boost::program_options;
+
+static void generate(StatementsAST * ast);
 
 int main(int argc, char **argv)
 {
@@ -36,7 +42,22 @@ int main(int argc, char **argv)
 	//std::ifstream input();
 	yyparse();
 
-	printf("done\n");
-//    std::cout << "Hello, world!" << std::endl;
-    return 0;
+	//TODO 从 programBlock 生成 llvm IR
+
+	generate(programBlock);
+	
+	return 0;
+}
+
+// generate llvm IR
+static void generate(StatementsAST * ast)
+{
+	for( std::list< StatementASTPtr >::iterator it = ast->begin();
+	    it != ast->end();
+		it ++ )
+	{
+		
+	}
+	
+	
 }

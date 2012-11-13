@@ -32,5 +32,11 @@ ConstExprAST::ConstExprAST(const std::string* val)
 LetStatementAST::LetStatementAST(VariableRefExprASTPtr l, ExprASTPtr r)
 	:lval(l),rval(r)
 {
-		
+
+}
+
+// 为 LET A=XX 赋值语句生成IR代码
+llvm::Value* LetStatementAST::Codegen()
+{
+    
 }
