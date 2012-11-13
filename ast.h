@@ -43,8 +43,9 @@ enum MathOperator{
 
 enum ExprType{
 	VOID=0,	// nul type , used as return type of SUB XXX
+			// only used by FunctionAST to define SUB in BASIC
 	BOOLEAR,	// as boolear , TRUE,FALSE
-	Short,	// as short
+	SHORT,	// as short
 	Intger,	// as Intger
 	Long,	// as long
 	Double,	// as Double
@@ -52,6 +53,7 @@ enum ExprType{
 	STRING,	// STRING is an internal struct type.
 			// STRING is implemented as structure by calling some member function
 			// automanticall by compiler
+	ARRAY	// 数组，only used by VariableExprAST & DimAST
 };
 
 // allow us to use shared ptr to manage the memory
@@ -78,7 +80,19 @@ typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
 
 class VariableExprAST:public ExprAST
 {
-	
+	ExprType type; // 变量类型
+	std::string	name; //变量名字
+
+};
+
+typedef 	boost::shared_ptr<VariableExprAST> VariableExprASTPtr;
+
+//数组变量的使用
+class ArrayVariableRefExprAST:public VariableExprAST
+{
+	VariableExprASTPtr array; //数组变量的话，数组的成员的类型
+
+	ExprASTPtr		index; //下表操作还是一个表达式
 };
 
 class CompExprAST:public ExprAST // bool as result
