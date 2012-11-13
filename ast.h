@@ -63,11 +63,6 @@ public:
 	virtual ~AST() ;
 };
 
-class DimAST: public AST
-{
-	ExprType type; // the type of the expresion	
-};
-
 // 表达式
 class ExprAST: public AST //
 {
@@ -87,6 +82,22 @@ class VariableExprAST:public ExprAST
 
 typedef 	boost::shared_ptr<VariableExprAST> VariableExprASTPtr;
 
+
+// 结构体变量，就是各种变量类型的集合
+class StructVariableExprAST: public VariableExprAST
+{
+	std::list<VariableExprASTPtr>	members; //各个成员
+};
+
+typedef boost::shared_ptr<StructVariableExprAST> StructVariableExprASTPtr;
+
+//结构体成员的引用
+class StructVariableRefExprAST: public VariableExprAST
+{
+	StructVariableExprASTPtr	structvar; //引用的结构体
+	std::string			nameormember; //引用的成员
+};
+
 //数组变量的使用
 class ArrayVariableRefExprAST:public VariableExprAST
 {
@@ -95,22 +106,31 @@ class ArrayVariableRefExprAST:public VariableExprAST
 	ExprASTPtr		index; //下表操作还是一个表达式
 };
 
+//比较表达式 比较两个表达式的值
 class CompExprAST:public ExprAST // bool as result
 {
 	ExprASTPtr  RHS,LHS;
 	enum CompOperator op;	
 };
 
+// 数值计算表达式
 class CalcExprAST:public ExprAST
 {
 	ExprASTPtr  RHS,LHS;
 	enum MathOperator op;
 };
 
+class DimAST: public AST
+{
+	//ExprType type; // the type of the expresion
+	VariableExprAST var; //定义的变量
+};
+
 // CALL Sub Functions , 函数调用也是表达式之一，返回值是表达式嘛
 class CallExpr:public ExprAST
 {
-
+	//参数，参数是一个表达式列表
+	std::list<ExprASTPtr>	args;
 };
 
 
