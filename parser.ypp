@@ -1,0 +1,104 @@
+/*
+    Parser of QBASIC to build Abstruct Syntax Tree
+    Copyright (C) 2012  microcai <microcai@fedoraproject.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
+%{
+#include <stdio.h>
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
+
+#include "ast.h"
+    
+    StatementsAST *programBlock; /* the top level root node of our final AST */
+
+    extern int yylex();
+    void yyerror(const char *s) { printf("ERROR: %s\n", s); }
+%}
+
+%union {
+	AST *ast;
+	StatementAST *stmt;
+	StatementsAST * stmts;
+	VariableRefExprAST * var;
+	ExprAST* expr;
+	ConstExprAST *numeric;
+	std::string* string;
+	int token;
+}
+
+/* Define our terminal symbols (tokens). This should
+   match our tokens.l lex file. We also define the node type
+   they represent.
+ */
+
+%token <string> TIDENTIFIER TINTEGER TDOUBLE
+%token <token> TQBEQUAL TQBNOTEQUAL  TQBLESS TQBLESSEQU TQBGREATER TQBGREATEREQU
+%token <token> TQBNOT TQBAND
+%token <token> PRINT
+%token <token> IF THEN ELSE ENDIF LET
+%token <token> NEWLINE
+
+
+/* Define the type of node our nonterminal symbols represent.
+   The types refer to the %union declaration above. Ex: when
+   we call an ident (defined by union type ident) we are really
+   calling an (NIdentifier*). It makes the compiler happy.
+ */
+
+%type <ast> program
+%type <stmts> stmts
+%type <stmt> stmt 
+%type <stmt> letstmt
+%type <numeric> numeric
+%type <var> var
+%type <expr> expr
+/* Operator precedence for mathematical operators */
+%left TPLUS TMINUS
+%left TMUL TDIV
+
+%start program
+
+%%
+
+program : stmts { programBlock = $1; }
+        ;
+
+stmts : stmt {
+		$$ = new StatementsAST();
+		$$->push_back( StatementASTPtr($<stmt>1)    );
+	}
+      | stmts stmt { $1->push_back( StatementASTPtr( $<stmt>2 ) ); }
+      ;
+
+stmt : letstmt { $$ = $1;}
+     ;
+
+letstmt : [LET] var TQBEQUAL expr NEWLINE {
+		$$ = new LetStatementAST( VariableRefExprASTPtr($1) , ExprASTPtr($3) ) ;
+	}
+	;
+
+expr: expr TPLUS expr { ; }
+	| numeric { ;}
+	;
+	
+var : 	TIDENTIFIER { }
+	;
+
+numeric: 	TINTEGER { $$ = new ConstExprAST($1); }
+	;

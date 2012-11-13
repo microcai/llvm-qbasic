@@ -57,33 +57,84 @@ enum ExprType{
 	ARRAY	// 数组，only used by VariableExprAST & DimAST
 };
 
+enum Linkage{
+	STATIC = 1,	//静态函数，无导出
+	EXTERN,		//导出函数
+	IMPORTC,		//导入C函数，这样就可以使用 C 函数调用了，算是我提供的一个扩展吧
+};
+
+enum ReferenceType{
+	BYVALUE,	//传值
+	BYREF,	//引用，实质就是指针了. 函数的默认参数是传引用
+};
 // allow us to use shared ptr to manage the memory
-class AST:public boost::enable_shared_from_this<AST>
+class AST :public boost::enable_shared_from_this<AST>
 {
+	boost::shared_ptr<AST> next; //下一条语句
 public:
-	virtual ~AST() ;
+	virtual ~AST(){} ;
+};
+
+class DimAST: public AST
+{
+
+};
+
+class VariableDimAST : public DimAST
+{
+	ExprType type;
+	ReferenceType	reftype; //引用类型
+	//ExprType type; // the type of the expresion
+	std::string varname; //定义的变量名字
+	
+};
+typedef boost::shared_ptr<VariableDimAST> VariableDimASTPtr;
+
+//定义结构体变量
+class VariableStructDimAST : VariableDimAST
+{
+	//VariableSimpleDimAST	
+	std::list<VariableDimASTPtr> members;
+};
+
+//定义数组
+class VariableArrayDimAST : VariableDimAST
+{
+	VariableDimASTPtr	itemtype;
+	int start,end; //起始位置
 };
 
 // 表达式
 class ExprAST: public AST //
 {
 	ExprType type; // the type of the expresion
-	
 
 };
 
 typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
 
-class VariableExprAST:public ExprAST
+// 常量
+class ConstExprAST:public ExprAST
 {
-	std::string	name; //变量名字
+public:
+	std::string constval;
+
+	ConstExprAST(const std::string * val)
+		:constval(*val){}
+	
 };
 
-typedef 	boost::shared_ptr<VariableExprAST> VariableExprASTPtr;
+class VariableRefExprAST:public ExprAST
+{
+	std::string	var; //指向引用的变量名字.
+ 	VariableDimASTPtr	vardim; //变量的定义位置. 如果为 0 则是随地定义. // not used by parser but generator
+};
+
+typedef 	boost::shared_ptr<VariableRefExprAST> VariableExprASTPtr;
 
 
 // 结构体变量，就是各种变量类型的集合
-class StructVariableExprAST: public VariableExprAST
+class StructVariableExprAST: public VariableRefExprAST
 {
 	std::list<VariableExprASTPtr>	members; //各个成员
 };
@@ -91,19 +142,20 @@ class StructVariableExprAST: public VariableExprAST
 typedef boost::shared_ptr<StructVariableExprAST> StructVariableExprASTPtr;
 
 //结构体成员的引用
-class StructVariableRefExprAST: public VariableExprAST
+class StructVariableRefExprAST: public VariableRefExprAST
 {
 	StructVariableExprASTPtr	structvar; //引用的结构体
 	std::string			nameormember; //引用的成员
 };
 
 //数组变量的使用
-class ArrayVariableRefExprAST:public VariableExprAST
+class ArrayVariableRefExprAST:public VariableRefExprAST
 {
-	VariableExprASTPtr array; //数组变量的话，数组的成员的类型
+	VariableExprASTPtr items; //数组变量的话，数组的成员的类型
 
 	ExprASTPtr		index; //下表操作还是一个表达式
 };
+typedef boost::shared_ptr<VariableRefExprAST> VariableRefExprASTPtr;
 
 //比较表达式 比较两个表达式的值
 class CompExprAST:public ExprAST // bool as result
@@ -120,7 +172,7 @@ class CalcExprAST:public ExprAST
 };
 
 // CALL Sub Functions , 函数调用也是表达式之一，返回值是表达式嘛
-class CallExpr:public ExprAST
+class CallExprAST:public ExprAST
 {
 	//参数，参数是一个表达式列表
 	std::list<ExprASTPtr>	args;
@@ -142,8 +194,13 @@ typedef std::list<StatementASTPtr> StatementsAST;
 //左值和右值, 把右值赋给左值
 class LetStatementAST: public StatementAST
 {
-	VariableExprAST * lval;//注意，左值只能是变量表达式
-	ExprAST *rval; // 右值可以是任意的表达式。注意，需要可以相互转化的。
+public:
+	LetStatementAST(VariableRefExprASTPtr l , ExprASTPtr r):
+		lval(l),rval(r){}
+
+	VariableRefExprASTPtr lval;//注意，左值只能是变量表达式
+	ExprASTPtr rval; // 右值可以是任意的表达式。注意，需要可以相互转化的。
+
 };
 
 // IF XX THEN xx ELSE xx ENDIF
@@ -161,29 +218,34 @@ class LoopExprAST: public StatementAST
 	
 };
 
-class DimAST: public AST
+// 前向函数声明
+class FunctionDeclarAST: public DimAST
 {
-
-};
-
-class VariableDimAST : public DimAST
-{
-	//ExprType type; // the type of the expresion
-	VariableExprAST var; //定义的变量
+	Linkage		linkage; //链接类型。static? extern ?
+	ExprType		type; //返回值
+	std::string	name; //函数名字
+	std::list<VariableDimASTPtr> args_type; //checked by CallExpr	
 };
 
 //函数体
-class FunctionDimAST: public DimAST
+class FunctionDimAST: public FunctionDeclarAST
 {
-	ExprType		type; //返回值
-	std::string	name; //函数名字
-
-	std::list<ExprType> args_type; //checked by
 	std::list<VariableDimAST> args; //定义的参数
 
-	std::list<DimAST>	dims;//定义的本地变量
+	AST * body; //函数体
 
-	StatementsAST		body;//函数体
+//	std::list<DimAST>	dims;//定义的本地变量
+
+//	StatementsAST		body;//函数体
+};
+
+////////////////////////////////////////////////////////////////////////////////
+//内建函数语句. PRINT , 为 PRINT 生成特殊的函数调用:)
+////////////////////////////////////////////////////////////////////////////////
+class PrintAST: public CallExprAST
+{
+	
 };
 
 #endif // __AST_H__
+
