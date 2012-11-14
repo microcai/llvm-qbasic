@@ -1,11 +1,13 @@
 /*
     Parser of QBASIC to build Abstruct Syntax Tree
-    Copyright (C) 2012  microcai <microcai@fedoraproject.org>
+    * Copyright (C) 2009-2010 Thomas Larsen and Pedro Sá.
+	* Copyright (C) 1995-2005 Marc-Oliver Ihm.
+    * Copyright (C) 2012  microcai <microcai@fedoraproject.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
+    version 3 of the License, or (at your option) any later version.
 
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,114 +21,850 @@
 
 %{
 
+/* Include main header file. */
+#include "qbc.h"
 
-#include <stdio.h>
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
+extern int yylex (void);
+extern int yylex_destroy(void);
+extern void yyerror (char *msg);
+extern int yylineno;
+#define error printf
 
-#include "ast.h"
-    
-AST *programBlock; /* the top level root node of our final AST */
+/* Types of functions. */
+enum {
+   ftNONE, ftNUMBER, ftSTRING
+};
 
-extern int yylex();
-void yyerror(const char *s) { printf("ERROR: %s\n", s); }
+/* Local definitions. */
+struct cli {
+   int items;
+   struct cli *next;
+};
 
+/* Global variables. */
+char *current_function = NULL;  /* name of currently parsed function */
+int in_loop = 0;                /* in loop? */
 
-inline void addtail(StatementAST* l,StatementAST* p) {
-	AST* _p =l;//->next;//.get() ;
-	while(_p->next)//.get())
-		_p = _p->next.get();
-	_p->next.reset(p);
+/* Local variables. */
+int cfunction_type = 0;			/* C function type */
+int continue_corrections = 0;   /* continue corrections */
+int function_type = ftNONE;     /* contains function type while parsing function */
+int unclosed_dos = 0;           /* unclosed "if" count */
+int unclosed_fors = 0;          /* unclosed "for" count */
+int unclosed_ifs = 0;           /* unclosed "if" count */
+int unclosed_repeats = 0;       /* unclosed "repeat" count */
+int unclosed_subs = 0;          /* unclosed subroutine count */
+int unclosed_switches = 0;      /* unclosed "switch" count */
+int unclosed_whiles = 0;        /* unclosed "while" count */
+bool until_eol = false;          /* read to end of line? */
+struct cli *cli = NULL;         /* call list items stack (for structure definitions) */
+struct cli *next_cli = NULL;    /* used for call list items stack */
+struct cli *old_cli = NULL;     /* used for call list items stack */
+struct command *cmd = NULL;     /* pointer to a command (for structure definitions) */
+struct data *data;              /* current data collection */
+
+/* Sanity check routine. */
+void not_inside_loop_or_conditional (char *what) {
+   /* Display an error if necessary. */
+   if ((unclosed_dos || unclosed_fors || unclosed_repeats || unclosed_whiles) || (unclosed_ifs || unclosed_switches)) {
+      if ((unclosed_dos || unclosed_fors || unclosed_repeats || unclosed_whiles) && (unclosed_ifs || unclosed_switches)) {
+         error ("cannot %s inside a loop, \"if\" statement, or \"switch\" construct", what);
+      }
+      else if (unclosed_dos || unclosed_fors || unclosed_repeats || unclosed_whiles) {
+         error ("cannot %s inside a loop", what);
+      }
+      else if (unclosed_ifs || unclosed_switches) {
+         error ("cannot %s inside an \"if\" statement or \"switch\" construct", what);
+      }
+   }
+
+   /* Return. */
+   return;
 }
 
 %}
 
 %union {
-	AST *ast;
-	StatementAST *stmt;
-	PrintAST * printstmt;
-	FunctionParameterListAST	*parameterlist;
-	VariableRefExprAST * var;
-	ExprAST* expr;
-	ConstExprAST *numeric;
-	std::string* string;
-	int token;
+   char *string;         /* quoted string */
+   char *symbol;         /* general symbol */
+   double number;        /* double number */
+   int separator;        /* separator */
 }
 
-/* Define our terminal symbols (tokens). This should
-   match our tokens.l lex file. We also define the node type
-   they represent.
- */
+%type <symbol> cfunction_name
+%type <symbol> function_name
+%type <symbol> number_function_or_array_any_params
+%type <symbol> number_function_or_array_with_params
+%type <symbol> numsym_a
+%type <symbol> numsym_a_no_calls
+%type <symbol> numsym_s
+%type <symbol> string_function_or_array_any_params
+%type <symbol> string_function_or_array_with_params
+%type <symbol> strsym_a
+%type <symbol> strsym_a_no_calls
+%type <symbol> strsym_s
+%type <separator> separator_list
 
-%token <string> TIDENTIFIER TINTEGER TDOUBLE
-%token <token> TQBEQUAL TQBNOTEQUAL  TQBLESS TQBLESSEQU TQBGREATER TQBGREATEREQU
-%token <token> TQBNOT TQBAND
-%token <token> TPRINT
-%token <token> IF THEN ELSE ENDIF LET
-%token <token> NEWLINE WHITESPACE TEOF
+%token <number> tNUMBER
+%token <string> tSTRING
+%token <symbol> tNUMSYM tSTRSYM
+%token <separator> tSEPARATOR
 
+%token tAND tOR tNOT tEOR
+%token tBREAK tCONTINUE tSUB tENDSUB tRETURN
+%token tCOMPILE tEXECUTERETURNNUMBER tEXECUTERETURNSTRING
+%token tCSUB tFROM
+%token tGOTO tGOSUB tLABEL
+%token tENABLE tDISABLE
+%token tEOPROG tNEWFILE tEXIT
+%token tEXPLICIT
+%token tFOR tTO tNEXT tSTEP tWHILE tWEND tREPEAT tUNTIL tDO tLOOP
+%token tIF tTHEN tELSE tELSEIF tENDIF
+%token tAS
+%token tLET tDIM tLOCAL tSTATIC tARDIM tARSIZE tINC tDEC
+%token tNEQ tLEQ tGEQ tLTN tGTN tEQU tPOW
+%token tPRINT tINPUT tLINE tUSING
+%token tSTRUCT tENDSTRUCT
+%token tSWITCH tSEND tCASE tDEFAULT
+%token tDATA tENDDATA tREAD tRESTORE
 
-/* Define the type of node our nonterminal symbols represent.
-   The types refer to the %union declaration above. Ex: when
-   we call an ident (defined by union type ident) we are really
-   calling an (NIdentifier*). It makes the compiler happy.
- */
+%token tABS tSIG tRAN tSQR tSQRT
+%token tINT tFRAC tMIN tMAX
+%token tLEFT tRIGHT tMID tUPPER tLOWER
+%token tOPEN tCLOSE tEOF tSEEK tTELL tPEEK tPOKE
+%token tSIN tASIN tCOS tACOS tTAN tATAN tEXP tLOG
+%token tSTR tCHR tVAL tASC tLEN
+%token tSYSTEM tARG tENV
+%token tTIME tDATE
+%token tTOKEN tTOKENALT tSPLIT tSPLITALT tGLOB
+%token tTRIM tLTRIM tRTRIM tINSTR tRINSTR
 
-%type <ast> program
-%type <stmt> stmts
-%type <stmt> stmt 
-%type <stmt> letstmt
-%type <printstmt> printstmt
-%type <parameterlist> printlist
-%type <numeric> numeric
-%type <var> var
-%type <expr> expr
-/* Operator precedence for mathematical operators */
-%left TPLUS TMINUS
-%left TMUL TDIV
-
-%start program
+%left tOR
+%left tAND
+%right tNOT
+%left tNEQ
+%left tGEQ
+%left tLEQ
+%left tLTN
+%left tGTN
+%left tEQU
+%left '-' '+'
+%left '*' '/' tMOD
+%right UMINUS UPLUS
+%left tPOW
+%nonassoc '.'
 
 %%
 
-program : stmts { programBlock = $$ = $1; }
-        ;
+program: list_of_statement_lists tEOPROG
+        /* Note that it is absolutely essential that the "exit"
+         * command be added here, because extra commands might be
+         * added later and sequential execution of them could prove
+         * disastrous. */
+        { /*add_command (cEOPROG, NULL);*/ yylex_destroy (); YYACCEPT; }
+   ;
 
-stmts : stmt 
-    | stmt stmts  {
-		$1->next.reset($2);
-		$$ = $1;
+list_of_statement_lists: statement_list
+   | list_of_statement_lists tNEWFILE statement_list
+   ;
+
+statement_list: statement
+   | statement_list tSEPARATOR
+        { yylineno += $2; }
+           statement
+   ;
+
+statement: /* empty */
+   | non_empty_statement
+   ;
+
+non_empty_statement: number_assignment
+   | string_assignment
+   | tLET number_assignment
+   | tLET string_assignment
+   | if_clause
+   | short_if
+   | do_loop
+   | for_loop
+   | repeat_loop
+   | while_loop
+   | switch_number_or_string
+   | tBREAK
+        { /*add_command (cBREAK, NULL); */ if (! (in_loop)) { error ("cannot \"break\" outside of loop"); } }
+   | tCONTINUE
+        { /*add_command (cCONTINUE, NULL)->tag = continue_corrections;*/ if (! (in_loop)) { error ("cannot \"continue\" outside of loop"); } }
+   | function_definition
+   | cfunction_definition
+   | structure_definition
+   | number_function_or_array_any_params { }
+   | string_function_or_array_any_params { }
+   | tLOCAL {if (function_type==ftNONE) error("declaring variables \"local\" outside of a function has no effect"); } local_list
+   | tSTATIC {if (function_type==ftNONE) error("declaring variables \"static\" outside of a function has no effect"); } static_list
+   | tPRINT print_intro print_list {/*create_print('l');create_pps(cPOPSTREAM,0);*/}
+   | tPRINT print_intro print_list ';' {/*create_pps(cPOPSTREAM,0);*/}
+   | tINPUT { until_eol = false; } input_body {/*create_pps(cPOPSTREAM,0);*/}
+   | tLINE tINPUT { until_eol = true; } input_body {/*create_pps(cPOPSTREAM,0);*/}
+   | tRETURN {//if (get_switch_id()) create_clean_switch_mark(0,TRUE);
+          //    if (function_type!=ftNONE) {
+        //  add_command(cCLEARREFS,NULL);lastcmd->nextref=firstref;
+         // add_command(cPOPSYMLIST,NULL);
+          //      create_retval(ftNONE,function_type);
+         //       add_command(cRET_FROM_FUN,NULL);
+       //      } else {
+          //     add_command(cRETURN,NULL);
+             //}
+             }
+   | tRETURN number_expression {
+// 	   if (get_switch_id()) create_clean_switch_mark(1,TRUE);
+// 	   if (function_type==ftNONE) {error("cannot return value outside of a subroutine"); } add_command(cCLEARREFS,NULL);
+// 	   lastcmd->nextref=firstref;
+// 	   add_command(cPOPSYMLIST,NULL);
+// 	   create_retval(ftNUMBER,function_type);
+// 	   add_command(cRET_FROM_FUN,NULL);
+   }
+
+   | tRETURN string_expression {/*if (get_switch_id()) create_clean_switch_mark(1,TRUE); if (function_type==ftNONE) {error("cannot return value outside of a subroutine"); } add_command(cCLEARREFS,NULL);lastcmd->nextref=firstref;add_command(cPOPSYMLIST,NULL);create_retval(ftSTRING,function_type);add_command(cRET_FROM_FUN,NULL);*/}
+   | tDIM dim_list
+   | tSYSTEM '(' string_expression ')' {/*create_function(fSYSTEM);
+   add_command(cPOP,NULL);*/}
+   | tEXIT {/*create_pushnum(EXIT_SUCCESS);add_command(cEXIT,NULL);*/}
+   | tEXIT number_expression {/*add_command(cEXIT,NULL);*/}
+   | tOPEN hashed_number ',' string_expression {/*create_myopen(OPEN_HAS_STREAM);*/}
+   | tOPEN hashed_number ',' string_expression ',' string_expression {/*create_myopen(OPEN_HAS_STREAM+OPEN_HAS_MODE);*/}
+   | tCLOSE hashed_number {/*add_command(cCLOSE,NULL);*/}
+   | tSEEK hashed_number ',' number_expression {/*add_command(cSEEK,NULL);*/}
+   | tSEEK hashed_number ',' number_expression ',' string_expression {/*add_command(cSEEK2,NULL);*/}
+   | tENABLE { /*create_pushnum (TRUE); */} option
+   | tDISABLE { /*create_pushnum (FALSE); */} option
+   | tDEC dec_list
+   | tINC inc_list
+   | tGOTO numsym_s {
+	   /* need to clean up after a "switch" construct (other loops and conditional statements are fine); since "goto" is a one-way jump, normal clean-up will not occur */
+	   //if (unclosed_switches) { create_clean_switch_mark (0, FALSE); }
+	   // /* create "goto" */ create_goto (dotify ($2));
+   }
+   | tGOSUB numsym_s { /* create "gosub" */ /*create_gosub (dotify ($2));*/ }
+   | tLABEL numsym_s {
+	//   if (unclosed_ifs || unclosed_switches) error ("cannot define a label inside an \"if\" statement or \"switch\" construct"); create_label (dotify ($2), cLABEL);
+   }
+   | tPOKE hashed_number ',' number_expression { /*add_command (cPOKEFILE, NULL);*/ }
+   | tCOMPILE string_expression { /*add_command (cCOMPILE, NULL);*/ }
+   | tEXECUTERETURNNUMBER '(' { /*add_command (cPUSHFREE, NULL);*/ } call_list ')' {
+	 //  create_execute (ftNUMBER); add_command (cPOP, NULL); add_command (cPOP, NULL);
+   }
+   | tEXECUTERETURNSTRING '(' { /*add_command (cPUSHFREE, NULL);*/ } call_list ')' { /*create_execute (ftSTRING); add_command (cPOP, NULL); add_command (cPOP, NULL);*/ }
+   | tDATA numsym_s { /*data = create_data (dotify ($2));*/ } separator_list data_list tENDDATA
+   | tREAD read_list
+   | tRESTORE restore_list
+   ;
+
+data_list: data_row
+   | data_list data_row
+   ;
+
+data_row: data_row_items separator_list
+   ;
+
+data_row_items: data_item
+   | data_row_items ',' data_item
+   ;
+
+data_item: tNUMBER   { /*data_add (data, 'n')->number_value = $1; */}
+   | '-' tNUMBER     { /*data_add (data, 'n')->number_value = -$2;*/ }
+   | tSTRING         { /*data_add (data, 's')->string_value = $1; */}
+   ;
+
+read_list: read_item
+   | read_list ',' read_item
+   ;
+
+read_item: numsym_s tFROM numsym_s { /*add_command (cDATAREAD, dotify ($3))->tag = 'n'; add_command (cPOPNUMSYM, dotify ($1)); */}
+   | strsym_s tFROM numsym_s { /*add_command (cDATAREAD, dotify ($3))->tag = 's'; add_command (cPOPSTRSYM, dotify ($1)); */}
+   | numsym_a tFROM numsym_s { /*add_command (cDATAREAD, dotify ($3))->tag = 'n'; create_doarray (dotify ($1), ASSIGNNUMBERARRAY);*/ }
+   | strsym_a tFROM numsym_s { /*add_command (cDATAREAD, dotify ($3))->tag = 's'; create_doarray (dotify ($1), ASSIGNSTRINGARRAY);*/ }
+   ;
+
+restore_list: numsym_s { /*add_command (cDATARESTORE, dotify ($1)); */}
+   | restore_list ',' numsym_s {/* add_command (cDATARESTORE, dotify ($3)); */}
+   ;
+
+number_assignment: numsym_s tEQU number_expression {/*add_command(cPOPNUMSYM,dotify($1));*/}
+   | number_function_or_array_with_params tEQU number_expression {/*create_doarray($1,ASSIGNNUMBERARRAY);*/}
+   ;
+
+string_assignment: strsym_s tEQU string_expression {/*add_command(cPOPSTRSYM,dotify($1));*/}
+   | tMID '(' string_scalar_or_array ',' number_expression ',' number_expression ')' tEQU string_expression {/*create_changestring(fMID);*/}
+   | tMID '(' string_scalar_or_array ',' number_expression ')' tEQU string_expression {/*create_changestring(fMID2);*/}
+   | tLEFT '(' string_scalar_or_array ',' number_expression ')' tEQU string_expression {/*create_changestring(fLEFT);*/}
+   | tRIGHT '(' string_scalar_or_array ',' number_expression ')' tEQU string_expression {/*create_changestring(fRIGHT);*/}
+   | string_function_or_array_with_params tEQU string_expression {
+	   //create_doarray($1,ASSIGNSTRINGARRAY);
+   }
+   ;
+
+string_scalar_or_array: strsym_s {/*add_command(cPUSHSTRPTR,dotify($1));*/}
+   | strsym_a {/*create_doarray(dotify($1),GETSTRINGPOINTER);*/}
+   ;
+
+string_expression: strsym_s {/*add_command(cPUSHSTRSYM,dotify($1));*/}
+   | string_function
+   | string_function_or_array_any_params {/*add_command(cSTRING_FUNCTION_OR_ARRAY,$1);*/}
+   | tSTRING {/*create_pushstr($1);*/}
+   | string_expression '+' string_expression {/*add_command(cCONCAT,NULL);*/}
+   | '(' string_expression ')'
+   ;
+
+string_function: tLEFT '(' string_expression ',' number_expression ')' {/*create_function(fLEFT);*/}
+   | tRIGHT '(' string_expression ',' number_expression ')' {/*create_function(fRIGHT);*/}
+   | tMID '(' string_expression ',' number_expression ',' number_expression ')' {/*create_function(fMID);*/}
+   | tMID '(' string_expression ',' number_expression ')' {/*create_function(fMID2);*/}
+   | tSTR '(' number_expression ')' {/*create_function(fSTR);*/}
+   | tSTR '(' number_expression ',' string_expression ')' {/*create_function(fSTR2);*/}
+   | tSTR '(' number_expression ',' string_expression ',' string_expression ')' {/*create_function(fSTR3);*/}
+   | tCHR '(' number_expression ')' {/*create_function(fCHR);*/}
+   | tUPPER '(' string_expression ')' {/*create_function(fUPPER);*/}
+   | tLOWER '(' string_expression ')' {/*create_function(fLOWER);*/}
+   | tLTRIM '(' string_expression ')' {/*create_function(fLTRIM);*/}
+   | tRTRIM '(' string_expression ')' {/*create_function(fRTRIM);*/}
+   | tTRIM '(' string_expression ')' {/*create_function(fTRIM);*/}
+   | tTOKENALT '(' string_scalar_or_array ',' string_expression ')' {/*add_command(cTOKENALT2,NULL);*/}
+   | tTOKENALT '(' string_scalar_or_array ')' {/*add_command(cTOKENALT,NULL);*/}
+   | tSPLITALT '(' string_scalar_or_array ',' string_expression ')' {/*add_command(cSPLITALT2,NULL);*/}
+   | tSPLITALT '(' string_scalar_or_array ')' {/*add_command(cSPLITALT,NULL);*/}
+   | tDATE {/*create_function(fDATE);*/}
+   | tTIME {/*create_function(fTIME);*/}
+   | tARG '(' number_expression ')' { /*create_function (fARG); */}
+   | tENV '(' string_expression ')' { /*create_function (fENV); */}
+   | tEXECUTERETURNSTRING '(' { /*add_command (cPUSHFREE, NULL);*/ } call_list ')' { /*create_execute (ftSTRING); add_command (cSWAP, NULL); add_command (cPOP, NULL); */}
+   ;
+
+number_expression: number_expression tOR {/*add_command(cORSHORT,NULL);pushlabel();*/} number_expression {/*poplabel();create_boole('|');*/}
+   | number_expression tAND {/*add_command(cANDSHORT,NULL);pushlabel();*/} number_expression {/*poplabel();create_boole('&');*/}
+   | tNOT number_expression {/*create_boole('!');*/}
+   | number_expression tEQU number_expression {/*create_numrelop('=');*/}
+   | number_expression tNEQ number_expression {/*create_numrelop('!');*/}
+   | number_expression tLTN number_expression {/*create_numrelop('<');*/}
+   | number_expression tLEQ number_expression {/*create_numrelop('{');*/}
+   | number_expression tGTN number_expression {/*create_numrelop('>');*/}
+   | number_expression tGEQ number_expression {/*create_numrelop('}');*/}
+   | tEOF '(' hashed_number ')' {/*add_command(cTESTEOF,NULL);*/}
+   | tGLOB '(' string_expression ',' string_expression ')' {/*add_command(cGLOB,NULL);*/}
+   | tNUMBER {/*create_pushnum($1);*/}
+   | tARDIM '(' number_arrayref ')' {/*add_command(cARDIM,"");*/}
+   | tARDIM '(' string_arrayref ')' {/*add_command(cARDIM,"");*/}
+   | tARSIZE '(' number_arrayref ',' number_expression ')' {/*add_command(cARSIZE,"");*/}
+   | tARSIZE '(' string_arrayref ',' number_expression ')' {/*add_command(cARSIZE,"");*/}
+   | number_function_or_array_any_params {/*add_command(cNUMBER_FUNCTION_OR_ARRAY,$1);*/}
+   | numsym_s {/*add_command(cPUSHNUMSYM,dotify($1));*/}
+   | number_expression '+' number_expression {/*create_numbin('+');*/}
+   | number_expression '-' number_expression {/*create_numbin('-');*/}
+   | number_expression '*' number_expression {/*create_numbin('*');*/}
+   | number_expression '/' number_expression {/*create_numbin('/');*/}
+   | number_expression tMOD number_expression {/*create_numbin('%');*/}
+   | number_expression tPOW number_expression {/*create_numbin('^');*/}
+   | '-' number_expression %prec UMINUS { /*add_command(cNEGATE,NULL);*/ }
+   | '+' number_expression %prec UPLUS { /* do nothing */ }
+   | string_expression tEQU string_expression {/*create_strrelop('=');*/}
+   | string_expression tNEQ string_expression {/*create_strrelop('!');*/}
+   | string_expression tLTN string_expression {/*create_strrelop('<');*/}
+   | string_expression tLEQ string_expression {/*create_strrelop('{');*/}
+   | string_expression tGTN string_expression {/*create_strrelop('>');*/}
+   | string_expression tGEQ string_expression {/*create_strrelop('}');*/}
+   | number_function
+   | '(' number_expression ')'
+   ;
+
+number_arrayref: numsym_a_no_calls {/*create_pusharrayref(dotify($1),stNUMBERARRAYREF);*/}
+   ;
+
+string_arrayref: strsym_a_no_calls {/*create_pusharrayref(dotify($1),stSTRINGARRAYREF);*/}
+   ;
+
+number_function: tSIN '(' number_expression ')' {/*create_function(fSIN);*/}
+   | tASIN '(' number_expression ')' {/*create_function(fASIN);*/}
+   | tCOS '(' number_expression ')' {/*create_function(fCOS);*/}
+   | tACOS '(' number_expression ')' {/*create_function(fACOS)*/;}
+   | tTAN '(' number_expression ')' {/*create_function(fTAN);*/}
+   | tATAN '(' number_expression ')' {/*create_function(fATAN);*/}
+   | tATAN '(' number_expression ',' number_expression  ')' {/*create_function(fATAN2);*/}
+   | tEXP '(' number_expression ')' {/*create_function(fEXP);*/}
+   | tLOG '(' number_expression ')' {/*create_function(fLOG);*/}
+   | tLOG '(' number_expression ',' number_expression ')' {/*create_function(fLOG2);*/}
+   | tINT '(' number_expression ')' {/*create_function(fINT);*/}
+   | tSQR '(' number_expression ')' {/*create_function(fSQR);*/}
+   | tSQRT '(' number_expression ')' {/*create_function(fSQRT);*/}
+   | tFRAC '(' number_expression ')' {/*create_function(fFRAC);*/}
+   | tABS '(' number_expression ')' {/*create_function(fABS);*/}
+   | tSIG '(' number_expression ')' {/*create_function(fSIG);*/}
+   | tRAN '(' number_expression ')' {/*create_function(fRAN);*/}
+   | tRAN '(' ')' {/*create_function(fRAN2);*/}
+   | tMIN '(' number_expression ',' number_expression ')' {/*create_function(fMIN);*/}
+   | tMAX '(' number_expression ',' number_expression ')' {/*create_function(fMAX);*/}
+   | tLEN '(' string_expression ')' {/*create_function(fLEN);*/}
+   | tVAL '(' string_expression ')' {/*create_function(fVAL);*/}
+   | tASC '(' string_expression ')' {/*create_function(fASC);*/}
+   | tINSTR '(' string_expression ',' string_expression ')' {/*create_function(fINSTR);*/}
+   | tINSTR '(' string_expression ',' string_expression ',' number_expression ')' {/*create_function(fINSTR2);*/}
+   | tRINSTR '(' string_expression ',' string_expression ')' {/*create_function(fRINSTR);*/}
+   | tRINSTR '(' string_expression ',' string_expression  ',' number_expression ')' {/*create_function(fRINSTR2);*/}
+   | tSYSTEM '(' string_expression ')' {/*create_function(fSYSTEM);*/}
+   | tAND '(' number_expression ',' number_expression ')' {/*create_function(fAND);*/}
+   | tOR '(' number_expression ',' number_expression ')' {/*create_function(fOR);*/}
+   | tEOR '(' number_expression ',' number_expression ')' {/*create_function(fEOR);*/}
+   | tTOKEN '(' string_expression ',' string_arrayref ',' string_expression ')' {/*add_command(cTOKEN2,NULL);*/}
+   | tTOKEN '(' string_expression ',' string_arrayref ')' {/*add_command(cTOKEN,NULL);*/}
+   | tSPLIT '(' string_expression ',' string_arrayref ',' string_expression ')' {/*add_command(cSPLIT2,NULL);*/}
+   | tSPLIT '(' string_expression ',' string_arrayref ')' {/*add_command(cSPLIT,NULL);*/}
+   | tOPEN '(' string_expression ')' {/*create_myopen (OPEN_FUNCTION);*/}
+   | tOPEN '(' string_expression ',' string_expression ')' {/*create_myopen (OPEN_FUNCTION + OPEN_HAS_MODE);*/}
+   | tOPEN '(' hashed_number ',' string_expression ')' {/*create_myopen (OPEN_FUNCTION + OPEN_HAS_STREAM);*/}
+   | tOPEN '(' hashed_number ',' string_expression ',' string_expression ')' {/*create_myopen (OPEN_FUNCTION + OPEN_HAS_STREAM + OPEN_HAS_MODE);*/}
+   | tTELL '(' hashed_number ')' { /*create_function (fTELL); */}
+   | tPEEK '(' hashed_number ')' { /*create_function (fPEEKFILE);*/ }
+   | tEXECUTERETURNNUMBER '(' { /*add_command (cPUSHFREE, NULL);*/ } call_list ')' { /*create_execute (ftNUMBER); add_command (cSWAP, NULL); add_command (cPOP, NULL);*/ }
+   ;
+
+hashed_number: '#' number_expression
+  | number_expression
+  ;
+
+dim_list: numsym_a {/*create_dim(dotify($1),'N');*/}
+   | strsym_a {/*create_dim(dotify($1),'S');*/}
+   | dim_list ',' numsym_a {/*create_dim(dotify($3),'N');*/}
+   | dim_list ',' strsym_a {/*create_dim(dotify($3),'S');*/}
+   ;
+
+number_function_or_array_any_params: numsym_a {/*$$ = dotify ($1);*/}
+   | numsym_a_no_calls { /*add_command (cPUSHFREE, NULL); $$ = dotify ($1); */}
+   ;
+
+number_function_or_array_with_params: numsym_a {/*$$ = dotify ($1);*/}
+   ;
+
+string_function_or_array_any_params: strsym_a {/*$$ = dotify ($1);*/}
+   | strsym_a_no_calls {/* add_command (cPUSHFREE, NULL); $$ = dotify ($1); */}
+   ;
+
+string_function_or_array_with_params: strsym_a {/*$$ = dotify ($1);*/}
+   ;
+
+call_list: call_item { /*if (cli != NULL) { cli->items++; }*/ }
+   | call_list ',' call_item { /*if (cli != NULL) { cli->items++; }*/ }
+   ;
+
+call_item: string_expression
+   | number_expression
+   ;
+
+function_definition: tSUB { unclosed_subs++; } { not_inside_loop_or_conditional ("define a function"); /*pushlabel();*/if (function_type!=ftNONE) {error("functions cannot be nested");}}
+   function_name { /*create_label($4,cUSER_FUNCTION);
+                  add_command(cPUSHSYMLIST,NULL);add_command(cCLEARREFS,NULL); firstref = lastcmd; lastref = lastcmd;
+                  create_numparam ();*/}
+   '(' param_list ')' {/*create_require(stFREE);add_command(cPOP,NULL);*/}
+   statement_list
+   endsub {
+	//   add_command(cCLEARREFS,NULL);lastcmd->nextref=firstref;add_command(cPOPSYMLIST,NULL);create_retval(ftNONE,function_type);function_type=ftNONE;add_command(cRET_FROM_FUN,NULL);lastref=NULL;create_endfunction();poplabel();
+   }
+   ;
+
+endsub: tEOPROG {
+	//if (unclosed_subs) { error ("%d subroutine%s not closed", unclosed_subs, (unclosed_subs > 1) ? "s" : ""); }
 	}
-	;
+   | tENDSUB {unclosed_subs--;}
+   ;
 
-stmt : letstmt 
-	| printstmt
-	| NEWLINE { $$ = new StatementAST(); }
-     ;
-
-letstmt : [LET] var TQBEQUAL expr NEWLINE {
-		$$ = new LetStatementAST( VariableRefExprASTPtr($1) , ExprASTPtr($3) ) ;
+function_name: numsym_s {
+	//function_type=ftNUMBER;current_function = dotify ($1); $$ = dotify ($1);
 	}
-	;
+   | strsym_s {/*function_type=ftSTRING;current_function = dotify ($1); $$ = dotify ($1);*/}
+   ;
 
-expr: expr WHITESPACE TPLUS WHITESPACE expr { ; }
-	| numeric { ;}
-	;
+cfunction_definition: tCSUB {
+//                          not_inside_loop_or_conditional ("define a module function");
+//                          if (function_type != ftNONE) {
+//                             error ("a module function may not be defined inside another function");
+//                          }
+//                          pushlabel();
+                      }
+                      cfunction_name {
+//                          create_label (dotify ($3), cUSER_FUNCTION);
+//                          add_command (cPUSHSYMLIST, NULL);
+//                          add_command (cCLEARREFS, NULL);
+//                          firstref = lastcmd;
+//                          lastref = lastcmd;
+//                          create_numparam ();
+                      }
+                      '(' cfunction_param_list ')' {
+//                          create_require (stFREE);
+//                          add_command (cPOP, NULL);
+                      }
+                      tFROM tSTRING {
+//                          add_command (cCALL_EXTERNAL, $3);
+//                          add_command (cCLEARREFS, NULL);
+//                          lastcmd->nextref = firstref;
+//                          add_command (cPOPSYMLIST, NULL);
+//                          create_retval (function_type, function_type);
+//                          function_type = ftNONE;
+//                          add_command (cRET_FROM_FUN, NULL);
+//                          lastref = NULL;
+//                          create_endfunction ();
+//                          poplabel ();
+//                          module = yabmod_load_module ($10);
+//                          if (module == NULL) error ("could not load module \"%s\"", $10);
+//                          cfunction = yabmod_load_cfunction (module, $3, cfunction_type);
+//                          if (cfunction == NULL)
+//								error ("could not load function \"%s\" from module \"%s\"", $3, $10);
+//                          cfunction_type = YABMOD_INTERFACE_TYPE_NONE;
+                      }
+   ;
 
-printstmt : TPRINT WHITESPACE printlist NEWLINE {
-		$$ = new PrintAST(*$3);
-	}
-	;
+cfunction_name: numsym_s {
+//                    function_type = ftNUMBER;
+//                    cfunction_type = YABMOD_INTERFACE_TYPE_SCALAR_NUMBER;
+//                    current_function = mystrdup ($1);
+//                    $$ = mystrdup ($1);
+                }
+   | strsym_s {
+//         function_type = ftSTRING;
+//         cfunction_type = YABMOD_INTERFACE_TYPE_SCALAR_STRING;
+//         current_function = mystrdup ($1);
+//         $$ = mystrdup ($1);
+     }
+   ;
 
-printlist : numeric {
-		$$ = new FunctionParameterListAST ;
-		$$->push_back( ExprASTPtr( $1 ) );
-	}
-	| printlist WHITESPACE numeric { $1->push_back( ExprASTPtr ( $3) );  }
-	;
+cfunction_param_list: /* empty */
+   | cfunction_param_item
+   | cfunction_param_list ',' cfunction_param_item
+   ;
 
-var : 	TIDENTIFIER { }
-	;
+cfunction_param_item: numsym_s {
+//                          create_require (stNUMBER); create_makelocal (dotify ($1), syNUMBER); add_command (cPOPNUMSYM, dotify ($1));
+                      }
+   | strsym_s {
+//         create_require (stSTRING); create_makelocal (dotify ($1), sySTRING); add_command (cPOPSTRSYM, dotify ($1));
+     }
+   | numsym_a_no_calls {
+//         create_require (stNUMBERARRAYREF); create_arraylink (dotify ($1), stNUMBERARRAYREF);
+     }
+   | strsym_a_no_calls {
+//         create_require (stSTRINGARRAYREF); create_arraylink (dotify ($1), stSTRINGARRAYREF);
+     }
+   ;
 
-numeric: 	TINTEGER { $$ = new ConstExprAST($<string>1); delete $1; }
-	;
+local_list: local_item
+   | local_list ',' local_item
+   ;
+
+local_item: numsym_s {/* create_makelocal (dotify ($1), syNUMBER);*/ }
+   | strsym_s {/* create_makelocal (dotify ($1), sySTRING); */}
+   | numsym_a { /*create_makelocal (dotify ($1), syARRAY); create_dim (dotify ($1), 'n'); */}
+   | strsym_a { /*create_makelocal (dotify ($1), syARRAY); create_dim (dotify ($1), 's'); */}
+   ;
+
+static_list: static_item
+   | static_list ',' static_item
+   ;
+
+static_item: numsym_s { /*create_makestatic (dotify ($1), syNUMBER);*/ }
+   | strsym_s { /*create_makestatic (dotify ($1), sySTRING);*/ }
+   | numsym_a { /*create_makestatic (dotify ($1), syARRAY); create_dim (dotify ($1), 'N'); */}
+   | strsym_a {/* create_makestatic (dotify ($1), syARRAY); create_dim (dotify ($1), 'S'); */}
+   ;
+
+param_list: /* empty */
+   | param_item
+   | param_list ',' param_item
+   ;
+
+param_item: numsym_s {/*create_require(stNUMBER);create_makelocal(dotify ($1),syNUMBER);add_command(cPOPNUMSYM,dotify ($1));*/}
+   | strsym_s {/*create_require(stSTRING);create_makelocal(dotify ($1),sySTRING);add_command(cPOPSTRSYM, dotify ($1));*/}
+   | numsym_a_no_calls {/*create_require(stNUMBERARRAYREF);create_arraylink(dotify ($1),stNUMBERARRAYREF);*/}
+   | strsym_a_no_calls {/*create_require(stSTRINGARRAYREF);create_arraylink(dotify ($1),stSTRINGARRAYREF);*/}
+   ;
+
+for_loop: tFOR { unclosed_fors++; } numsym_s tEQU
+             { /*pushname (dotify ($3));    /* used to check for symbol match */
+//              add_command(cRESETSKIPONCE,NULL);
+// //         pushgoto();add_command(cCONTINUE_HERE,NULL);create_break_mark(0,1);
+			}
+     number_expression tTO number_expression
+     step_part { /* pushes another number expression */
+//         add_command(cSKIPONCE,NULL);
+//         pushlabel();
+//         add_command(cSTARTFOR,NULL);
+//         add_command(cPOPNUMSYM,dotify ($3));
+//         poplabel();
+//         add_command(cPUSHNUMSYM,dotify ($3));
+//         add_command(cFORINCREMENT,NULL);
+//         add_command(cPOPNUMSYM,dotify ($3));
+//         add_command(cPUSHNUMSYM,dotify ($3));
+//         add_command(cFORCHECK,NULL);
+//         add_command(cDECIDE,NULL);
+//              pushlabel();
+	 }
+	  statement_list {/*
+              swap();popgoto();poplabel();*/}
+           next next_symbol {/*create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);*/
+		}
+   ;
+
+next: tEOPROG {if (unclosed_fors) { error ("%d \"for\" loop%s not closed", unclosed_fors, (unclosed_fors > 1) ? "s" : ""); } }
+   | tNEXT {unclosed_fors--;}
+   ;
+
+next_symbol: /* empty */ {/* pop (stSTRING);*/ }
+   | numsym_s { /*if (strcmp (pop (stSTRING)->pointer, dotify ($1)) != 0) */{ error ("symbols used for \"for\" and \"next\" do not match"); } }
+   ;
+
+step_part: {/*create_pushnum(1);*/} /* can be omitted */
+   | tSTEP number_expression
+   ;
+
+switch_number_or_string: tSWITCH { unclosed_switches ++; } {/*push_switch_id();add_command(cPUSH_SWITCH_MARK,NULL);create_break_mark(0,1);
+   continue_corrections ++; add_command(cCONTINUE_CORRECTION, NULL)->tag = continue_corrections;*/}
+                 number_or_string separator_list case_list default tSEND { unclosed_switches --; } {continue_corrections --; /*create_break_mark(-1,0);add_command(cBREAK_HERE,NULL);create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);create_clean_switch_mark(0,false);pop_switch_id();*/}
+   ;
+
+separator_list: tSEPARATOR { yylineno += $1; }
+   | separator_list tSEPARATOR { yylineno += $2; }
+   ;
+
+number_or_string: number_expression
+   | string_expression
+   ;
+
+case_list: /* empty */
+   | case_list tCASE {/*create_break_mark(-1,0);add_command(cBREAK_HERE,NULL);*/} number_or_string
+       {/*add_command(cSWITCH_COMPARE,NULL);add_command(cDECIDE,NULL);add_command(cMINOR_BREAK,NULL);create_break_mark(1,0);} statement_list {add_command(cNEXT_CASE,NULL);*/}
+   ;
+
+default: /* empty */
+   | tDEFAULT tSEPARATOR { yylineno+=$2; } {/*create_break_mark(-1,0); add_command(cBREAK_HERE,NULL);*/} statement_list
+   ;
+
+do_loop: tDO { unclosed_dos++; } {/*add_command(cCONTINUE_HERE,NULL);create_break_mark(0,1);pushgoto();*/}
+         statement_list
+             loop
+   ;
+
+loop: tEOPROG {if (unclosed_dos) { error ("%d \"do\" loop%s not closed", unclosed_dos, (unclosed_dos > 1) ? "s" : ""); } }
+   | tLOOP {unclosed_dos--;} {/*popgoto();create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);*/}
+   ;
+
+while_loop: tWHILE { unclosed_whiles++; } {/*add_command(cCONTINUE_HERE,NULL);create_break_mark(0,1);pushgoto()*/} number_expression
+         {/*add_command(cDECIDE,NULL);
+         pushlabel();*/}
+         statement_list
+             wend
+   ;
+
+wend: tEOPROG {if (unclosed_whiles) { error ("%d \"while\" loop%s not closed", unclosed_whiles, (unclosed_whiles > 1) ? "s" : ""); } }
+   | tWEND {unclosed_whiles--;} {/*swap();popgoto();poplabel();create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);*/}
+   ;
+
+repeat_loop: tREPEAT { unclosed_repeats++; } {/*add_command(cCONTINUE_HERE,NULL);create_break_mark(0,1);pushgoto();*/}
+          statement_list
+        until
+   ;
+
+until: tEOPROG {if (unclosed_repeats) { error ("%d \"repeat\" loop%s not closed", unclosed_repeats, (unclosed_repeats > 1) ? "s" : ""); } }
+   | tUNTIL number_expression
+          {unclosed_repeats--;} {/*add_command(cDECIDE,NULL);popgoto();create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);*/}
+   ;
+
+if_clause: if_part number_expression {/*add_command(cDECIDE,NULL);storelabel();pushlabel();*/}
+            tTHEN statement_list {/*swap();matchgoto();swap();poplabel();*/}
+      elseif_part
+            else_part {/*poplabel();*/}
+            endif
+   ;
+
+short_if: if_part number_expression { /*add_command (cDECIDE, NULL); storelabel (); pushlabel ();*/ }
+            non_empty_statement { unclosed_ifs--; } {/* swap (); matchgoto (); swap (); poplabel (); poplabel (); */}
+   | if_part number_expression { /*add_command (cDECIDE, NULL); storelabel (); pushlabel ();*/ } separator_list
+            non_empty_statement {/* unclosed_ifs--; } { swap (); matchgoto (); swap (); poplabel (); poplabel ();*/ }
+   ;
+
+endif: tEOPROG {if (unclosed_ifs) { error ("%d \"if\" statement%s not closed", unclosed_ifs, (unclosed_ifs > 1) ? "s" : ""); } }
+   | tENDIF {unclosed_ifs--;}
+   ;
+
+if_part: tIF { unclosed_ifs ++; }
+   ;
+
+else_part: /* can be omitted */
+   | tELSE statement_list
+   ;
+
+elseif_part: /* can be omitted */
+   | tELSEIF number_expression tTHEN
+      {/*add_command(cDECIDE,NULL);pushlabel();*/}
+     statement_list
+   {/*swap();matchgoto();swap();poplabel();*/}
+     elseif_part
+   ;
+
+input: numsym_s {/*create_myread ('n', until_eol); add_command (cPOPNUMSYM, dotify ($1)); */}
+   | strsym_s {/*create_myread('s',until_eol);add_command(cPOPSTRSYM, dotify ($1));*/}
+   | numsym_a {/*create_myread('n',until_eol);create_doarray(dotify ($1),ASSIGNNUMBERARRAY);*/}
+   | strsym_a {/*create_myread('s',until_eol);create_doarray(dotify ($1),ASSIGNSTRINGARRAY);*/}
+   ;
+
+print_list:  /* empty */
+   | number_expression
+        { /*create_print ('n');*/ }
+   | number_expression tUSING string_expression
+        { /*create_print ('u'); */}
+   | string_expression
+        { /*create_print ('s');*/ }
+   | print_list ',' number_expression
+        { /*create_print ('b'); create_print ('n');*/ }
+   | print_list ',' number_expression tUSING string_expression
+        {/* create_print ('b'); create_print ('u'); */}
+   | print_list ',' string_expression
+        { /*create_print ('b'); create_print ('s');*/ }
+   ;
+
+input_body: /* empty */ {/*create_pushnum(STDIO_STREAM);create_pps(cPUSHSTREAM,1);*/} prompt input
+   | '#' numsym_s {/*add_command(cPUSHNUMSYM,dotify ($2));create_pps(cPUSHSTREAM,1);*/} input
+   | '#' tNUMBER {/*create_pushnum ($2); create_pps(cPUSHSTREAM,1);*/} input
+   | '#' '(' number_expression ')' {/*create_pps(cPUSHSTREAM,1);*/} input
+   ;
+
+prompt: string_expression
+        {/* create_print ('s');*/ }
+   ;
+
+print_intro: /* empty */ {/*create_pushnum(STDIO_STREAM);create_pps(cPUSHSTREAM,0);*/}
+   | '#' numsym_s {/*add_command(cPUSHNUMSYM,dotify ($2));create_pps(cPUSHSTREAM,0);*/}
+   | '#' tNUMBER {/*create_pushnum ($2); create_pps(cPUSHSTREAM,0);*/}
+   | '#' '(' number_expression ')' {/*create_pps(cPUSHSTREAM,0);*/}
+   ;
+
+option: tEXPLICIT {/* add_command (cOPTEXPLICIT, NULL); */}
+   ;
+
+dec_list: numsym_s { /*add_command (cPUSHNUMSYM, dotify ($1)); create_pushnum (1); create_numbin ('-'); add_command (cPOPNUMSYM, dotify ($1));*/ }
+   | dec_list ',' numsym_s {/* add_command (cPUSHNUMSYM, dotify ($3)); create_pushnum (1); create_numbin ('-'); add_command (cPOPNUMSYM, dotify ($3)); */}
+   ;
+
+inc_list: numsym_s { /*add_command (cPUSHNUMSYM, dotify ($1)); create_pushnum (1); create_numbin ('+'); add_command (cPOPNUMSYM, dotify ($1));*/ }
+   | inc_list ',' numsym_s {
+	/*   add_command (cPUSHNUMSYM, dotify ($3)); create_pushnum (1); create_numbin ('+'); add_command (cPOPNUMSYM, dotify ($3));*/ }
+   ;
+
+structure_definition: tSTRUCT new_cli numsym_s {
+//                          if (cli->next == NULL) {
+//                             cmd = add_command (cSTRUCT, dotify ($3));
+//                          }
+//                          else {
+//                             cmd = add_command (cSTRUCT, $3);
+//                          }
+//                          cmd->args = cli->items;
+//                          cmd->tag = syNUMBER;
+                      }
+                      separator_list structure_definition_parts tENDSTRUCT {
+//                          add_command (cENDSTRUCT, NULL)->args = cli->items;
+//                          next_cli = cli->next;
+//                          xfree (cli);
+//                          cli = next_cli;
+                      }
+   | tSTRUCT new_cli numsym_a {
+//         if (cli->next == NULL) {
+//            cmd = add_command (cSTRUCT, dotify ($3));
+//         }
+//         else {
+//            cmd = add_command (cSTRUCT, $3);
+//         }
+//         cmd->args = cli->items;
+//         cmd->tag = syNUMBER;
+     }
+     separator_list structure_definition_parts tENDSTRUCT {
+//         add_command (cENDSTRUCT, NULL)->args = cli->items;
+//         next_cli = cli->next;
+//         xfree (cli);
+//         cli = next_cli;
+     }
+   ;
+
+structure_definition_parts: structure_definition_variable separator_list
+   | structure_definition_parts structure_definition_variable separator_list
+   ;
+
+structure_definition_variable: structure_definition
+   | new_cli numsym_s {
+//         cmd = add_command (cSTRUCTVAR, $2);
+//         cmd->args = cli->items;
+//         cmd->tag = syNUMBER;
+//         next_cli = cli->next;
+//         xfree (cli);
+//         cli = next_cli;
+     }
+   | new_cli strsym_s {
+//         cmd = add_command (cSTRUCTVAR, $2);
+//         cmd->args = cli->items;
+//         cmd->tag = sySTRING;
+//         next_cli = cli->next;
+//         xfree (cli);
+//         cli = next_cli;
+     }
+   | new_cli numsym_a {
+//         cmd = add_command (cSTRUCTVAR, $2);
+//         cmd->args = cli->items;
+//         cmd->tag = syNUMBER;
+//         next_cli = cli->next;
+//         xfree (cli);
+//         cli = next_cli;
+     }
+   | new_cli strsym_a {
+//         cmd = add_command (cSTRUCTVAR, $2);
+//         cmd->args = cli->items;
+//         cmd->tag = sySTRING;
+//         next_cli = cli->next;
+//         xfree (cli);
+//         cli = next_cli;
+     }
+   ;
+
+new_cli: {
+//             old_cli = cli;
+//             cli = xmalloc (sizeof (struct cli));
+//             cli->items = 0;
+//             cli->next = old_cli;
+         }
+   ;
+
+numsym_s: tNUMSYM { /*$$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);*/ }
+   | numsym_s '.' tNUMSYM { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1); */}
+   ;
+
+numsym_a: tNUMSYM '(' {
+	/*add_command (cPUSHFREE, NULL); } call_list ')' { $$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1); */}
+   | numsym_a '.' tNUMSYM '(' call_list ')' { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
+   | numsym_a '.' tNUMSYM { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
+   | numsym_s '.' tNUMSYM '(' { /*add_command (cPUSHFREE, NULL); } call_list ')' { $$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
+   ;
+
+numsym_a_no_calls: tNUMSYM '(' ')' {
+// 	$$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);
+ 	}
+   | numsym_a_no_calls '.' tNUMSYM '(' ')' { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
+   | numsym_a_no_calls '.' tNUMSYM { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1); */}
+   | numsym_s '.' tNUMSYM '(' ')' { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
+   ;
+
+strsym_s: tSTRSYM { /*$$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);*/ }
+   | numsym_s '.' tSTRSYM { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
+   ;
+
+strsym_a: tSTRSYM '(' { /*add_command (cPUSHFREE, NULL); } call_list ')' { $$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);*/ }
+   | numsym_a '.' tSTRSYM '(' call_list ')' { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
+   | numsym_a '.' tSTRSYM { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
+   | numsym_s '.' tSTRSYM '(' {/* add_command (cPUSHFREE, NULL);*/ } call_list ')' { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1); */}
+   ;
+
+strsym_a_no_calls: tSTRSYM '(' ')' { /*$$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);*/ }
+   | numsym_a_no_calls '.' tSTRSYM '(' ')' { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
+   | numsym_a_no_calls '.' tSTRSYM { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
+   | numsym_s '.' tSTRSYM '(' ')' { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1); */}
+   ;

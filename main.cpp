@@ -9,11 +9,9 @@ namespace fs=boost::filesystem;
 #include "ast.h"
 #include "parser.hpp"
 
-
 extern FILE *yyin;
-extern AST *programBlock;
 
-static void generate(AST * ast);
+static void generate(StatementAST * ast);
 
 static std::list<std::string> argv_getinputfiles(int argc, char **argv)
 {
@@ -64,8 +62,10 @@ int main(int argc, char **argv)
 		printf("open %s failed\n",input.c_str());
 		return 1;
 	}
-	//std::ifstream input();
+
 	yyparse();
+
+	std::cout << "parse done, no errors, generating llvm IR..." << std::endl;
 
 	//TODO 从 programBlock 生成 llvm IR
 
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 	AST::module = new llvm::Module( outfilename.c_str(), llvm::getGlobalContext());
 
 
-	generate(programBlock);
+	//generate(programBlock);
 
 	//compile to excuteable if -c not specified
 	if(vm.count("c")){
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
 }
 
 // generate llvm IR
-static void generate(AST * ast)
+static void generate(StatementAST * ast)
 {
 	//首先生成全局可用的外部辅助函数
 	llvm::IRBuilder<> builder(llvm::getGlobalContext());

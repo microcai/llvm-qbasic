@@ -5,7 +5,7 @@
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
+    version 3 of the License, or (at your option) any later version.
 
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,9 +36,7 @@ llvm::Module * AST::module ;
 
 
 AST::AST()
-	:next()
 {
-
 }
 
 AST::~AST()
@@ -50,7 +48,7 @@ ConstExprAST::ConstExprAST(const std::string* val)
 	constval = val->c_str();
 }
 
-LetStatementAST::LetStatementAST(VariableRefExprASTPtr l, ExprASTPtr r)
+LetExprAST::LetExprAST(VariableRefExprASTPtr l, ExprASTPtr r)
 	:lval(l),rval(r)
 {
 
@@ -65,7 +63,7 @@ llvm::Value* StatementAST::Codegen()
 }
 
 // 为 LET A=XX 赋值语句生成IR代码
-llvm::Value* LetStatementAST::Codegen()
+llvm::Value* LetExprAST::Codegen()
 {
 	//TODO 只能为简单类型生成赋值语句
 	//TODO 复杂类型实质是要调用 operator ==
@@ -84,7 +82,7 @@ llvm::Value* ConstExprAST::Codegen()
 }
 
 //TODO 为 print 语句生成,
-llvm::Value* PrintAST::Codegen()
+llvm::Value* PrintExprAST::Codegen()
 {
     debug("call PRINT\n");
 	
@@ -96,7 +94,13 @@ llvm::Value* PrintAST::Codegen()
 	//builder.CreateCall();
 }
 
-PrintAST::PrintAST(FunctionParameterListAST args):
-	printlist(args)
-{    
+PrintExprAST::PrintExprAST(FunctionParameterListAST args)
+	:CallExprAST(args)
+{
+}
+
+CallExprAST::CallExprAST(FunctionParameterListAST args)
+	:callargs(args)
+{
+	
 }

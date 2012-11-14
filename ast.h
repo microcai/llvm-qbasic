@@ -5,7 +5,7 @@
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
+    version 3 of the License, or (at your option) any later version.
 
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -73,7 +73,6 @@ class AST // :public boost::enable_shared_from_this<AST>
 {
 public:
 	AST();
-	boost::shared_ptr<AST> next; //下一条语句
 	virtual llvm::Value *Codegen() = 0;
 	virtual ~AST();
 	static llvm::Module * module;
@@ -81,6 +80,19 @@ private:
 	AST( const AST &  );
 	AST & operator =( const AST &  );
 };
+
+//语句有, 声明语句和表达式语句和函数调用语句
+class StatementAST: public AST
+{
+public:
+	boost::shared_ptr<StatementAST> next; //下一条语句
+
+	std::string	LABEL;	// label , if there is. then we can use goto
+						// must be uniq among function bodys
+	virtual llvm::Value* Codegen();
+};
+
+typedef boost::shared_ptr<StatementAST>	StatementASTPtr;
 
 class DimAST: public AST
 {
@@ -201,49 +213,50 @@ typedef std::list<ExprASTPtr>	FunctionParameterListAST;
 // CALL Sub Functions , 函数调用也是表达式之一，返回值是表达式嘛
 class CallExprAST:public ExprAST
 {
+public:
+	CallExprAST(FunctionParameterListAST);
 	//参数，参数是一个表达式列表
-	FunctionParameterListAST	args;
+	FunctionParameterListAST	callargs;
 };
 
 typedef boost::shared_ptr<CalcExprAST> CalcExprASTPtr;
 
-// 语句
-class StatementAST: public AST
-{
-public:
-	std::string	LABEL;	// label , if there is. then we can use goto
-						// must be uniq among function bodys
-	virtual llvm::Value* Codegen();
-};
 
-typedef boost::shared_ptr<StatementAST>	StatementASTPtr;
-
+//表达式加回车或者 : 就是一个语句了.
 //左值和右值, 把右值赋给左值
-class LetStatementAST: public StatementAST
+class LetExprAST: public ExprAST
 {
 public:
-	LetStatementAST(VariableRefExprASTPtr lval , ExprASTPtr rval);
+	LetExprAST(VariableRefExprASTPtr lval , ExprASTPtr rval);
 
 	VariableRefExprASTPtr lval;//注意，左值只能是变量表达式
 	ExprASTPtr rval; // 右值可以是任意的表达式。注意，需要可以相互转化的。
 	virtual	llvm::Value *Codegen();
 };
 
+//条件控制表达式
+class ContronExprAST: public ExprAST
+{
+	
+};
 
 // IF XX THEN xx ELSE xx ENDIF
-class IFExprAST:public StatementAST
+
+class IFExprAST:public ContronExprAST
 {
+
 	ExprASTPtr ifexpresion;
-	StatementAST THEN;
-	StatementAST ELSE;
+	StatementASTPtr THEN;
+	StatementASTPtr ELSE;
 };
 
 // loop XXX until
-class LoopExprAST: public StatementAST
+class LoopExprAST: public ContronExprAST
 {
 	
 	
 };
+
 
 
 //函数调用语句
@@ -257,13 +270,11 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 //内建函数语句. PRINT , 为 PRINT 生成特殊的函数调用:)
 ////////////////////////////////////////////////////////////////////////////////
-class PrintAST: public StatementAST
+class PrintExprAST: public CallExprAST
 {
 public:
-	PrintAST(FunctionParameterListAST);
+	PrintExprAST(FunctionParameterListAST);
     virtual llvm::Value* Codegen();
-
-	FunctionParameterListAST printlist;
 };
 
 #endif // __AST_H__

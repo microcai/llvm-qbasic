@@ -19,8 +19,8 @@ if(Boost_FOUND)
     link_libraries(${Boost_LIBRARIES})
 endif()
 
-BISON_TARGET(QBParse parser.ypp ${PROJECT_BINARY_DIR}/parser.cpp)
-FLEX_TARGET(QBLex qblex.ll ${PROJECT_BINARY_DIR}/qblex.cpp)
+BISON_TARGET(QBParse parser.ypp ${PROJECT_SOURCE_DIR}/parser.cpp)
+FLEX_TARGET(QBLex qblex.ll ${PROJECT_SOURCE_DIR}/qblex.cpp)
 
 ADD_FLEX_BISON_DEPENDENCY(QBLex QBParse)
 include_directories(
