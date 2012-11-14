@@ -1,7 +1,6 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include </home/cai/projects/basic/include/defines.h>
 
 #include "defines.h"
 
