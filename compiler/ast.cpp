@@ -16,7 +16,7 @@
     License along with this library; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
-
+#include <iostream>
 #include <boost/lexical_cast.hpp>
 #include <llvm/DerivedTypes.h>
 #include <llvm/Constants.h>
@@ -28,7 +28,7 @@
 #include <llvm/Instruction.h>
 #include <llvm/Support/IRBuilder.h>
 
-#include "ast.h"
+#include "ast.hpp"
 
 #define debug printf
 
@@ -82,20 +82,44 @@ llvm::Value* ConstExprAST::Codegen()
 }
 
 //TODO 为 print 语句生成,
-llvm::Value* PrintExprAST::Codegen()
+llvm::Value* PrintStmtAST::Codegen()
 {
-    debug("call PRINT\n");
+    debug("generating llvm-IR for calling PRINT\n");
 	
 	//llvm::CallInst::Create();
 	llvm::IRBuilder<> builder(llvm::getGlobalContext());
 
+	std::vector<llvm::Type *> brt_printArgs;
+	switch(sizeof(int)){
+		case 4:
+			brt_printArgs.push_back(builder.getInt32Ty());
+			break;
+		case 8:
+			brt_printArgs.push_back(builder.getInt64Ty());
+			break;
+		case 2:
+			brt_printArgs.push_back(builder.getInt16Ty());
+		default:
+			std::cerr << "unknow int type" << std::endl ;
+	}
+
+	llvm::Constant *brt_print =
+			module->getOrInsertFunction("brt_print",
+										llvm::FunctionType::get(builder.getInt32Ty(), llvm::ArrayRef<llvm::Type*>(brt_printArgs), true));
+
+	
+	// creat call into BASIC Runtime function brt_print
+	builder.CreateCall(brt_print,0,"PRINT");
+
+	// int brt_print( int print_intro , int numargs , ... );
+	
 	//llvm::Function * printf = llvm::Function::get(
 
 	//builder.CreateCall();
 }
 
-PrintExprAST::PrintExprAST(FunctionParameterListAST args)
-	:CallExprAST(args)
+PrintStmtAST::PrintStmtAST(FunctionParameterListAST args)
+	:callargs(args)
 {
 }
 

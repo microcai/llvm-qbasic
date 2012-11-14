@@ -76,6 +76,7 @@ public:
 	virtual llvm::Value *Codegen() = 0;
 	virtual ~AST();
 	static llvm::Module * module;
+	//static llvm: * module;
 private:
 	AST( const AST &  );
 	AST & operator =( const AST &  );
@@ -132,7 +133,13 @@ class ExprAST: public AST //
 
 typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
 
-// 常量
+//整数类型. 最简单的类型.可以直接生成  llvm-IR 代码
+class NumberExprAST : public ExprAST
+{
+	
+};
+
+// 常量 , 需要一步转化为 Number 或者是 String
 class ConstExprAST:public ExprAST
 {
 public:
@@ -270,10 +277,20 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 //内建函数语句. PRINT , 为 PRINT 生成特殊的函数调用:)
 ////////////////////////////////////////////////////////////////////////////////
-class PrintExprAST: public CallExprAST
+
+//打印目的地. 默认打印到屏幕
+class PrintIntroAST : public NumberExprAST
+{
+		
+};
+typedef boost::shared_ptr<PrintIntroAST> PrintIntroASTPtr;
+
+class PrintStmtAST: public StatementAST
 {
 public:
-	PrintExprAST(FunctionParameterListAST);
+	PrintIntroASTPtr			print_intro;
+	FunctionParameterListAST	callargs;
+	PrintStmtAST(FunctionParameterListAST);
     virtual llvm::Value* Codegen();
 };
 

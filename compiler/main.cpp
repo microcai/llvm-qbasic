@@ -1,3 +1,6 @@
+
+#include "qbc.h"
+
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 #include <boost/program_options.hpp>
@@ -6,7 +9,6 @@ namespace po = boost::program_options;
 namespace fs=boost::filesystem;
 #include <llvm/Support/IRBuilder.h>
 
-#include "ast.h"
 #include "parser.hpp"
 
 extern FILE *yyin;

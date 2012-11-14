@@ -25,7 +25,7 @@
 #include <llvm/Module.h>
 #include <llvm/Support/IRBuilder.h>
 
-#include "ast.h"
+#include "ast.hpp"
 
 #ifdef __linux__
 #define SYSTEM_NAME "Linux"
