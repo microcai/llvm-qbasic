@@ -234,57 +234,45 @@ non_empty_statement: number_assignment
 	   debug("got PRINT now\n");
 	   $$ = new PrintStmtAST(PrintIntroASTPtr($2),PrintListASTPtr($3));
    }
-   | tINPUT { until_eol = false; } input_body {/*create_pps(cPOPSTREAM,0);*/}
-   | tLINE tINPUT { until_eol = true; } input_body {/*create_pps(cPOPSTREAM,0);*/}
-   | tRETURN {//if (get_switch_id()) create_clean_switch_mark(0,TRUE);
-          //    if (function_type!=ftNONE) {
-        //  add_command(cCLEARREFS,NULL);lastcmd->nextref=firstref;
-         // add_command(cPOPSYMLIST,NULL);
-          //      create_retval(ftNONE,function_type);
-         //       add_command(cRET_FROM_FUN,NULL);
-       //      } else {
-          //     add_command(cRETURN,NULL);
-             //}
+   | tINPUT { until_eol = false; } input_body {}
+   | tLINE tINPUT { until_eol = true; } input_body {}
+   | tRETURN {
+	   
              }
    | tRETURN number_expression {
-// 	   if (get_switch_id()) create_clean_switch_mark(1,TRUE);
-// 	   if (function_type==ftNONE) {error("cannot return value outside of a subroutine"); } add_command(cCLEARREFS,NULL);
-// 	   lastcmd->nextref=firstref;
-// 	   add_command(cPOPSYMLIST,NULL);
-// 	   create_retval(ftNUMBER,function_type);
-// 	   add_command(cRET_FROM_FUN,NULL);
+
+	   
    }
 
    | tRETURN string_expression { }
    | tDIM dim_list
-   | tSYSTEM '(' string_expression ')' {/*create_function(fSYSTEM);
-   add_command(cPOP,NULL);*/}
-   | tEXIT {/*create_pushnum(EXIT_SUCCESS);add_command(cEXIT,NULL);*/}
-   | tEXIT number_expression {/*add_command(cEXIT,NULL);*/}
-   | tOPEN hashed_number ',' string_expression {/*create_myopen(OPEN_HAS_STREAM);*/}
-   | tOPEN hashed_number ',' string_expression ',' string_expression {/*create_myopen(OPEN_HAS_STREAM+OPEN_HAS_MODE);*/}
-   | tCLOSE hashed_number {/*add_command(cCLOSE,NULL);*/}
-   | tSEEK hashed_number ',' number_expression {/*add_command(cSEEK,NULL);*/}
-   | tSEEK hashed_number ',' number_expression ',' string_expression {/*add_command(cSEEK2,NULL);*/}
+   | tSYSTEM '(' string_expression ')' {
+	   
+}
+   | tEXIT {}
+   | tEXIT number_expression {}
+   | tOPEN hashed_number ',' string_expression {}
+   | tOPEN hashed_number ',' string_expression ',' string_expression {}
+   | tCLOSE hashed_number {}
+   | tSEEK hashed_number ',' number_expression {}
+   | tSEEK hashed_number ',' number_expression ',' string_expression {}
    | tENABLE { /*create_pushnum (TRUE); */} option
    | tDISABLE { /*create_pushnum (FALSE); */} option
    | tDEC dec_list
    | tINC inc_list
    | tGOTO numsym_s {
-	   /* need to clean up after a "switch" construct (other loops and conditional statements are fine); since "goto" is a one-way jump, normal clean-up will not occur */
-	   //if (unclosed_switches) { create_clean_switch_mark (0, FALSE); }
-	   // /* create "goto" */ create_goto (dotify ($2));
+
    }
-   | tGOSUB numsym_s { /* create "gosub" */ /*create_gosub (dotify ($2));*/ }
+   | tGOSUB numsym_s {  }
    | tLABEL numsym_s {
-	//   if (unclosed_ifs || unclosed_switches) error ("cannot define a label inside an \"if\" statement or \"switch\" construct"); create_label (dotify ($2), cLABEL);
+
    }
-   | tPOKE hashed_number ',' number_expression { /*add_command (cPOKEFILE, NULL);*/ }
-   | tCOMPILE string_expression { /*add_command (cCOMPILE, NULL);*/ }
-   | tEXECUTERETURNNUMBER '(' { /*add_command (cPUSHFREE, NULL);*/ } call_list ')' {
+   | tPOKE hashed_number ',' number_expression {  }
+   | tCOMPILE string_expression {  }
+   | tEXECUTERETURNNUMBER '(' {  } call_list ')' {
 	 //  create_execute (ftNUMBER); add_command (cPOP, NULL); add_command (cPOP, NULL);
    }
-   | tEXECUTERETURNSTRING '(' { /*add_command (cPUSHFREE, NULL);*/ } call_list ')' { /*create_execute (ftSTRING); add_command (cPOP, NULL); add_command (cPOP, NULL);*/ }
+   | tEXECUTERETURNSTRING '(' { } call_list ')' {  }
    | tDATA numsym_s { /*data = create_data (dotify ($2));*/ } separator_list data_list tENDDATA
    | tREAD read_list
    | tRESTORE restore_list
@@ -488,14 +476,17 @@ call_item: string_expression
    | number_expression
    ;
 
-function_definition: tSUB { unclosed_subs++; } { not_inside_loop_or_conditional ("define a function"); /*pushlabel();*/if (function_type!=ftNONE) {error("functions cannot be nested");}}
-   function_name { /*create_label($4,cUSER_FUNCTION);
-                  add_command(cPUSHSYMLIST,NULL);add_command(cCLEARREFS,NULL); firstref = lastcmd; lastref = lastcmd;
-                  create_numparam ();*/}
-   '(' param_list ')' {/*create_require(stFREE);add_command(cPOP,NULL);*/}
+function_definition: tSUB { unclosed_subs++; } { not_inside_loop_or_conditional ("define a function");
+if (function_type!=ftNONE) {error("functions cannot be nested");}}
+   function_name {
+	   
+}
+   '(' param_list ')' {
+	   
+}
    statement_list
    endsub {
-	//   add_command(cCLEARREFS,NULL);lastcmd->nextref=firstref;add_command(cPOPSYMLIST,NULL);create_retval(ftNONE,function_type);function_type=ftNONE;add_command(cRET_FROM_FUN,NULL);lastref=NULL;create_endfunction();poplabel();
+	
    }
    ;
 
