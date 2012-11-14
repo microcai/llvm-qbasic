@@ -26,10 +26,20 @@ static unsigned sizeofint()
 {
 	return sizeof(int)*8;
 }
-	
+
+static unsigned sizeoflong()
+{
+	return sizeof(long)*8;
+}
+
 llvm::Value * getconstint(int v)
 {
 	return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(sizeofint(),(uint64_t)v,true));
+}
+
+llvm::Value * getconstlong(long v)
+{
+	return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(sizeoflong(),(uint64_t)v,true));
 }
 
 }

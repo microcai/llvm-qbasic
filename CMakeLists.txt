@@ -19,3 +19,4 @@ endif()
 
 add_subdirectory(brt)
 add_subdirectory(compiler)
+add_subdirectory(include)

@@ -31,6 +31,8 @@ endif()
 link_directories(${LLVM_LIBDIR})
 link_libraries("${LLVM_LIBRARIES}")
 
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
 SET(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} ${LLVM_CPPFLAGS} ")
 
 add_executable(llvm-qbc ast.cpp main.cpp llvmwrapper.cpp

@@ -145,19 +145,26 @@ llvm::Value* PrintStmtAST::Codegen(llvm::BasicBlock * insertto)
 			it != callargs->printlist.end() ; it++)
 		{
 			ExprASTPtr argitem = *it;
+			
 			switch(argitem->type){
 				case EXPR_TYPE_BOOL:
 				case EXPR_TYPE_BYTE:	// for const char * used with CARRAY
 				case EXPR_TYPE_SHORT:	// as short
 				case EXPR_TYPE_INTGER:	// as Intger
-				case EXPR_TYPE_LONG:	// as long
-				case EXPR_TYPE_DOUBLE:	// as Double
-				case EXPR_TYPE_POINTER:// as ptr
 					// this are types that can be manipulated directly
 					args.push_back(	qbc::getconstint(argitem->type) );
 					debug("add code for print list args type %d\n",argitem->type);
 					args.push_back(	argitem->Codegen(insertto) );
 					break;
+				case EXPR_TYPE_LONG:	// as long
+					// this are types that can be manipulated directly
+					args.push_back(	qbc::getconstint(argitem->type) );
+					debug("add code for print list args type %d\n",argitem->type);
+					args.push_back(	argitem->Codegen(insertto) );
+					break;
+				case EXPR_TYPE_DOUBLE:	// as Double
+				case EXPR_TYPE_POINTER:// as ptr
+					//TODO: 64位的数字
 				default:
 					//TODO, 目前只需要支持 number , brt_print 也只是支持数字
 					printf("print argument not supported\n");
@@ -199,7 +206,7 @@ ConstNumberExprAST::ConstNumberExprAST(const int64_t v)
 llvm::Value* ConstNumberExprAST::Codegen(llvm::BasicBlock * insertto)
 {
 	debug("const for %d\n",this->val);
-    return qbc::getconstint(this->val);
+    return qbc::getconstlong(this->val);
 }
 
 NumberExprAST::NumberExprAST() :ExprAST(EXPR_TYPE_LONG)

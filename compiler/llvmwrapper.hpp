@@ -23,4 +23,6 @@ namespace qbc{
 
 llvm::Value * getconstint(int v);
 
+llvm::Value * getconstlong(long v);
+
 }
