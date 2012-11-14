@@ -255,7 +255,7 @@ non_empty_statement: number_assignment
 // 	   add_command(cRET_FROM_FUN,NULL);
    }
 
-   | tRETURN string_expression {/*if (get_switch_id()) create_clean_switch_mark(1,TRUE); if (function_type==ftNONE) {error("cannot return value outside of a subroutine"); } add_command(cCLEARREFS,NULL);lastcmd->nextref=firstref;add_command(cPOPSYMLIST,NULL);create_retval(ftSTRING,function_type);add_command(cRET_FROM_FUN,NULL);*/}
+   | tRETURN string_expression { }
    | tDIM dim_list
    | tSYSTEM '(' string_expression ')' {/*create_function(fSYSTEM);
    add_command(cPOP,NULL);*/}

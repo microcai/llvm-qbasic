@@ -3024,7 +3024,7 @@ yyreduce:
   case 40:
 /* Line 1813 of yacc.c  */
 #line 258 "parser.ypp"
-    {/*if (get_switch_id()) create_clean_switch_mark(1,TRUE); if (function_type==ftNONE) {error("cannot return value outside of a subroutine"); } add_command(cCLEARREFS,NULL);lastcmd->nextref=firstref;add_command(cPOPSYMLIST,NULL);create_retval(ftSTRING,function_type);add_command(cRET_FROM_FUN,NULL);*/}
+    { }
     break;
 
   case 42:
