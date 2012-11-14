@@ -4588,7 +4588,7 @@ yyreduce:
   case 333:
 /* Line 1813 of yacc.c  */
 #line 750 "parser.ypp"
-    { /*create_print ('b'); create_print ('n');*/ }
+    { (yyval.print_list) = (yyvsp[(1) - (3)].print_list) ; (yyval.print_list)->additem(ExprASTPtr((yyvsp[(3) - (3)].number_expression))) ;  }
     break;
 
   case 334:

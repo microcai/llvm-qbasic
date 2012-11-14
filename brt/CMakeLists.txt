@@ -1,2 +1,2 @@
 
-add_library(brt print.c)
+add_library(brt print.c mm.c)
