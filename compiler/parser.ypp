@@ -225,9 +225,15 @@ non_empty_statement: number_assignment
    | tPRINT print_intro print_list {
 	   // 构造打印语句
 	   debug("got PRINT now\n");
+	   //TODO 最后一个是 \new line
+	   
 	   $$ = new PrintStmtAST(PrintIntroASTPtr($2),PrintListASTPtr($3));
    }
-   | tPRINT print_intro print_list ';' {/*create_pps(cPOPSTREAM,0);*/}
+   | tPRINT print_intro print_list ';' {
+	   // 构造打印语句
+	   debug("got PRINT now\n");
+	   $$ = new PrintStmtAST(PrintIntroASTPtr($2),PrintListASTPtr($3));
+   }
    | tINPUT { until_eol = false; } input_body {/*create_pps(cPOPSTREAM,0);*/}
    | tLINE tINPUT { until_eol = true; } input_body {/*create_pps(cPOPSTREAM,0);*/}
    | tRETURN {//if (get_switch_id()) create_clean_switch_mark(0,TRUE);

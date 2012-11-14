@@ -9,15 +9,15 @@ int brt_print(int into, int num, ...)
 {
 	int i = 0;
 	int ret = 0;
-	printf("DEBUG: PRINT called , PRINT to %d with %d args\n", into, num);
 
 	va_list va;
 
 	va_start(va,num);
 
-	for( ; i < num ; i++)
+	for(i=0 ; i < num ; i++)
 	{
-		switch(va_arg(va,int))
+		int type = va_arg(va,int);
+		switch(type)
 		{
 			case EXPR_TYPE_BOOL:
 			case EXPR_TYPE_BYTE:	// for const char * used with CARRAY
@@ -26,10 +26,13 @@ int brt_print(int into, int num, ...)
 				printf("%d\t",va_arg(va,int));
 				break;
 			case EXPR_TYPE_LONG:
-				printf("%l",(long)(va_arg(va,long)));
-				break;				
+				printf("%ld\t",(long)(va_arg(va,long)));
+				break;
+			default:
+				printf("unsupported !");
 		}		
 	}
+	printf("\n");
 	fflush(stdout);
 	
 	return ret;

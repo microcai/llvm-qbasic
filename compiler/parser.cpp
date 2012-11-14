@@ -815,42 +815,42 @@ static const yytype_uint16 yyrline[] =
        0,   173,   173,   185,   186,   189,   190,   190,   199,   200,
      203,   204,   205,   206,   207,   208,   209,   210,   211,   212,
      213,   214,   216,   218,   219,   220,   221,   222,   223,   223,
-     224,   224,   225,   230,   231,   231,   232,   232,   233,   243,
-     252,   253,   254,   256,   257,   258,   259,   260,   261,   262,
-     263,   263,   264,   264,   265,   266,   267,   272,   273,   276,
-     277,   278,   278,   281,   281,   282,   282,   283,   284,   287,
-     288,   291,   294,   295,   298,   299,   300,   303,   304,   307,
-     308,   309,   310,   313,   314,   317,   318,   321,   322,   323,
-     324,   325,   326,   331,   332,   335,   336,   337,   338,   339,
-     340,   343,   344,   345,   346,   347,   348,   349,   350,   351,
-     352,   353,   354,   355,   356,   357,   358,   359,   360,   361,
-     362,   363,   364,   364,   367,   367,   368,   368,   369,   370,
-     371,   372,   373,   374,   375,   376,   377,   378,   379,   380,
-     381,   382,   383,   384,   385,   386,   387,   388,   389,   390,
-     391,   392,   393,   394,   395,   396,   397,   398,   399,   400,
-     403,   406,   409,   410,   411,   412,   413,   414,   415,   416,
-     417,   418,   419,   420,   421,   422,   423,   424,   425,   426,
-     427,   428,   429,   430,   431,   432,   433,   434,   435,   436,
-     437,   438,   439,   440,   441,   442,   443,   444,   445,   446,
-     447,   448,   449,   450,   450,   453,   454,   457,   458,   459,
-     460,   463,   464,   467,   470,   471,   474,   477,   478,   481,
-     482,   485,   485,   486,   489,   485,   496,   499,   502,   505,
-     508,   515,   523,   508,   547,   553,   561,   562,   563,   566,
-     569,   572,   575,   580,   581,   584,   585,   586,   587,   590,
-     591,   594,   595,   596,   597,   600,   601,   602,   605,   606,
-     607,   608,   611,   612,   617,   631,   611,   637,   638,   641,
-     642,   645,   646,   649,   649,   651,   649,   654,   655,   658,
-     659,   662,   663,   663,   667,   668,   668,   668,   671,   671,
-     671,   676,   677,   677,   680,   680,   681,   680,   687,   688,
-     688,   691,   691,   691,   696,   698,   697,   701,   702,   704,
-     701,   708,   709,   708,   710,   710,   714,   715,   718,   721,
-     722,   725,   727,   729,   726,   733,   734,   735,   736,   739,
-     740,   745,   747,   749,   751,   753,   757,   757,   758,   758,
-     759,   759,   760,   760,   763,   767,   772,   773,   774,   777,
-     780,   781,   784,   785,   789,   789,   805,   805,   823,   824,
-     827,   828,   836,   844,   852,   862,   870,   871,   874,   876,
-     877,   878,   881,   884,   885,   886,   889,   890,   893,   894,
-     895,   896,   896,   899,   900,   901,   902
+     224,   224,   225,   232,   237,   237,   238,   238,   239,   249,
+     258,   259,   260,   262,   263,   264,   265,   266,   267,   268,
+     269,   269,   270,   270,   271,   272,   273,   278,   279,   282,
+     283,   284,   284,   287,   287,   288,   288,   289,   290,   293,
+     294,   297,   300,   301,   304,   305,   306,   309,   310,   313,
+     314,   315,   316,   319,   320,   323,   324,   327,   328,   329,
+     330,   331,   332,   337,   338,   341,   342,   343,   344,   345,
+     346,   349,   350,   351,   352,   353,   354,   355,   356,   357,
+     358,   359,   360,   361,   362,   363,   364,   365,   366,   367,
+     368,   369,   370,   370,   373,   373,   374,   374,   375,   376,
+     377,   378,   379,   380,   381,   382,   383,   384,   385,   386,
+     387,   388,   389,   390,   391,   392,   393,   394,   395,   396,
+     397,   398,   399,   400,   401,   402,   403,   404,   405,   406,
+     409,   412,   415,   416,   417,   418,   419,   420,   421,   422,
+     423,   424,   425,   426,   427,   428,   429,   430,   431,   432,
+     433,   434,   435,   436,   437,   438,   439,   440,   441,   442,
+     443,   444,   445,   446,   447,   448,   449,   450,   451,   452,
+     453,   454,   455,   456,   456,   459,   460,   463,   464,   465,
+     466,   469,   470,   473,   476,   477,   480,   483,   484,   487,
+     488,   491,   491,   492,   495,   491,   502,   505,   508,   511,
+     514,   521,   529,   514,   553,   559,   567,   568,   569,   572,
+     575,   578,   581,   586,   587,   590,   591,   592,   593,   596,
+     597,   600,   601,   602,   603,   606,   607,   608,   611,   612,
+     613,   614,   617,   618,   623,   637,   617,   643,   644,   647,
+     648,   651,   652,   655,   655,   657,   655,   660,   661,   664,
+     665,   668,   669,   669,   673,   674,   674,   674,   677,   677,
+     677,   682,   683,   683,   686,   686,   687,   686,   693,   694,
+     694,   697,   697,   697,   702,   704,   703,   707,   708,   710,
+     707,   714,   715,   714,   716,   716,   720,   721,   724,   727,
+     728,   731,   733,   735,   732,   739,   740,   741,   742,   745,
+     746,   751,   753,   755,   757,   759,   763,   763,   764,   764,
+     765,   765,   766,   766,   769,   773,   778,   779,   780,   783,
+     786,   787,   790,   791,   795,   795,   811,   811,   829,   830,
+     833,   834,   842,   850,   858,   868,   876,   877,   880,   882,
+     883,   884,   887,   890,   891,   892,   895,   896,   899,   900,
+     901,   902,   902,   905,   906,   907,   908
 };
 #endif
 
@@ -2953,43 +2953,49 @@ yyreduce:
     {
 	   // 构造打印语句
 	   debug("got PRINT now\n");
+	   //TODO 最后一个是 \new line
+	   
 	   (yyval.statement) = new PrintStmtAST(PrintIntroASTPtr((yyvsp[(2) - (3)].print_intro)),PrintListASTPtr((yyvsp[(3) - (3)].print_list)));
    }
     break;
 
   case 33:
 /* Line 1813 of yacc.c  */
-#line 230 "parser.ypp"
-    {/*create_pps(cPOPSTREAM,0);*/}
+#line 232 "parser.ypp"
+    {
+	   // 构造打印语句
+	   debug("got PRINT now\n");
+	   (yyval.statement) = new PrintStmtAST(PrintIntroASTPtr((yyvsp[(2) - (4)].print_intro)),PrintListASTPtr((yyvsp[(3) - (4)].print_list)));
+   }
     break;
 
   case 34:
 /* Line 1813 of yacc.c  */
-#line 231 "parser.ypp"
+#line 237 "parser.ypp"
     { until_eol = false; }
     break;
 
   case 35:
 /* Line 1813 of yacc.c  */
-#line 231 "parser.ypp"
+#line 237 "parser.ypp"
     {/*create_pps(cPOPSTREAM,0);*/}
     break;
 
   case 36:
 /* Line 1813 of yacc.c  */
-#line 232 "parser.ypp"
+#line 238 "parser.ypp"
     { until_eol = true; }
     break;
 
   case 37:
 /* Line 1813 of yacc.c  */
-#line 232 "parser.ypp"
+#line 238 "parser.ypp"
     {/*create_pps(cPOPSTREAM,0);*/}
     break;
 
   case 38:
 /* Line 1813 of yacc.c  */
-#line 233 "parser.ypp"
+#line 239 "parser.ypp"
     {//if (get_switch_id()) create_clean_switch_mark(0,TRUE);
           //    if (function_type!=ftNONE) {
         //  add_command(cCLEARREFS,NULL);lastcmd->nextref=firstref;
@@ -3004,7 +3010,7 @@ yyreduce:
 
   case 39:
 /* Line 1813 of yacc.c  */
-#line 243 "parser.ypp"
+#line 249 "parser.ypp"
     {
 // 	   if (get_switch_id()) create_clean_switch_mark(1,TRUE);
 // 	   if (function_type==ftNONE) {error("cannot return value outside of a subroutine"); } add_command(cCLEARREFS,NULL);
@@ -3017,74 +3023,74 @@ yyreduce:
 
   case 40:
 /* Line 1813 of yacc.c  */
-#line 252 "parser.ypp"
+#line 258 "parser.ypp"
     {/*if (get_switch_id()) create_clean_switch_mark(1,TRUE); if (function_type==ftNONE) {error("cannot return value outside of a subroutine"); } add_command(cCLEARREFS,NULL);lastcmd->nextref=firstref;add_command(cPOPSYMLIST,NULL);create_retval(ftSTRING,function_type);add_command(cRET_FROM_FUN,NULL);*/}
     break;
 
   case 42:
 /* Line 1813 of yacc.c  */
-#line 254 "parser.ypp"
+#line 260 "parser.ypp"
     {/*create_function(fSYSTEM);
    add_command(cPOP,NULL);*/}
     break;
 
   case 43:
 /* Line 1813 of yacc.c  */
-#line 256 "parser.ypp"
+#line 262 "parser.ypp"
     {/*create_pushnum(EXIT_SUCCESS);add_command(cEXIT,NULL);*/}
     break;
 
   case 44:
 /* Line 1813 of yacc.c  */
-#line 257 "parser.ypp"
+#line 263 "parser.ypp"
     {/*add_command(cEXIT,NULL);*/}
     break;
 
   case 45:
 /* Line 1813 of yacc.c  */
-#line 258 "parser.ypp"
+#line 264 "parser.ypp"
     {/*create_myopen(OPEN_HAS_STREAM);*/}
     break;
 
   case 46:
 /* Line 1813 of yacc.c  */
-#line 259 "parser.ypp"
+#line 265 "parser.ypp"
     {/*create_myopen(OPEN_HAS_STREAM+OPEN_HAS_MODE);*/}
     break;
 
   case 47:
 /* Line 1813 of yacc.c  */
-#line 260 "parser.ypp"
+#line 266 "parser.ypp"
     {/*add_command(cCLOSE,NULL);*/}
     break;
 
   case 48:
 /* Line 1813 of yacc.c  */
-#line 261 "parser.ypp"
+#line 267 "parser.ypp"
     {/*add_command(cSEEK,NULL);*/}
     break;
 
   case 49:
 /* Line 1813 of yacc.c  */
-#line 262 "parser.ypp"
+#line 268 "parser.ypp"
     {/*add_command(cSEEK2,NULL);*/}
     break;
 
   case 50:
 /* Line 1813 of yacc.c  */
-#line 263 "parser.ypp"
+#line 269 "parser.ypp"
     { /*create_pushnum (TRUE); */}
     break;
 
   case 52:
 /* Line 1813 of yacc.c  */
-#line 264 "parser.ypp"
+#line 270 "parser.ypp"
     { /*create_pushnum (FALSE); */}
     break;
 
   case 56:
 /* Line 1813 of yacc.c  */
-#line 267 "parser.ypp"
+#line 273 "parser.ypp"
     {
 	   /* need to clean up after a "switch" construct (other loops and conditional statements are fine); since "goto" is a one-way jump, normal clean-up will not occur */
 	   //if (unclosed_switches) { create_clean_switch_mark (0, FALSE); }
@@ -3094,13 +3100,13 @@ yyreduce:
 
   case 57:
 /* Line 1813 of yacc.c  */
-#line 272 "parser.ypp"
+#line 278 "parser.ypp"
     { /* create "gosub" */ /*create_gosub (dotify ($2));*/ }
     break;
 
   case 58:
 /* Line 1813 of yacc.c  */
-#line 273 "parser.ypp"
+#line 279 "parser.ypp"
     {
 	//   if (unclosed_ifs || unclosed_switches) error ("cannot define a label inside an \"if\" statement or \"switch\" construct"); create_label (dotify ($2), cLABEL);
    }
@@ -3108,25 +3114,25 @@ yyreduce:
 
   case 59:
 /* Line 1813 of yacc.c  */
-#line 276 "parser.ypp"
+#line 282 "parser.ypp"
     { /*add_command (cPOKEFILE, NULL);*/ }
     break;
 
   case 60:
 /* Line 1813 of yacc.c  */
-#line 277 "parser.ypp"
+#line 283 "parser.ypp"
     { /*add_command (cCOMPILE, NULL);*/ }
     break;
 
   case 61:
 /* Line 1813 of yacc.c  */
-#line 278 "parser.ypp"
+#line 284 "parser.ypp"
     { /*add_command (cPUSHFREE, NULL);*/ }
     break;
 
   case 62:
 /* Line 1813 of yacc.c  */
-#line 278 "parser.ypp"
+#line 284 "parser.ypp"
     {
 	 //  create_execute (ftNUMBER); add_command (cPOP, NULL); add_command (cPOP, NULL);
    }
@@ -3134,121 +3140,121 @@ yyreduce:
 
   case 63:
 /* Line 1813 of yacc.c  */
-#line 281 "parser.ypp"
+#line 287 "parser.ypp"
     { /*add_command (cPUSHFREE, NULL);*/ }
     break;
 
   case 64:
 /* Line 1813 of yacc.c  */
-#line 281 "parser.ypp"
+#line 287 "parser.ypp"
     { /*create_execute (ftSTRING); add_command (cPOP, NULL); add_command (cPOP, NULL);*/ }
     break;
 
   case 65:
 /* Line 1813 of yacc.c  */
-#line 282 "parser.ypp"
+#line 288 "parser.ypp"
     { /*data = create_data (dotify ($2));*/ }
     break;
 
   case 74:
 /* Line 1813 of yacc.c  */
-#line 298 "parser.ypp"
+#line 304 "parser.ypp"
     { /*data_add (data, 'n')->number_value = $1; */}
     break;
 
   case 75:
 /* Line 1813 of yacc.c  */
-#line 299 "parser.ypp"
+#line 305 "parser.ypp"
     { /*data_add (data, 'n')->number_value = -$2;*/ }
     break;
 
   case 76:
 /* Line 1813 of yacc.c  */
-#line 300 "parser.ypp"
+#line 306 "parser.ypp"
     { /*data_add (data, 's')->string_value = $1; */}
     break;
 
   case 79:
 /* Line 1813 of yacc.c  */
-#line 307 "parser.ypp"
+#line 313 "parser.ypp"
     { /*add_command (cDATAREAD, dotify ($3))->tag = 'n'; add_command (cPOPNUMSYM, dotify ($1)); */}
     break;
 
   case 80:
 /* Line 1813 of yacc.c  */
-#line 308 "parser.ypp"
+#line 314 "parser.ypp"
     { /*add_command (cDATAREAD, dotify ($3))->tag = 's'; add_command (cPOPSTRSYM, dotify ($1)); */}
     break;
 
   case 81:
 /* Line 1813 of yacc.c  */
-#line 309 "parser.ypp"
+#line 315 "parser.ypp"
     { /*add_command (cDATAREAD, dotify ($3))->tag = 'n'; create_doarray (dotify ($1), ASSIGNNUMBERARRAY);*/ }
     break;
 
   case 82:
 /* Line 1813 of yacc.c  */
-#line 310 "parser.ypp"
+#line 316 "parser.ypp"
     { /*add_command (cDATAREAD, dotify ($3))->tag = 's'; create_doarray (dotify ($1), ASSIGNSTRINGARRAY);*/ }
     break;
 
   case 83:
 /* Line 1813 of yacc.c  */
-#line 313 "parser.ypp"
+#line 319 "parser.ypp"
     { /*add_command (cDATARESTORE, dotify ($1)); */}
     break;
 
   case 84:
 /* Line 1813 of yacc.c  */
-#line 314 "parser.ypp"
+#line 320 "parser.ypp"
     {/* add_command (cDATARESTORE, dotify ($3)); */}
     break;
 
   case 85:
 /* Line 1813 of yacc.c  */
-#line 317 "parser.ypp"
+#line 323 "parser.ypp"
     {/*add_command(cPOPNUMSYM,dotify($1));*/}
     break;
 
   case 86:
 /* Line 1813 of yacc.c  */
-#line 318 "parser.ypp"
+#line 324 "parser.ypp"
     {/*create_doarray($1,ASSIGNNUMBERARRAY);*/}
     break;
 
   case 87:
 /* Line 1813 of yacc.c  */
-#line 321 "parser.ypp"
+#line 327 "parser.ypp"
     {/*add_command(cPOPSTRSYM,dotify($1));*/}
     break;
 
   case 88:
 /* Line 1813 of yacc.c  */
-#line 322 "parser.ypp"
+#line 328 "parser.ypp"
     {/*create_changestring(fMID);*/}
     break;
 
   case 89:
 /* Line 1813 of yacc.c  */
-#line 323 "parser.ypp"
+#line 329 "parser.ypp"
     {/*create_changestring(fMID2);*/}
     break;
 
   case 90:
 /* Line 1813 of yacc.c  */
-#line 324 "parser.ypp"
+#line 330 "parser.ypp"
     {/*create_changestring(fLEFT);*/}
     break;
 
   case 91:
 /* Line 1813 of yacc.c  */
-#line 325 "parser.ypp"
+#line 331 "parser.ypp"
     {/*create_changestring(fRIGHT);*/}
     break;
 
   case 92:
 /* Line 1813 of yacc.c  */
-#line 326 "parser.ypp"
+#line 332 "parser.ypp"
     {
 	   //create_doarray($1,ASSIGNSTRINGARRAY);
    }
@@ -3256,739 +3262,739 @@ yyreduce:
 
   case 93:
 /* Line 1813 of yacc.c  */
-#line 331 "parser.ypp"
+#line 337 "parser.ypp"
     {/*add_command(cPUSHSTRPTR,dotify($1));*/}
     break;
 
   case 94:
 /* Line 1813 of yacc.c  */
-#line 332 "parser.ypp"
+#line 338 "parser.ypp"
     {/*create_doarray(dotify($1),GETSTRINGPOINTER);*/}
     break;
 
   case 95:
 /* Line 1813 of yacc.c  */
-#line 335 "parser.ypp"
+#line 341 "parser.ypp"
     {		/*add_command(cPUSHSTRSYM,dotify($1));*/	}
     break;
 
   case 97:
 /* Line 1813 of yacc.c  */
-#line 337 "parser.ypp"
+#line 343 "parser.ypp"
     {/*add_command(cSTRING_FUNCTION_OR_ARRAY,$1);*/}
     break;
 
   case 98:
 /* Line 1813 of yacc.c  */
-#line 338 "parser.ypp"
+#line 344 "parser.ypp"
     {/*create_pushstr($1);*/}
     break;
 
   case 99:
 /* Line 1813 of yacc.c  */
-#line 339 "parser.ypp"
+#line 345 "parser.ypp"
     {/*add_command(cCONCAT,NULL);*/}
     break;
 
   case 101:
 /* Line 1813 of yacc.c  */
-#line 343 "parser.ypp"
+#line 349 "parser.ypp"
     {/*create_function(fLEFT);*/}
     break;
 
   case 102:
 /* Line 1813 of yacc.c  */
-#line 344 "parser.ypp"
+#line 350 "parser.ypp"
     {/*create_function(fRIGHT);*/}
     break;
 
   case 103:
 /* Line 1813 of yacc.c  */
-#line 345 "parser.ypp"
+#line 351 "parser.ypp"
     {/*create_function(fMID);*/}
     break;
 
   case 104:
 /* Line 1813 of yacc.c  */
-#line 346 "parser.ypp"
+#line 352 "parser.ypp"
     {/*create_function(fMID2);*/}
     break;
 
   case 105:
 /* Line 1813 of yacc.c  */
-#line 347 "parser.ypp"
+#line 353 "parser.ypp"
     {/*create_function(fSTR);*/}
     break;
 
   case 106:
 /* Line 1813 of yacc.c  */
-#line 348 "parser.ypp"
+#line 354 "parser.ypp"
     {/*create_function(fSTR2);*/}
     break;
 
   case 107:
 /* Line 1813 of yacc.c  */
-#line 349 "parser.ypp"
+#line 355 "parser.ypp"
     {/*create_function(fSTR3);*/}
     break;
 
   case 108:
 /* Line 1813 of yacc.c  */
-#line 350 "parser.ypp"
+#line 356 "parser.ypp"
     {/*create_function(fCHR);*/}
     break;
 
   case 109:
 /* Line 1813 of yacc.c  */
-#line 351 "parser.ypp"
+#line 357 "parser.ypp"
     {/*create_function(fUPPER);*/}
     break;
 
   case 110:
 /* Line 1813 of yacc.c  */
-#line 352 "parser.ypp"
+#line 358 "parser.ypp"
     {/*create_function(fLOWER);*/}
     break;
 
   case 111:
 /* Line 1813 of yacc.c  */
-#line 353 "parser.ypp"
+#line 359 "parser.ypp"
     {/*create_function(fLTRIM);*/}
     break;
 
   case 112:
 /* Line 1813 of yacc.c  */
-#line 354 "parser.ypp"
+#line 360 "parser.ypp"
     {/*create_function(fRTRIM);*/}
     break;
 
   case 113:
 /* Line 1813 of yacc.c  */
-#line 355 "parser.ypp"
+#line 361 "parser.ypp"
     {/*create_function(fTRIM);*/}
     break;
 
   case 114:
 /* Line 1813 of yacc.c  */
-#line 356 "parser.ypp"
+#line 362 "parser.ypp"
     {/*add_command(cTOKENALT2,NULL);*/}
     break;
 
   case 115:
 /* Line 1813 of yacc.c  */
-#line 357 "parser.ypp"
+#line 363 "parser.ypp"
     {/*add_command(cTOKENALT,NULL);*/}
     break;
 
   case 116:
 /* Line 1813 of yacc.c  */
-#line 358 "parser.ypp"
+#line 364 "parser.ypp"
     {/*add_command(cSPLITALT2,NULL);*/}
     break;
 
   case 117:
 /* Line 1813 of yacc.c  */
-#line 359 "parser.ypp"
+#line 365 "parser.ypp"
     {/*add_command(cSPLITALT,NULL);*/}
     break;
 
   case 118:
 /* Line 1813 of yacc.c  */
-#line 360 "parser.ypp"
+#line 366 "parser.ypp"
     {/*create_function(fDATE);*/}
     break;
 
   case 119:
 /* Line 1813 of yacc.c  */
-#line 361 "parser.ypp"
+#line 367 "parser.ypp"
     {/*create_function(fTIME);*/}
     break;
 
   case 120:
 /* Line 1813 of yacc.c  */
-#line 362 "parser.ypp"
+#line 368 "parser.ypp"
     { /*create_function (fARG); */}
     break;
 
   case 121:
 /* Line 1813 of yacc.c  */
-#line 363 "parser.ypp"
+#line 369 "parser.ypp"
     { /*create_function (fENV); */}
     break;
 
   case 122:
 /* Line 1813 of yacc.c  */
-#line 364 "parser.ypp"
+#line 370 "parser.ypp"
     { /*add_command (cPUSHFREE, NULL);*/ }
     break;
 
   case 123:
 /* Line 1813 of yacc.c  */
-#line 364 "parser.ypp"
+#line 370 "parser.ypp"
     { /*create_execute (ftSTRING); add_command (cSWAP, NULL); add_command (cPOP, NULL); */}
     break;
 
   case 124:
 /* Line 1813 of yacc.c  */
-#line 367 "parser.ypp"
+#line 373 "parser.ypp"
     {/*add_command(cORSHORT,NULL);pushlabel();*/}
     break;
 
   case 125:
 /* Line 1813 of yacc.c  */
-#line 367 "parser.ypp"
+#line 373 "parser.ypp"
     {/*poplabel();create_boole('|');*/}
     break;
 
   case 126:
 /* Line 1813 of yacc.c  */
-#line 368 "parser.ypp"
+#line 374 "parser.ypp"
     {/*add_command(cANDSHORT,NULL);pushlabel();*/}
     break;
 
   case 127:
 /* Line 1813 of yacc.c  */
-#line 368 "parser.ypp"
+#line 374 "parser.ypp"
     {/*poplabel();create_boole('&');*/}
     break;
 
   case 128:
 /* Line 1813 of yacc.c  */
-#line 369 "parser.ypp"
+#line 375 "parser.ypp"
     {/*create_boole('!');*/}
     break;
 
   case 129:
 /* Line 1813 of yacc.c  */
-#line 370 "parser.ypp"
+#line 376 "parser.ypp"
     {/*create_numrelop('=');*/}
     break;
 
   case 130:
 /* Line 1813 of yacc.c  */
-#line 371 "parser.ypp"
+#line 377 "parser.ypp"
     {/*create_numrelop('!');*/}
     break;
 
   case 131:
 /* Line 1813 of yacc.c  */
-#line 372 "parser.ypp"
+#line 378 "parser.ypp"
     {/*create_numrelop('<');*/}
     break;
 
   case 132:
 /* Line 1813 of yacc.c  */
-#line 373 "parser.ypp"
+#line 379 "parser.ypp"
     {/*create_numrelop('{');*/}
     break;
 
   case 133:
 /* Line 1813 of yacc.c  */
-#line 374 "parser.ypp"
+#line 380 "parser.ypp"
     {/*create_numrelop('>');*/}
     break;
 
   case 134:
 /* Line 1813 of yacc.c  */
-#line 375 "parser.ypp"
+#line 381 "parser.ypp"
     {/*create_numrelop('}');*/}
     break;
 
   case 135:
 /* Line 1813 of yacc.c  */
-#line 376 "parser.ypp"
+#line 382 "parser.ypp"
     {/*add_command(cTESTEOF,NULL);*/}
     break;
 
   case 136:
 /* Line 1813 of yacc.c  */
-#line 377 "parser.ypp"
+#line 383 "parser.ypp"
     {/*add_command(cGLOB,NULL);*/}
     break;
 
   case 137:
 /* Line 1813 of yacc.c  */
-#line 378 "parser.ypp"
+#line 384 "parser.ypp"
     { (yyval.number_expression) = new ConstNumberExprAST((yyvsp[(1) - (1)].number));  }
     break;
 
   case 138:
 /* Line 1813 of yacc.c  */
-#line 379 "parser.ypp"
+#line 385 "parser.ypp"
     {/*add_command(cARDIM,"");*/}
     break;
 
   case 139:
 /* Line 1813 of yacc.c  */
-#line 380 "parser.ypp"
+#line 386 "parser.ypp"
     {/*add_command(cARDIM,"");*/}
     break;
 
   case 140:
 /* Line 1813 of yacc.c  */
-#line 381 "parser.ypp"
+#line 387 "parser.ypp"
     {/*add_command(cARSIZE,"");*/}
     break;
 
   case 141:
 /* Line 1813 of yacc.c  */
-#line 382 "parser.ypp"
+#line 388 "parser.ypp"
     {/*add_command(cARSIZE,"");*/}
     break;
 
   case 142:
 /* Line 1813 of yacc.c  */
-#line 383 "parser.ypp"
+#line 389 "parser.ypp"
     {/*add_command(cNUMBER_FUNCTION_OR_ARRAY,$1);*/}
     break;
 
   case 143:
 /* Line 1813 of yacc.c  */
-#line 384 "parser.ypp"
+#line 390 "parser.ypp"
     {/*add_command(cPUSHNUMSYM,dotify($1));*/}
     break;
 
   case 144:
 /* Line 1813 of yacc.c  */
-#line 385 "parser.ypp"
+#line 391 "parser.ypp"
     {/*create_numbin('+');*/}
     break;
 
   case 145:
 /* Line 1813 of yacc.c  */
-#line 386 "parser.ypp"
+#line 392 "parser.ypp"
     {/*create_numbin('-');*/}
     break;
 
   case 146:
 /* Line 1813 of yacc.c  */
-#line 387 "parser.ypp"
+#line 393 "parser.ypp"
     {/*create_numbin('*');*/}
     break;
 
   case 147:
 /* Line 1813 of yacc.c  */
-#line 388 "parser.ypp"
+#line 394 "parser.ypp"
     {/*create_numbin('/');*/}
     break;
 
   case 148:
 /* Line 1813 of yacc.c  */
-#line 389 "parser.ypp"
+#line 395 "parser.ypp"
     {/*create_numbin('%');*/}
     break;
 
   case 149:
 /* Line 1813 of yacc.c  */
-#line 390 "parser.ypp"
+#line 396 "parser.ypp"
     {/*create_numbin('^');*/}
     break;
 
   case 150:
 /* Line 1813 of yacc.c  */
-#line 391 "parser.ypp"
+#line 397 "parser.ypp"
     { /*add_command(cNEGATE,NULL);*/ }
     break;
 
   case 151:
 /* Line 1813 of yacc.c  */
-#line 392 "parser.ypp"
+#line 398 "parser.ypp"
     { /* do nothing */ }
     break;
 
   case 152:
 /* Line 1813 of yacc.c  */
-#line 393 "parser.ypp"
+#line 399 "parser.ypp"
     {/*create_strrelop('=');*/}
     break;
 
   case 153:
 /* Line 1813 of yacc.c  */
-#line 394 "parser.ypp"
+#line 400 "parser.ypp"
     {/*create_strrelop('!');*/}
     break;
 
   case 154:
 /* Line 1813 of yacc.c  */
-#line 395 "parser.ypp"
+#line 401 "parser.ypp"
     {/*create_strrelop('<');*/}
     break;
 
   case 155:
 /* Line 1813 of yacc.c  */
-#line 396 "parser.ypp"
+#line 402 "parser.ypp"
     {/*create_strrelop('{');*/}
     break;
 
   case 156:
 /* Line 1813 of yacc.c  */
-#line 397 "parser.ypp"
+#line 403 "parser.ypp"
     {/*create_strrelop('>');*/}
     break;
 
   case 157:
 /* Line 1813 of yacc.c  */
-#line 398 "parser.ypp"
+#line 404 "parser.ypp"
     {/*create_strrelop('}');*/}
     break;
 
   case 160:
 /* Line 1813 of yacc.c  */
-#line 403 "parser.ypp"
+#line 409 "parser.ypp"
     {/*create_pusharrayref(dotify($1),stNUMBERARRAYREF);*/}
     break;
 
   case 161:
 /* Line 1813 of yacc.c  */
-#line 406 "parser.ypp"
+#line 412 "parser.ypp"
     {/*create_pusharrayref(dotify($1),stSTRINGARRAYREF);*/}
     break;
 
   case 162:
 /* Line 1813 of yacc.c  */
-#line 409 "parser.ypp"
+#line 415 "parser.ypp"
     {/*create_function(fSIN);*/}
     break;
 
   case 163:
 /* Line 1813 of yacc.c  */
-#line 410 "parser.ypp"
+#line 416 "parser.ypp"
     {/*create_function(fASIN);*/}
     break;
 
   case 164:
 /* Line 1813 of yacc.c  */
-#line 411 "parser.ypp"
+#line 417 "parser.ypp"
     {/*create_function(fCOS);*/}
     break;
 
   case 165:
 /* Line 1813 of yacc.c  */
-#line 412 "parser.ypp"
+#line 418 "parser.ypp"
     {/*create_function(fACOS)*/;}
     break;
 
   case 166:
 /* Line 1813 of yacc.c  */
-#line 413 "parser.ypp"
+#line 419 "parser.ypp"
     {/*create_function(fTAN);*/}
     break;
 
   case 167:
 /* Line 1813 of yacc.c  */
-#line 414 "parser.ypp"
+#line 420 "parser.ypp"
     {/*create_function(fATAN);*/}
     break;
 
   case 168:
 /* Line 1813 of yacc.c  */
-#line 415 "parser.ypp"
+#line 421 "parser.ypp"
     {/*create_function(fATAN2);*/}
     break;
 
   case 169:
 /* Line 1813 of yacc.c  */
-#line 416 "parser.ypp"
+#line 422 "parser.ypp"
     {/*create_function(fEXP);*/}
     break;
 
   case 170:
 /* Line 1813 of yacc.c  */
-#line 417 "parser.ypp"
+#line 423 "parser.ypp"
     {/*create_function(fLOG);*/}
     break;
 
   case 171:
 /* Line 1813 of yacc.c  */
-#line 418 "parser.ypp"
+#line 424 "parser.ypp"
     {/*create_function(fLOG2);*/}
     break;
 
   case 172:
 /* Line 1813 of yacc.c  */
-#line 419 "parser.ypp"
+#line 425 "parser.ypp"
     {/*create_function(fINT);*/}
     break;
 
   case 173:
 /* Line 1813 of yacc.c  */
-#line 420 "parser.ypp"
+#line 426 "parser.ypp"
     {/*create_function(fSQR);*/}
     break;
 
   case 174:
 /* Line 1813 of yacc.c  */
-#line 421 "parser.ypp"
+#line 427 "parser.ypp"
     {/*create_function(fSQRT);*/}
     break;
 
   case 175:
 /* Line 1813 of yacc.c  */
-#line 422 "parser.ypp"
+#line 428 "parser.ypp"
     {/*create_function(fFRAC);*/}
     break;
 
   case 176:
 /* Line 1813 of yacc.c  */
-#line 423 "parser.ypp"
+#line 429 "parser.ypp"
     {/*create_function(fABS);*/}
     break;
 
   case 177:
 /* Line 1813 of yacc.c  */
-#line 424 "parser.ypp"
+#line 430 "parser.ypp"
     {/*create_function(fSIG);*/}
     break;
 
   case 178:
 /* Line 1813 of yacc.c  */
-#line 425 "parser.ypp"
+#line 431 "parser.ypp"
     {/*create_function(fRAN);*/}
     break;
 
   case 179:
 /* Line 1813 of yacc.c  */
-#line 426 "parser.ypp"
+#line 432 "parser.ypp"
     {/*create_function(fRAN2);*/}
     break;
 
   case 180:
 /* Line 1813 of yacc.c  */
-#line 427 "parser.ypp"
+#line 433 "parser.ypp"
     {/*create_function(fMIN);*/}
     break;
 
   case 181:
 /* Line 1813 of yacc.c  */
-#line 428 "parser.ypp"
+#line 434 "parser.ypp"
     {/*create_function(fMAX);*/}
     break;
 
   case 182:
 /* Line 1813 of yacc.c  */
-#line 429 "parser.ypp"
+#line 435 "parser.ypp"
     {/*create_function(fLEN);*/}
     break;
 
   case 183:
 /* Line 1813 of yacc.c  */
-#line 430 "parser.ypp"
+#line 436 "parser.ypp"
     {/*create_function(fVAL);*/}
     break;
 
   case 184:
 /* Line 1813 of yacc.c  */
-#line 431 "parser.ypp"
+#line 437 "parser.ypp"
     {/*create_function(fASC);*/}
     break;
 
   case 185:
 /* Line 1813 of yacc.c  */
-#line 432 "parser.ypp"
+#line 438 "parser.ypp"
     {/*create_function(fINSTR);*/}
     break;
 
   case 186:
 /* Line 1813 of yacc.c  */
-#line 433 "parser.ypp"
+#line 439 "parser.ypp"
     {/*create_function(fINSTR2);*/}
     break;
 
   case 187:
 /* Line 1813 of yacc.c  */
-#line 434 "parser.ypp"
+#line 440 "parser.ypp"
     {/*create_function(fRINSTR);*/}
     break;
 
   case 188:
 /* Line 1813 of yacc.c  */
-#line 435 "parser.ypp"
+#line 441 "parser.ypp"
     {/*create_function(fRINSTR2);*/}
     break;
 
   case 189:
 /* Line 1813 of yacc.c  */
-#line 436 "parser.ypp"
+#line 442 "parser.ypp"
     {/*create_function(fSYSTEM);*/}
     break;
 
   case 190:
 /* Line 1813 of yacc.c  */
-#line 437 "parser.ypp"
+#line 443 "parser.ypp"
     {/*create_function(fAND);*/}
     break;
 
   case 191:
 /* Line 1813 of yacc.c  */
-#line 438 "parser.ypp"
+#line 444 "parser.ypp"
     {/*create_function(fOR);*/}
     break;
 
   case 192:
 /* Line 1813 of yacc.c  */
-#line 439 "parser.ypp"
+#line 445 "parser.ypp"
     {/*create_function(fEOR);*/}
     break;
 
   case 193:
 /* Line 1813 of yacc.c  */
-#line 440 "parser.ypp"
+#line 446 "parser.ypp"
     {/*add_command(cTOKEN2,NULL);*/}
     break;
 
   case 194:
 /* Line 1813 of yacc.c  */
-#line 441 "parser.ypp"
+#line 447 "parser.ypp"
     {/*add_command(cTOKEN,NULL);*/}
     break;
 
   case 195:
 /* Line 1813 of yacc.c  */
-#line 442 "parser.ypp"
+#line 448 "parser.ypp"
     {/*add_command(cSPLIT2,NULL);*/}
     break;
 
   case 196:
 /* Line 1813 of yacc.c  */
-#line 443 "parser.ypp"
+#line 449 "parser.ypp"
     {/*add_command(cSPLIT,NULL);*/}
     break;
 
   case 197:
 /* Line 1813 of yacc.c  */
-#line 444 "parser.ypp"
+#line 450 "parser.ypp"
     {/*create_myopen (OPEN_FUNCTION);*/}
     break;
 
   case 198:
 /* Line 1813 of yacc.c  */
-#line 445 "parser.ypp"
+#line 451 "parser.ypp"
     {/*create_myopen (OPEN_FUNCTION + OPEN_HAS_MODE);*/}
     break;
 
   case 199:
 /* Line 1813 of yacc.c  */
-#line 446 "parser.ypp"
+#line 452 "parser.ypp"
     {/*create_myopen (OPEN_FUNCTION + OPEN_HAS_STREAM);*/}
     break;
 
   case 200:
 /* Line 1813 of yacc.c  */
-#line 447 "parser.ypp"
+#line 453 "parser.ypp"
     {/*create_myopen (OPEN_FUNCTION + OPEN_HAS_STREAM + OPEN_HAS_MODE);*/}
     break;
 
   case 201:
 /* Line 1813 of yacc.c  */
-#line 448 "parser.ypp"
+#line 454 "parser.ypp"
     { /*create_function (fTELL); */}
     break;
 
   case 202:
 /* Line 1813 of yacc.c  */
-#line 449 "parser.ypp"
+#line 455 "parser.ypp"
     { /*create_function (fPEEKFILE);*/ }
     break;
 
   case 203:
 /* Line 1813 of yacc.c  */
-#line 450 "parser.ypp"
+#line 456 "parser.ypp"
     { /*add_command (cPUSHFREE, NULL);*/ }
     break;
 
   case 204:
 /* Line 1813 of yacc.c  */
-#line 450 "parser.ypp"
+#line 456 "parser.ypp"
     { /*create_execute (ftNUMBER); add_command (cSWAP, NULL); add_command (cPOP, NULL);*/ }
     break;
 
   case 207:
 /* Line 1813 of yacc.c  */
-#line 457 "parser.ypp"
+#line 463 "parser.ypp"
     {/*create_dim(dotify($1),'N');*/}
     break;
 
   case 208:
 /* Line 1813 of yacc.c  */
-#line 458 "parser.ypp"
+#line 464 "parser.ypp"
     {/*create_dim(dotify($1),'S');*/}
     break;
 
   case 209:
 /* Line 1813 of yacc.c  */
-#line 459 "parser.ypp"
+#line 465 "parser.ypp"
     {/*create_dim(dotify($3),'N');*/}
     break;
 
   case 210:
 /* Line 1813 of yacc.c  */
-#line 460 "parser.ypp"
+#line 466 "parser.ypp"
     {/*create_dim(dotify($3),'S');*/}
     break;
 
   case 211:
 /* Line 1813 of yacc.c  */
-#line 463 "parser.ypp"
+#line 469 "parser.ypp"
     {/*$$ = dotify ($1);*/}
     break;
 
   case 212:
 /* Line 1813 of yacc.c  */
-#line 464 "parser.ypp"
+#line 470 "parser.ypp"
     { /*add_command (cPUSHFREE, NULL); $$ = dotify ($1); */}
     break;
 
   case 213:
 /* Line 1813 of yacc.c  */
-#line 467 "parser.ypp"
+#line 473 "parser.ypp"
     {/*$$ = dotify ($1);*/}
     break;
 
   case 214:
 /* Line 1813 of yacc.c  */
-#line 470 "parser.ypp"
+#line 476 "parser.ypp"
     {/*$$ = dotify ($1);*/}
     break;
 
   case 215:
 /* Line 1813 of yacc.c  */
-#line 471 "parser.ypp"
+#line 477 "parser.ypp"
     {/* add_command (cPUSHFREE, NULL); $$ = dotify ($1); */}
     break;
 
   case 216:
 /* Line 1813 of yacc.c  */
-#line 474 "parser.ypp"
+#line 480 "parser.ypp"
     {/*$$ = dotify ($1);*/}
     break;
 
   case 217:
 /* Line 1813 of yacc.c  */
-#line 477 "parser.ypp"
+#line 483 "parser.ypp"
     { /*if (cli != NULL) { cli->items++; }*/ }
     break;
 
   case 218:
 /* Line 1813 of yacc.c  */
-#line 478 "parser.ypp"
+#line 484 "parser.ypp"
     { /*if (cli != NULL) { cli->items++; }*/ }
     break;
 
   case 221:
 /* Line 1813 of yacc.c  */
-#line 485 "parser.ypp"
+#line 491 "parser.ypp"
     { unclosed_subs++; }
     break;
 
   case 222:
 /* Line 1813 of yacc.c  */
-#line 485 "parser.ypp"
+#line 491 "parser.ypp"
     { not_inside_loop_or_conditional ("define a function"); /*pushlabel();*/if (function_type!=ftNONE) {error("functions cannot be nested");}}
     break;
 
   case 223:
 /* Line 1813 of yacc.c  */
-#line 486 "parser.ypp"
+#line 492 "parser.ypp"
     { /*create_label($4,cUSER_FUNCTION);
                   add_command(cPUSHSYMLIST,NULL);add_command(cCLEARREFS,NULL); firstref = lastcmd; lastref = lastcmd;
                   create_numparam ();*/}
@@ -3996,13 +4002,13 @@ yyreduce:
 
   case 224:
 /* Line 1813 of yacc.c  */
-#line 489 "parser.ypp"
+#line 495 "parser.ypp"
     {/*create_require(stFREE);add_command(cPOP,NULL);*/}
     break;
 
   case 225:
 /* Line 1813 of yacc.c  */
-#line 491 "parser.ypp"
+#line 497 "parser.ypp"
     {
 	//   add_command(cCLEARREFS,NULL);lastcmd->nextref=firstref;add_command(cPOPSYMLIST,NULL);create_retval(ftNONE,function_type);function_type=ftNONE;add_command(cRET_FROM_FUN,NULL);lastref=NULL;create_endfunction();poplabel();
    }
@@ -4010,7 +4016,7 @@ yyreduce:
 
   case 226:
 /* Line 1813 of yacc.c  */
-#line 496 "parser.ypp"
+#line 502 "parser.ypp"
     {
 	//if (unclosed_subs) { error ("%d subroutine%s not closed", unclosed_subs, (unclosed_subs > 1) ? "s" : ""); }
 	}
@@ -4018,13 +4024,13 @@ yyreduce:
 
   case 227:
 /* Line 1813 of yacc.c  */
-#line 499 "parser.ypp"
+#line 505 "parser.ypp"
     {unclosed_subs--;}
     break;
 
   case 228:
 /* Line 1813 of yacc.c  */
-#line 502 "parser.ypp"
+#line 508 "parser.ypp"
     {
 	//function_type=ftNUMBER;current_function = dotify ($1); $$ = dotify ($1);
 	}
@@ -4032,13 +4038,13 @@ yyreduce:
 
   case 229:
 /* Line 1813 of yacc.c  */
-#line 505 "parser.ypp"
+#line 511 "parser.ypp"
     {/*function_type=ftSTRING;current_function = dotify ($1); $$ = dotify ($1);*/}
     break;
 
   case 230:
 /* Line 1813 of yacc.c  */
-#line 508 "parser.ypp"
+#line 514 "parser.ypp"
     {
 //                          not_inside_loop_or_conditional ("define a module function");
 //                          if (function_type != ftNONE) {
@@ -4050,7 +4056,7 @@ yyreduce:
 
   case 231:
 /* Line 1813 of yacc.c  */
-#line 515 "parser.ypp"
+#line 521 "parser.ypp"
     {
 //                          create_label (dotify ($3), cUSER_FUNCTION);
 //                          add_command (cPUSHSYMLIST, NULL);
@@ -4063,7 +4069,7 @@ yyreduce:
 
   case 232:
 /* Line 1813 of yacc.c  */
-#line 523 "parser.ypp"
+#line 529 "parser.ypp"
     {
 //                          create_require (stFREE);
 //                          add_command (cPOP, NULL);
@@ -4072,7 +4078,7 @@ yyreduce:
 
   case 233:
 /* Line 1813 of yacc.c  */
-#line 527 "parser.ypp"
+#line 533 "parser.ypp"
     {
 //                          add_command (cCALL_EXTERNAL, $3);
 //                          add_command (cCLEARREFS, NULL);
@@ -4095,7 +4101,7 @@ yyreduce:
 
   case 234:
 /* Line 1813 of yacc.c  */
-#line 547 "parser.ypp"
+#line 553 "parser.ypp"
     {
 //                    function_type = ftNUMBER;
 //                    cfunction_type = YABMOD_INTERFACE_TYPE_SCALAR_NUMBER;
@@ -4106,7 +4112,7 @@ yyreduce:
 
   case 235:
 /* Line 1813 of yacc.c  */
-#line 553 "parser.ypp"
+#line 559 "parser.ypp"
     {
 //         function_type = ftSTRING;
 //         cfunction_type = YABMOD_INTERFACE_TYPE_SCALAR_STRING;
@@ -4117,7 +4123,7 @@ yyreduce:
 
   case 239:
 /* Line 1813 of yacc.c  */
-#line 566 "parser.ypp"
+#line 572 "parser.ypp"
     {
 //                          create_require (stNUMBER); create_makelocal (dotify ($1), syNUMBER); add_command (cPOPNUMSYM, dotify ($1));
                       }
@@ -4125,7 +4131,7 @@ yyreduce:
 
   case 240:
 /* Line 1813 of yacc.c  */
-#line 569 "parser.ypp"
+#line 575 "parser.ypp"
     {
 //         create_require (stSTRING); create_makelocal (dotify ($1), sySTRING); add_command (cPOPSTRSYM, dotify ($1));
      }
@@ -4133,7 +4139,7 @@ yyreduce:
 
   case 241:
 /* Line 1813 of yacc.c  */
-#line 572 "parser.ypp"
+#line 578 "parser.ypp"
     {
 //         create_require (stNUMBERARRAYREF); create_arraylink (dotify ($1), stNUMBERARRAYREF);
      }
@@ -4141,7 +4147,7 @@ yyreduce:
 
   case 242:
 /* Line 1813 of yacc.c  */
-#line 575 "parser.ypp"
+#line 581 "parser.ypp"
     {
 //         create_require (stSTRINGARRAYREF); create_arraylink (dotify ($1), stSTRINGARRAYREF);
      }
@@ -4149,85 +4155,85 @@ yyreduce:
 
   case 245:
 /* Line 1813 of yacc.c  */
-#line 584 "parser.ypp"
+#line 590 "parser.ypp"
     {/* create_makelocal (dotify ($1), syNUMBER);*/ }
     break;
 
   case 246:
 /* Line 1813 of yacc.c  */
-#line 585 "parser.ypp"
+#line 591 "parser.ypp"
     {/* create_makelocal (dotify ($1), sySTRING); */}
     break;
 
   case 247:
 /* Line 1813 of yacc.c  */
-#line 586 "parser.ypp"
+#line 592 "parser.ypp"
     { /*create_makelocal (dotify ($1), syARRAY); create_dim (dotify ($1), 'n'); */}
     break;
 
   case 248:
 /* Line 1813 of yacc.c  */
-#line 587 "parser.ypp"
+#line 593 "parser.ypp"
     { /*create_makelocal (dotify ($1), syARRAY); create_dim (dotify ($1), 's'); */}
     break;
 
   case 251:
 /* Line 1813 of yacc.c  */
-#line 594 "parser.ypp"
+#line 600 "parser.ypp"
     { /*create_makestatic (dotify ($1), syNUMBER);*/ }
     break;
 
   case 252:
 /* Line 1813 of yacc.c  */
-#line 595 "parser.ypp"
+#line 601 "parser.ypp"
     { /*create_makestatic (dotify ($1), sySTRING);*/ }
     break;
 
   case 253:
 /* Line 1813 of yacc.c  */
-#line 596 "parser.ypp"
+#line 602 "parser.ypp"
     { /*create_makestatic (dotify ($1), syARRAY); create_dim (dotify ($1), 'N'); */}
     break;
 
   case 254:
 /* Line 1813 of yacc.c  */
-#line 597 "parser.ypp"
+#line 603 "parser.ypp"
     {/* create_makestatic (dotify ($1), syARRAY); create_dim (dotify ($1), 'S'); */}
     break;
 
   case 258:
 /* Line 1813 of yacc.c  */
-#line 605 "parser.ypp"
+#line 611 "parser.ypp"
     {/*create_require(stNUMBER);create_makelocal(dotify ($1),syNUMBER);add_command(cPOPNUMSYM,dotify ($1));*/}
     break;
 
   case 259:
 /* Line 1813 of yacc.c  */
-#line 606 "parser.ypp"
+#line 612 "parser.ypp"
     {/*create_require(stSTRING);create_makelocal(dotify ($1),sySTRING);add_command(cPOPSTRSYM, dotify ($1));*/}
     break;
 
   case 260:
 /* Line 1813 of yacc.c  */
-#line 607 "parser.ypp"
+#line 613 "parser.ypp"
     {/*create_require(stNUMBERARRAYREF);create_arraylink(dotify ($1),stNUMBERARRAYREF);*/}
     break;
 
   case 261:
 /* Line 1813 of yacc.c  */
-#line 608 "parser.ypp"
+#line 614 "parser.ypp"
     {/*create_require(stSTRINGARRAYREF);create_arraylink(dotify ($1),stSTRINGARRAYREF);*/}
     break;
 
   case 262:
 /* Line 1813 of yacc.c  */
-#line 611 "parser.ypp"
+#line 617 "parser.ypp"
     { unclosed_fors++; }
     break;
 
   case 263:
 /* Line 1813 of yacc.c  */
-#line 612 "parser.ypp"
+#line 618 "parser.ypp"
     { /*pushname (dotify ($3));    /* used to check for symbol match */
 //              add_command(cRESETSKIPONCE,NULL);
 // //         pushgoto();add_command(cCONTINUE_HERE,NULL);create_break_mark(0,1);
@@ -4236,7 +4242,7 @@ yyreduce:
 
   case 264:
 /* Line 1813 of yacc.c  */
-#line 617 "parser.ypp"
+#line 623 "parser.ypp"
     { /* pushes another number expression */
 //         add_command(cSKIPONCE,NULL);
 //         pushlabel();
@@ -4255,317 +4261,317 @@ yyreduce:
 
   case 265:
 /* Line 1813 of yacc.c  */
-#line 631 "parser.ypp"
+#line 637 "parser.ypp"
     {/*
               swap();popgoto();poplabel();*/}
     break;
 
   case 266:
 /* Line 1813 of yacc.c  */
-#line 633 "parser.ypp"
+#line 639 "parser.ypp"
     {/*create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);*/
 		}
     break;
 
   case 267:
 /* Line 1813 of yacc.c  */
-#line 637 "parser.ypp"
+#line 643 "parser.ypp"
     {if (unclosed_fors) { error ("%d \"for\" loop%s not closed", unclosed_fors, (unclosed_fors > 1) ? "s" : ""); } }
     break;
 
   case 268:
 /* Line 1813 of yacc.c  */
-#line 638 "parser.ypp"
+#line 644 "parser.ypp"
     {unclosed_fors--;}
     break;
 
   case 269:
 /* Line 1813 of yacc.c  */
-#line 641 "parser.ypp"
+#line 647 "parser.ypp"
     {/* pop (stSTRING);*/ }
     break;
 
   case 270:
 /* Line 1813 of yacc.c  */
-#line 642 "parser.ypp"
+#line 648 "parser.ypp"
     { /*if (strcmp (pop (stSTRING)->pointer, dotify ($1)) != 0) */{ error ("symbols used for \"for\" and \"next\" do not match"); } }
     break;
 
   case 271:
 /* Line 1813 of yacc.c  */
-#line 645 "parser.ypp"
+#line 651 "parser.ypp"
     {/*create_pushnum(1);*/}
     break;
 
   case 273:
 /* Line 1813 of yacc.c  */
-#line 649 "parser.ypp"
+#line 655 "parser.ypp"
     { unclosed_switches ++; }
     break;
 
   case 274:
 /* Line 1813 of yacc.c  */
-#line 649 "parser.ypp"
+#line 655 "parser.ypp"
     {/*push_switch_id();add_command(cPUSH_SWITCH_MARK,NULL);create_break_mark(0,1);
    continue_corrections ++; add_command(cCONTINUE_CORRECTION, NULL)->tag = continue_corrections;*/}
     break;
 
   case 275:
 /* Line 1813 of yacc.c  */
-#line 651 "parser.ypp"
+#line 657 "parser.ypp"
     { unclosed_switches --; }
     break;
 
   case 276:
 /* Line 1813 of yacc.c  */
-#line 651 "parser.ypp"
+#line 657 "parser.ypp"
     {continue_corrections --; /*create_break_mark(-1,0);add_command(cBREAK_HERE,NULL);create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);create_clean_switch_mark(0,false);pop_switch_id();*/}
     break;
 
   case 277:
 /* Line 1813 of yacc.c  */
-#line 654 "parser.ypp"
+#line 660 "parser.ypp"
     { yylineno += (yyvsp[(1) - (1)].separator); }
     break;
 
   case 278:
 /* Line 1813 of yacc.c  */
-#line 655 "parser.ypp"
+#line 661 "parser.ypp"
     { yylineno += (yyvsp[(2) - (2)].separator); }
     break;
 
   case 282:
 /* Line 1813 of yacc.c  */
-#line 663 "parser.ypp"
+#line 669 "parser.ypp"
     {/*create_break_mark(-1,0);add_command(cBREAK_HERE,NULL);*/}
     break;
 
   case 283:
 /* Line 1813 of yacc.c  */
-#line 664 "parser.ypp"
+#line 670 "parser.ypp"
     {/*add_command(cSWITCH_COMPARE,NULL);add_command(cDECIDE,NULL);add_command(cMINOR_BREAK,NULL);create_break_mark(1,0);} statement_list {add_command(cNEXT_CASE,NULL);*/}
     break;
 
   case 285:
 /* Line 1813 of yacc.c  */
-#line 668 "parser.ypp"
+#line 674 "parser.ypp"
     { yylineno+=(yyvsp[(2) - (2)].separator); }
     break;
 
   case 286:
 /* Line 1813 of yacc.c  */
-#line 668 "parser.ypp"
+#line 674 "parser.ypp"
     {/*create_break_mark(-1,0); add_command(cBREAK_HERE,NULL);*/}
     break;
 
   case 288:
 /* Line 1813 of yacc.c  */
-#line 671 "parser.ypp"
+#line 677 "parser.ypp"
     { unclosed_dos++; }
     break;
 
   case 289:
 /* Line 1813 of yacc.c  */
-#line 671 "parser.ypp"
+#line 677 "parser.ypp"
     {/*add_command(cCONTINUE_HERE,NULL);create_break_mark(0,1);pushgoto();*/}
     break;
 
   case 291:
 /* Line 1813 of yacc.c  */
-#line 676 "parser.ypp"
+#line 682 "parser.ypp"
     {if (unclosed_dos) { error ("%d \"do\" loop%s not closed", unclosed_dos, (unclosed_dos > 1) ? "s" : ""); } }
     break;
 
   case 292:
 /* Line 1813 of yacc.c  */
-#line 677 "parser.ypp"
+#line 683 "parser.ypp"
     {unclosed_dos--;}
     break;
 
   case 293:
 /* Line 1813 of yacc.c  */
-#line 677 "parser.ypp"
+#line 683 "parser.ypp"
     {/*popgoto();create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);*/}
     break;
 
   case 294:
 /* Line 1813 of yacc.c  */
-#line 680 "parser.ypp"
+#line 686 "parser.ypp"
     { unclosed_whiles++; }
     break;
 
   case 295:
 /* Line 1813 of yacc.c  */
-#line 680 "parser.ypp"
+#line 686 "parser.ypp"
     {/*add_command(cCONTINUE_HERE,NULL);create_break_mark(0,1);pushgoto()*/}
     break;
 
   case 296:
 /* Line 1813 of yacc.c  */
-#line 681 "parser.ypp"
+#line 687 "parser.ypp"
     {/*add_command(cDECIDE,NULL);
          pushlabel();*/}
     break;
 
   case 298:
 /* Line 1813 of yacc.c  */
-#line 687 "parser.ypp"
+#line 693 "parser.ypp"
     {if (unclosed_whiles) { error ("%d \"while\" loop%s not closed", unclosed_whiles, (unclosed_whiles > 1) ? "s" : ""); } }
     break;
 
   case 299:
 /* Line 1813 of yacc.c  */
-#line 688 "parser.ypp"
+#line 694 "parser.ypp"
     {unclosed_whiles--;}
     break;
 
   case 300:
 /* Line 1813 of yacc.c  */
-#line 688 "parser.ypp"
+#line 694 "parser.ypp"
     {/*swap();popgoto();poplabel();create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);*/}
     break;
 
   case 301:
 /* Line 1813 of yacc.c  */
-#line 691 "parser.ypp"
+#line 697 "parser.ypp"
     { unclosed_repeats++; }
     break;
 
   case 302:
 /* Line 1813 of yacc.c  */
-#line 691 "parser.ypp"
+#line 697 "parser.ypp"
     {/*add_command(cCONTINUE_HERE,NULL);create_break_mark(0,1);pushgoto();*/}
     break;
 
   case 304:
 /* Line 1813 of yacc.c  */
-#line 696 "parser.ypp"
+#line 702 "parser.ypp"
     {if (unclosed_repeats) { error ("%d \"repeat\" loop%s not closed", unclosed_repeats, (unclosed_repeats > 1) ? "s" : ""); } }
     break;
 
   case 305:
 /* Line 1813 of yacc.c  */
-#line 698 "parser.ypp"
+#line 704 "parser.ypp"
     {unclosed_repeats--;}
     break;
 
   case 306:
 /* Line 1813 of yacc.c  */
-#line 698 "parser.ypp"
+#line 704 "parser.ypp"
     {/*add_command(cDECIDE,NULL);popgoto();create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);*/}
     break;
 
   case 307:
 /* Line 1813 of yacc.c  */
-#line 701 "parser.ypp"
+#line 707 "parser.ypp"
     {/*add_command(cDECIDE,NULL);storelabel();pushlabel();*/}
     break;
 
   case 308:
 /* Line 1813 of yacc.c  */
-#line 702 "parser.ypp"
+#line 708 "parser.ypp"
     {/*swap();matchgoto();swap();poplabel();*/}
     break;
 
   case 309:
 /* Line 1813 of yacc.c  */
-#line 704 "parser.ypp"
+#line 710 "parser.ypp"
     {/*poplabel();*/}
     break;
 
   case 311:
 /* Line 1813 of yacc.c  */
-#line 708 "parser.ypp"
+#line 714 "parser.ypp"
     { /*add_command (cDECIDE, NULL); storelabel (); pushlabel ();*/ }
     break;
 
   case 312:
 /* Line 1813 of yacc.c  */
-#line 709 "parser.ypp"
+#line 715 "parser.ypp"
     { unclosed_ifs--; }
     break;
 
   case 313:
 /* Line 1813 of yacc.c  */
-#line 709 "parser.ypp"
+#line 715 "parser.ypp"
     {/* swap (); matchgoto (); swap (); poplabel (); poplabel (); */}
     break;
 
   case 314:
 /* Line 1813 of yacc.c  */
-#line 710 "parser.ypp"
+#line 716 "parser.ypp"
     { /*add_command (cDECIDE, NULL); storelabel (); pushlabel ();*/ }
     break;
 
   case 315:
 /* Line 1813 of yacc.c  */
-#line 711 "parser.ypp"
+#line 717 "parser.ypp"
     {/* unclosed_ifs--; } { swap (); matchgoto (); swap (); poplabel (); poplabel ();*/ }
     break;
 
   case 316:
 /* Line 1813 of yacc.c  */
-#line 714 "parser.ypp"
+#line 720 "parser.ypp"
     {if (unclosed_ifs) { error ("%d \"if\" statement%s not closed", unclosed_ifs, (unclosed_ifs > 1) ? "s" : ""); } }
     break;
 
   case 317:
 /* Line 1813 of yacc.c  */
-#line 715 "parser.ypp"
+#line 721 "parser.ypp"
     {unclosed_ifs--;}
     break;
 
   case 318:
 /* Line 1813 of yacc.c  */
-#line 718 "parser.ypp"
+#line 724 "parser.ypp"
     { unclosed_ifs ++; }
     break;
 
   case 322:
 /* Line 1813 of yacc.c  */
-#line 727 "parser.ypp"
+#line 733 "parser.ypp"
     {/*add_command(cDECIDE,NULL);pushlabel();*/}
     break;
 
   case 323:
 /* Line 1813 of yacc.c  */
-#line 729 "parser.ypp"
+#line 735 "parser.ypp"
     {/*swap();matchgoto();swap();poplabel();*/}
     break;
 
   case 325:
 /* Line 1813 of yacc.c  */
-#line 733 "parser.ypp"
+#line 739 "parser.ypp"
     {/*create_myread ('n', until_eol); add_command (cPOPNUMSYM, dotify ($1)); */}
     break;
 
   case 326:
 /* Line 1813 of yacc.c  */
-#line 734 "parser.ypp"
+#line 740 "parser.ypp"
     {/*create_myread('s',until_eol);add_command(cPOPSTRSYM, dotify ($1));*/}
     break;
 
   case 327:
 /* Line 1813 of yacc.c  */
-#line 735 "parser.ypp"
+#line 741 "parser.ypp"
     {/*create_myread('n',until_eol);create_doarray(dotify ($1),ASSIGNNUMBERARRAY);*/}
     break;
 
   case 328:
 /* Line 1813 of yacc.c  */
-#line 736 "parser.ypp"
+#line 742 "parser.ypp"
     {/*create_myread('s',until_eol);create_doarray(dotify ($1),ASSIGNSTRINGARRAY);*/}
     break;
 
   case 329:
 /* Line 1813 of yacc.c  */
-#line 739 "parser.ypp"
+#line 745 "parser.ypp"
     { error("ERROR: print with no arg not supprted yet\n"); exit(1); }
     break;
 
   case 330:
 /* Line 1813 of yacc.c  */
-#line 740 "parser.ypp"
+#line 746 "parser.ypp"
     {
 		debug("got first print argument as number\n");
 		(yyval.print_list) = new PrintListAST();
@@ -4575,67 +4581,67 @@ yyreduce:
 
   case 331:
 /* Line 1813 of yacc.c  */
-#line 746 "parser.ypp"
+#line 752 "parser.ypp"
     { /*create_print ('u'); */}
     break;
 
   case 332:
 /* Line 1813 of yacc.c  */
-#line 748 "parser.ypp"
+#line 754 "parser.ypp"
     { debug("print with string\n"); }
     break;
 
   case 333:
 /* Line 1813 of yacc.c  */
-#line 750 "parser.ypp"
+#line 756 "parser.ypp"
     { (yyval.print_list) = (yyvsp[(1) - (3)].print_list) ; (yyval.print_list)->additem(ExprASTPtr((yyvsp[(3) - (3)].number_expression))) ; }
     break;
 
   case 334:
 /* Line 1813 of yacc.c  */
-#line 752 "parser.ypp"
+#line 758 "parser.ypp"
     {/* create_print ('b'); create_print ('u'); */}
     break;
 
   case 335:
 /* Line 1813 of yacc.c  */
-#line 754 "parser.ypp"
+#line 760 "parser.ypp"
     { /*create_print ('b'); create_print ('s');*/ }
     break;
 
   case 336:
 /* Line 1813 of yacc.c  */
-#line 757 "parser.ypp"
+#line 763 "parser.ypp"
     {/*create_pushnum(STDIO_STREAM);create_pps(cPUSHSTREAM,1);*/}
     break;
 
   case 338:
 /* Line 1813 of yacc.c  */
-#line 758 "parser.ypp"
+#line 764 "parser.ypp"
     {/*add_command(cPUSHNUMSYM,dotify ($2));create_pps(cPUSHSTREAM,1);*/}
     break;
 
   case 340:
 /* Line 1813 of yacc.c  */
-#line 759 "parser.ypp"
+#line 765 "parser.ypp"
     {/*create_pushnum ($2); create_pps(cPUSHSTREAM,1);*/}
     break;
 
   case 342:
 /* Line 1813 of yacc.c  */
-#line 760 "parser.ypp"
+#line 766 "parser.ypp"
     {/*create_pps(cPUSHSTREAM,1);*/}
     break;
 
   case 344:
 /* Line 1813 of yacc.c  */
-#line 764 "parser.ypp"
+#line 770 "parser.ypp"
     {/* create_print ('s');*/ }
     break;
 
   case 345:
 /* Line 1813 of yacc.c  */
-#line 767 "parser.ypp"
+#line 773 "parser.ypp"
     {
 		debug("empty print_intro\n");
 		/*构造一个默认的 打印目标*/
@@ -4645,56 +4651,56 @@ yyreduce:
 
   case 346:
 /* Line 1813 of yacc.c  */
-#line 772 "parser.ypp"
+#line 778 "parser.ypp"
     {  /* 构造一个使用常数表的打印目标*/ }
     break;
 
   case 347:
 /* Line 1813 of yacc.c  */
-#line 773 "parser.ypp"
+#line 779 "parser.ypp"
     {/*create_pushnum ($2); create_pps(cPUSHSTREAM,0);*/}
     break;
 
   case 348:
 /* Line 1813 of yacc.c  */
-#line 774 "parser.ypp"
+#line 780 "parser.ypp"
     {/*create_pps(cPUSHSTREAM,0);*/}
     break;
 
   case 349:
 /* Line 1813 of yacc.c  */
-#line 777 "parser.ypp"
+#line 783 "parser.ypp"
     {/* add_command (cOPTEXPLICIT, NULL); */}
     break;
 
   case 350:
 /* Line 1813 of yacc.c  */
-#line 780 "parser.ypp"
+#line 786 "parser.ypp"
     { /*add_command (cPUSHNUMSYM, dotify ($1)); create_pushnum (1); create_numbin ('-'); add_command (cPOPNUMSYM, dotify ($1));*/ }
     break;
 
   case 351:
 /* Line 1813 of yacc.c  */
-#line 781 "parser.ypp"
+#line 787 "parser.ypp"
     {/* add_command (cPUSHNUMSYM, dotify ($3)); create_pushnum (1); create_numbin ('-'); add_command (cPOPNUMSYM, dotify ($3)); */}
     break;
 
   case 352:
 /* Line 1813 of yacc.c  */
-#line 784 "parser.ypp"
+#line 790 "parser.ypp"
     { /*add_command (cPUSHNUMSYM, dotify ($1)); create_pushnum (1); create_numbin ('+'); add_command (cPOPNUMSYM, dotify ($1));*/ }
     break;
 
   case 353:
 /* Line 1813 of yacc.c  */
-#line 785 "parser.ypp"
+#line 791 "parser.ypp"
     {
 	/*   add_command (cPUSHNUMSYM, dotify ($3)); create_pushnum (1); create_numbin ('+'); add_command (cPOPNUMSYM, dotify ($3));*/ }
     break;
 
   case 354:
 /* Line 1813 of yacc.c  */
-#line 789 "parser.ypp"
+#line 795 "parser.ypp"
     {
 //                          if (cli->next == NULL) {
 //                             cmd = add_command (cSTRUCT, dotify ($3));
@@ -4709,7 +4715,7 @@ yyreduce:
 
   case 355:
 /* Line 1813 of yacc.c  */
-#line 799 "parser.ypp"
+#line 805 "parser.ypp"
     {
 //                          add_command (cENDSTRUCT, NULL)->args = cli->items;
 //                          next_cli = cli->next;
@@ -4720,7 +4726,7 @@ yyreduce:
 
   case 356:
 /* Line 1813 of yacc.c  */
-#line 805 "parser.ypp"
+#line 811 "parser.ypp"
     {
 //         if (cli->next == NULL) {
 //            cmd = add_command (cSTRUCT, dotify ($3));
@@ -4735,7 +4741,7 @@ yyreduce:
 
   case 357:
 /* Line 1813 of yacc.c  */
-#line 815 "parser.ypp"
+#line 821 "parser.ypp"
     {
 //         add_command (cENDSTRUCT, NULL)->args = cli->items;
 //         next_cli = cli->next;
@@ -4746,7 +4752,7 @@ yyreduce:
 
   case 361:
 /* Line 1813 of yacc.c  */
-#line 828 "parser.ypp"
+#line 834 "parser.ypp"
     {
 //         cmd = add_command (cSTRUCTVAR, $2);
 //         cmd->args = cli->items;
@@ -4759,7 +4765,7 @@ yyreduce:
 
   case 362:
 /* Line 1813 of yacc.c  */
-#line 836 "parser.ypp"
+#line 842 "parser.ypp"
     {
 //         cmd = add_command (cSTRUCTVAR, $2);
 //         cmd->args = cli->items;
@@ -4772,7 +4778,7 @@ yyreduce:
 
   case 363:
 /* Line 1813 of yacc.c  */
-#line 844 "parser.ypp"
+#line 850 "parser.ypp"
     {
 //         cmd = add_command (cSTRUCTVAR, $2);
 //         cmd->args = cli->items;
@@ -4785,7 +4791,7 @@ yyreduce:
 
   case 364:
 /* Line 1813 of yacc.c  */
-#line 852 "parser.ypp"
+#line 858 "parser.ypp"
     {
 //         cmd = add_command (cSTRUCTVAR, $2);
 //         cmd->args = cli->items;
@@ -4798,7 +4804,7 @@ yyreduce:
 
   case 365:
 /* Line 1813 of yacc.c  */
-#line 862 "parser.ypp"
+#line 868 "parser.ypp"
     {
 //             old_cli = cli;
 //             cli = xmalloc (sizeof (struct cli));
@@ -4809,44 +4815,44 @@ yyreduce:
 
   case 366:
 /* Line 1813 of yacc.c  */
-#line 870 "parser.ypp"
+#line 876 "parser.ypp"
     { /*$$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);*/ }
     break;
 
   case 367:
 /* Line 1813 of yacc.c  */
-#line 871 "parser.ypp"
+#line 877 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1); */}
     break;
 
   case 368:
 /* Line 1813 of yacc.c  */
-#line 874 "parser.ypp"
+#line 880 "parser.ypp"
     {
 	/*add_command (cPUSHFREE, NULL); } call_list ')' { $$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1); */}
     break;
 
   case 369:
 /* Line 1813 of yacc.c  */
-#line 876 "parser.ypp"
+#line 882 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 370:
 /* Line 1813 of yacc.c  */
-#line 877 "parser.ypp"
+#line 883 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 371:
 /* Line 1813 of yacc.c  */
-#line 878 "parser.ypp"
+#line 884 "parser.ypp"
     { /*add_command (cPUSHFREE, NULL); } call_list ')' { $$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 372:
 /* Line 1813 of yacc.c  */
-#line 881 "parser.ypp"
+#line 887 "parser.ypp"
     {
 // 	$$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);
  	}
@@ -4854,91 +4860,91 @@ yyreduce:
 
   case 373:
 /* Line 1813 of yacc.c  */
-#line 884 "parser.ypp"
+#line 890 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 374:
 /* Line 1813 of yacc.c  */
-#line 885 "parser.ypp"
+#line 891 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1); */}
     break;
 
   case 375:
 /* Line 1813 of yacc.c  */
-#line 886 "parser.ypp"
+#line 892 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 376:
 /* Line 1813 of yacc.c  */
-#line 889 "parser.ypp"
+#line 895 "parser.ypp"
     { /*$$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);*/ }
     break;
 
   case 377:
 /* Line 1813 of yacc.c  */
-#line 890 "parser.ypp"
+#line 896 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 378:
 /* Line 1813 of yacc.c  */
-#line 893 "parser.ypp"
+#line 899 "parser.ypp"
     { /*add_command (cPUSHFREE, NULL); } call_list ')' { $$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);*/ }
     break;
 
   case 379:
 /* Line 1813 of yacc.c  */
-#line 894 "parser.ypp"
+#line 900 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 380:
 /* Line 1813 of yacc.c  */
-#line 895 "parser.ypp"
+#line 901 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 381:
 /* Line 1813 of yacc.c  */
-#line 896 "parser.ypp"
+#line 902 "parser.ypp"
     {/* add_command (cPUSHFREE, NULL);*/ }
     break;
 
   case 382:
 /* Line 1813 of yacc.c  */
-#line 896 "parser.ypp"
+#line 902 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1); */}
     break;
 
   case 383:
 /* Line 1813 of yacc.c  */
-#line 899 "parser.ypp"
+#line 905 "parser.ypp"
     { /*$$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);*/ }
     break;
 
   case 384:
 /* Line 1813 of yacc.c  */
-#line 900 "parser.ypp"
+#line 906 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 385:
 /* Line 1813 of yacc.c  */
-#line 901 "parser.ypp"
+#line 907 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 386:
 /* Line 1813 of yacc.c  */
-#line 902 "parser.ypp"
+#line 908 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1); */}
     break;
 
 
 /* Line 1813 of yacc.c  */
-#line 4942 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 4948 "/home/cai/projects/basic/compiler/parser.cpp"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
