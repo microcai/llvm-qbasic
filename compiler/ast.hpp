@@ -46,7 +46,8 @@ enum MathOperator{
 enum ExprType{
 	VOID=0,	// nul type , used as return type of SUB XXX
 			// only used by FunctionAST to define SUB in BASIC
-	BOOLEAR,	// as boolear , TRUE,FALSE
+	BOOLEAR,// as boolear , TRUE,FALSE
+	BYTE,	// for const char * used with CARRAY
 	SHORT,	// as short
 	Intger,	// as Intger
 	Long,	// as long
@@ -55,6 +56,7 @@ enum ExprType{
 	STRING,	// STRING is an internal struct type.
 			// STRING is implemented as structure by calling some member function
 			// automanticall by compiler
+	CARRAY,	// C 数组, BYTE 类型
 	ARRAY	// 数组，only used by VariableExprAST & DimAST
 };
 
@@ -130,6 +132,8 @@ class VariableArrayDimAST : VariableDimAST
 class ExprAST: public AST //
 {
 public:
+	ExprAST(){type = VOID;}
+    ExprAST(enum ExprType);
 	ExprType type; // the type of the expresion
 	virtual llvm::Value *Codegen() = 0;
 };
@@ -149,6 +153,17 @@ public:
 	std::string constval;
 	ConstExprAST(const std::string * val);
 	virtual	llvm::Value *Codegen();
+};
+
+class CArrayAST: public ExprAST
+{
+	CArrayAST();
+};
+
+// 常量字符串 , 类型 CSTRING
+class ConstStringAST: public CArrayAST
+{
+	
 };
 
 class VariableRefExprAST:public ExprAST

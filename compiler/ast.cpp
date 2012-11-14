@@ -159,4 +159,15 @@ CallExprAST::CallExprAST(FunctionParameterListAST args)
 {
 	
 }
+CArrayAST::CArrayAST()
+	:ExprAST(CARRAY)
+{
+    ;
+}
+
+ExprAST::ExprAST(ExprType _type)
+	:type(_type)
+{
+
+}
 

@@ -332,7 +332,7 @@ string_scalar_or_array: strsym_s {/*add_command(cPUSHSTRPTR,dotify($1));*/}
    | strsym_a {/*create_doarray(dotify($1),GETSTRINGPOINTER);*/}
    ;
 
-string_expression: strsym_s {/*add_command(cPUSHSTRSYM,dotify($1));*/}
+string_expression: strsym_s {		/*add_command(cPUSHSTRSYM,dotify($1));*/	}
    | string_function
    | string_function_or_array_any_params {/*add_command(cSTRING_FUNCTION_OR_ARRAY,$1);*/}
    | tSTRING {/*create_pushstr($1);*/}
@@ -736,7 +736,7 @@ input: numsym_s {/*create_myread ('n', until_eol); add_command (cPOPNUMSYM, doti
    | strsym_a {/*create_myread('s',until_eol);create_doarray(dotify ($1),ASSIGNSTRINGARRAY);*/}
    ;
 
-print_list:  /* empty */
+print_list:  /* empty */ { error("ERROR: print with no arg not supprted yet\n"); exit(1); }
    | number_expression {
 		debug("got first print argument as number\n");
 		$$ = new PrintListAST();
@@ -745,7 +745,7 @@ print_list:  /* empty */
    | number_expression tUSING string_expression
         { /*create_print ('u'); */}
    | string_expression
-        { /*create_print ('s');*/ }
+        { debug("print with string\n"); }
    | print_list ',' number_expression
         { /*create_print ('b'); create_print ('n');*/ }
    | print_list ',' number_expression tUSING string_expression

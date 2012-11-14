@@ -3269,7 +3269,7 @@ yyreduce:
   case 95:
 /* Line 1813 of yacc.c  */
 #line 335 "parser.ypp"
-    {/*add_command(cPUSHSTRSYM,dotify($1));*/}
+    {		/*add_command(cPUSHSTRSYM,dotify($1));*/	}
     break;
 
   case 97:
@@ -4557,6 +4557,12 @@ yyreduce:
     {/*create_myread('s',until_eol);create_doarray(dotify ($1),ASSIGNSTRINGARRAY);*/}
     break;
 
+  case 329:
+/* Line 1813 of yacc.c  */
+#line 739 "parser.ypp"
+    { error("ERROR: print with no arg not supprted yet\n"); exit(1); }
+    break;
+
   case 330:
 /* Line 1813 of yacc.c  */
 #line 740 "parser.ypp"
@@ -4576,7 +4582,7 @@ yyreduce:
   case 332:
 /* Line 1813 of yacc.c  */
 #line 748 "parser.ypp"
-    { /*create_print ('s');*/ }
+    { debug("print with string\n"); }
     break;
 
   case 333:
@@ -4932,7 +4938,7 @@ yyreduce:
 
 
 /* Line 1813 of yacc.c  */
-#line 4936 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 4942 "/home/cai/projects/basic/compiler/parser.cpp"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
