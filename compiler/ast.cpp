@@ -19,6 +19,8 @@
 #include <iostream>
 #include <boost/lexical_cast.hpp>
 #include <boost/weak_ptr.hpp>
+#include <boost/foreach.hpp>
+
 #include <llvm/DerivedTypes.h>
 #include <llvm/Constants.h>
 #include <llvm/Constant.h>
@@ -46,11 +48,6 @@ AST::~AST()
 {
 }
 
-ConstExprAST::ConstExprAST(const std::string* val)
-{
-	constval = val->c_str();
-}
-
 LetExprAST::LetExprAST(VariableRefExprASTPtr l, ExprASTPtr r)
 	:lval(l),rval(r)
 {
@@ -68,18 +65,18 @@ llvm::Value* StatementAST::Codegen(llvm::BasicBlock* insertto)
 
 
 // 为 LET A=XX 赋值语句生成IR代码
-llvm::Value* LetExprAST::Codegen()
+llvm::Value* LetExprAST::Codegen(llvm::BasicBlock * insertto)
 {
 	//TODO 只能为简单类型生成赋值语句
 	//TODO 复杂类型实质是要调用 operator ==
 	
-    llvm::Value * r = this->rval->Codegen();
-	llvm::Value * l = this->lval->Codegen();
+    llvm::Value * r = this->rval->Codegen(insertto);
+	llvm::Value * l = this->lval->Codegen(insertto);
 //	return llvm::
 }
 
 // 为立即数生成 IR
-llvm::Value* ConstExprAST::Codegen()
+llvm::Value* ConstExprAST::Codegen(llvm::BasicBlock * insertto)
 {	
 	debug("%s\n",__func__);
     return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(64,this->constval,10));
@@ -136,15 +133,38 @@ llvm::Value* PrintStmtAST::Codegen(llvm::BasicBlock * insertto)
 	std::vector<llvm::Value*> args;
 	args.push_back( qbc::getconstint(0) );
 
-	//第二个参数是参数个数
+	//第二个参数是参数(个数/2)
 	args.push_back( qbc::getconstint( callargs->size() ) );
 
-	//第三个参数开始是 ...  //TODO, 目前只需要支持 number , brt_print 也只是支持数字
-	// TODO : 支持字符串的版本修改第三个参数开始为参数对.
-
-	// TEST: 现在是测试, 打印出参数个数
-	args.push_back( qbc::getconstint( callargs->size() ) );
-
+	//第三个参数开始是 ... 参数对.
+	
+	if(callargs->size() > 0){
+		// TODO : 支持字符串的版本修改第三个参数开始为参数对.
+		//std::for_E	BOOST_FOREACH(ExprASTPtr argitem,callargs->printlist);
+		for( std::vector<ExprASTPtr>::iterator it = callargs->printlist.begin();
+			it != callargs->printlist.end() ; it++)
+		{
+			ExprASTPtr argitem = *it;
+			switch(argitem->type){
+				case EXPR_TYPE_BOOL:
+				case EXPR_TYPE_BYTE:	// for const char * used with CARRAY
+				case EXPR_TYPE_SHORT:	// as short
+				case EXPR_TYPE_INTGER:	// as Intger
+				case EXPR_TYPE_LONG:	// as long
+				case EXPR_TYPE_DOUBLE:	// as Double
+				case EXPR_TYPE_POINTER:// as ptr
+					// this are types that can be manipulated directly
+					args.push_back(	qbc::getconstint(argitem->type) );
+					debug("add code for print list args type %d\n",argitem->type);
+					args.push_back(	argitem->Codegen(insertto) );
+					break;
+				default:
+					//TODO, 目前只需要支持 number , brt_print 也只是支持数字
+					printf("print argument not supported\n");
+			}
+			//argitem->Codegen()
+		}
+	}
 	//调用 print
 	builder.CreateCall(brt_print,args ,"PRINT");
 
@@ -168,6 +188,29 @@ CArrayAST::CArrayAST()
 ExprAST::ExprAST(ExprType _type)
 	:type(_type)
 {
+
+}
+
+ConstNumberExprAST::ConstNumberExprAST(const int64_t v)
+	:val(v)
+{
+}
+
+llvm::Value* ConstNumberExprAST::Codegen(llvm::BasicBlock * insertto)
+{
+	debug("const for %d\n",this->val);
+    return qbc::getconstint(this->val);
+}
+
+NumberExprAST::NumberExprAST() :ExprAST(EXPR_TYPE_LONG)
+{
+	
+}
+
+llvm::Value* NumberExprAST::Codegen(llvm::BasicBlock* insertto)
+{
+	//return insertto;
+	debug("number expr for \n");
 
 }
 

@@ -44,14 +44,15 @@ enum MathOperator{
 };
 
 enum ExprType{
-	VOID=0,	// nul type , used as return type of SUB XXX
+	EXPR_TYPE_VOID=0,	// nul type , used as return type of SUB XXX
 			// only used by FunctionAST to define SUB in BASIC
-	BOOLEAR,// as boolear , TRUE,FALSE
-	BYTE,	// for const char * used with CARRAY
-	SHORT,	// as short
-	Intger,	// as Intger
-	Long,	// as long
-	Double,	// as Double
+	EXPR_TYPE_BOOL,// as boolear , TRUE,FALSE
+	EXPR_TYPE_BYTE,	// for const char * used with CARRAY
+	EXPR_TYPE_SHORT,	// as short
+	EXPR_TYPE_INTGER,	// as Intger
+	EXPR_TYPE_LONG,	// as long
+	EXPR_TYPE_DOUBLE,	// as Double
+ 	EXPR_TYPE_POINTER,// as ptr
 	STRUCT,	// qbasic supports structure,
 	STRING,	// STRING is an internal struct type.
 			// STRING is implemented as structure by calling some member function
@@ -132,10 +133,10 @@ class VariableArrayDimAST : VariableDimAST
 class ExprAST: public AST //
 {
 public:
-	ExprAST(){type = VOID;}
+	ExprAST(){type = EXPR_TYPE_VOID;}
     ExprAST(enum ExprType);
 	ExprType type; // the type of the expresion
-	virtual llvm::Value *Codegen() = 0;
+	virtual llvm::Value *Codegen(llvm::BasicBlock * insertto) = 0;
 };
 
 typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
@@ -143,7 +144,9 @@ typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
 //整数类型. 最简单的类型.可以直接生成  llvm-IR 代码
 class NumberExprAST : public ExprAST
 {
-	
+public:
+    NumberExprAST();
+	virtual llvm::Value *Codegen(llvm::BasicBlock * insertto);
 };
 
 // 常量 , 需要一步转化为 Number 或者是 String
@@ -151,8 +154,15 @@ class ConstExprAST:public ExprAST
 {
 public:
 	std::string constval;
-	ConstExprAST(const std::string * val);
-	virtual	llvm::Value *Codegen();
+	virtual	llvm::Value *Codegen(llvm::BasicBlock * insertto);
+};
+
+class ConstNumberExprAST :public NumberExprAST
+{
+	const int64_t val;
+public:
+    ConstNumberExprAST(const int64_t);
+	virtual llvm::Value *Codegen(llvm::BasicBlock * insertto); // final , 不允许继承了.
 };
 
 class CArrayAST: public ExprAST
@@ -256,7 +266,7 @@ public:
 
 	VariableRefExprASTPtr lval;//注意，左值只能是变量表达式
 	ExprASTPtr rval; // 右值可以是任意的表达式。注意，需要可以相互转化的。
-	virtual	llvm::Value *Codegen();
+	virtual	llvm::Value *Codegen(llvm::BasicBlock * insertto);
 };
 
 //条件控制表达式

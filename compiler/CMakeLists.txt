@@ -16,10 +16,17 @@ if(NOT Boost_FOUND)
 	endif()
 endif()
 
-BISON_TARGET(QBParse parser.ypp ${CMAKE_CURRENT_SOURCE_DIR}/parser.cpp)
-FLEX_TARGET(QBLex qblex.ll ${CMAKE_CURRENT_SOURCE_DIR}/qblex.cpp)
+if( USE_BISON )
+	BISON_TARGET(QBParse parser.ypp ${CMAKE_CURRENT_SOURCE_DIR}/parser.cpp)
+	FLEX_TARGET(QBLex qblex.ll ${CMAKE_CURRENT_SOURCE_DIR}/qblex.cpp)
 
-ADD_FLEX_BISON_DEPENDENCY(QBLex QBParse)
+	ADD_FLEX_BISON_DEPENDENCY(QBLex QBParse)
+
+else()
+	SET(BISON_QBParse_OUTPUTS parser.cpp)
+	SET(FLEX_QBLex_OUTPUTS qblex.cpp)
+endif()
+
 
 link_directories(${LLVM_LIBDIR})
 link_libraries("${LLVM_LIBRARIES}")

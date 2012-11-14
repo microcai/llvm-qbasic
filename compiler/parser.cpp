@@ -3509,7 +3509,7 @@ yyreduce:
   case 137:
 /* Line 1813 of yacc.c  */
 #line 378 "parser.ypp"
-    {/*create_pushnum($1);*/}
+    { (yyval.number_expression) = new ConstNumberExprAST((yyvsp[(1) - (1)].number));  }
     break;
 
   case 138:
@@ -4588,7 +4588,7 @@ yyreduce:
   case 333:
 /* Line 1813 of yacc.c  */
 #line 750 "parser.ypp"
-    { (yyval.print_list) = (yyvsp[(1) - (3)].print_list) ; (yyval.print_list)->additem(ExprASTPtr((yyvsp[(3) - (3)].number_expression))) ;  }
+    { (yyval.print_list) = (yyvsp[(1) - (3)].print_list) ; (yyval.print_list)->additem(ExprASTPtr((yyvsp[(3) - (3)].number_expression))) ; }
     break;
 
   case 334:

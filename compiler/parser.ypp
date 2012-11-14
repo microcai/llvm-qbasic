@@ -375,7 +375,7 @@ number_expression: number_expression tOR {/*add_command(cORSHORT,NULL);pushlabel
    | number_expression tGEQ number_expression {/*create_numrelop('}');*/}
    | tEOF '(' hashed_number ')' {/*add_command(cTESTEOF,NULL);*/}
    | tGLOB '(' string_expression ',' string_expression ')' {/*add_command(cGLOB,NULL);*/}
-   | tNUMBER {/*create_pushnum($1);*/}
+   | tNUMBER { $$ = new ConstNumberExprAST($1);  }
    | tARDIM '(' number_arrayref ')' {/*add_command(cARDIM,"");*/}
    | tARDIM '(' string_arrayref ')' {/*add_command(cARDIM,"");*/}
    | tARSIZE '(' number_arrayref ',' number_expression ')' {/*add_command(cARSIZE,"");*/}
@@ -747,7 +747,7 @@ print_list:  /* empty */ { error("ERROR: print with no arg not supprted yet\n");
    | string_expression
         { debug("print with string\n"); }
    | print_list ',' number_expression
-        { /*create_print ('b'); create_print ('n');*/ }
+        { $$ = $1 ; $$->additem(ExprASTPtr($3)) ; }
    | print_list ',' number_expression tUSING string_expression
         {/* create_print ('b'); create_print ('u'); */}
    | print_list ',' string_expression
