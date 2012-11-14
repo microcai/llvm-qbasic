@@ -1,8 +1,6 @@
 
 #include "qbc.h"
-#include <unistd.h>
-#include <sys/types.h>
-#include <fcntl.h>
+
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>

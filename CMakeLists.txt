@@ -17,6 +17,9 @@ if(Boost_FOUND)
     link_libraries(${Boost_LIBRARIES})
 endif()
 
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
 add_subdirectory(brt)
 add_subdirectory(compiler)
 add_subdirectory(include)
+
