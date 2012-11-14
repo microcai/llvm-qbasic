@@ -56,12 +56,16 @@ LetExprAST::LetExprAST(VariableRefExprASTPtr l, ExprASTPtr r)
 {
 
 }
-// nop 语句
-llvm::Value* StatementAST::Codegen(llvm::BasicBlock * insertto)
+
+// nop 语句, 自动调用下一条.
+llvm::Value* StatementAST::Codegen(llvm::BasicBlock* insertto)
 {
-	debug("empty statementn\n");
-	return insertto;
+	debug("%s called \n",__func__);
+	if(this->next)
+		return this->next->Codegen(insertto);
+	else return insertto;
 }
+
 
 // 为 LET A=XX 赋值语句生成IR代码
 llvm::Value* LetExprAST::Codegen()
@@ -144,7 +148,7 @@ llvm::Value* PrintStmtAST::Codegen(llvm::BasicBlock * insertto)
 	//调用 print
 	builder.CreateCall(brt_print,args ,"PRINT");
 
-	return insertto;
+	return StatementAST::Codegen(insertto);
 }
 
 llvm::Value* PrintIntroAST::Codegen() {}

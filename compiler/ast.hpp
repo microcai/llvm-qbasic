@@ -91,7 +91,7 @@ public:
 
 	std::string	LABEL;	// label , if there is. then we can use goto
 						// must be uniq among function bodys
-	virtual llvm::Value* Codegen(llvm::BasicBlock * insertto)=0;
+	virtual llvm::Value* Codegen(llvm::BasicBlock * insertto);
 };
 typedef boost::shared_ptr<StatementAST>	StatementASTPtr;
 typedef std::list<StatementASTPtr> StatementASTList;
