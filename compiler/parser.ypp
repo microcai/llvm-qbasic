@@ -24,22 +24,20 @@
 /* Include main header file. */
 #include "qbc.h"
 
+extern	StatementAST * program;
+
 extern int yylex (void);
 extern int yylex_destroy(void);
 extern void yyerror (char *msg);
 extern int yylineno;
 #define error printf
+#define debug printf
 
 /* Types of functions. */
 enum {
    ftNONE, ftNUMBER, ftSTRING
 };
 
-/* Local definitions. */
-struct cli {
-   int items;
-   struct cli *next;
-};
 
 /* Global variables. */
 char *current_function = NULL;  /* name of currently parsed function */
@@ -85,11 +83,27 @@ void not_inside_loop_or_conditional (char *what) {
 %}
 
 %union {
-   char *string;         /* quoted string */
-   char *symbol;         /* general symbol */
-   double number;        /* double number */
-   int separator;        /* separator */
+	char *string;         /* quoted string */
+	char *symbol;         /* general symbol */
+	double number;        /* double number */
+	int separator;        /* separator */
+	PrintIntroAST *print_intro;
+	PrintListAST * print_list;
+	NumberExprAST* number_expression;
+	StatementAST * statement;
+	
 }
+
+/*
+ * Defination union needed for Generating AST
+ */
+%type <print_intro>			print_intro
+%type <print_list>			print_list
+%type <number_expression>	number_expression
+%type <statement>			non_empty_statement
+%type <statement>			statement
+%type <statement>			statement_list
+%type <statement>			list_of_statement_lists
 
 %type <symbol> cfunction_name
 %type <symbol> function_name
@@ -161,21 +175,29 @@ program: list_of_statement_lists tEOPROG
          * command be added here, because extra commands might be
          * added later and sequential execution of them could prove
          * disastrous. */
-        { /*add_command (cEOPROG, NULL);*/ yylex_destroy (); YYACCEPT; }
+        {
+			program = $1;
+			debug("program ended\n");
+			/*add_command (cEOPROG, NULL);*/ yylex_destroy (); YYACCEPT;
+		}
    ;
 
-list_of_statement_lists: statement_list
+list_of_statement_lists: statement_list { $$ = $1; debug("list_of_statement_lists\n"); }
    | list_of_statement_lists tNEWFILE statement_list
    ;
 
-statement_list: statement
-   | statement_list tSEPARATOR
-        { yylineno += $2; }
-           statement
+statement_list: statement { $$ = $1;}
+   | statement_list tSEPARATOR { yylineno += $2; } statement {
+		if($4){
+			debug("got statement_list now %p\n",$4);
+			$$ = $1;
+			$1->append($4);
+		}
+	}
    ;
 
-statement: /* empty */
-   | non_empty_statement
+statement: /* empty */{ $$ = 0 ;}
+   | non_empty_statement { $$ = $1; }
    ;
 
 non_empty_statement: number_assignment
@@ -200,7 +222,11 @@ non_empty_statement: number_assignment
    | string_function_or_array_any_params { }
    | tLOCAL {if (function_type==ftNONE) error("declaring variables \"local\" outside of a function has no effect"); } local_list
    | tSTATIC {if (function_type==ftNONE) error("declaring variables \"static\" outside of a function has no effect"); } static_list
-   | tPRINT print_intro print_list {/*create_print('l');create_pps(cPOPSTREAM,0);*/}
+   | tPRINT print_intro print_list {
+	   // 构造打印语句
+	   debug("got PRINT now\n");
+	   $$ = new PrintStmtAST(PrintIntroASTPtr($2),PrintListASTPtr($3));
+   }
    | tPRINT print_intro print_list ';' {/*create_pps(cPOPSTREAM,0);*/}
    | tINPUT { until_eol = false; } input_body {/*create_pps(cPOPSTREAM,0);*/}
    | tLINE tINPUT { until_eol = true; } input_body {/*create_pps(cPOPSTREAM,0);*/}
@@ -711,8 +737,11 @@ input: numsym_s {/*create_myread ('n', until_eol); add_command (cPOPNUMSYM, doti
    ;
 
 print_list:  /* empty */
-   | number_expression
-        { /*create_print ('n');*/ }
+   | number_expression {
+		debug("got first print argument as number\n");
+		$$ = new PrintListAST();
+		$$->additem(ExprASTPtr($1));
+   }
    | number_expression tUSING string_expression
         { /*create_print ('u'); */}
    | string_expression
@@ -735,8 +764,12 @@ prompt: string_expression
         {/* create_print ('s');*/ }
    ;
 
-print_intro: /* empty */ {/*create_pushnum(STDIO_STREAM);create_pps(cPUSHSTREAM,0);*/}
-   | '#' numsym_s {/*add_command(cPUSHNUMSYM,dotify ($2));create_pps(cPUSHSTREAM,0);*/}
+print_intro: /* empty */ {
+		debug("empty print_intro\n");
+		/*构造一个默认的 打印目标*/
+		$$ = new PrintIntroAST(); 
+	}
+   | '#' numsym_s {  /* 构造一个使用常数表的打印目标*/ }
    | '#' tNUMBER {/*create_pushnum ($2); create_pps(cPUSHSTREAM,0);*/}
    | '#' '(' number_expression ')' {/*create_pps(cPUSHSTREAM,0);*/}
    ;

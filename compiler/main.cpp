@@ -12,6 +12,7 @@ namespace fs=boost::filesystem;
 #include "parser.hpp"
 
 extern FILE *yyin;
+StatementAST * program;
 
 static void generate(StatementAST * ast);
 
@@ -79,7 +80,7 @@ int main(int argc, char **argv)
 	AST::module = new llvm::Module( outfilename.c_str(), llvm::getGlobalContext());
 
 
-	//generate(programBlock);
+	generate(program);
 
 	//compile to excuteable if -c not specified
 	if(vm.count("c")){
@@ -95,10 +96,14 @@ static void generate(StatementAST * ast)
 {
 	//首先生成全局可用的外部辅助函数
 	llvm::IRBuilder<> builder(llvm::getGlobalContext());
+	llvm::FunctionType *funcType = llvm::FunctionType::get(builder.getVoidTy(), false);
+	llvm::Function *mainFunc =
+		llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, "main", AST::module);
+	llvm::BasicBlock *entry = llvm::BasicBlock::Create(builder.getContext(), "entrypoint", mainFunc);
+	builder.SetInsertPoint(entry);
 
 	//开始生成代码
-	do{
-		ast->Codegen();
-		ast = ast->next.get();
-	}while(ast);
+	ast->Codegen(entry);
+	builder.CreateRetVoid();
+	AST::module->dump();
 }

@@ -30,8 +30,8 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-#ifndef YY_YY_HOME_CAI_PROJECTS_BASIC_PARSER_HPP_INCLUDED
-# define YY_YY_HOME_CAI_PROJECTS_BASIC_PARSER_HPP_INCLUDED
+#ifndef YY_YY_HOME_CAI_PROJECTS_BASIC_COMPILER_PARSER_HPP_INCLUDED
+# define YY_YY_HOME_CAI_PROJECTS_BASIC_COMPILER_PARSER_HPP_INCLUDED
 /* Enabling traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -179,16 +179,21 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 2077 of yacc.c  */
-#line 87 "parser.ypp"
+#line 85 "parser.ypp"
 
-   char *string;         /* quoted string */
-   char *symbol;         /* general symbol */
-   double number;        /* double number */
-   int separator;        /* separator */
+	char *string;         /* quoted string */
+	char *symbol;         /* general symbol */
+	double number;        /* double number */
+	int separator;        /* separator */
+	PrintIntroAST *print_intro;
+	PrintListAST * print_list;
+	NumberExprAST* number_expression;
+	StatementAST * statement;
+	
 
 
 /* Line 2077 of yacc.c  */
-#line 192 "/home/cai/projects/basic/parser.hpp"
+#line 197 "/home/cai/projects/basic/compiler/parser.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -211,4 +216,4 @@ int yyparse ();
 #endif
 #endif /* ! YYPARSE_PARAM */
 
-#endif /* !YY_YY_HOME_CAI_PROJECTS_BASIC_PARSER_HPP_INCLUDED  */
+#endif /* !YY_YY_HOME_CAI_PROJECTS_BASIC_COMPILER_PARSER_HPP_INCLUDED  */

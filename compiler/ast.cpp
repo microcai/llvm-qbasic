@@ -18,6 +18,7 @@
 */
 #include <iostream>
 #include <boost/lexical_cast.hpp>
+#include <boost/weak_ptr.hpp>
 #include <llvm/DerivedTypes.h>
 #include <llvm/Constants.h>
 #include <llvm/Constant.h>
@@ -28,6 +29,8 @@
 #include <llvm/Instruction.h>
 #include <llvm/Support/IRBuilder.h>
 
+
+#include "llvmwrapper.hpp"
 #include "ast.hpp"
 
 #define debug printf
@@ -54,12 +57,10 @@ LetExprAST::LetExprAST(VariableRefExprASTPtr l, ExprASTPtr r)
 
 }
 // nop 语句
-llvm::Value* StatementAST::Codegen()
+llvm::Value* StatementAST::Codegen(llvm::BasicBlock * insertto)
 {
 	debug("empty statementn\n");
-	llvm::Value * l = llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt());
-	llvm::Value * r = llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt());
-	return llvm::BinaryOperator::CreateNUWSub(l,r);
+	return insertto;
 }
 
 // 为 LET A=XX 赋值语句生成IR代码
@@ -75,19 +76,37 @@ llvm::Value* LetExprAST::Codegen()
 
 // 为立即数生成 IR
 llvm::Value* ConstExprAST::Codegen()
-{
+{	
 	debug("%s\n",__func__);
-	long v = boost::lexical_cast<long>(this->constval);
-    return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(64,v,1));
+    return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(64,this->constval,10));
+}
+
+void StatementAST::append(StatementAST * item)
+{
+	if(!next)
+		next.reset(item);
+	else{
+		StatementAST * p = (this->next.get());
+		while(p->next.get())
+			p = p->next.get();
+		p->next.reset(item);
+	}
+}
+
+PrintStmtAST::PrintStmtAST(PrintIntroASTPtr intro,PrintListASTPtr args)
+	:callargs(args),print_intro(intro)
+{
+	
 }
 
 //TODO 为 print 语句生成,
-llvm::Value* PrintStmtAST::Codegen()
+llvm::Value* PrintStmtAST::Codegen(llvm::BasicBlock * insertto)
 {
     debug("generating llvm-IR for calling PRINT\n");
 	
 	//llvm::CallInst::Create();
 	llvm::IRBuilder<> builder(llvm::getGlobalContext());
+	builder.SetInsertPoint(insertto);
 
 	std::vector<llvm::Type *> brt_printArgs;
 	switch(sizeof(int)){
@@ -105,26 +124,35 @@ llvm::Value* PrintStmtAST::Codegen()
 
 	llvm::Constant *brt_print =
 			module->getOrInsertFunction("brt_print",
-										llvm::FunctionType::get(builder.getInt32Ty(), llvm::ArrayRef<llvm::Type*>(brt_printArgs), true));
+										llvm::FunctionType::get(builder.getInt32Ty(), brt_printArgs,
+		/*必须为true, 这样才能接受可变参数*/true));
 
-	
-	// creat call into BASIC Runtime function brt_print
-	builder.CreateCall(brt_print,0,"PRINT");
+	// TODO: 调用 this->print_intro->Codegen() 生成第一个参数
+	// 现在 brt 忽略第一个参数
+	std::vector<llvm::Value*> args;
+	args.push_back( qbc::getconstint(0) );
 
-	// int brt_print( int print_intro , int numargs , ... );
-	
-	//llvm::Function * printf = llvm::Function::get(
+	//第二个参数是参数个数
+	args.push_back( qbc::getconstint( callargs->size() ) );
 
-	//builder.CreateCall();
+	//第三个参数开始是 ...  //TODO, 目前只需要支持 number , brt_print 也只是支持数字
+	// TODO : 支持字符串的版本修改第三个参数开始为参数对.
+
+	// TEST: 现在是测试, 打印出参数个数
+	args.push_back( qbc::getconstint( callargs->size() ) );
+
+	//调用 print
+	builder.CreateCall(brt_print,args ,"PRINT");
+
+	return insertto;
 }
 
-PrintStmtAST::PrintStmtAST(FunctionParameterListAST args)
-	:callargs(args)
-{
-}
+llvm::Value* PrintIntroAST::Codegen() {}
+PrintIntroAST::PrintIntroAST() {}
 
 CallExprAST::CallExprAST(FunctionParameterListAST args)
 	:callargs(args)
 {
 	
 }
+

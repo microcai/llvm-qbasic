@@ -73,7 +73,6 @@ class AST // :public boost::enable_shared_from_this<AST>
 {
 public:
 	AST();
-	virtual llvm::Value *Codegen() = 0;
 	virtual ~AST();
 	static llvm::Module * module;
 	//static llvm: * module;
@@ -87,13 +86,16 @@ class StatementAST: public AST
 {
 public:
 	boost::shared_ptr<StatementAST> next; //下一条语句
+	// helper function for  statements
+	void append(StatementAST* item);
 
 	std::string	LABEL;	// label , if there is. then we can use goto
 						// must be uniq among function bodys
-	virtual llvm::Value* Codegen();
+	virtual llvm::Value* Codegen(llvm::BasicBlock * insertto)=0;
 };
-
 typedef boost::shared_ptr<StatementAST>	StatementASTPtr;
+typedef std::list<StatementASTPtr> StatementASTList;
+
 
 class DimAST: public AST
 {
@@ -127,8 +129,9 @@ class VariableArrayDimAST : VariableDimAST
 // 表达式
 class ExprAST: public AST //
 {
+public:
 	ExprType type; // the type of the expresion
-
+	virtual llvm::Value *Codegen() = 0;
 };
 
 typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
@@ -281,17 +284,33 @@ public:
 //打印目的地. 默认打印到屏幕
 class PrintIntroAST : public NumberExprAST
 {
-		
+public:
+	PrintIntroAST();
+    virtual llvm::Value* Codegen();
 };
 typedef boost::shared_ptr<PrintIntroAST> PrintIntroASTPtr;
+
+class PrintListAST: public AST
+{
+public:
+	std::vector<ExprASTPtr> printlist;
+	int size(){
+		return printlist.size();
+	}
+	void additem(ExprASTPtr item){
+		printlist.push_back(item);		
+	}
+};
+
+typedef boost::shared_ptr<PrintListAST> PrintListASTPtr;
 
 class PrintStmtAST: public StatementAST
 {
 public:
-	PrintIntroASTPtr			print_intro;
-	FunctionParameterListAST	callargs;
-	PrintStmtAST(FunctionParameterListAST);
-    virtual llvm::Value* Codegen();
+	PrintIntroASTPtr	print_intro;
+	PrintListASTPtr		callargs;
+	PrintStmtAST(PrintIntroASTPtr,PrintListASTPtr);
+    virtual llvm::Value* Codegen(llvm::BasicBlock * insertto);
 };
 
 #endif // __AST_H__
