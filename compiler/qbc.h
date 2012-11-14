@@ -29,6 +29,8 @@
 
 #ifdef __linux__
 #define SYSTEM_NAME "Linux"
+#elif _WIN32
+#define SYSTEM_NAME "Windows"
 #endif
 
 #define VERSION "0.1"
