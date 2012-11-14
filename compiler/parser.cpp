@@ -838,9 +838,9 @@ static const yytype_uint16 yyrline[] =
      505,   512,   520,   505,   544,   550,   558,   559,   560,   563,
      566,   569,   572,   577,   578,   581,   582,   583,   584,   587,
      588,   591,   592,   593,   594,   597,   598,   599,   602,   603,
-     604,   605,   608,   609,   614,   628,   608,   634,   635,   638,
-     639,   642,   643,   646,   646,   648,   646,   651,   652,   655,
-     656,   659,   660,   660,   664,   665,   665,   665,   668,   668,
+     604,   605,   608,   609,   613,   615,   608,   621,   626,   629,
+     630,   633,   634,   637,   637,   639,   637,   644,   645,   648,
+     649,   652,   653,   653,   661,   662,   662,   662,   668,   668,
      668,   673,   674,   674,   677,   677,   678,   677,   684,   685,
      685,   688,   688,   688,   693,   695,   694,   698,   699,   701,
      698,   705,   706,   705,   707,   707,   711,   712,   715,   718,
@@ -4225,134 +4225,134 @@ if (function_type!=ftNONE) {error("functions cannot be nested");}}
   case 263:
 /* Line 1813 of yacc.c  */
 #line 609 "parser.ypp"
-    { /*pushname (dotify ($3));    /* used to check for symbol match */
-//              add_command(cRESETSKIPONCE,NULL);
-// //         pushgoto();add_command(cCONTINUE_HERE,NULL);create_break_mark(0,1);
+    {
+				 
 			}
     break;
 
   case 264:
 /* Line 1813 of yacc.c  */
-#line 614 "parser.ypp"
-    { /* pushes another number expression */
-//         add_command(cSKIPONCE,NULL);
-//         pushlabel();
-//         add_command(cSTARTFOR,NULL);
-//         add_command(cPOPNUMSYM,dotify ($3));
-//         poplabel();
-//         add_command(cPUSHNUMSYM,dotify ($3));
-//         add_command(cFORINCREMENT,NULL);
-//         add_command(cPOPNUMSYM,dotify ($3));
-//         add_command(cPUSHNUMSYM,dotify ($3));
-//         add_command(cFORCHECK,NULL);
-//         add_command(cDECIDE,NULL);
-//              pushlabel();
+#line 613 "parser.ypp"
+    {
 	 }
     break;
 
   case 265:
 /* Line 1813 of yacc.c  */
-#line 628 "parser.ypp"
+#line 615 "parser.ypp"
     {/*
               swap();popgoto();poplabel();*/}
     break;
 
   case 266:
 /* Line 1813 of yacc.c  */
-#line 630 "parser.ypp"
+#line 617 "parser.ypp"
     {/*create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);*/
 		}
     break;
 
   case 267:
 /* Line 1813 of yacc.c  */
-#line 634 "parser.ypp"
-    {if (unclosed_fors) { error ("%d \"for\" loop%s not closed", unclosed_fors, (unclosed_fors > 1) ? "s" : ""); } }
+#line 621 "parser.ypp"
+    {
+		if (unclosed_fors) {
+			error ("%d \"for\" loop%s not closed", unclosed_fors, (unclosed_fors > 1) ? "s" : "");
+		}
+	}
     break;
 
   case 268:
 /* Line 1813 of yacc.c  */
-#line 635 "parser.ypp"
+#line 626 "parser.ypp"
     {unclosed_fors--;}
     break;
 
   case 269:
 /* Line 1813 of yacc.c  */
-#line 638 "parser.ypp"
+#line 629 "parser.ypp"
     {/* pop (stSTRING);*/ }
     break;
 
   case 270:
 /* Line 1813 of yacc.c  */
-#line 639 "parser.ypp"
-    { /*if (strcmp (pop (stSTRING)->pointer, dotify ($1)) != 0) */{ error ("symbols used for \"for\" and \"next\" do not match"); } }
+#line 630 "parser.ypp"
+    {  }
     break;
 
   case 271:
 /* Line 1813 of yacc.c  */
-#line 642 "parser.ypp"
+#line 633 "parser.ypp"
     {/*create_pushnum(1);*/}
     break;
 
   case 273:
 /* Line 1813 of yacc.c  */
-#line 646 "parser.ypp"
+#line 637 "parser.ypp"
     { unclosed_switches ++; }
     break;
 
   case 274:
 /* Line 1813 of yacc.c  */
-#line 646 "parser.ypp"
-    {/*push_switch_id();add_command(cPUSH_SWITCH_MARK,NULL);create_break_mark(0,1);
-   continue_corrections ++; add_command(cCONTINUE_CORRECTION, NULL)->tag = continue_corrections;*/}
+#line 637 "parser.ypp"
+    {
+	}
     break;
 
   case 275:
 /* Line 1813 of yacc.c  */
-#line 648 "parser.ypp"
+#line 639 "parser.ypp"
     { unclosed_switches --; }
     break;
 
   case 276:
 /* Line 1813 of yacc.c  */
-#line 648 "parser.ypp"
-    {continue_corrections --; /*create_break_mark(-1,0);add_command(cBREAK_HERE,NULL);create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);create_clean_switch_mark(0,false);pop_switch_id();*/}
+#line 639 "parser.ypp"
+    {continue_corrections --;
+					 
+				}
     break;
 
   case 277:
 /* Line 1813 of yacc.c  */
-#line 651 "parser.ypp"
+#line 644 "parser.ypp"
     { yylineno += (yyvsp[(1) - (1)].separator); }
     break;
 
   case 278:
 /* Line 1813 of yacc.c  */
-#line 652 "parser.ypp"
+#line 645 "parser.ypp"
     { yylineno += (yyvsp[(2) - (2)].separator); }
     break;
 
   case 282:
 /* Line 1813 of yacc.c  */
-#line 660 "parser.ypp"
-    {/*create_break_mark(-1,0);add_command(cBREAK_HERE,NULL);*/}
+#line 653 "parser.ypp"
+    {
+	   
+}
     break;
 
   case 283:
 /* Line 1813 of yacc.c  */
-#line 661 "parser.ypp"
-    {/*add_command(cSWITCH_COMPARE,NULL);add_command(cDECIDE,NULL);add_command(cMINOR_BREAK,NULL);create_break_mark(1,0);} statement_list {add_command(cNEXT_CASE,NULL);*/}
+#line 656 "parser.ypp"
+    {
+		   
+	}
     break;
 
   case 285:
 /* Line 1813 of yacc.c  */
-#line 665 "parser.ypp"
+#line 662 "parser.ypp"
     { yylineno+=(yyvsp[(2) - (2)].separator); }
     break;
 
   case 286:
 /* Line 1813 of yacc.c  */
-#line 665 "parser.ypp"
-    {/*create_break_mark(-1,0); add_command(cBREAK_HERE,NULL);*/}
+#line 662 "parser.ypp"
+    {
+
+	   
+}
     break;
 
   case 288:
@@ -4419,7 +4419,7 @@ if (function_type!=ftNONE) {error("functions cannot be nested");}}
   case 300:
 /* Line 1813 of yacc.c  */
 #line 685 "parser.ypp"
-    {/*swap();popgoto();poplabel();create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);*/}
+    { }
     break;
 
   case 301:

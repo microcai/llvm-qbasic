@@ -606,24 +606,11 @@ param_item: numsym_s {/*create_require(stNUMBER);create_makelocal(dotify ($1),sy
    ;
 
 for_loop: tFOR { unclosed_fors++; } numsym_s tEQU
-             { /*pushname (dotify ($3));    /* used to check for symbol match */
-//              add_command(cRESETSKIPONCE,NULL);
-// //         pushgoto();add_command(cCONTINUE_HERE,NULL);create_break_mark(0,1);
+             {
+				 
 			}
      number_expression tTO number_expression
-     step_part { /* pushes another number expression */
-//         add_command(cSKIPONCE,NULL);
-//         pushlabel();
-//         add_command(cSTARTFOR,NULL);
-//         add_command(cPOPNUMSYM,dotify ($3));
-//         poplabel();
-//         add_command(cPUSHNUMSYM,dotify ($3));
-//         add_command(cFORINCREMENT,NULL);
-//         add_command(cPOPNUMSYM,dotify ($3));
-//         add_command(cPUSHNUMSYM,dotify ($3));
-//         add_command(cFORCHECK,NULL);
-//         add_command(cDECIDE,NULL);
-//              pushlabel();
+     step_part {
 	 }
 	  statement_list {/*
               swap();popgoto();poplabel();*/}
@@ -631,21 +618,27 @@ for_loop: tFOR { unclosed_fors++; } numsym_s tEQU
 		}
    ;
 
-next: tEOPROG {if (unclosed_fors) { error ("%d \"for\" loop%s not closed", unclosed_fors, (unclosed_fors > 1) ? "s" : ""); } }
+next: tEOPROG {
+		if (unclosed_fors) {
+			error ("%d \"for\" loop%s not closed", unclosed_fors, (unclosed_fors > 1) ? "s" : "");
+		}
+	}
    | tNEXT {unclosed_fors--;}
    ;
 
 next_symbol: /* empty */ {/* pop (stSTRING);*/ }
-   | numsym_s { /*if (strcmp (pop (stSTRING)->pointer, dotify ($1)) != 0) */{ error ("symbols used for \"for\" and \"next\" do not match"); } }
+   | numsym_s {  }
    ;
 
 step_part: {/*create_pushnum(1);*/} /* can be omitted */
    | tSTEP number_expression
    ;
 
-switch_number_or_string: tSWITCH { unclosed_switches ++; } {/*push_switch_id();add_command(cPUSH_SWITCH_MARK,NULL);create_break_mark(0,1);
-   continue_corrections ++; add_command(cCONTINUE_CORRECTION, NULL)->tag = continue_corrections;*/}
-                 number_or_string separator_list case_list default tSEND { unclosed_switches --; } {continue_corrections --; /*create_break_mark(-1,0);add_command(cBREAK_HERE,NULL);create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);create_clean_switch_mark(0,false);pop_switch_id();*/}
+switch_number_or_string: tSWITCH { unclosed_switches ++; } {
+	}
+	number_or_string separator_list case_list default tSEND { unclosed_switches --; } {continue_corrections --;
+					 
+				}
    ;
 
 separator_list: tSEPARATOR { yylineno += $1; }
@@ -657,12 +650,19 @@ number_or_string: number_expression
    ;
 
 case_list: /* empty */
-   | case_list tCASE {/*create_break_mark(-1,0);add_command(cBREAK_HERE,NULL);*/} number_or_string
-       {/*add_command(cSWITCH_COMPARE,NULL);add_command(cDECIDE,NULL);add_command(cMINOR_BREAK,NULL);create_break_mark(1,0);} statement_list {add_command(cNEXT_CASE,NULL);*/}
+   | case_list tCASE {
+	   
+} number_or_string
+       {
+		   
+	}
    ;
 
 default: /* empty */
-   | tDEFAULT tSEPARATOR { yylineno+=$2; } {/*create_break_mark(-1,0); add_command(cBREAK_HERE,NULL);*/} statement_list
+   | tDEFAULT tSEPARATOR { yylineno+=$2; } {
+
+	   
+} statement_list
    ;
 
 do_loop: tDO { unclosed_dos++; } {/*add_command(cCONTINUE_HERE,NULL);create_break_mark(0,1);pushgoto();*/}
@@ -682,7 +682,7 @@ while_loop: tWHILE { unclosed_whiles++; } {/*add_command(cCONTINUE_HERE,NULL);cr
    ;
 
 wend: tEOPROG {if (unclosed_whiles) { error ("%d \"while\" loop%s not closed", unclosed_whiles, (unclosed_whiles > 1) ? "s" : ""); } }
-   | tWEND {unclosed_whiles--;} {/*swap();popgoto();poplabel();create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);*/}
+   | tWEND {unclosed_whiles--;} { }
    ;
 
 repeat_loop: tREPEAT { unclosed_repeats++; } {/*add_command(cCONTINUE_HERE,NULL);create_break_mark(0,1);pushgoto();*/}
