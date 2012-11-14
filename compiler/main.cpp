@@ -6,7 +6,7 @@
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
-
+#include <boost/format.hpp>
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
 #include <boost/filesystem.hpp>
@@ -52,7 +52,7 @@ static void generateIR(StatementAST * ast)
 	builder.CreateRetVoid();
 }
 
-static int generateobj(std::string outbasename)
+static int generateobj(boost::shared_ptr<llvm::tool_output_file> Out)
 {
 	llvm::PassManager PM;
 
@@ -72,10 +72,6 @@ static int generateobj(std::string outbasename)
 		TheTarget->createTargetMachine(TheTriple.getTriple(), MCPU, FeaturesStr, Options);
   // Figure out where we are going to send the output...
 
-	std::string outname = outbasename + ".o";
-	
-	boost::scoped_ptr<llvm::tool_output_file> Out( new
-		llvm::tool_output_file(outname.c_str(), Err, llvm::raw_fd_ostream::F_Binary) );
 
 	llvm::formatted_raw_ostream FOS(Out->os());
 	
@@ -85,9 +81,6 @@ static int generateobj(std::string outbasename)
       return 1;
     }
 	PM.run(*AST::module);
-
-	printf("======== object file writed to %s ===========\n", outname.c_str());
-	Out->keep();
 	return 0;
 }
 
@@ -158,13 +151,37 @@ int main(int argc, char **argv)
 		AST::module->dump();
 		return 0;
 	}
+	
+#if _WIN32
+	std::string outname = outfilename + ".obj";
+#else
+	std::string outname = outfilename + ".o";
+#endif
+	std::string Err;
 
-	generateobj(outfilename);
+	boost::shared_ptr<llvm::tool_output_file> Out( new
+		llvm::tool_output_file(outname.c_str(), Err, llvm::raw_fd_ostream::F_Binary) );
+
+	if(generateobj(Out)==0){
+		printf("======== object file writed to %s ===========\n", outname.c_str());
+	}	
 	
 	if(!vm.count("-c")){
 		// compile to excuteable
 		// 调用  gcc
-		
+#if _WIN32
+		printf("please invok link.exe your self, link to libbrt.a!\n");
+		Out->keep();
+#else
+		std::string libdir = fs::path(argv[0]).parent_path().string();
+		std::string cmd = boost::str(boost::format("gcc -o %s %s -L%s -lbrt") % outfilename %  (outfilename + ".o") % libdir.c_str());
+
+		printf("run %s\n",cmd.c_str());
+		system(cmd.c_str());
+#endif
+	}else{
+		//不删除 obj 文件
+		Out->keep();
 	}
 	return 0;
 }
