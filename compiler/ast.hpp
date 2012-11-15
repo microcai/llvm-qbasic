@@ -261,7 +261,7 @@ public:
 class DefaultMainFunctionAST : public FunctionDimAST
 {
 public:
-	DefaultMainFunctionAST();
+	DefaultMainFunctionAST(StatementsAST * body);
 };
 
 typedef std::list<ExprASTPtr>	FunctionParameterListAST;

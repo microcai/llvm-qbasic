@@ -29,7 +29,7 @@
 #include <boost/make_shared.hpp>
 #include <boost/concept_check.hpp>
 
-extern	StatementsAST * program;
+extern	DimAST * program;
 
 
 extern int yylex(qb::parser::semantic_type * yylval_param );
@@ -194,7 +194,8 @@ program: list_of_statement_lists tEOPROG
          * added later and sequential execution of them could prove
          * disastrous. */
         {
-			program = $1;
+			program = new DefaultMainFunctionAST( $1 );
+			
 			debug("program ended\n");
 			/*add_command (cEOPROG, NULL);*/
 			// yylex_destroy ();

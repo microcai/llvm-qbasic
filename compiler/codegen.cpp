@@ -263,6 +263,18 @@ llvm::Value* FunctionDimAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlo
 	BOOST_ASSERT(!TheFunction);
 	BOOST_ASSERT(!insertto);
 
+	//首先生成全局可用的外部辅助函数
+	llvm::IRBuilder<> builder(llvm::getGlobalContext());
+	llvm::FunctionType *funcType = llvm::FunctionType::get(builder.getVoidTy(), false);
+	llvm::Function *mainFunc =
+		llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, this->name , AST::module);
+	llvm::BasicBlock *entry = llvm::BasicBlock::Create(builder.getContext(), "entrypoint", mainFunc);
+	builder.SetInsertPoint(entry);
+	//开始生成代码
 
-	// now code up the function body
+	this->body->Codegen(mainFunc,entry);
+
+	//返回值
+	builder.CreateRetVoid();	
+	//now code up the function body
 }

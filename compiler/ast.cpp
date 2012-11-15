@@ -114,9 +114,9 @@ FunctionDimAST::FunctionDimAST(const std::string _name, ExprTypeASTPtr _type)
 }
 
 
-DefaultMainFunctionAST::DefaultMainFunctionAST()
+DefaultMainFunctionAST::DefaultMainFunctionAST(StatementsAST * body)
 	:FunctionDimAST("main",ExprTypeASTPtr( new VoidTypeAST())  )
 {
-	
+	this->body = StatementsASTPtr(body);
 }
 

@@ -21,7 +21,7 @@ namespace fs=boost::filesystem;
 #include "parser.hpp"
 
 extern FILE *yyin;
-StatementsAST * program;
+DimAST * program;
 
 static std::list<std::string> argv_getinputfiles(int argc, char **argv)
 {
@@ -35,19 +35,10 @@ static std::list<std::string> argv_getinputfiles(int argc, char **argv)
 }
 
 // generate llvm IR
-static void generateIR(StatementsAST * ast)
+static void generateIR(DimAST * ast)
 {
-	//首先生成全局可用的外部辅助函数
-	llvm::IRBuilder<> builder(llvm::getGlobalContext());
-	llvm::FunctionType *funcType = llvm::FunctionType::get(builder.getVoidTy(), false);
-	llvm::Function *mainFunc =
-		llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, "main", AST::module);
-	llvm::BasicBlock *entry = llvm::BasicBlock::Create(builder.getContext(), "entrypoint", mainFunc);
-	builder.SetInsertPoint(entry);
-
 	//开始生成代码
-	ast->Codegen(mainFunc,entry);
-	builder.CreateRetVoid();
+	ast->Codegen(0,0);
 }
 
 static int generateobj(boost::shared_ptr<llvm::tool_output_file> Out)
