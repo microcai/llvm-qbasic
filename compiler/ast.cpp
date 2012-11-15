@@ -110,16 +110,10 @@ llvm::Value* PrintStmtAST::Codegen(llvm::BasicBlock * insertto)
 										llvm::FunctionType::get(builder.getInt32Ty(), brt_printArgs,
 		/*必须为true, 这样才能接受可变参数*/true));
 
-	// TODO: 调用 this->print_intro->Codegen() 生成第一个参数
-	// 现在 brt 忽略第一个参数
-	std::vector<llvm::Value*> args;
-	args.push_back( qbc::getconstint(0) );
-
-	//第二个参数是参数(个数/2)
-	args.push_back( qbc::getconstint( callargs->size() ) );
-
+	std::vector<llvm::Value*> args; // 先插入第3个开始的参数.
+	std::string	printfmt;
+	
 	//第三个参数开始是 ... 参数对.
-#if 0
 	if(callargs->size() > 0){
 		// TODO : 支持字符串的版本修改第三个参数开始为参数对.
 		//std::for_E	BOOST_FOREACH(ExprASTPtr argitem,callargs->printlist);
@@ -127,38 +121,37 @@ llvm::Value* PrintStmtAST::Codegen(llvm::BasicBlock * insertto)
 			it != callargs->printlist.end() ; it++)
 		{
 			ExprASTPtr argitem = *it;
-			
-			switch(argitem->type){
-				case EXPR_TYPE_BOOL:
-				case EXPR_TYPE_BYTE:	// for const char * used with CARRAY
-				case EXPR_TYPE_SHORT:	// as short
-				case EXPR_TYPE_INTGER:	// as Intger
-					// this are types that can be manipulated directly
-					args.push_back(	qbc::getconstint(argitem->type) );
-					debug("add code for print list args type %d\n",argitem->type);
+			switch(argitem->type->size()){ //按照大小来啊,果然
+				case sizeof(long): // 整数产量的类型
+					
+					if( dynamic_cast<PointerTypeAST*>(argitem->type.get()) ){
+						//指针类型
+						printfmt += "\t%p"; //TODO: 字符串
+					debug("add code for print list args type %%p\n");
+						
+					}else{
+					debug("add code for print list args type %%ld\n");
+						printfmt += "\t%ld";
+					}
 					args.push_back(	argitem->Codegen(insertto) );
 					break;
-				case EXPR_TYPE_LONG:	// as long
-					// this are types that can be manipulated directly
-					args.push_back(	qbc::getconstint(argitem->type) );
-					debug("add code for print list args type %d\n",argitem->type);
+				case sizeof(int):
+					printfmt += "\t%d";
 					args.push_back(	argitem->Codegen(insertto) );
 					break;
-				case EXPR_TYPE_VOID:
-					args.push_back(	qbc::getconstint(argitem->type) );
-					debug("add code for print list args type %d\n",argitem->type);
-					break;
-				case EXPR_TYPE_DOUBLE:	// as Double
-				case EXPR_TYPE_POINTER:// as ptr
-					//TODO: 64位的数字
 				default:
 					//TODO, 目前只需要支持 number , brt_print 也只是支持数字
-					printf("print argument not supported\n");
+					debug("print argument not supported\n");
 			}
-			//argitem->Codegen()
 		}
 	}
-#endif
+
+	// 现在 brt 忽略第一个参数 , 其实质是 一个 map 到 FILE* 的转化, 由 btr_print 实现
+	//第二个参数是打印列表.
+	args.insert(args.begin(), builder.CreateGlobalStringPtr(printfmt.c_str()));
+	
+	args.insert(args.begin(), qbc::getconstint(0) );
+
 	//调用 print
 	builder.CreateCall(brt_print,args ,"PRINT");
 
