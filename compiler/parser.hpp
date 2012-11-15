@@ -67,7 +67,7 @@ namespace qb {
     union semantic_type
     {
 /* Line 36 of lalr1.cc  */
-#line 94 "parser.ypp"
+#line 93 "parser.ypp"
 
 	char *string;         /* quoted string */
 	char *symbol;         /* general symbol */

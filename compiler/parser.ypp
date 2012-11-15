@@ -29,7 +29,7 @@
 #include <boost/make_shared.hpp>
 #include <boost/concept_check.hpp>
 
-extern	DimAST * program;
+extern	StatementAST * program;
 
 
 extern int yylex(qb::parser::semantic_type * yylval_param );
@@ -47,13 +47,11 @@ enum {
 
 
 /* Global variables. */
-char *current_function = NULL;  /* name of currently parsed function */
+std::string current_function;  /* name of currently parsed function */
 int in_loop = 0;                /* in loop? */
 
 /* Local variables. */
-int cfunction_type = 0;			/* C function type */
 int continue_corrections = 0;   /* continue corrections */
-int function_type = ftNONE;     /* contains function type while parsing function */
 int unclosed_dos = 0;           /* unclosed "if" count */
 int unclosed_fors = 0;          /* unclosed "for" count */
 int unclosed_ifs = 0;           /* unclosed "if" count */
@@ -62,6 +60,7 @@ int unclosed_subs = 0;          /* unclosed subroutine count */
 int unclosed_switches = 0;      /* unclosed "switch" count */
 int unclosed_whiles = 0;        /* unclosed "while" count */
 bool until_eol = false;          /* read to end of line? */
+bool useDefautSubMain = false;	/* shall we treat the while file as an sub main ? */
 
 /* Sanity check routine. */
 void not_inside_loop_or_conditional (char *what) {
@@ -196,8 +195,11 @@ program: list_of_statement_lists tEOPROG
          * added later and sequential execution of them could prove
          * disastrous. */
         {
-			program = new DefaultMainFunctionAST( $1 );
-			
+			if(useDefautSubMain){
+				program = new DefaultMainFunctionAST( $1 );
+			}else{
+				program = $1;
+			}
 			debug("program ended\n");
 			/*add_command (cEOPROG, NULL);*/
 			// yylex_destroy ();
@@ -248,8 +250,8 @@ non_empty_statement: number_assignment
    | structure_definition
    | number_function_or_array_any_params { }
    | string_function_or_array_any_params { }
-   | tLOCAL {if (function_type==ftNONE) debug("declaring variables \"local\" outside of a function has no effect"); } local_list
-   | tSTATIC {if (function_type==ftNONE) debug("declaring variables \"static\" outside of a function has no effect"); } static_list
+   | tLOCAL { } local_list
+   | tSTATIC { } static_list
    | tPRINT print_intro print_list {
 	   // 构造打印语句
 	   debug("got PRINT now\n");
@@ -257,16 +259,24 @@ non_empty_statement: number_assignment
 		$3->additem(boost::make_shared<EmptyExprAST>());
 	   
 	   $$ = new PrintStmtAST(PrintIntroASTPtr($2),PrintListASTPtr($3));
+
+		if(current_function.empty())
+			useDefautSubMain = true;
+
    }
    | tPRINT print_intro print_list ';' {
 	   // 构造打印语句
 	   debug("got PRINT now with ; \n");	   
 	   $$ = new PrintStmtAST(PrintIntroASTPtr($2),PrintListASTPtr($3));
+	   if(current_function.empty())
+			useDefautSubMain = true;
    }   
    | tPRINT print_intro print_list ',' {
 	   // 构造打印语句
 	   debug("got PRINT now with ; \n");
 	   $$ = new PrintStmtAST(PrintIntroASTPtr($2),PrintListASTPtr($3));
+	   if(current_function.empty())
+			useDefautSubMain = true;
    }
    | tINPUT { until_eol = false; } input_body {}
    | tLINE tINPUT { until_eol = true; } input_body {}
@@ -350,6 +360,8 @@ number_assignment: numsym_s tEQU number_expression {
 		// 变量赋值
 		debug("变量赋值\n");
 		$$ = new NumberAssigmentAST(VariableRefExprASTPtr($1), NumberExprASTPtr($3));
+		if(current_function.empty())
+			useDefautSubMain = true;
 	}
    | number_function_or_array_with_params tEQU number_expression {/*create_doarray($1,ASSIGNNUMBERARRAY);*/}
    ;
@@ -573,8 +585,7 @@ begin_sub:	tSUB { unclosed_subs++; }
 
 function_definition:
 	begin_sub { not_inside_loop_or_conditional ("define a function");
-				if (function_type!=ftNONE) {debug("functions cannot be nested");}
-	}  function_name {  }
+	}  function_name { current_function = $3; }
 			'(' param_list ')' {	}
 					dim_as_type {
 						debug("function dim as ... %p\n", $9 );
@@ -584,7 +595,8 @@ function_definition:
 	} statement_list {
 		$<statement_list>$ = $11;
 	}	
-	endsub {	   
+	endsub {
+		current_function.clear();
 		/** TODO support for functions*/
 	}
 	;
