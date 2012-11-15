@@ -103,4 +103,20 @@ NumberCalcExprAST::NumberCalcExprAST(NumberExprASTPtr lhs, MathOperator OP, Numb
 	
 }
 
+FunctionDeclarAST::FunctionDeclarAST(const std::string _name, ExprTypeASTPtr _type)
+	:DimAST(_name,_type)
+{}
+
+FunctionDimAST::FunctionDimAST(const std::string _name, ExprTypeASTPtr _type)
+	:FunctionDeclarAST(_name,_type)
+{
+	
+}
+
+
+DefaultMainFunctionAST::DefaultMainFunctionAST()
+	:FunctionDimAST("main",ExprTypeASTPtr( new VoidTypeAST())  )
+{
+	
+}
 

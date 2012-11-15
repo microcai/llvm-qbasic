@@ -239,22 +239,28 @@ public:
 // 前向函数声明
 class FunctionDeclarAST: public DimAST
 {
+public:
+    FunctionDeclarAST(const std::string _name, ExprTypeASTPtr _type);
 	Linkage		linkage; //链接类型。static? extern ?
-	ExprTypeASTPtr	type; //返回值
-	std::string	name; //函数名字
 	std::list<VariableDimASTPtr> args_type; //checked by CallExpr
 };
 
 //函数体
 class FunctionDimAST: public FunctionDeclarAST
 {
+public:
+    FunctionDimAST(const std::string _name, ExprTypeASTPtr _type);;
 	std::list<VariableDimAST> args; //定义的参数
 
-	AST * body; //函数体
+	StatementsAST * body; //函数体
 
 //	std::list<DimAST>	dims;//定义的本地变量
+};
 
-//	StatementsAST		body;//函数体
+class DefaultMainFunctionAST : public FunctionDimAST
+{
+public:
+	DefaultMainFunctionAST();
 };
 
 typedef std::list<ExprASTPtr>	FunctionParameterListAST;
