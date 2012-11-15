@@ -252,7 +252,7 @@ public:
     FunctionDimAST(const std::string _name, ExprTypeASTPtr _type);;
 	std::list<VariableDimAST> args; //定义的参数
 
-	StatementsAST * body; //函数体
+	StatementsASTPtr	body; //函数体
 
 //	std::list<DimAST>	dims;//定义的本地变量
 };
