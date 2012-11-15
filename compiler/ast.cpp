@@ -35,7 +35,7 @@
 #include "llvmwrapper.hpp"
 #include "ast.hpp"
 
-#define debug printf
+#define debug	std::printf
 
 llvm::Module * AST::module ;
 
@@ -85,6 +85,7 @@ PrintStmtAST::PrintStmtAST(PrintIntroASTPtr intro,PrintListASTPtr args)
 //TODO 为 print 语句生成,
 llvm::Value* PrintStmtAST::Codegen(llvm::BasicBlock * insertto)
 {
+	bool need_brt = false;
     debug("generating llvm-IR for calling PRINT\n");
 	
 	//llvm::CallInst::Create();
@@ -92,6 +93,9 @@ llvm::Value* PrintStmtAST::Codegen(llvm::BasicBlock * insertto)
 	builder.SetInsertPoint(insertto);
 
 	std::vector<llvm::Type *> brt_printArgs;
+	std::vector<llvm::Type *> printfArgs;
+	printfArgs.push_back(builder.getInt8PtrTy());
+	
 	switch(sizeof(int)){
 		case 4:
 			brt_printArgs.push_back(builder.getInt32Ty());
@@ -108,6 +112,10 @@ llvm::Value* PrintStmtAST::Codegen(llvm::BasicBlock * insertto)
 	llvm::Constant *brt_print =
 			module->getOrInsertFunction("brt_print",
 										llvm::FunctionType::get(builder.getInt32Ty(), brt_printArgs,
+		/*必须为true, 这样才能接受可变参数*/true));
+
+	llvm::Constant *printf_func = module->getOrInsertFunction("printf",
+										llvm::FunctionType::get(builder.getInt32Ty(), printfArgs,
 		/*必须为true, 这样才能接受可变参数*/true));
 
 	std::vector<llvm::Value*> args; // 先插入第3个开始的参数.
@@ -151,11 +159,15 @@ llvm::Value* PrintStmtAST::Codegen(llvm::BasicBlock * insertto)
 	// 现在 brt 忽略第一个参数 , 其实质是 一个 map 到 FILE* 的转化, 由 btr_print 实现
 	//第二个参数是打印列表.
 	args.insert(args.begin(), builder.CreateGlobalStringPtr(printfmt.c_str()));
-	
-	args.insert(args.begin(), qbc::getconstint(0) );
 
 	//调用 print
-	builder.CreateCall(brt_print,args ,"PRINT");
+	if(need_brt){
+		args.insert(args.begin(), qbc::getconstint(0) );
+		builder.CreateCall(brt_print,args ,"PRINT");
+	}
+	else{
+		builder.CreateCall(printf_func,args ,"PRINT_via_printf");
+	}
 
 	return StatementAST::Codegen(insertto);
 }
