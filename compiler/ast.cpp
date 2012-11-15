@@ -96,3 +96,11 @@ NumberExprAST::NumberExprAST(VariableExprASTPtr _var_num)
 	debug("numver expresion is a local var reference code %p\n",var_num.get());
 	// the varable is a type of number, right ?	
 }
+
+NumberCalcExprAST::NumberCalcExprAST(NumberExprASTPtr lhs, MathOperator OP, NumberExprASTPtr rhs)
+	:rval(rhs),lval(lhs),op(OP)
+{
+	
+}
+
+

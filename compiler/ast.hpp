@@ -39,10 +39,10 @@ enum CompOperator{
 };
 
 enum MathOperator{
-	Mul = 1 , // *
-	Div , // /
-	Add , // +
-	Minus , // -
+	OPERATOR_ADD = 1 , // +
+	OPERATOR_SUB , // -
+	OPERATOR_MUL , // *
+	OPERATOR_DIV , // /
 	Mod , // % , MOD
 	Power , // ^
 };
@@ -137,7 +137,7 @@ class ExprAST: public AST //
 public:
 	ExprTypeASTPtr type;
     ExprAST(ExprTypeASTPtr ExprType):type(ExprType){};
-	virtual llvm::Value *Codegen(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto) = 0;
+	virtual llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto) = 0;
 };
 
 typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
@@ -146,7 +146,7 @@ class EmptyExprAST : public ExprAST
 {
 public:	
     EmptyExprAST():ExprAST(ExprTypeASTPtr(new VoidTypeAST())){}
-	llvm::Value *Codegen(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto){return insertto;}
+	llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto){return insertto;}
 };
 
 class VariableRefExprAST:public ExprAST
@@ -155,7 +155,14 @@ public:
 	VariableDimAST	*	define;
     VariableRefExprAST(const std::string _name);
 	std::string	var; //指向引用的变量名字.
-	virtual llvm::Value *Codegen(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto);
+
+	// helper function , resolve the name to llvm::AllocaInst
+	virtual llvm::AllocaInst*nameresolve(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto);
+	
+	virtual llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto);
+
+	// get pointer to the val, then the llvm::Value can be used to CreateStore
+	virtual	llvm::Value *getptr(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto);
 };
 typedef 	boost::shared_ptr<VariableRefExprAST> VariableExprASTPtr;
 
@@ -167,7 +174,7 @@ public:
     NumberExprAST():ExprAST(ExprTypeASTPtr(new NumberTypeAST())){};
 	NumberExprAST(VariableExprASTPtr);
 
-	virtual llvm::Value *Codegen(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto);
+	virtual llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto);
 };
 typedef boost::shared_ptr<NumberExprAST> NumberExprASTPtr;
 
@@ -176,7 +183,7 @@ class ConstExprAST:public ExprAST
 {
 public:
 	std::string constval;
-	virtual	llvm::Value *Codegen(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto);
+	virtual	llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto);
 };
 
 class ConstNumberExprAST :public NumberExprAST
@@ -184,7 +191,7 @@ class ConstNumberExprAST :public NumberExprAST
 	const int64_t val;
 public:
     ConstNumberExprAST(const int64_t);
-	llvm::Value *Codegen(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto); // final , 不允许继承了.
+	llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto); // final , 不允许继承了.
 };
 
 // 结构体变量，就是各种变量类型的集合
@@ -227,10 +234,14 @@ class CompExprAST:public ExprAST // bool as result
 };
 
 // 数值计算表达式
-class CalcExprAST:public ExprAST
+class NumberCalcExprAST : public NumberExprAST
 {
-	ExprASTPtr  RHS,LHS;
+public:
+    NumberCalcExprAST(NumberExprASTPtr , MathOperator  ,NumberExprASTPtr );
+	NumberExprASTPtr  rval,lval;
 	enum MathOperator op;
+
+    virtual llvm::Value* getval(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };
 
 // 前向函数声明

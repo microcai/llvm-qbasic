@@ -53,13 +53,13 @@ llvm::Value* StatementsAST::Codegen(llvm::Function* TheFunction, llvm::BasicBloc
 }
 
 // 为立即数生成 IR
-llvm::Value* ConstExprAST::Codegen(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto)
+llvm::Value* ConstExprAST::getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto)
 {
 	debug("%s\n",__func__);
     return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(64,this->constval,10));
 }
 
-llvm::Value* ConstNumberExprAST::Codegen(
+llvm::Value* ConstNumberExprAST::getval(
 	StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto)
 {
     return qbc::getconstlong(this->val);
@@ -129,11 +129,11 @@ llvm::Value* PrintStmtAST::Codegen(llvm::Function *TheFunction,llvm::BasicBlock 
 					debug("add code for print list args type %%ld\n");
 						printfmt += "%ld\t";
 					}
-					args.push_back(	argitem->Codegen(this,TheFunction,insertto) );
+					args.push_back(	argitem->getval(this,TheFunction,insertto) );
 					break;
 				case sizeof(int):
 					printfmt += "%d\t";
-					args.push_back(	argitem->Codegen(this,TheFunction,insertto) );
+					args.push_back(	argitem->getval(this,TheFunction,insertto) );
 					break;
 				case 0:
 					printfmt +="\n"; // 很重要,呵呵
@@ -180,8 +180,8 @@ llvm::Value* VariableDimAST::Codegen(llvm::Function *TheFunction,llvm::BasicBloc
 	return AllocaInstRef;
 }
 
-
-llvm::Value* VariableRefExprAST::Codegen(StatementAST * parent,llvm::Function* TheFunction, llvm::BasicBlock* insertto)
+llvm::AllocaInst* VariableRefExprAST::nameresolve(
+	StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto)
 {
 	ExprTypeAST * exptype = this->type.get();
 
@@ -197,19 +197,29 @@ llvm::Value* VariableRefExprAST::Codegen(StatementAST * parent,llvm::Function* T
 			exit(1);
 		}
 	}
-	exptype = this->type.get();
-
 	return this->define->AllocaInstRef;
-	//找到生成的变量的定义语句
-	exit(1);
+}
+
+llvm::Value* VariableRefExprAST::getptr(
+	StatementAST* parent, llvm::Function* TheFunction,llvm::BasicBlock* insertto)
+{
+	return this->nameresolve(parent,TheFunction,insertto);
+}
+
+llvm::Value* VariableRefExprAST::getval(StatementAST * parent,llvm::Function* TheFunction, llvm::BasicBlock* insertto)
+{
+	llvm::AllocaInst * ptr = this->nameresolve(parent,TheFunction,insertto);
+	llvm::IRBuilder<> builder(TheFunction->getContext());
+	builder.SetInsertPoint(insertto);
+	return builder.CreateLoad(ptr);
 }
 
 llvm::Value* NumberAssigmentAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
 {
 	debug("called for number assigment\n");
 	//return NULL;
-	llvm::Value * LHS =	this->lval->Codegen(this,TheFunction,insertto);
-	llvm::Value * RHS =	this->rval->Codegen(this,TheFunction,insertto);
+	llvm::Value * LHS =	this->lval->getptr(this,TheFunction,insertto);
+	llvm::Value * RHS =	this->rval->getval(this,TheFunction,insertto);
 
 	llvm::IRBuilder<> builder(TheFunction->getContext());
 	builder.SetInsertPoint(insertto);	
@@ -218,7 +228,7 @@ llvm::Value* NumberAssigmentAST::Codegen(llvm::Function* TheFunction, llvm::Basi
 }
 
 //TODO:
-llvm::Value* NumberExprAST::Codegen(StatementAST * parent,
+llvm::Value* NumberExprAST::getval(StatementAST * parent,
 		llvm::Function *TheFunction,llvm::BasicBlock * insertto)
 {
 	VariableRefExprAST * var =  var_num.get();
@@ -228,11 +238,29 @@ llvm::Value* NumberExprAST::Codegen(StatementAST * parent,
 		var->define = 0;
 	}
 	debug("number expr for %s \n" ,var->var.c_str());
+	return (var->getval(parent,TheFunction,insertto));
+}
+
+llvm::Value* NumberCalcExprAST::getval(
+	StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto)
+{
+	//TODO, 生成计算表达式 !
+	llvm::Value * LHS =	this->lval->getval(parent,TheFunction,insertto);
+	llvm::Value * RHS =	this->rval->getval(parent,TheFunction,insertto);
 
 	llvm::IRBuilder<> builder(TheFunction->getContext());
 	builder.SetInsertPoint(insertto);
 
-	llvm::Value * alloc = (var->Codegen(parent,TheFunction,insertto));
-	return builder.CreateLoad(alloc);
+	switch(this->op){
+		case OPERATOR_ADD:
+			return builder.CreateAdd(LHS,RHS);
+		case OPERATOR_SUB:
+			return builder.CreateSub(LHS,RHS);
+		case OPERATOR_MUL:
+			return builder.CreateMul(LHS,RHS);
+		case OPERATOR_DIV:
+			return builder.CreateSDiv(LHS,RHS);
+	}
+	
+	exit(1);
 }
-

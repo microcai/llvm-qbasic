@@ -414,14 +414,6 @@ number_expression: number_expression tOR {/*add_command(cORSHORT,NULL);pushlabel
    | tARSIZE '(' number_arrayref ',' number_expression ')' {/*add_command(cARSIZE,"");*/}
    | tARSIZE '(' string_arrayref ',' number_expression ')' {/*add_command(cARSIZE,"");*/}
    | number_function_or_array_any_params {/*add_command(cNUMBER_FUNCTION_OR_ARRAY,$1);*/}
-   | number_expression '+' number_expression {/*create_numbin('+');*/}
-   | number_expression '-' number_expression {/*create_numbin('-');*/}
-   | number_expression '*' number_expression {/*create_numbin('*');*/}
-   | number_expression '/' number_expression {/*create_numbin('/');*/}
-   | number_expression tMOD number_expression {/*create_numbin('%');*/}
-   | number_expression tPOW number_expression {/*create_numbin('^');*/}
-   | '-' number_expression %prec UMINUS { /*add_command(cNEGATE,NULL);*/ }
-   | '+' number_expression %prec UPLUS { /* do nothing */ }
    | string_expression tEQU string_expression {/*create_strrelop('=');*/}
    | string_expression tNEQ string_expression {/*create_strrelop('!');*/}
    | string_expression tLTN string_expression {/*create_strrelop('<');*/}
@@ -429,7 +421,31 @@ number_expression: number_expression tOR {/*add_command(cORSHORT,NULL);pushlabel
    | string_expression tGTN string_expression {/*create_strrelop('>');*/}
    | string_expression tGEQ string_expression {/*create_strrelop('}');*/}
    | number_function
-   | '(' number_expression ')'
+   | number_expression tMOD number_expression {/*create_numbin('%');*/}
+   | number_expression tPOW number_expression {/*create_numbin('^');*/}
+   | '+' number_expression %prec UPLUS {
+	   $$ = $2 ;
+   }
+   | '-' number_expression %prec UMINUS {
+	   /*add_command(cNEGATE,NULL);*/
+	   ConstNumberExprAST * zero = new ConstNumberExprAST(0);
+	   $$ = new NumberCalcExprAST( NumberExprASTPtr(zero) ,OPERATOR_SUB,NumberExprASTPtr($2));
+   }
+   | number_expression '*' number_expression {
+	   $$ = new NumberCalcExprAST( NumberExprASTPtr($1),OPERATOR_MUL,NumberExprASTPtr($3));
+   }
+   | number_expression '/' number_expression {
+	   $$ = new NumberCalcExprAST( NumberExprASTPtr($1),OPERATOR_DIV,NumberExprASTPtr($3));
+   }
+   | number_expression '-' number_expression {
+	   // 减法计算
+	   $$ = new NumberCalcExprAST( NumberExprASTPtr($1),OPERATOR_SUB,NumberExprASTPtr($3));
+   }
+   | number_expression '+' number_expression {
+	   // 加法计算.
+	   $$ = new NumberCalcExprAST( NumberExprASTPtr($1),OPERATOR_ADD,NumberExprASTPtr($3));
+   }
+   | '(' number_expression ')' { $$ = $2 ;}
    | numsym_s {
 	   debug("got numsym_s\n");	   
 	   $$ =new NumberExprAST( VariableExprASTPtr($1) );
