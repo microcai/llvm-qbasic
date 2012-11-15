@@ -136,7 +136,7 @@ int main(int argc, char **argv)
 
 	if(outfilename.empty()){
 		//选择一个
-		outfilename = fs::basename(fs::path(input));
+		outfilename = (fs::path(input).parent_path() / fs::basename(fs::path(input))).string();
 	}
 
 	AST::module = new llvm::Module( outfilename.c_str(), llvm::getGlobalContext());
