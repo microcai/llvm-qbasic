@@ -52,13 +52,6 @@ llvm::Value* StatementsAST::Codegen(llvm::Function* TheFunction, llvm::BasicBloc
 	return &TheFunction->back();
 }
 
-// 为立即数生成 IR
-llvm::Value* ConstExprAST::getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto)
-{
-	debug("%s\n",__func__);
-    return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(64,this->constval,10));
-}
-
 llvm::Value* ConstNumberExprAST::getval(
 	StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto)
 {

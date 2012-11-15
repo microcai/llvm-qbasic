@@ -768,12 +768,16 @@ until: tEOPROG {if (unclosed_repeats) { debug ("%d \"repeat\" loop%s not closed"
           {unclosed_repeats--;} {/*add_command(cDECIDE,NULL);popgoto();create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);*/}
    ;
 
-if_clause: if_part number_expression {/*add_command(cDECIDE,NULL);storelabel();pushlabel();*/}
-            tTHEN statement_list {/*swap();matchgoto();swap();poplabel();*/}
-      elseif_part
-            else_part {/*poplabel();*/}
+if_clause: if_part number_expression {
+				/*构造 IF 语句, 填充 条件表达式*/
+				NumberExprASTPtr ne = NumberExprASTPtr($2);
+
+								
+			} tTHEN statement_list {  /*填充真语句*/ }
+			elseif_part 
+            else_part { /*填充假语句*/}
             endif
-   ;
+            ;
 
 short_if: if_part number_expression { /*add_command (cDECIDE, NULL); storelabel (); pushlabel ();*/ }
             non_empty_statement { unclosed_ifs--; } {/* swap (); matchgoto (); swap (); poplabel (); poplabel (); */}

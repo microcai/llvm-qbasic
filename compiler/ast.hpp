@@ -178,14 +178,6 @@ public:
 };
 typedef boost::shared_ptr<NumberExprAST> NumberExprASTPtr;
 
-// 常量 , 需要一步转化为 Number 或者是 String
-class ConstExprAST:public ExprAST
-{
-public:
-	std::string constval;
-	virtual	llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto);
-};
-
 class ConstNumberExprAST :public NumberExprAST
 {
 	const int64_t val;
