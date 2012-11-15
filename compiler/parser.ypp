@@ -83,7 +83,8 @@ void not_inside_loop_or_conditional (char *what) {
 
 void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 {
-	std::cerr << "syntex error "<< msg << " at " << loc.begin.line << std::endl ;
+	std::cerr << msg << " at line " << yylineno << std::endl ;
+	exit(1);
 }
 
 
