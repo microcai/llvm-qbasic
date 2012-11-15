@@ -1,6 +1,6 @@
-#line 2 "/home/cai/projects/basic/qblex.cpp"
+#line 2 "/home/cai/projects/basic/compiler/qblex.cpp"
 
-#line 4 "/home/cai/projects/basic/qblex.cpp"
+#line 4 "/home/cai/projects/basic/compiler/qblex.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -1037,7 +1037,10 @@ char *yytext;
     License along with this library; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
-#line 24 "qblex.ll"
+#define YY_NO_INPUT 1
+#define YY_NO_UNISTD_H 1
+
+#line 31 "qblex.ll"
 
 /* Include main header file. */
 #include "qbc.h"
@@ -1045,13 +1048,17 @@ char *yytext;
 /* Get tokens from parser library. */
 #include "parser.hpp"
 
+using namespace qb;
+
+typedef parser::semantic_type YYSTYPE;
+typedef location YYLTYPE;
+typedef parser::token token;
+
 #define error printf
 /* Local variables. */
 int count = 0;                  /* for strings */
-int scanning_string = false;    /* scanning a string as opposed to a file? */
-#define YY_NO_INPUT 1
 
-#line 1055 "/home/cai/projects/basic/qblex.cpp"
+#line 1062 "/home/cai/projects/basic/compiler/qblex.cpp"
 
 #define INITIAL 0
 #define block_comment 1
@@ -1098,6 +1105,10 @@ char *yyget_text (void );
 int yyget_lineno (void );
 
 void yyset_lineno (int line_number  );
+
+YYSTYPE * yyget_lval (void );
+
+void yyset_lval (YYSTYPE * yylval_param  );
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -1204,9 +1215,11 @@ static int input (void );
 #ifndef YY_DECL
 #define YY_DECL_IS_OURS 1
 
-extern int yylex (void);
+extern int yylex \
+               (YYSTYPE * yylval_param );
 
-#define YY_DECL int yylex (void)
+#define YY_DECL int yylex \
+               (YYSTYPE * yylval_param )
 #endif /* !YY_DECL */
 
 /* Code executed at the beginning of each rule, after yytext and yyleng
@@ -1235,10 +1248,14 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 48 "qblex.ll"
+        YYSTYPE * yylval;
+    
+#line 55 "qblex.ll"
 
 
-#line 1242 "/home/cai/projects/basic/qblex.cpp"
+#line 1257 "/home/cai/projects/basic/compiler/qblex.cpp"
+
+    yylval = yylval_param;
 
 	if ( !(yy_init) )
 		{
@@ -1329,844 +1346,844 @@ do_action:	/* This label is used only to access EOF actions. */
 			goto yy_find_action;
 
 case YY_STATE_EOF(INITIAL):
-#line 50 "qblex.ll"
+#line 57 "qblex.ll"
 {
 
-   return tEOPROG;
+   return token::tEOPROG;
    
 }
 	YY_BREAK
 case 1:
 YY_RULE_SETUP
-#line 56 "qblex.ll"
+#line 63 "qblex.ll"
 {
-   yylval.separator = 0;
+   yylval->separator = 0;
    BEGIN (block_comment);
 }
 	YY_BREAK
 
 case 2:
 YY_RULE_SETUP
-#line 61 "qblex.ll"
+#line 68 "qblex.ll"
 {
    BEGIN (INITIAL);
-   return tSEPARATOR;
+   return token::tSEPARATOR;
 }
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 65 "qblex.ll"
+#line 72 "qblex.ll"
 {
-   yylval.separator += 1;
+   yylval->separator += 1;
 }
 	YY_BREAK
 case YY_STATE_EOF(block_comment):
-#line 68 "qblex.ll"
+#line 75 "qblex.ll"
 {
    error ("block comment not terminated");
 }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 71 "qblex.ll"
+#line 78 "qblex.ll"
 /* eat comment */
 	YY_BREAK
 
 case 5:
 YY_RULE_SETUP
-#line 74 "qblex.ll"
+#line 81 "qblex.ll"
 /* eat comment */ {
-   yylval.separator = 0;
-   return tSEPARATOR;
+   yylval->separator = 0;
+   return token::tSEPARATOR;
 }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 79 "qblex.ll"
+#line 86 "qblex.ll"
 /* eat comment */ {
-   yylval.separator = 0;
-   return tSEPARATOR;
+   yylval->separator = 0;
+   return token::tSEPARATOR;
 }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 84 "qblex.ll"
+#line 91 "qblex.ll"
 /* eat comment */ {
-   yylval.separator = 0;
-   return tSEPARATOR;
+   yylval->separator = 0;
+   return token::tSEPARATOR;
 }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 89 "qblex.ll"
+#line 96 "qblex.ll"
 /* eat comment */ {
-   yylval.separator = 0;
-   return tSEPARATOR;
+   yylval->separator = 0;
+   return token::tSEPARATOR;
 }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 94 "qblex.ll"
+#line 101 "qblex.ll"
 /* add to program documentation */ {
  //  add_doc (strdup (""));
-   yylval.separator = 0;
-   return tSEPARATOR;
+   yylval->separator = 0;
+   return token::tSEPARATOR;
 }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 100 "qblex.ll"
+#line 107 "qblex.ll"
 /* add to program documentation */ {
    for (count = 1; *yytext != ' ' && *yytext != '\r' && *yytext != '\t' && *yytext != '\f' && *yytext != '\v'; count++) {
       yytext ++;
    }
    yytext ++;
   // add_doc (mystrdup (yytext));
-   yylval.separator = 0;
-   return tSEPARATOR;
+   yylval->separator = 0;
+   return token::tSEPARATOR;
 }
 	YY_BREAK
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 110 "qblex.ll"
+#line 117 "qblex.ll"
 {
-   yylval.separator = 1;
-   return tSEPARATOR;
+   yylval->separator = 1;
+   return token::tSEPARATOR;
 }
 	YY_BREAK
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
-#line 115 "qblex.ll"
+#line 122 "qblex.ll"
 {  /* handle line continuation */
    yylineno += 1;
 }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 119 "qblex.ll"
+#line 126 "qblex.ll"
 {
-   yylval.separator = 0;
-   return tSEPARATOR;
+   yylval->separator = 0;
+   return token::tSEPARATOR;
 }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 124 "qblex.ll"
+#line 131 "qblex.ll"
 /* eat whitespace */
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 126 "qblex.ll"
-return tARDIM;
+#line 133 "qblex.ll"
+return token::tARDIM;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 127 "qblex.ll"
-return tARSIZE;
+#line 134 "qblex.ll"
+return token::tARSIZE;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 128 "qblex.ll"
-return tAS;
+#line 135 "qblex.ll"
+return token::tAS;
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 129 "qblex.ll"
-return tBREAK;
+#line 136 "qblex.ll"
+return token::tBREAK;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 130 "qblex.ll"
-return tCASE;
+#line 137 "qblex.ll"
+return token::tCASE;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 131 "qblex.ll"
-return tCOMPILE;
+#line 138 "qblex.ll"
+return token::tCOMPILE;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 132 "qblex.ll"
-return tCONTINUE;
+#line 139 "qblex.ll"
+return token::tCONTINUE;
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 133 "qblex.ll"
-return tCSUB;
+#line 140 "qblex.ll"
+return token::tCSUB;
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 134 "qblex.ll"
-return tDATA;
+#line 141 "qblex.ll"
+return token::tDATA;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 135 "qblex.ll"
-return tDEC;
+#line 142 "qblex.ll"
+return token::tDEC;
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 136 "qblex.ll"
-return tDEFAULT;
+#line 143 "qblex.ll"
+return token::tDEFAULT;
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 137 "qblex.ll"
-return tDIM;
+#line 144 "qblex.ll"
+return token::tDIM;
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 138 "qblex.ll"
-return tDISABLE;
+#line 145 "qblex.ll"
+return token::tDISABLE;
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 139 "qblex.ll"
-return tDO;
+#line 146 "qblex.ll"
+return token::tDO;
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 140 "qblex.ll"
-return tELSEIF;
+#line 147 "qblex.ll"
+return token::tELSEIF;
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 141 "qblex.ll"
-return tELSE;
+#line 148 "qblex.ll"
+return token::tELSE;
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 142 "qblex.ll"
-return tENABLE;
+#line 149 "qblex.ll"
+return token::tENABLE;
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 143 "qblex.ll"
-return tENDDATA;
+#line 150 "qblex.ll"
+return token::tENDDATA;
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 144 "qblex.ll"
-return tENDIF;
+#line 151 "qblex.ll"
+return token::tENDIF;
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 145 "qblex.ll"
-return tENDSTRUCT;
+#line 152 "qblex.ll"
+return token::tENDSTRUCT;
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 146 "qblex.ll"
-return tENDSUB;
+#line 153 "qblex.ll"
+return token::tENDSUB;
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 147 "qblex.ll"
-return tSEND;
+#line 154 "qblex.ll"
+return token::tSEND;
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 148 "qblex.ll"
-return tEOR;
+#line 155 "qblex.ll"
+return token::tEOR;
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 149 "qblex.ll"
-return tEXIT;
+#line 156 "qblex.ll"
+return token::tEXIT;
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 150 "qblex.ll"
-return tEXPLICIT;
+#line 157 "qblex.ll"
+return token::tEXPLICIT;
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 151 "qblex.ll"
-return tFOR;
+#line 158 "qblex.ll"
+return token::tFOR;
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 152 "qblex.ll"
-return tFROM;
+#line 159 "qblex.ll"
+return token::tFROM;
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 153 "qblex.ll"
-return tGOSUB;
+#line 160 "qblex.ll"
+return token::tGOSUB;
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 154 "qblex.ll"
-return tGOTO;
+#line 161 "qblex.ll"
+return token::tGOTO;
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 155 "qblex.ll"
-return tIF;
+#line 162 "qblex.ll"
+return token::tIF;
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 156 "qblex.ll"
-return tINC;
+#line 163 "qblex.ll"
+return token::tINC;
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 157 "qblex.ll"
-return tINPUT;
+#line 164 "qblex.ll"
+return token::tINPUT;
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 158 "qblex.ll"
-return tLABEL;
+#line 165 "qblex.ll"
+return token::tLABEL;
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 159 "qblex.ll"
-return tLET;
+#line 166 "qblex.ll"
+return token::tLET;
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 160 "qblex.ll"
-return tLINE;
+#line 167 "qblex.ll"
+return token::tLINE;
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 161 "qblex.ll"
-return tLOCAL;
+#line 168 "qblex.ll"
+return token::tLOCAL;
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 162 "qblex.ll"
-return tLOOP;
+#line 169 "qblex.ll"
+return token::tLOOP;
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 163 "qblex.ll"
-return tNEXT;
+#line 170 "qblex.ll"
+return token::tNEXT;
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 164 "qblex.ll"
-return tPOKE;
+#line 171 "qblex.ll"
+return token::tPOKE;
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 165 "qblex.ll"
-return tPRINT;
+#line 172 "qblex.ll"
+return token::tPRINT;
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 166 "qblex.ll"
-return tREAD;
+#line 173 "qblex.ll"
+return token::tREAD;
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 167 "qblex.ll"
-return tREPEAT;
+#line 174 "qblex.ll"
+return token::tREPEAT;
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 168 "qblex.ll"
-return tRESTORE;
+#line 175 "qblex.ll"
+return token::tRESTORE;
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 169 "qblex.ll"
-return tRETURN;
+#line 176 "qblex.ll"
+return token::tRETURN;
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 170 "qblex.ll"
-return tSEEK;
+#line 177 "qblex.ll"
+return token::tSEEK;
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 171 "qblex.ll"
-return tSTATIC;
+#line 178 "qblex.ll"
+return token::tSTATIC;
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 172 "qblex.ll"
-return tSTEP;
+#line 179 "qblex.ll"
+return token::tSTEP;
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 173 "qblex.ll"
-return tSTRUCT;
+#line 180 "qblex.ll"
+return token::tSTRUCT;
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 174 "qblex.ll"
-return tSUB;
+#line 181 "qblex.ll"
+return token::tSUB;
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 175 "qblex.ll"
-return tSWITCH;
+#line 182 "qblex.ll"
+return token::tSWITCH;
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 176 "qblex.ll"
-return tTHEN;
+#line 183 "qblex.ll"
+return token::tTHEN;
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 177 "qblex.ll"
-return tTO;
+#line 184 "qblex.ll"
+return token::tTO;
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 178 "qblex.ll"
-return tUNTIL;
+#line 185 "qblex.ll"
+return token::tUNTIL;
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 179 "qblex.ll"
-return tUSING;
+#line 186 "qblex.ll"
+return token::tUSING;
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 180 "qblex.ll"
-return tWEND;
+#line 187 "qblex.ll"
+return token::tWEND;
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 181 "qblex.ll"
-return tWHILE;
+#line 188 "qblex.ll"
+return token::tWHILE;
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 183 "qblex.ll"
-return tABS;
+#line 190 "qblex.ll"
+return token::tABS;
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 184 "qblex.ll"
-return tACOS;
+#line 191 "qblex.ll"
+return token::tACOS;
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 185 "qblex.ll"
-return tASC;
+#line 192 "qblex.ll"
+return token::tASC;
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 186 "qblex.ll"
-return tASIN;
+#line 193 "qblex.ll"
+return token::tASIN;
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 187 "qblex.ll"
-return tATAN;
+#line 194 "qblex.ll"
+return token::tATAN;
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 188 "qblex.ll"
-return tCHR;
+#line 195 "qblex.ll"
+return token::tCHR;
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 189 "qblex.ll"
-return tCLOSE;
+#line 196 "qblex.ll"
+return token::tCLOSE;
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 190 "qblex.ll"
-return tCOS;
+#line 197 "qblex.ll"
+return token::tCOS;
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 191 "qblex.ll"
-return tEOF;
+#line 198 "qblex.ll"
+return token::tEOF;
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 192 "qblex.ll"
-return tEXECUTERETURNNUMBER;
+#line 199 "qblex.ll"
+return token::tEXECUTERETURNNUMBER;
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 193 "qblex.ll"
-return tEXECUTERETURNSTRING;
+#line 200 "qblex.ll"
+return token::tEXECUTERETURNSTRING;
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 194 "qblex.ll"
-return tEXP;
+#line 201 "qblex.ll"
+return token::tEXP;
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 195 "qblex.ll"
-return tFRAC;
+#line 202 "qblex.ll"
+return token::tFRAC;
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 196 "qblex.ll"
-return tGLOB;
+#line 203 "qblex.ll"
+return token::tGLOB;
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 197 "qblex.ll"
-return tINSTR;
+#line 204 "qblex.ll"
+return token::tINSTR;
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 198 "qblex.ll"
-return tINT;
+#line 205 "qblex.ll"
+return token::tINT;
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 199 "qblex.ll"
-return tLEFT;
+#line 206 "qblex.ll"
+return token::tLEFT;
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 200 "qblex.ll"
-return tLEN;
+#line 207 "qblex.ll"
+return token::tLEN;
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 201 "qblex.ll"
-return tLOG;
+#line 208 "qblex.ll"
+return token::tLOG;
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 202 "qblex.ll"
-return tLOWER;
+#line 209 "qblex.ll"
+return token::tLOWER;
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 203 "qblex.ll"
-return tLTRIM;
+#line 210 "qblex.ll"
+return token::tLTRIM;
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 204 "qblex.ll"
-return tMAX;
+#line 211 "qblex.ll"
+return token::tMAX;
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 205 "qblex.ll"
-return tMID;
+#line 212 "qblex.ll"
+return token::tMID;
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 206 "qblex.ll"
-return tMIN;
+#line 213 "qblex.ll"
+return token::tMIN;
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 207 "qblex.ll"
-return tOPEN;
+#line 214 "qblex.ll"
+return token::tOPEN;
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 208 "qblex.ll"
-return tPEEK;
+#line 215 "qblex.ll"
+return token::tPEEK;
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
-#line 209 "qblex.ll"
-return tRAN;
+#line 216 "qblex.ll"
+return token::tRAN;
 	YY_BREAK
 case 98:
 YY_RULE_SETUP
-#line 210 "qblex.ll"
-return tPOW;
+#line 217 "qblex.ll"
+return token::tPOW;
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
-#line 211 "qblex.ll"
-return tRIGHT;
+#line 218 "qblex.ll"
+return token::tRIGHT;
 	YY_BREAK
 case 100:
 YY_RULE_SETUP
-#line 212 "qblex.ll"
-return tRINSTR;
+#line 219 "qblex.ll"
+return token::tRINSTR;
 	YY_BREAK
 case 101:
 YY_RULE_SETUP
-#line 213 "qblex.ll"
-return tRTRIM;
+#line 220 "qblex.ll"
+return token::tRTRIM;
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
-#line 214 "qblex.ll"
-return tSIG;
+#line 221 "qblex.ll"
+return token::tSIG;
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
-#line 215 "qblex.ll"
-return tSIN;
+#line 222 "qblex.ll"
+return token::tSIN;
 	YY_BREAK
 case 104:
 YY_RULE_SETUP
-#line 216 "qblex.ll"
-return tSPLIT;
+#line 223 "qblex.ll"
+return token::tSPLIT;
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
-#line 217 "qblex.ll"
-return tSPLITALT;
+#line 224 "qblex.ll"
+return token::tSPLITALT;
 	YY_BREAK
 case 106:
 YY_RULE_SETUP
-#line 218 "qblex.ll"
-return tSQR;
+#line 225 "qblex.ll"
+return token::tSQR;
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
-#line 219 "qblex.ll"
-return tSQRT;
+#line 226 "qblex.ll"
+return token::tSQRT;
 	YY_BREAK
 case 108:
 YY_RULE_SETUP
-#line 220 "qblex.ll"
-return tSTR;
+#line 227 "qblex.ll"
+return token::tSTR;
 	YY_BREAK
 case 109:
 YY_RULE_SETUP
-#line 221 "qblex.ll"
-return tSYSTEM;
+#line 228 "qblex.ll"
+return token::tSYSTEM;
 	YY_BREAK
 case 110:
 YY_RULE_SETUP
-#line 222 "qblex.ll"
-return tTAN;
+#line 229 "qblex.ll"
+return token::tTAN;
 	YY_BREAK
 case 111:
 YY_RULE_SETUP
-#line 223 "qblex.ll"
-return tTELL;
+#line 230 "qblex.ll"
+return token::tTELL;
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
-#line 224 "qblex.ll"
-return tTOKEN;
+#line 231 "qblex.ll"
+return token::tTOKEN;
 	YY_BREAK
 case 113:
 YY_RULE_SETUP
-#line 225 "qblex.ll"
-return tTOKENALT;
+#line 232 "qblex.ll"
+return token::tTOKENALT;
 	YY_BREAK
 case 114:
 YY_RULE_SETUP
-#line 226 "qblex.ll"
-return tTRIM;
+#line 233 "qblex.ll"
+return token::tTRIM;
 	YY_BREAK
 case 115:
 YY_RULE_SETUP
-#line 227 "qblex.ll"
-return tUPPER;
+#line 234 "qblex.ll"
+return token::tUPPER;
 	YY_BREAK
 case 116:
 YY_RULE_SETUP
-#line 228 "qblex.ll"
-return tVAL;
+#line 235 "qblex.ll"
+return token::tVAL;
 	YY_BREAK
 case 117:
 YY_RULE_SETUP
-#line 230 "qblex.ll"
-return tAND;
+#line 237 "qblex.ll"
+return token::tAND;
 	YY_BREAK
 case 118:
 YY_RULE_SETUP
-#line 231 "qblex.ll"
-return tMOD;
+#line 238 "qblex.ll"
+return token::tMOD;
 	YY_BREAK
 case 119:
 YY_RULE_SETUP
-#line 232 "qblex.ll"
-return tNOT;
+#line 239 "qblex.ll"
+return token::tNOT;
 	YY_BREAK
 case 120:
 YY_RULE_SETUP
-#line 233 "qblex.ll"
-return tOR;
+#line 240 "qblex.ll"
+return token::tOR;
 	YY_BREAK
 case 121:
 YY_RULE_SETUP
-#line 234 "qblex.ll"
-return tEQU;
+#line 241 "qblex.ll"
+return token::tEQU;
 	YY_BREAK
 case 122:
 YY_RULE_SETUP
-#line 235 "qblex.ll"
-return tGEQ;
+#line 242 "qblex.ll"
+return token::tGEQ;
 	YY_BREAK
 case 123:
 YY_RULE_SETUP
-#line 236 "qblex.ll"
-return tGTN;
+#line 243 "qblex.ll"
+return token::tGTN;
 	YY_BREAK
 case 124:
 YY_RULE_SETUP
-#line 237 "qblex.ll"
-return tLEQ;
+#line 244 "qblex.ll"
+return token::tLEQ;
 	YY_BREAK
 case 125:
 YY_RULE_SETUP
-#line 238 "qblex.ll"
-return tLTN;
+#line 245 "qblex.ll"
+return token::tLTN;
 	YY_BREAK
 case 126:
 YY_RULE_SETUP
-#line 239 "qblex.ll"
-return tNEQ;
+#line 246 "qblex.ll"
+return token::tNEQ;
 	YY_BREAK
 case 127:
 YY_RULE_SETUP
-#line 240 "qblex.ll"
-return tNOT;
+#line 247 "qblex.ll"
+return token::tNOT;
 	YY_BREAK
 case 128:
 YY_RULE_SETUP
-#line 242 "qblex.ll"
+#line 249 "qblex.ll"
 {
    return yytext[1 - 1];
 }
 	YY_BREAK
 case 129:
 YY_RULE_SETUP
-#line 246 "qblex.ll"
+#line 253 "qblex.ll"
 {
-   yylval.number = strtod ("inf", NULL);
-   return tNUMBER;
+   yylval->number = strtod ("inf", NULL);
+   return token::tNUMBER;
 }
 	YY_BREAK
 case 130:
 YY_RULE_SETUP
-#line 251 "qblex.ll"
+#line 258 "qblex.ll"
 {
-   yylval.number = strtod ("nan", NULL);
-   return tNUMBER;
+   yylval->number = strtod ("nan", NULL);
+   return token::tNUMBER;
 }
 	YY_BREAK
 case 131:
 YY_RULE_SETUP
-#line 256 "qblex.ll"
+#line 263 "qblex.ll"
 {
-   yylval.number = 3.1415926535897932;
-   return tNUMBER;
+   yylval->number = 3.1415926535897932;
+   return token::tNUMBER;
 }
 	YY_BREAK
 case 132:
 YY_RULE_SETUP
-#line 261 "qblex.ll"
+#line 268 "qblex.ll"
 {
-   yylval.number = 2.7182818284590452;
-   return tNUMBER;
+   yylval->number = 2.7182818284590452;
+   return token::tNUMBER;
 }
 	YY_BREAK
 case 133:
 YY_RULE_SETUP
-#line 266 "qblex.ll"
+#line 273 "qblex.ll"
 {
-   yylval.number = 1;
-   return tNUMBER;
+   yylval->number = 1;
+   return token::tNUMBER;
 }
 	YY_BREAK
 case 134:
 YY_RULE_SETUP
-#line 271 "qblex.ll"
+#line 278 "qblex.ll"
 {
-   yylval.number = 0;
-   return tNUMBER;
+   yylval->number = 0;
+   return token::tNUMBER;
 }
 	YY_BREAK
 case 135:
 YY_RULE_SETUP
-#line 276 "qblex.ll"
+#line 283 "qblex.ll"
 {
-   return tDATE;
+   return token::tDATE;
 }
 	YY_BREAK
 case 136:
 YY_RULE_SETUP
-#line 280 "qblex.ll"
+#line 287 "qblex.ll"
 {
-   return tTIME;
+   return token::tTIME;
 }
 	YY_BREAK
 case 137:
 YY_RULE_SETUP
-#line 284 "qblex.ll"
+#line 291 "qblex.ll"
 {
-   return tENV;
+   return token::tENV;
 }
 	YY_BREAK
 case 138:
 YY_RULE_SETUP
-#line 288 "qblex.ll"
+#line 295 "qblex.ll"
 {
-   yylval.symbol = strdup ("__numparam");
-   return tNUMSYM;
+   yylval->symbol = strdup ("__numparam");
+   return token::tNUMSYM;
 }
 	YY_BREAK
 case 139:
 YY_RULE_SETUP
-#line 293 "qblex.ll"
+#line 300 "qblex.ll"
 {
-   yylval.symbol = strdup (SYSTEM_NAME);
-   return tSTRING;
+   yylval->symbol = strdup (SYSTEM_NAME);
+   return token::tSTRING;
 }
 	YY_BREAK
 case 140:
 YY_RULE_SETUP
-#line 298 "qblex.ll"
+#line 305 "qblex.ll"
 {
-   yylval.string = strdup (VERSION);
-   return tSTRING;
+   yylval->string = strdup (VERSION);
+   return token::tSTRING;
 }
 	YY_BREAK
 case 141:
 YY_RULE_SETUP
-#line 303 "qblex.ll"
+#line 310 "qblex.ll"
 {
-   return tARG;
+   return token::tARG;
 }
 	YY_BREAK
 case 142:
 YY_RULE_SETUP
-#line 307 "qblex.ll"
+#line 314 "qblex.ll"
 {
    error ("symbol prefix \"__\" is reserved for internal variables");
 }
 	YY_BREAK
 case 143:
 YY_RULE_SETUP
-#line 311 "qblex.ll"
+#line 318 "qblex.ll"
 {
-   yylval.symbol = strdup (yytext);
-   return tNUMSYM;
+   yylval->symbol = strdup (yytext);
+   return token::tNUMSYM;
 }
 	YY_BREAK
 case 144:
 YY_RULE_SETUP
-#line 316 "qblex.ll"
+#line 323 "qblex.ll"
 {
-   yylval.symbol = strdup (yytext);
-   return tSTRSYM;
+   yylval->symbol = strdup (yytext);
+   return token::tSTRSYM;
 }
 	YY_BREAK
 case 145:
 YY_RULE_SETUP
-#line 321 "qblex.ll"
+#line 328 "qblex.ll"
 {
-   yylval.number = strtod (yytext, NULL);
-   return tNUMBER;
+   yylval->number = strtod (yytext, NULL);
+   return token::tNUMBER;
 }
 	YY_BREAK
 case 146:
 /* rule 146 can match eol */
 YY_RULE_SETUP
-#line 326 "qblex.ll"
+#line 333 "qblex.ll"
 {
    if (yytext[yyleng - 1] == '\n') {
-      error ("string not terminated");
+      printf ("string not terminated");
    }
    for (count = 0; yytext[(yyleng - count - 1) - 1] == '\\'; count++);
    if (count % 2) {
@@ -2174,26 +2191,26 @@ YY_RULE_SETUP
       yymore ();
    }
    else {
-      yylval.string = strdup (yytext + 1);
-      *(yylval.string + yyleng - 2) = '\0';
-      replace (yylval.string);
-      return tSTRING;
+      yylval->string = strdup (yytext + 1);
+      *(yylval->string + yyleng - 2) = '\0';
+      replace (yylval->string);
+      return token::tSTRING;
    }
 }
 	YY_BREAK
 case 147:
 YY_RULE_SETUP
-#line 343 "qblex.ll"
+#line 350 "qblex.ll"
 {
    return yytext[1 - 1];
 }
 	YY_BREAK
 case 148:
 YY_RULE_SETUP
-#line 347 "qblex.ll"
+#line 354 "qblex.ll"
 ECHO;
 	YY_BREAK
-#line 2197 "/home/cai/projects/basic/qblex.cpp"
+#line 2214 "/home/cai/projects/basic/compiler/qblex.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -3151,7 +3168,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 347 "qblex.ll"
+#line 354 "qblex.ll"
 
 
 
@@ -3159,30 +3176,15 @@ void yyfree (void * ptr )
 void yyerror (char *msg) {
    /* Report the error. */
    if (*yytext == '\n' || *yytext == '\0') {
-      error ("%s at end of line", msg);
+      printf ("%s at end of line", msg);
    }
    else {
-      error ("%s at \"%s\"", msg, yytext);
+      printf ("%s at \"%s\"", msg, yytext);
    }
 
    /* Return. */
    return;
 }
-
-/* Open a string for scanning. Note that this function should only be
- * used either *before* the first file has been parsed or *after* the
- * last file has been parsed. */
-void open_string (char *string) {
-   /* Switch to string buffer. */
-   scanning_string = true;
-   yy_switch_to_buffer (yy_scan_string (string));
-   //current_file = current->file;
-  // yylineno = current->line;
-
-   /* Return. */
-   return;
-}
-
 
 /* Replace escape characters. */
 char *replace (char *string) {

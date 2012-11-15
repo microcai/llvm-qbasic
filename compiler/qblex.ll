@@ -19,6 +19,13 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+%option caseless
+%option noinput
+%option nounput
+%option noyywrap
+%option nounistd
+%option bison-bridge
+%x block_comment
 
 %{
 
@@ -28,42 +35,42 @@
 /* Get tokens from parser library. */
 #include "parser.hpp"
 
+using namespace qb;
+
+typedef parser::semantic_type YYSTYPE;
+typedef location YYLTYPE;
+typedef parser::token token;
+
 #define error printf
 /* Local variables. */
 int count = 0;                  /* for strings */
-int scanning_string = false;    /* scanning a string as opposed to a file? */
+
 %}
 
 name [_a-z][_a-z0-9]*
 whitespace [ \r\t\f\v]
 lcchar [\\_]
 
-%option caseless
-%option noinput
-%option nounput
-%option noyywrap
-
-%x block_comment
 
 %%
 
 <INITIAL><<EOF>> {
 
-   return tEOPROG;
+   return token::tEOPROG;
    
 }
 
 "/*" {
-   yylval.separator = 0;
+   yylval->separator = 0;
    BEGIN (block_comment);
 }
 <block_comment>{
 "*/" {
    BEGIN (INITIAL);
-   return tSEPARATOR;
+   return token::tSEPARATOR;
 }
 \n {
-   yylval.separator += 1;
+   yylval->separator += 1;
 }
 <<EOF>> {
    error ("block comment not terminated");
@@ -72,29 +79,29 @@ lcchar [\\_]
 }
 
 "//".* /* eat comment */ {
-   yylval.separator = 0;
-   return tSEPARATOR;
+   yylval->separator = 0;
+   return token::tSEPARATOR;
 }
 
 "'".* /* eat comment */ {
-   yylval.separator = 0;
-   return tSEPARATOR;
+   yylval->separator = 0;
+   return token::tSEPARATOR;
 }
 
 ^"#".* /* eat comment */ {
-   yylval.separator = 0;
-   return tSEPARATOR;
+   yylval->separator = 0;
+   return token::tSEPARATOR;
 }
 
 "rem"{whitespace}+.*|"remark"{whitespace}+.*|"comment"{whitespace}+.* /* eat comment */ {
-   yylval.separator = 0;
-   return tSEPARATOR;
+   yylval->separator = 0;
+   return token::tSEPARATOR;
 }
 
 "doc"|"docu"|"documentation" /* add to program documentation */ {
  //  add_doc (strdup (""));
-   yylval.separator = 0;
-   return tSEPARATOR;
+   yylval->separator = 0;
+   return token::tSEPARATOR;
 }
 
 "doc"{whitespace}+.*|"docu"{whitespace}+.*|"documentation"{whitespace}+.* /* add to program documentation */ {
@@ -103,13 +110,13 @@ lcchar [\\_]
    }
    yytext ++;
   // add_doc (mystrdup (yytext));
-   yylval.separator = 0;
-   return tSEPARATOR;
+   yylval->separator = 0;
+   return token::tSEPARATOR;
 }
 
 \n {
-   yylval.separator = 1;
-   return tSEPARATOR;
+   yylval->separator = 1;
+   return token::tSEPARATOR;
 }
 
 {lcchar}{whitespace}*\n {  /* handle line continuation */
@@ -117,191 +124,191 @@ lcchar [\\_]
 }
 
 : {
-   yylval.separator = 0;
-   return tSEPARATOR;
+   yylval->separator = 0;
+   return token::tSEPARATOR;
 }
 
 {whitespace}+ /* eat whitespace */
 
-arraydim return tARDIM;
-arraysize return tARSIZE;
-as return tAS;
-break return tBREAK;
-case return tCASE;
-compile return tCOMPILE;
-continue return tCONTINUE;
-csub return tCSUB;
-data return tDATA;
-dec|decrement return tDEC;
-default return tDEFAULT;
-dim return tDIM;
-disable return tDISABLE;
-do return tDO;
-elseif|elsif|elif return tELSEIF;
-else return tELSE;
-enable|option return tENABLE;
-end{whitespace}*data return tENDDATA;
-end{whitespace}*if|fi return tENDIF;
-end{whitespace}*struct|end{whitespace}*structure return tENDSTRUCT;
-end{whitespace}*sub|end{whitespace}*subroutine return tENDSUB;
-end{whitespace}*switch|end{whitespace}*select return tSEND;
-eor|xor return tEOR;
-exit|end return tEXIT;
-explicit return tEXPLICIT;
-for return tFOR;
-from return tFROM;
-gosub return tGOSUB;
-goto return tGOTO;
-if return tIF;
-inc|increment return tINC;
-input return tINPUT;
-label return tLABEL;
-let return tLET;
-line return tLINE;
-local return tLOCAL;
-loop return tLOOP;
-next return tNEXT;
-poke return tPOKE;
-print|\? return tPRINT;
-read return tREAD;
-repeat return tREPEAT;
-restore return tRESTORE;
-return return tRETURN;
-seek return tSEEK;
-static return tSTATIC;
-step return tSTEP;
-struct|structure return tSTRUCT;
-sub|subroutine return tSUB;
-switch|select return tSWITCH;
-then return tTHEN;
-to return tTO;
-until return tUNTIL;
-using return tUSING;
-wend return tWEND;
-while return tWHILE;
+arraydim return token::tARDIM;
+arraysize return token::tARSIZE;
+as return token::tAS;
+break return token::tBREAK;
+case return token::tCASE;
+compile return token::tCOMPILE;
+continue return token::tCONTINUE;
+csub return token::tCSUB;
+data return token::tDATA;
+dec|decrement return token::tDEC;
+default return token::tDEFAULT;
+dim return token::tDIM;
+disable return token::tDISABLE;
+do return token::tDO;
+elseif|elsif|elif return token::tELSEIF;
+else return token::tELSE;
+enable|option return token::tENABLE;
+end{whitespace}*data return token::tENDDATA;
+end{whitespace}*if|fi return token::tENDIF;
+end{whitespace}*struct|end{whitespace}*structure return token::tENDSTRUCT;
+end{whitespace}*sub|end{whitespace}*subroutine return token::tENDSUB;
+end{whitespace}*switch|end{whitespace}*select return token::tSEND;
+eor|xor return token::tEOR;
+exit|end return token::tEXIT;
+explicit return token::tEXPLICIT;
+for return token::tFOR;
+from return token::tFROM;
+gosub return token::tGOSUB;
+goto return token::tGOTO;
+if return token::tIF;
+inc|increment return token::tINC;
+input return token::tINPUT;
+label return token::tLABEL;
+let return token::tLET;
+line return token::tLINE;
+local return token::tLOCAL;
+loop return token::tLOOP;
+next return token::tNEXT;
+poke return token::tPOKE;
+print|\? return token::tPRINT;
+read return token::tREAD;
+repeat return token::tREPEAT;
+restore return token::tRESTORE;
+return return token::tRETURN;
+seek return token::tSEEK;
+static return token::tSTATIC;
+step return token::tSTEP;
+struct|structure return token::tSTRUCT;
+sub|subroutine return token::tSUB;
+switch|select return token::tSWITCH;
+then return token::tTHEN;
+to return token::tTO;
+until return token::tUNTIL;
+using return token::tUSING;
+wend return token::tWEND;
+while return token::tWHILE;
 
-abs return tABS;
-acos return tACOS;
-asc return tASC;
-asin return tASIN;
-atan return tATAN;
-chr\$ return tCHR;
-close return tCLOSE;
-cos return tCOS;
-eof return tEOF;
-execute return tEXECUTERETURNNUMBER;
-execute\$ return tEXECUTERETURNSTRING;
-exp return tEXP;
-frac return tFRAC;
-glob return tGLOB;
-instr return tINSTR;
-int return tINT;
-left\$ return tLEFT;
-len return tLEN;
-log return tLOG;
-lower\$ return tLOWER;
-ltrim\$ return tLTRIM;
-max return tMAX;
-mid\$ return tMID;
-min return tMIN;
-open return tOPEN;
-peek return tPEEK;
-ran return tRAN;
-\^|\*\* return tPOW;
-right\$ return tRIGHT;
-rinstr return tRINSTR;
-rtrim\$ return tRTRIM;
-sig return tSIG;
-sin return tSIN;
-split return tSPLIT;
-split\$ return tSPLITALT;
-sqr return tSQR;
-sqrt return tSQRT;
-str\$ return tSTR;
-system return tSYSTEM;
-tan return tTAN;
-tell return tTELL;
-token return tTOKEN;
-token\$ return tTOKENALT;
-trim\$ return tTRIM;
-upper\$ return tUPPER;
-val return tVAL;
+abs return token::tABS;
+acos return token::tACOS;
+asc return token::tASC;
+asin return token::tASIN;
+atan return token::tATAN;
+chr\$ return token::tCHR;
+close return token::tCLOSE;
+cos return token::tCOS;
+eof return token::tEOF;
+execute return token::tEXECUTERETURNNUMBER;
+execute\$ return token::tEXECUTERETURNSTRING;
+exp return token::tEXP;
+frac return token::tFRAC;
+glob return token::tGLOB;
+instr return token::tINSTR;
+int return token::tINT;
+left\$ return token::tLEFT;
+len return token::tLEN;
+log return token::tLOG;
+lower\$ return token::tLOWER;
+ltrim\$ return token::tLTRIM;
+max return token::tMAX;
+mid\$ return token::tMID;
+min return token::tMIN;
+open return token::tOPEN;
+peek return token::tPEEK;
+ran return token::tRAN;
+\^|\*\* return token::tPOW;
+right\$ return token::tRIGHT;
+rinstr return token::tRINSTR;
+rtrim\$ return token::tRTRIM;
+sig return token::tSIG;
+sin return token::tSIN;
+split return token::tSPLIT;
+split\$ return token::tSPLITALT;
+sqr return token::tSQR;
+sqrt return token::tSQRT;
+str\$ return token::tSTR;
+system return token::tSYSTEM;
+tan return token::tTAN;
+tell return token::tTELL;
+token return token::tTOKEN;
+token\$ return token::tTOKENALT;
+trim\$ return token::tTRIM;
+upper\$ return token::tUPPER;
+val return token::tVAL;
 
-"and" return tAND;
-"mod"|"%" return tMOD;
-"not" return tNOT;
-"or" return tOR;
-"=" return tEQU;
-">=" return tGEQ;
-">" return tGTN;
-"<=" return tLEQ;
-"<" return tLTN;
-"<>" return tNEQ;
-"!" return tNOT;
+"and" return token::tAND;
+"mod"|"%" return token::tMOD;
+"not" return token::tNOT;
+"or" return token::tOR;
+"=" return token::tEQU;
+">=" return token::tGEQ;
+">" return token::tGTN;
+"<=" return token::tLEQ;
+"<" return token::tLTN;
+"<>" return token::tNEQ;
+"!" return token::tNOT;
 
 [-+*/:(),.;] {
    return yytext[1 - 1];
 }
 
 inf|infinity {
-   yylval.number = strtod ("inf", NULL);
-   return tNUMBER;
+   yylval->number = strtod ("inf", NULL);
+   return token::tNUMBER;
 }
 
 nan {
-   yylval.number = strtod ("nan", NULL);
-   return tNUMBER;
+   yylval->number = strtod ("nan", NULL);
+   return token::tNUMBER;
 }
 
 pi {
-   yylval.number = 3.1415926535897932;
-   return tNUMBER;
+   yylval->number = 3.1415926535897932;
+   return token::tNUMBER;
 }
 
 euler {
-   yylval.number = 2.7182818284590452;
-   return tNUMBER;
+   yylval->number = 2.7182818284590452;
+   return token::tNUMBER;
 }
 
 true {
-   yylval.number = 1;
-   return tNUMBER;
+   yylval->number = 1;
+   return token::tNUMBER;
 }
 
 false {
-   yylval.number = 0;
-   return tNUMBER;
+   yylval->number = 0;
+   return token::tNUMBER;
 }
 
 __date\$ {
-   return tDATE;
+   return token::tDATE;
 }
 
 __time\$ {
-   return tTIME;
+   return token::tTIME;
 }
 
 __env\$|__environment\$ {
-   return tENV;
+   return token::tENV;
 }
 
 __numparams? {
-   yylval.symbol = strdup ("__numparam");
-   return tNUMSYM;
+   yylval->symbol = strdup ("__numparam");
+   return token::tNUMSYM;
 }
 
 __system\$ {
-   yylval.symbol = strdup (SYSTEM_NAME);
-   return tSTRING;
+   yylval->symbol = strdup (SYSTEM_NAME);
+   return token::tSTRING;
 }
 
 __version\$ {
-   yylval.string = strdup (VERSION);
-   return tSTRING;
+   yylval->string = strdup (VERSION);
+   return token::tSTRING;
 }
 
 __arg\$|__args\$|__argument\$|__arguments\$ {
-   return tARG;
+   return token::tARG;
 }
 
 __[_a-z0-9]*|__[_a-z0-9]*\$ {
@@ -309,23 +316,23 @@ __[_a-z0-9]*|__[_a-z0-9]*\$ {
 }
 
 {name} {
-   yylval.symbol = strdup (yytext);
-   return tNUMSYM;
+   yylval->symbol = strdup (yytext);
+   return token::tNUMSYM;
 }
 
 {name}\$ {
-   yylval.symbol = strdup (yytext);
-   return tSTRSYM;
+   yylval->symbol = strdup (yytext);
+   return token::tSTRSYM;
 }
 
 (([0-9]+|([0-9]*\.[0-9]*))([eE][-+]?[0-9]+)?) {
-   yylval.number = strtod (yytext, NULL);
-   return tNUMBER;
+   yylval->number = strtod (yytext, NULL);
+   return token::tNUMBER;
 }
 
 \"[^"\n]*(\"|\n) {
    if (yytext[yyleng - 1] == '\n') {
-      error ("string not terminated");
+      printf ("string not terminated");
    }
    for (count = 0; yytext[(yyleng - count - 1) - 1] == '\\'; count++);
    if (count % 2) {
@@ -333,10 +340,10 @@ __[_a-z0-9]*|__[_a-z0-9]*\$ {
       yymore ();
    }
    else {
-      yylval.string = strdup (yytext + 1);
-      *(yylval.string + yyleng - 2) = '\0';
-      replace (yylval.string);
-      return tSTRING;
+      yylval->string = strdup (yytext + 1);
+      *(yylval->string + yyleng - 2) = '\0';
+      replace (yylval->string);
+      return token::tSTRING;
    }
 }
 
@@ -350,30 +357,15 @@ __[_a-z0-9]*|__[_a-z0-9]*\$ {
 void yyerror (char *msg) {
    /* Report the error. */
    if (*yytext == '\n' || *yytext == '\0') {
-      error ("%s at end of line", msg);
+      printf ("%s at end of line", msg);
    }
    else {
-      error ("%s at \"%s\"", msg, yytext);
+      printf ("%s at \"%s\"", msg, yytext);
    }
 
    /* Return. */
    return;
 }
-
-/* Open a string for scanning. Note that this function should only be
- * used either *before* the first file has been parsed or *after* the
- * last file has been parsed. */
-void open_string (char *string) {
-   /* Switch to string buffer. */
-   scanning_string = true;
-   yy_switch_to_buffer (yy_scan_string (string));
-   //current_file = current->file;
-  // yylineno = current->line;
-
-   /* Return. */
-   return;
-}
-
 
 /* Replace escape characters. */
 char *replace (char *string) {

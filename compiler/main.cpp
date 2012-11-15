@@ -122,8 +122,10 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	yyparse();
+	qb::parser parser;
 
+	parser.parse();
+	
 	std::cout << "parse done, no errors, generating llvm IR..." << std::endl;
 
 	// Initialize targets first, so that --version shows registered targets.
