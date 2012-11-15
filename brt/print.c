@@ -27,11 +27,13 @@ int brt_print(int into, int num, ...)
 			case EXPR_TYPE_LONG:
 				printf("%ld\t",(long)(va_arg(va,long)));
 				break;
+			case EXPR_TYPE_VOID:
+				printf("\n");
+				break;
 			default:
 				printf("unsupported !");
 		}		
 	}
-	printf("\n");
 	fflush(stdout);
 	
 	return ret;

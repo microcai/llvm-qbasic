@@ -162,6 +162,10 @@ llvm::Value* PrintStmtAST::Codegen(llvm::BasicBlock * insertto)
 					debug("add code for print list args type %d\n",argitem->type);
 					args.push_back(	argitem->Codegen(insertto) );
 					break;
+				case EXPR_TYPE_VOID:
+					args.push_back(	qbc::getconstint(argitem->type) );
+					debug("add code for print list args type %d\n",argitem->type);
+					break;
 				case EXPR_TYPE_DOUBLE:	// as Double
 				case EXPR_TYPE_POINTER:// as ptr
 					//TODO: 64位的数字

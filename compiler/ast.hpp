@@ -99,6 +99,13 @@ public:
 
 typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
 
+class EmptyExprAST : public ExprAST
+{
+public:
+    EmptyExprAST(){}	
+	llvm::Value *Codegen(llvm::BasicBlock * insertto){return insertto;}
+};
+
 //整数类型. 最简单的类型.可以直接生成  llvm-IR 代码
 class NumberExprAST : public ExprAST
 {
