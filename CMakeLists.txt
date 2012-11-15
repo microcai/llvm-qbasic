@@ -23,3 +23,5 @@ add_subdirectory(brt)
 add_subdirectory(compiler)
 add_subdirectory(include)
 
+
+add_subdirectory(test)

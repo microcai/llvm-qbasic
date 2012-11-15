@@ -50,7 +50,7 @@ int count = 0;                  /* for strings */
 name [_a-z][_a-z0-9]*
 whitespace [ \r\t\f\v]
 lcchar [\\_]
-
+ 
 
 %%
 

@@ -23,7 +23,9 @@ enum CompOperator{
 	Equl = 1, // == , =
 	NotEqul , // <> , >< , != as in basic
 	Less , // <
-	Greater , // >
+	LessEqul, // <=
+	Greater, // >
+	GreaterEqul, // >=
 };
 
 enum MathOperator{

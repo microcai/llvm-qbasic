@@ -36,7 +36,7 @@ extern int yylex(qb::parser::semantic_type * yylval_param );
 //extern int yylex_destroy(void);
 //extern void yyerror (char *msg);
 extern int yylineno;
-//#define error printf
+
 #define debug printf
 
 /* Types of functions. */
@@ -67,13 +67,13 @@ void not_inside_loop_or_conditional (char *what) {
    /* Display an error if necessary. */
    if ((unclosed_dos || unclosed_fors || unclosed_repeats || unclosed_whiles) || (unclosed_ifs || unclosed_switches)) {
       if ((unclosed_dos || unclosed_fors || unclosed_repeats || unclosed_whiles) && (unclosed_ifs || unclosed_switches)) {
-         printf ("cannot %s inside a loop, \"if\" statement, or \"switch\" construct", what);
+         debug ("cannot %s inside a loop, \"if\" statement, or \"switch\" construct", what);
       }
       else if (unclosed_dos || unclosed_fors || unclosed_repeats || unclosed_whiles) {
-         printf ("cannot %s inside a loop", what);
+         debug ("cannot %s inside a loop", what);
       }
       else if (unclosed_ifs || unclosed_switches) {
-         printf ("cannot %s inside an \"if\" statement or \"switch\" construct", what);
+         debug ("cannot %s inside an \"if\" statement or \"switch\" construct", what);
       }
    }
 
@@ -223,12 +223,12 @@ non_empty_statement: number_assignment
    | switch_number_or_string
    | tBREAK {
 	   /*add_command (cBREAK, NULL); */
-	   if (! (in_loop)) { printf ("cannot \"break\" outside of loop"); }
+	   if (! (in_loop)) { debug ("cannot \"break\" outside of loop"); }
    }
    | tCONTINUE {
 	   /*add_command (cCONTINUE, NULL)->tag = continue_corrections;*/
 	   if (! (in_loop)) {
-		   printf ("cannot \"continue\" outside of loop");
+		   debug ("cannot \"continue\" outside of loop");
 	   }
 	} 
    | function_definition
@@ -236,8 +236,8 @@ non_empty_statement: number_assignment
    | structure_definition
    | number_function_or_array_any_params { }
    | string_function_or_array_any_params { }
-   | tLOCAL {if (function_type==ftNONE) printf("declaring variables \"local\" outside of a function has no effect"); } local_list
-   | tSTATIC {if (function_type==ftNONE) printf("declaring variables \"static\" outside of a function has no effect"); } static_list
+   | tLOCAL {if (function_type==ftNONE) debug("declaring variables \"local\" outside of a function has no effect"); } local_list
+   | tSTATIC {if (function_type==ftNONE) debug("declaring variables \"static\" outside of a function has no effect"); } static_list
    | tPRINT print_intro print_list {
 	   // 构造打印语句
 	   debug("got PRINT now\n");
@@ -287,7 +287,7 @@ non_empty_statement: number_assignment
    }
    | tGOSUB numsym_s {  }
    | tLABEL numsym_s {
-
+		debug("got label!\n");
    }
    | tPOKE hashed_number ',' number_expression {  }
    | tCOMPILE string_expression {  }
@@ -499,7 +499,7 @@ call_item: string_expression
    ;
 
 function_definition: tSUB { unclosed_subs++; } { not_inside_loop_or_conditional ("define a function");
-if (function_type!=ftNONE) {printf("functions cannot be nested");}}
+if (function_type!=ftNONE) {debug("functions cannot be nested");}}
    function_name {
 	   
 }
@@ -515,7 +515,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 endsub: tEOPROG {
 		if (unclosed_subs)
 		{
-			printf ("%d subroutine%s not closed", unclosed_subs, (unclosed_subs > 1) ? "s" : "");
+			debug ("%d subroutine%s not closed", unclosed_subs, (unclosed_subs > 1) ? "s" : "");
 		}
 	}
    | tENDSUB {unclosed_subs--;}
@@ -626,7 +626,7 @@ for_loop: tFOR { unclosed_fors++; } numsym_s tEQU
 
 next: tEOPROG {
 		if (unclosed_fors) {
-			printf ("%d \"for\" loop%s not closed", unclosed_fors, (unclosed_fors > 1) ? "s" : "");
+			debug ("%d \"for\" loop%s not closed", unclosed_fors, (unclosed_fors > 1) ? "s" : "");
 		}
 	}
    | tNEXT {unclosed_fors--;}
@@ -676,7 +676,7 @@ do_loop: tDO { unclosed_dos++; } {/*add_command(cCONTINUE_HERE,NULL);create_brea
              loop
    ;
 
-loop: tEOPROG {if (unclosed_dos) { printf ("%d \"do\" loop%s not closed", unclosed_dos, (unclosed_dos > 1) ? "s" : ""); } }
+loop: tEOPROG {if (unclosed_dos) { debug ("%d \"do\" loop%s not closed", unclosed_dos, (unclosed_dos > 1) ? "s" : ""); } }
    | tLOOP {unclosed_dos--;} {/*popgoto();create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);*/}
    ;
 
@@ -687,7 +687,7 @@ while_loop: tWHILE { unclosed_whiles++; } {/*add_command(cCONTINUE_HERE,NULL);cr
              wend
    ;
 
-wend: tEOPROG {if (unclosed_whiles) { printf ("%d \"while\" loop%s not closed", unclosed_whiles, (unclosed_whiles > 1) ? "s" : ""); } }
+wend: tEOPROG {if (unclosed_whiles) { debug ("%d \"while\" loop%s not closed", unclosed_whiles, (unclosed_whiles > 1) ? "s" : ""); } }
    | tWEND {unclosed_whiles--;} { }
    ;
 
@@ -696,7 +696,7 @@ repeat_loop: tREPEAT { unclosed_repeats++; } {/*add_command(cCONTINUE_HERE,NULL)
         until
    ;
 
-until: tEOPROG {if (unclosed_repeats) { printf ("%d \"repeat\" loop%s not closed", unclosed_repeats, (unclosed_repeats > 1) ? "s" : ""); } }
+until: tEOPROG {if (unclosed_repeats) { debug ("%d \"repeat\" loop%s not closed", unclosed_repeats, (unclosed_repeats > 1) ? "s" : ""); } }
    | tUNTIL number_expression
           {unclosed_repeats--;} {/*add_command(cDECIDE,NULL);popgoto();create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);*/}
    ;
@@ -714,7 +714,7 @@ short_if: if_part number_expression { /*add_command (cDECIDE, NULL); storelabel 
             non_empty_statement {/* unclosed_ifs--; } { swap (); matchgoto (); swap (); poplabel (); poplabel ();*/ }
    ;
 
-endif: tEOPROG {if (unclosed_ifs) { printf ("%d \"if\" statement%s not closed", unclosed_ifs, (unclosed_ifs > 1) ? "s" : ""); } }
+endif: tEOPROG {if (unclosed_ifs) { debug ("%d \"if\" statement%s not closed", unclosed_ifs, (unclosed_ifs > 1) ? "s" : ""); } }
    | tENDIF {unclosed_ifs--;}
    ;
 
@@ -739,16 +739,16 @@ input: numsym_s {/*create_myread ('n', until_eol); add_command (cPOPNUMSYM, doti
    | strsym_a {/*create_myread('s',until_eol);create_doarray(dotify ($1),ASSIGNSTRINGARRAY);*/}
    ;
 
-print_list:  /* empty */ { printf("ERROR: print with no arg not supprted yet\n"); exit(1); }
+print_list:  /* empty */ { debug("ERROR: print with no arg not supprted yet\n"); exit(1); }
    | number_expression {
 		debug("got first print argument as number\n");
 		$$ = new PrintListAST();
 		$$->additem(ExprASTPtr($1));
    }
    | number_expression tUSING string_expression
-        { printf("ERROR: print syntax not supprted yet\n"); exit(1);}
+        { debug("ERROR: print syntax not supprted yet\n"); exit(1);}
    | string_expression
-        { printf("ERROR: print syntax not supprted yet\n"); exit(1); }
+        { debug("ERROR: print syntax not supprted yet\n"); exit(1); }
    | print_list ',' number_expression
         { $$ = $1 ; $$->additem(ExprASTPtr($3)) ; }
    | print_list ',' number_expression tUSING string_expression

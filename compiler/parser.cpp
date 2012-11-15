@@ -49,7 +49,7 @@ extern int yylex(qb::parser::semantic_type * yylval_param );
 //extern int yylex_destroy(void);
 //extern void yyerror (char *msg);
 extern int yylineno;
-//#define error printf
+
 #define debug printf
 
 /* Types of functions. */
@@ -80,13 +80,13 @@ void not_inside_loop_or_conditional (char *what) {
    /* Display an error if necessary. */
    if ((unclosed_dos || unclosed_fors || unclosed_repeats || unclosed_whiles) || (unclosed_ifs || unclosed_switches)) {
       if ((unclosed_dos || unclosed_fors || unclosed_repeats || unclosed_whiles) && (unclosed_ifs || unclosed_switches)) {
-         printf ("cannot %s inside a loop, \"if\" statement, or \"switch\" construct", what);
+         debug ("cannot %s inside a loop, \"if\" statement, or \"switch\" construct", what);
       }
       else if (unclosed_dos || unclosed_fors || unclosed_repeats || unclosed_whiles) {
-         printf ("cannot %s inside a loop", what);
+         debug ("cannot %s inside a loop", what);
       }
       else if (unclosed_ifs || unclosed_switches) {
-         printf ("cannot %s inside an \"if\" statement or \"switch\" construct", what);
+         debug ("cannot %s inside an \"if\" statement or \"switch\" construct", what);
       }
    }
 
@@ -527,7 +527,7 @@ namespace qb {
 #line 224 "parser.ypp"
     {
 	   /*add_command (cBREAK, NULL); */
-	   if (! (in_loop)) { printf ("cannot \"break\" outside of loop"); }
+	   if (! (in_loop)) { debug ("cannot \"break\" outside of loop"); }
    }
     break;
 
@@ -537,7 +537,7 @@ namespace qb {
     {
 	   /*add_command (cCONTINUE, NULL)->tag = continue_corrections;*/
 	   if (! (in_loop)) {
-		   printf ("cannot \"continue\" outside of loop");
+		   debug ("cannot \"continue\" outside of loop");
 	   }
 	}
     break;
@@ -557,13 +557,13 @@ namespace qb {
   case 28:
 /* Line 661 of lalr1.cc  */
 #line 239 "parser.ypp"
-    {if (function_type==ftNONE) printf("declaring variables \"local\" outside of a function has no effect"); }
+    {if (function_type==ftNONE) debug("declaring variables \"local\" outside of a function has no effect"); }
     break;
 
   case 30:
 /* Line 661 of lalr1.cc  */
 #line 240 "parser.ypp"
-    {if (function_type==ftNONE) printf("declaring variables \"static\" outside of a function has no effect"); }
+    {if (function_type==ftNONE) debug("declaring variables \"static\" outside of a function has no effect"); }
     break;
 
   case 32:
@@ -726,7 +726,7 @@ namespace qb {
 /* Line 661 of lalr1.cc  */
 #line 289 "parser.ypp"
     {
-
+		debug("got label!\n");
    }
     break;
 
@@ -1608,7 +1608,7 @@ namespace qb {
 /* Line 661 of lalr1.cc  */
 #line 501 "parser.ypp"
     { not_inside_loop_or_conditional ("define a function");
-if (function_type!=ftNONE) {printf("functions cannot be nested");}}
+if (function_type!=ftNONE) {debug("functions cannot be nested");}}
     break;
 
   case 224:
@@ -1641,7 +1641,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
     {
 		if (unclosed_subs)
 		{
-			printf ("%d subroutine%s not closed", unclosed_subs, (unclosed_subs > 1) ? "s" : "");
+			debug ("%d subroutine%s not closed", unclosed_subs, (unclosed_subs > 1) ? "s" : "");
 		}
 	}
     break;
@@ -1870,7 +1870,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 #line 627 "parser.ypp"
     {
 		if (unclosed_fors) {
-			printf ("%d \"for\" loop%s not closed", unclosed_fors, (unclosed_fors > 1) ? "s" : "");
+			debug ("%d \"for\" loop%s not closed", unclosed_fors, (unclosed_fors > 1) ? "s" : "");
 		}
 	}
     break;
@@ -1984,7 +1984,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
   case 292:
 /* Line 661 of lalr1.cc  */
 #line 679 "parser.ypp"
-    {if (unclosed_dos) { printf ("%d \"do\" loop%s not closed", unclosed_dos, (unclosed_dos > 1) ? "s" : ""); } }
+    {if (unclosed_dos) { debug ("%d \"do\" loop%s not closed", unclosed_dos, (unclosed_dos > 1) ? "s" : ""); } }
     break;
 
   case 293:
@@ -2021,7 +2021,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
   case 299:
 /* Line 661 of lalr1.cc  */
 #line 690 "parser.ypp"
-    {if (unclosed_whiles) { printf ("%d \"while\" loop%s not closed", unclosed_whiles, (unclosed_whiles > 1) ? "s" : ""); } }
+    {if (unclosed_whiles) { debug ("%d \"while\" loop%s not closed", unclosed_whiles, (unclosed_whiles > 1) ? "s" : ""); } }
     break;
 
   case 300:
@@ -2051,7 +2051,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
   case 305:
 /* Line 661 of lalr1.cc  */
 #line 699 "parser.ypp"
-    {if (unclosed_repeats) { printf ("%d \"repeat\" loop%s not closed", unclosed_repeats, (unclosed_repeats > 1) ? "s" : ""); } }
+    {if (unclosed_repeats) { debug ("%d \"repeat\" loop%s not closed", unclosed_repeats, (unclosed_repeats > 1) ? "s" : ""); } }
     break;
 
   case 306:
@@ -2117,7 +2117,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
   case 317:
 /* Line 661 of lalr1.cc  */
 #line 717 "parser.ypp"
-    {if (unclosed_ifs) { printf ("%d \"if\" statement%s not closed", unclosed_ifs, (unclosed_ifs > 1) ? "s" : ""); } }
+    {if (unclosed_ifs) { debug ("%d \"if\" statement%s not closed", unclosed_ifs, (unclosed_ifs > 1) ? "s" : ""); } }
     break;
 
   case 318:
@@ -2171,7 +2171,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
   case 330:
 /* Line 661 of lalr1.cc  */
 #line 742 "parser.ypp"
-    { printf("ERROR: print with no arg not supprted yet\n"); exit(1); }
+    { debug("ERROR: print with no arg not supprted yet\n"); exit(1); }
     break;
 
   case 331:
@@ -2187,13 +2187,13 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
   case 332:
 /* Line 661 of lalr1.cc  */
 #line 749 "parser.ypp"
-    { printf("ERROR: print syntax not supprted yet\n"); exit(1);}
+    { debug("ERROR: print syntax not supprted yet\n"); exit(1);}
     break;
 
   case 333:
 /* Line 661 of lalr1.cc  */
 #line 751 "parser.ypp"
-    { printf("ERROR: print syntax not supprted yet\n"); exit(1); }
+    { debug("ERROR: print syntax not supprted yet\n"); exit(1); }
     break;
 
   case 334:
