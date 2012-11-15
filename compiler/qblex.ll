@@ -207,6 +207,7 @@ frac return token::tFRAC;
 glob return token::tGLOB;
 instr return token::tINSTR;
 int return token::tINT;
+intger return token::tINT;
 left\$ return token::tLEFT;
 len return token::tLEN;
 log return token::tLOG;

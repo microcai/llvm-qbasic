@@ -512,6 +512,10 @@ hashed_number: '#' number_expression
 exprtype: tLONG {
 		$$ = new NumberTypeAST();
 	}
+	| tINT {
+		//TODO int should be 32bit not 64bit
+		$$ = new NumberTypeAST();
+	}
 	;
   
 dim_as_type:	/* empty , default to INTGER*/
