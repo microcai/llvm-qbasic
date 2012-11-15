@@ -241,6 +241,7 @@ token\$ return token::tTOKENALT;
 trim\$ return token::tTRIM;
 upper\$ return token::tUPPER;
 val return token::tVAL;
+call return token::tCALL;
 
 "and" return token::tAND;
 "mod"|"%" return token::tMOD;
