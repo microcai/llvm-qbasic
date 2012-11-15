@@ -17,34 +17,3 @@ enum ExprType{
 	CARRAY,	// C 数组, BYTE 类型
 	ARRAY	// 数组，only used by VariableExprAST & DimAST
 };
-
-
-enum CompOperator{
-	Equl = 1, // == , =
-	NotEqul , // <> , >< , != as in basic
-	Less , // <
-	LessEqul, // <=
-	Greater, // >
-	GreaterEqul, // >=
-};
-
-enum MathOperator{
-	Mul = 1 , // *
-	Div , // /
-	Add , // +
-	Minus , // -
-	Mod , // % , MOD
-	Power , // ^
-};
-
-
-enum Linkage{
-	STATIC = 1,	//静态函数，无导出
-	EXTERN,		//导出函数
-	IMPORTC,		//导入C函数，这样就可以使用 C 函数调用了，算是我提供的一个扩展吧
-};
-
-enum ReferenceType{
-	BYVALUE,	//传值
-	BYREF,	//引用，实质就是指针了. 函数的默认参数是传引用
-};

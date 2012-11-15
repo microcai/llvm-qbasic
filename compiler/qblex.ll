@@ -130,9 +130,13 @@ lcchar [\\_]
 
 {whitespace}+ /* eat whitespace */
 
+
+long return token::tLONG;/* variables type*/
+
+as return token::tAS;
+
 arraydim return token::tARDIM;
 arraysize return token::tARSIZE;
-as return token::tAS;
 break return token::tBREAK;
 case return token::tCASE;
 compile return token::tCOMPILE;
@@ -141,7 +145,7 @@ csub return token::tCSUB;
 data return token::tDATA;
 dec|decrement return token::tDEC;
 default return token::tDEFAULT;
-dim return token::tDIM;
+dim 	{ printf("got DIM\n");   return token::tDIM;}
 disable return token::tDISABLE;
 do return token::tDO;
 elseif|elsif|elif return token::tELSEIF;

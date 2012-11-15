@@ -48,12 +48,6 @@ AST::~AST()
 {
 }
 
-LetExprAST::LetExprAST(VariableRefExprASTPtr l, ExprASTPtr r)
-	:lval(l),rval(r)
-{
-
-}
-
 // nop 语句, 自动调用下一条.
 llvm::Value* StatementAST::Codegen(llvm::BasicBlock* insertto)
 {
@@ -61,18 +55,6 @@ llvm::Value* StatementAST::Codegen(llvm::BasicBlock* insertto)
 	if(this->next)
 		return this->next->Codegen(insertto);
 	else return insertto;
-}
-
-
-// 为 LET A=XX 赋值语句生成IR代码
-llvm::Value* LetExprAST::Codegen(llvm::BasicBlock * insertto)
-{
-	//TODO 只能为简单类型生成赋值语句
-	//TODO 复杂类型实质是要调用 operator ==
-	
-    llvm::Value * r = this->rval->Codegen(insertto);
-	llvm::Value * l = this->lval->Codegen(insertto);
-//	return llvm::
 }
 
 // 为立即数生成 IR
@@ -137,7 +119,7 @@ llvm::Value* PrintStmtAST::Codegen(llvm::BasicBlock * insertto)
 	args.push_back( qbc::getconstint( callargs->size() ) );
 
 	//第三个参数开始是 ... 参数对.
-	
+#if 0
 	if(callargs->size() > 0){
 		// TODO : 支持字符串的版本修改第三个参数开始为参数对.
 		//std::for_E	BOOST_FOREACH(ExprASTPtr argitem,callargs->printlist);
@@ -176,31 +158,14 @@ llvm::Value* PrintStmtAST::Codegen(llvm::BasicBlock * insertto)
 			//argitem->Codegen()
 		}
 	}
+#endif
 	//调用 print
 	builder.CreateCall(brt_print,args ,"PRINT");
 
 	return StatementAST::Codegen(insertto);
 }
 
-llvm::Value* PrintIntroAST::Codegen() {}
 PrintIntroAST::PrintIntroAST() {}
-
-CallExprAST::CallExprAST(FunctionParameterListAST args)
-	:callargs(args)
-{
-	
-}
-CArrayAST::CArrayAST()
-	:ExprAST(CARRAY)
-{
-    ;
-}
-
-ExprAST::ExprAST(ExprType _type)
-	:type(_type)
-{
-
-}
 
 ConstNumberExprAST::ConstNumberExprAST(const int64_t v)
 	:val(v)
@@ -213,15 +178,15 @@ llvm::Value* ConstNumberExprAST::Codegen(llvm::BasicBlock * insertto)
     return qbc::getconstlong(this->val);
 }
 
-NumberExprAST::NumberExprAST() :ExprAST(EXPR_TYPE_LONG)
-{
-	
-}
-
 llvm::Value* NumberExprAST::Codegen(llvm::BasicBlock* insertto)
 {
 	//return insertto;
 	debug("number expr for \n");
 
+}
+
+llvm::Value* PrintIntroAST::Codegen(llvm::BasicBlock* insertto)
+{
+	debug("PrintIntroAST expr for \n");
 }
 

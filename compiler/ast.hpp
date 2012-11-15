@@ -26,9 +26,37 @@
 #include <boost/shared_ptr.hpp>
 #include <llvm/Value.h>
 #include <llvm/Module.h>
+#include <llvm/Type.h>
 
-#include "defines.h"
+enum CompOperator{
+	Equl = 1, // == , =
+	NotEqul , // <> , >< , != as in basic
+	Less , // <
+	LessEqul, // <=
+	Greater, // >
+	GreaterEqul, // >=
+};
 
+enum MathOperator{
+	Mul = 1 , // *
+	Div , // /
+	Add , // +
+	Minus , // -
+	Mod , // % , MOD
+	Power , // ^
+};
+
+
+enum Linkage{
+	STATIC = 1,	//静态函数，无导出
+	EXTERN,		//导出函数
+	IMPORTC,		//导入C函数，这样就可以使用 C 函数调用了，算是我提供的一个扩展吧
+};
+
+enum ReferenceType{
+	BYVALUE,	//传值
+	BYREF,	//引用，实质就是指针了. 函数的默认参数是传引用
+};
 // allow us to use shared ptr to manage the memory
 class AST // :public boost::enable_shared_from_this<AST>
 {
@@ -41,6 +69,8 @@ private:
 	AST( const AST &  );
 	AST & operator =( const AST &  );
 };
+
+#include "typeast.h"
 
 //语句有, 声明语句和表达式语句和函数调用语句
 class StatementAST: public AST
@@ -65,8 +95,7 @@ class DimAST: public AST
 
 class VariableDimAST : public DimAST
 {
-	ExprType type;
-	ReferenceType	reftype; //引用类型
+	ExprTypeASTPtr	type;
 	//ExprType type; // the type of the expresion
 	std::string varname; //定义的变量名字
 	
@@ -91,9 +120,8 @@ class VariableArrayDimAST : VariableDimAST
 class ExprAST: public AST //
 {
 public:
-	ExprAST(){type = EXPR_TYPE_VOID;}
-    ExprAST(enum ExprType);
-	ExprType type; // the type of the expresion
+	ExprTypeASTPtr type;
+    ExprAST(ExprTypeASTPtr ExprType):type(ExprType){};
 	virtual llvm::Value *Codegen(llvm::BasicBlock * insertto) = 0;
 };
 
@@ -101,8 +129,8 @@ typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
 
 class EmptyExprAST : public ExprAST
 {
-public:
-    EmptyExprAST(){}	
+public:	
+    EmptyExprAST():ExprAST(ExprTypeASTPtr(new VoidTypeAST())){}
 	llvm::Value *Codegen(llvm::BasicBlock * insertto){return insertto;}
 };
 
@@ -110,7 +138,7 @@ public:
 class NumberExprAST : public ExprAST
 {
 public:
-    NumberExprAST();
+    NumberExprAST():ExprAST(ExprTypeASTPtr(new NumberTypeAST())){};
 	virtual llvm::Value *Codegen(llvm::BasicBlock * insertto);
 };
 
@@ -192,7 +220,7 @@ class CalcExprAST:public ExprAST
 class FunctionDeclarAST: public DimAST
 {
 	Linkage		linkage; //链接类型。static? extern ?
-	ExprType		type; //返回值
+	ExprTypeASTPtr	type; //返回值
 	std::string	name; //函数名字
 	std::list<VariableDimASTPtr> args_type; //checked by CallExpr
 };
@@ -210,62 +238,6 @@ class FunctionDimAST: public FunctionDeclarAST
 };
 
 typedef std::list<ExprASTPtr>	FunctionParameterListAST;
-// CALL Sub Functions , 函数调用也是表达式之一，返回值是表达式嘛
-class CallExprAST:public ExprAST
-{
-public:
-	CallExprAST(FunctionParameterListAST);
-	//参数，参数是一个表达式列表
-	FunctionParameterListAST	callargs;
-};
-
-typedef boost::shared_ptr<CalcExprAST> CalcExprASTPtr;
-
-
-//表达式加回车或者 : 就是一个语句了.
-//左值和右值, 把右值赋给左值
-class LetExprAST: public ExprAST
-{
-public:
-	LetExprAST(VariableRefExprASTPtr lval , ExprASTPtr rval);
-
-	VariableRefExprASTPtr lval;//注意，左值只能是变量表达式
-	ExprASTPtr rval; // 右值可以是任意的表达式。注意，需要可以相互转化的。
-	virtual	llvm::Value *Codegen(llvm::BasicBlock * insertto);
-};
-
-//条件控制表达式
-class ContronExprAST: public ExprAST
-{
-	
-};
-
-// IF XX THEN xx ELSE xx ENDIF
-
-class IFExprAST:public ContronExprAST
-{
-
-	ExprASTPtr ifexpresion;
-	StatementASTPtr THEN;
-	StatementASTPtr ELSE;
-};
-
-// loop XXX until
-class LoopExprAST: public ContronExprAST
-{
-	
-	
-};
-
-
-
-//函数调用语句
-class CallStatmentAST: public StatementAST
-{
-public:
-//	CallStatmentAST( CalcExprASTPtr );
-	CalcExprASTPtr tocall;
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 //内建函数语句. PRINT , 为 PRINT 生成特殊的函数调用:)
@@ -276,7 +248,7 @@ class PrintIntroAST : public NumberExprAST
 {
 public:
 	PrintIntroAST();
-    virtual llvm::Value* Codegen();
+    llvm::Value* Codegen(llvm::BasicBlock * insertto);
 };
 typedef boost::shared_ptr<PrintIntroAST> PrintIntroASTPtr;
 
