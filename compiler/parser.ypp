@@ -123,7 +123,6 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %type <varable_ref>			numsym_s
 %type <number_assignment>	number_assignment
 
-%type <symbol> cfunction_name
 %type <symbol> function_name
 %type <symbol> number_function_or_array_any_params
 %type <symbol> number_function_or_array_with_params
@@ -243,7 +242,6 @@ non_empty_statement: number_assignment
 	   }
 	} 
    | function_definition
-   | cfunction_definition
    | structure_definition
    | number_function_or_array_any_params { }
    | string_function_or_array_any_params { }
@@ -566,17 +564,27 @@ call_item: string_expression
    | number_expression
    ;
 
-function_definition: tSUB { unclosed_subs++; } { not_inside_loop_or_conditional ("define a function");
-if (function_type!=ftNONE) {debug("functions cannot be nested");}}
-   function_name {
-	   
-}
+begin_sub:	tSUB { unclosed_subs++; }
+	| tFUNCTION { unclosed_subs++; }
+	;
+
+function_definition: begin_sub {
+		not_inside_loop_or_conditional ("define a function");
+		if (function_type!=ftNONE) {debug("functions cannot be nested");}
+	}
+	function_name {
+		
+	}
    '(' param_list ')' {
-	   
-}
-   statement_list
+
+	}
+   statement_list {		}
+   dim_as_type {
+		debug("function dim as ...\n");
+	   //$$ = $11;
+	}
    endsub {
-	
+		/** TODO support for functions*/
    }
    ;
 
@@ -587,59 +595,11 @@ endsub: tEOPROG {
 		}
 	}
    | tENDSUB {unclosed_subs--;}
+   | tENDFUNCTION {unclosed_subs--;}
    ;
 
-function_name: numsym_s {
-	//function_type=ftNUMBER;current_function = dotify ($1); $$ = dotify ($1);
-	}
-   | strsym_s {/*function_type=ftSTRING;current_function = dotify ($1); $$ = dotify ($1);*/}
-   ;
-
-cfunction_definition: tCSUB {
-	
-                      }
-                      cfunction_name {
-						  
-                      }
-                      '(' cfunction_param_list ')' {
-						  
-                      }
-                      tFROM tSTRING {
-						  
-                      }
-   ;
-
-cfunction_name: numsym_s {
-//                    function_type = ftNUMBER;
-//                    cfunction_type = YABMOD_INTERFACE_TYPE_SCALAR_NUMBER;
-//                    current_function = mystrdup ($1);
-//                    $$ = mystrdup ($1);
-                }
-   | strsym_s {
-//         function_type = ftSTRING;
-//         cfunction_type = YABMOD_INTERFACE_TYPE_SCALAR_STRING;
-//         current_function = mystrdup ($1);
-//         $$ = mystrdup ($1);
-     }
-   ;
-
-cfunction_param_list: /* empty */
-   | cfunction_param_item
-   | cfunction_param_list ',' cfunction_param_item
-   ;
-
-cfunction_param_item: numsym_s {
-//                          create_require (stNUMBER); create_makelocal (dotify ($1), syNUMBER); add_command (cPOPNUMSYM, dotify ($1));
-                      }
-   | strsym_s {
-//         create_require (stSTRING); create_makelocal (dotify ($1), sySTRING); add_command (cPOPSTRSYM, dotify ($1));
-     }
-   | numsym_a_no_calls {
-//         create_require (stNUMBERARRAYREF); create_arraylink (dotify ($1), stNUMBERARRAYREF);
-     }
-   | strsym_a_no_calls {
-//         create_require (stSTRINGARRAYREF); create_arraylink (dotify ($1), stSTRINGARRAYREF);
-     }
+function_name: numsym_s
+   | strsym_s 
    ;
 
 local_list: local_item

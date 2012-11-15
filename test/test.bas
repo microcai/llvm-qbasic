@@ -1,3 +1,4 @@
+sub main ( )
 DIM A as int
 dim B as intger
 
@@ -7,3 +8,5 @@ PRINT 2
 DIM C as long
 C=A + B
 print C , 1 + 1 , A + C , C - A , B * 2 , A / 10 , -B 
+
+end sub

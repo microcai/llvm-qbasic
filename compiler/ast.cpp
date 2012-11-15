@@ -85,9 +85,11 @@ NumberAssigmentAST::NumberAssigmentAST(VariableRefExprASTPtr _lval, NumberExprAS
 }
 
 void StatementsAST::append(StatementASTPtr item)
-{	
-	item.get()->parent = this;
-	this->statements.push_back(item);
+{
+	if(item){
+		item.get()->parent = this;
+		this->statements.push_back(item);
+	}
 }
 
 NumberExprAST::NumberExprAST(VariableExprASTPtr _var_num)
