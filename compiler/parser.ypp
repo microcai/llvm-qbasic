@@ -29,7 +29,7 @@
 #include <boost/make_shared.hpp>
 #include <boost/concept_check.hpp>
 
-extern	StatementAST * program;
+extern	StatementsAST * program;
 
 
 extern int yylex(qb::parser::semantic_type * yylval_param );
@@ -100,7 +100,11 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 	PrintListAST * print_list;
 	NumberExprAST* number_expression;
 	StatementAST * statement;
-	
+	StatementsAST* statement_list;
+	ExprTypeAST *  exprtype;
+	VariableDimAST*dim_list;
+    VariableRefExprAST*varable_ref;
+	NumberAssigmentAST*number_assignment;
 }
 
 /*
@@ -109,10 +113,15 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %type <print_intro>			print_intro
 %type <print_list>			print_list
 %type <number_expression>	number_expression
+%type <exprtype>			exprtype
+%type <exprtype>			dim_as_type
+%type <dim_list>			dim_list
 %type <statement>			non_empty_statement
 %type <statement>			statement
-%type <statement>			statement_list
-%type <statement>			list_of_statement_lists
+%type <statement_list>		statement_list
+%type <statement_list>		list_of_statement_lists
+%type <varable_ref>			numsym_s
+%type <number_assignment>	number_assignment
 
 %type <symbol> cfunction_name
 %type <symbol> function_name
@@ -120,7 +129,6 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %type <symbol> number_function_or_array_with_params
 %type <symbol> numsym_a
 %type <symbol> numsym_a_no_calls
-%type <symbol> numsym_s
 %type <symbol> string_function_or_array_any_params
 %type <symbol> string_function_or_array_with_params
 %type <symbol> strsym_a
@@ -198,12 +206,12 @@ list_of_statement_lists: statement_list { $$ = $1; debug("list_of_statement_list
    | list_of_statement_lists tNEWFILE statement_list
    ;
 
-statement_list: statement { $$ = $1;}
+statement_list: statement { $$ = new StatementsAST(); $$->append(StatementASTPtr($1));}
    | statement_list tSEPARATOR { yylineno += $2; } statement {
 		if($4){
 			debug("got statement_list now %p\n",$4);
 			$$ = $1;
-			$1->append($4);
+			$1->append(StatementASTPtr($4));
 		}
 	}
    ;
@@ -270,7 +278,9 @@ non_empty_statement: number_assignment
 
    | tRETURN string_expression { }
    | tDIM dim_list {
-		debug("got syntax of \"dim local var\" now\n");
+	   debug("got syntax of \"dim local var\" now\n");
+
+	   $$ = $2;	   
 	}
    | tSYSTEM '(' string_expression ')' {
 	   
@@ -334,7 +344,11 @@ restore_list: numsym_s { /*add_command (cDATARESTORE, dotify ($1)); */}
    | restore_list ',' numsym_s {/* add_command (cDATARESTORE, dotify ($3)); */}
    ;
 
-number_assignment: numsym_s tEQU number_expression {/*add_command(cPOPNUMSYM,dotify($1));*/}
+number_assignment: numsym_s tEQU number_expression {
+		// 变量赋值
+		debug("变量赋值\n");
+		$$ = new NumberAssigmentAST(VariableRefExprASTPtr($1), NumberExprASTPtr($3));
+	}
    | number_function_or_array_with_params tEQU number_expression {/*create_doarray($1,ASSIGNNUMBERARRAY);*/}
    ;
 
@@ -395,13 +409,11 @@ number_expression: number_expression tOR {/*add_command(cORSHORT,NULL);pushlabel
    | number_expression tGEQ number_expression {/*create_numrelop('}');*/}
    | tEOF '(' hashed_number ')' {/*add_command(cTESTEOF,NULL);*/}
    | tGLOB '(' string_expression ',' string_expression ')' {/*add_command(cGLOB,NULL);*/}
-   | tNUMBER { $$ = new ConstNumberExprAST($1);  }
    | tARDIM '(' number_arrayref ')' {/*add_command(cARDIM,"");*/}
    | tARDIM '(' string_arrayref ')' {/*add_command(cARDIM,"");*/}
    | tARSIZE '(' number_arrayref ',' number_expression ')' {/*add_command(cARSIZE,"");*/}
    | tARSIZE '(' string_arrayref ',' number_expression ')' {/*add_command(cARSIZE,"");*/}
    | number_function_or_array_any_params {/*add_command(cNUMBER_FUNCTION_OR_ARRAY,$1);*/}
-   | numsym_s {/*add_command(cPUSHNUMSYM,dotify($1));*/}
    | number_expression '+' number_expression {/*create_numbin('+');*/}
    | number_expression '-' number_expression {/*create_numbin('-');*/}
    | number_expression '*' number_expression {/*create_numbin('*');*/}
@@ -418,6 +430,13 @@ number_expression: number_expression tOR {/*add_command(cORSHORT,NULL);pushlabel
    | string_expression tGEQ string_expression {/*create_strrelop('}');*/}
    | number_function
    | '(' number_expression ')'
+   | numsym_s {
+	   debug("got numsym_s\n");	   
+	   $$ =new NumberExprAST( VariableExprASTPtr($1) );
+	}
+   | tNUMBER {
+	   $$ = new ConstNumberExprAST($1);
+   }
    ;
 
 number_arrayref: numsym_a_no_calls {/*create_pusharrayref(dotify($1),stNUMBERARRAYREF);*/}
@@ -474,21 +493,34 @@ hashed_number: '#' number_expression
   | number_expression
   ;
 
+exprtype: tLONG {
+		$$ = new NumberTypeAST();
+	}
+	;
+  
 dim_as_type:	/* empty , default to INTGER*/
-		| tAS tLONG {
-			debug("as  long\n");
+		| tAS exprtype {
+			debug("as  %s\n",$2->name.c_str());
 			// long varable
-			
+			// 构造类型
+			$$ = $2;
 		}
 		;
 
 dim_list: tNUMSYM dim_as_type {
 		/*变量定义*/
-		// 从堆栈分配指定大小
+		// 在 AST 中分配一个变量名称列表.
+		std::string name;
+		name = $1;
+		$$ = new VariableDimAST( name , ExprTypeASTPtr($2));		
 	}
    | strsym_a dim_as_type {/*create_dim(dotify($1),'S');*/}
-   | dim_list ',' numsym_a {/*create_dim(dotify($3),'N');*/}
-   | dim_list ',' strsym_a {/*create_dim(dotify($3),'S');*/}
+   | dim_list ',' tNUMSYM dim_as_type {
+	  // 	std::string name;
+	//	name = $3;
+	//	$$ = new VariableDimAST( name , ExprTypeASTPtr($2));
+   }
+   | dim_list ',' strsym_a dim_as_type {/*create_dim(dotify($3),'S');*/}
    ;
 
 number_function_or_array_any_params: numsym_a {/*$$ = dotify ($1);*/}
@@ -885,7 +917,10 @@ new_cli: {
          }
    ;
 
-numsym_s: tNUMSYM { /*$$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);*/ }
+numsym_s: tNUMSYM {
+		debug("变量引用\n");
+		$$ = new VariableRefExprAST( $1 );
+	}
    | numsym_s '.' tNUMSYM { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1); */}
    ;
 

@@ -30,13 +30,27 @@ class ExprTypeAST : public AST
 {
 	size_t			_size;
 public:
-    ExprTypeAST(size_t __size):_size(__size){}
+    ExprTypeAST(size_t __size,const std::string _name = std::string(""));
 	std::string		name; // name of the type. // for debug only
 	virtual	size_t	size(){return _size;} // memory size of this type , can be overided
-
 	virtual llvm::Type *	llvmtype() = 0; // llvm type of this type, NULL if not reperentable directly
+	virtual	bool	resolved(){return true;};
 };
+
 typedef	boost::shared_ptr<ExprTypeAST> ExprTypeASTPtr;
+
+// helper for delay the type resolve
+class DimAST;
+class UnknowTypeAST : public ExprTypeAST
+{
+	std::string	varname;
+public:
+    UnknowTypeAST(const std::string _name);
+    size_t size(){return -1;}
+    ExprTypeASTPtr resolve(StatementAST* theblock, DimAST ** ); // resolve and return
+    llvm::Type* llvmtype(){return NULL;}
+   	virtual	bool	resolved(){return false;}// always false, then you call resolve
+};
 
 class VoidTypeAST : public ExprTypeAST
 {
@@ -48,7 +62,7 @@ public:
 class NumberTypeAST : public ExprTypeAST
 {
 public:
-	NumberTypeAST():ExprTypeAST(sizeof(long)){}
+	NumberTypeAST();
 	llvm::Type *	llvmtype();
 };
 

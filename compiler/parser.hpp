@@ -77,11 +77,15 @@ namespace qb {
 	PrintListAST * print_list;
 	NumberExprAST* number_expression;
 	StatementAST * statement;
-	
+	StatementsAST* statement_list;
+	ExprTypeAST *  exprtype;
+	VariableDimAST*dim_list;
+    VariableRefExprAST*varable_ref;
+	NumberAssigmentAST*number_assignment;
 
 
 /* Line 36 of lalr1.cc  */
-#line 85 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 89 "/home/cai/projects/basic/compiler/parser.hpp"
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -391,7 +395,7 @@ namespace qb {
 #line 22 "parser.ypp"
 } // qb
 /* Line 36 of lalr1.cc  */
-#line 395 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 399 "/home/cai/projects/basic/compiler/parser.hpp"
 
 
 
