@@ -583,37 +583,38 @@ namespace qb {
     {
 	   // 构造打印语句
 	   debug("got PRINT now\n");
+	   
 	   (yyval.statement) = new PrintStmtAST(PrintIntroASTPtr((yysemantic_stack_[(4) - (2)].print_intro)),PrintListASTPtr((yysemantic_stack_[(4) - (3)].print_list)));
    }
     break;
 
   case 34:
 /* Line 661 of lalr1.cc  */
-#line 252 "parser.ypp"
+#line 253 "parser.ypp"
     { until_eol = false; }
     break;
 
   case 35:
 /* Line 661 of lalr1.cc  */
-#line 252 "parser.ypp"
+#line 253 "parser.ypp"
     {}
     break;
 
   case 36:
 /* Line 661 of lalr1.cc  */
-#line 253 "parser.ypp"
+#line 254 "parser.ypp"
     { until_eol = true; }
     break;
 
   case 37:
 /* Line 661 of lalr1.cc  */
-#line 253 "parser.ypp"
+#line 254 "parser.ypp"
     {}
     break;
 
   case 38:
 /* Line 661 of lalr1.cc  */
-#line 254 "parser.ypp"
+#line 255 "parser.ypp"
     {
 	   
              }
@@ -621,7 +622,7 @@ namespace qb {
 
   case 39:
 /* Line 661 of lalr1.cc  */
-#line 257 "parser.ypp"
+#line 258 "parser.ypp"
     {
 
 	   
@@ -630,13 +631,13 @@ namespace qb {
 
   case 40:
 /* Line 661 of lalr1.cc  */
-#line 262 "parser.ypp"
+#line 263 "parser.ypp"
     { }
     break;
 
   case 42:
 /* Line 661 of lalr1.cc  */
-#line 264 "parser.ypp"
+#line 265 "parser.ypp"
     {
 	   
 }
@@ -644,61 +645,61 @@ namespace qb {
 
   case 43:
 /* Line 661 of lalr1.cc  */
-#line 267 "parser.ypp"
+#line 268 "parser.ypp"
     {}
     break;
 
   case 44:
 /* Line 661 of lalr1.cc  */
-#line 268 "parser.ypp"
+#line 269 "parser.ypp"
     {}
     break;
 
   case 45:
 /* Line 661 of lalr1.cc  */
-#line 269 "parser.ypp"
+#line 270 "parser.ypp"
     {}
     break;
 
   case 46:
 /* Line 661 of lalr1.cc  */
-#line 270 "parser.ypp"
+#line 271 "parser.ypp"
     {}
     break;
 
   case 47:
 /* Line 661 of lalr1.cc  */
-#line 271 "parser.ypp"
+#line 272 "parser.ypp"
     {}
     break;
 
   case 48:
 /* Line 661 of lalr1.cc  */
-#line 272 "parser.ypp"
+#line 273 "parser.ypp"
     {}
     break;
 
   case 49:
 /* Line 661 of lalr1.cc  */
-#line 273 "parser.ypp"
+#line 274 "parser.ypp"
     {}
     break;
 
   case 50:
 /* Line 661 of lalr1.cc  */
-#line 274 "parser.ypp"
+#line 275 "parser.ypp"
     { /*create_pushnum (TRUE); */}
     break;
 
   case 52:
 /* Line 661 of lalr1.cc  */
-#line 275 "parser.ypp"
+#line 276 "parser.ypp"
     { /*create_pushnum (FALSE); */}
     break;
 
   case 56:
 /* Line 661 of lalr1.cc  */
-#line 278 "parser.ypp"
+#line 279 "parser.ypp"
     {
 
    }
@@ -706,13 +707,13 @@ namespace qb {
 
   case 57:
 /* Line 661 of lalr1.cc  */
-#line 281 "parser.ypp"
+#line 282 "parser.ypp"
     {  }
     break;
 
   case 58:
 /* Line 661 of lalr1.cc  */
-#line 282 "parser.ypp"
+#line 283 "parser.ypp"
     {
 
    }
@@ -720,25 +721,25 @@ namespace qb {
 
   case 59:
 /* Line 661 of lalr1.cc  */
-#line 285 "parser.ypp"
+#line 286 "parser.ypp"
     {  }
     break;
 
   case 60:
 /* Line 661 of lalr1.cc  */
-#line 286 "parser.ypp"
+#line 287 "parser.ypp"
     {  }
     break;
 
   case 61:
 /* Line 661 of lalr1.cc  */
-#line 287 "parser.ypp"
+#line 288 "parser.ypp"
     {  }
     break;
 
   case 62:
 /* Line 661 of lalr1.cc  */
-#line 287 "parser.ypp"
+#line 288 "parser.ypp"
     {
 	 //  create_execute (ftNUMBER); add_command (cPOP, NULL); add_command (cPOP, NULL);
    }
@@ -746,121 +747,121 @@ namespace qb {
 
   case 63:
 /* Line 661 of lalr1.cc  */
-#line 290 "parser.ypp"
+#line 291 "parser.ypp"
     { }
     break;
 
   case 64:
 /* Line 661 of lalr1.cc  */
-#line 290 "parser.ypp"
+#line 291 "parser.ypp"
     {  }
     break;
 
   case 65:
 /* Line 661 of lalr1.cc  */
-#line 291 "parser.ypp"
+#line 292 "parser.ypp"
     { /*data = create_data (dotify ($2));*/ }
     break;
 
   case 74:
 /* Line 661 of lalr1.cc  */
-#line 307 "parser.ypp"
+#line 308 "parser.ypp"
     { /*data_add (data, 'n')->number_value = $1; */}
     break;
 
   case 75:
 /* Line 661 of lalr1.cc  */
-#line 308 "parser.ypp"
+#line 309 "parser.ypp"
     { /*data_add (data, 'n')->number_value = -$2;*/ }
     break;
 
   case 76:
 /* Line 661 of lalr1.cc  */
-#line 309 "parser.ypp"
+#line 310 "parser.ypp"
     { /*data_add (data, 's')->string_value = $1; */}
     break;
 
   case 79:
 /* Line 661 of lalr1.cc  */
-#line 316 "parser.ypp"
+#line 317 "parser.ypp"
     { /*add_command (cDATAREAD, dotify ($3))->tag = 'n'; add_command (cPOPNUMSYM, dotify ($1)); */}
     break;
 
   case 80:
 /* Line 661 of lalr1.cc  */
-#line 317 "parser.ypp"
+#line 318 "parser.ypp"
     { /*add_command (cDATAREAD, dotify ($3))->tag = 's'; add_command (cPOPSTRSYM, dotify ($1)); */}
     break;
 
   case 81:
 /* Line 661 of lalr1.cc  */
-#line 318 "parser.ypp"
+#line 319 "parser.ypp"
     { /*add_command (cDATAREAD, dotify ($3))->tag = 'n'; create_doarray (dotify ($1), ASSIGNNUMBERARRAY);*/ }
     break;
 
   case 82:
 /* Line 661 of lalr1.cc  */
-#line 319 "parser.ypp"
+#line 320 "parser.ypp"
     { /*add_command (cDATAREAD, dotify ($3))->tag = 's'; create_doarray (dotify ($1), ASSIGNSTRINGARRAY);*/ }
     break;
 
   case 83:
 /* Line 661 of lalr1.cc  */
-#line 322 "parser.ypp"
+#line 323 "parser.ypp"
     { /*add_command (cDATARESTORE, dotify ($1)); */}
     break;
 
   case 84:
 /* Line 661 of lalr1.cc  */
-#line 323 "parser.ypp"
+#line 324 "parser.ypp"
     {/* add_command (cDATARESTORE, dotify ($3)); */}
     break;
 
   case 85:
 /* Line 661 of lalr1.cc  */
-#line 326 "parser.ypp"
+#line 327 "parser.ypp"
     {/*add_command(cPOPNUMSYM,dotify($1));*/}
     break;
 
   case 86:
 /* Line 661 of lalr1.cc  */
-#line 327 "parser.ypp"
+#line 328 "parser.ypp"
     {/*create_doarray($1,ASSIGNNUMBERARRAY);*/}
     break;
 
   case 87:
 /* Line 661 of lalr1.cc  */
-#line 330 "parser.ypp"
+#line 331 "parser.ypp"
     {/*add_command(cPOPSTRSYM,dotify($1));*/}
     break;
 
   case 88:
 /* Line 661 of lalr1.cc  */
-#line 331 "parser.ypp"
+#line 332 "parser.ypp"
     {/*create_changestring(fMID);*/}
     break;
 
   case 89:
 /* Line 661 of lalr1.cc  */
-#line 332 "parser.ypp"
+#line 333 "parser.ypp"
     {/*create_changestring(fMID2);*/}
     break;
 
   case 90:
 /* Line 661 of lalr1.cc  */
-#line 333 "parser.ypp"
+#line 334 "parser.ypp"
     {/*create_changestring(fLEFT);*/}
     break;
 
   case 91:
 /* Line 661 of lalr1.cc  */
-#line 334 "parser.ypp"
+#line 335 "parser.ypp"
     {/*create_changestring(fRIGHT);*/}
     break;
 
   case 92:
 /* Line 661 of lalr1.cc  */
-#line 335 "parser.ypp"
+#line 336 "parser.ypp"
     {
 	   //create_doarray($1,ASSIGNSTRINGARRAY);
    }
@@ -868,740 +869,740 @@ namespace qb {
 
   case 93:
 /* Line 661 of lalr1.cc  */
-#line 340 "parser.ypp"
+#line 341 "parser.ypp"
     {/*add_command(cPUSHSTRPTR,dotify($1));*/}
     break;
 
   case 94:
 /* Line 661 of lalr1.cc  */
-#line 341 "parser.ypp"
+#line 342 "parser.ypp"
     {/*create_doarray(dotify($1),GETSTRINGPOINTER);*/}
     break;
 
   case 95:
 /* Line 661 of lalr1.cc  */
-#line 344 "parser.ypp"
+#line 345 "parser.ypp"
     {		/*add_command(cPUSHSTRSYM,dotify($1));*/	}
     break;
 
   case 97:
 /* Line 661 of lalr1.cc  */
-#line 346 "parser.ypp"
+#line 347 "parser.ypp"
     {/*add_command(cSTRING_FUNCTION_OR_ARRAY,$1);*/}
     break;
 
   case 98:
 /* Line 661 of lalr1.cc  */
-#line 347 "parser.ypp"
+#line 348 "parser.ypp"
     {/*create_pushstr($1);*/}
     break;
 
   case 99:
 /* Line 661 of lalr1.cc  */
-#line 348 "parser.ypp"
+#line 349 "parser.ypp"
     {/*add_command(cCONCAT,NULL);*/}
     break;
 
   case 101:
 /* Line 661 of lalr1.cc  */
-#line 352 "parser.ypp"
+#line 353 "parser.ypp"
     {/*create_function(fLEFT);*/}
     break;
 
   case 102:
 /* Line 661 of lalr1.cc  */
-#line 353 "parser.ypp"
+#line 354 "parser.ypp"
     {/*create_function(fRIGHT);*/}
     break;
 
   case 103:
 /* Line 661 of lalr1.cc  */
-#line 354 "parser.ypp"
+#line 355 "parser.ypp"
     {/*create_function(fMID);*/}
     break;
 
   case 104:
 /* Line 661 of lalr1.cc  */
-#line 355 "parser.ypp"
+#line 356 "parser.ypp"
     {/*create_function(fMID2);*/}
     break;
 
   case 105:
 /* Line 661 of lalr1.cc  */
-#line 356 "parser.ypp"
+#line 357 "parser.ypp"
     {/*create_function(fSTR);*/}
     break;
 
   case 106:
 /* Line 661 of lalr1.cc  */
-#line 357 "parser.ypp"
+#line 358 "parser.ypp"
     {/*create_function(fSTR2);*/}
     break;
 
   case 107:
 /* Line 661 of lalr1.cc  */
-#line 358 "parser.ypp"
+#line 359 "parser.ypp"
     {/*create_function(fSTR3);*/}
     break;
 
   case 108:
 /* Line 661 of lalr1.cc  */
-#line 359 "parser.ypp"
+#line 360 "parser.ypp"
     {/*create_function(fCHR);*/}
     break;
 
   case 109:
 /* Line 661 of lalr1.cc  */
-#line 360 "parser.ypp"
+#line 361 "parser.ypp"
     {/*create_function(fUPPER);*/}
     break;
 
   case 110:
 /* Line 661 of lalr1.cc  */
-#line 361 "parser.ypp"
+#line 362 "parser.ypp"
     {/*create_function(fLOWER);*/}
     break;
 
   case 111:
 /* Line 661 of lalr1.cc  */
-#line 362 "parser.ypp"
+#line 363 "parser.ypp"
     {/*create_function(fLTRIM);*/}
     break;
 
   case 112:
 /* Line 661 of lalr1.cc  */
-#line 363 "parser.ypp"
+#line 364 "parser.ypp"
     {/*create_function(fRTRIM);*/}
     break;
 
   case 113:
 /* Line 661 of lalr1.cc  */
-#line 364 "parser.ypp"
+#line 365 "parser.ypp"
     {/*create_function(fTRIM);*/}
     break;
 
   case 114:
 /* Line 661 of lalr1.cc  */
-#line 365 "parser.ypp"
+#line 366 "parser.ypp"
     {/*add_command(cTOKENALT2,NULL);*/}
     break;
 
   case 115:
 /* Line 661 of lalr1.cc  */
-#line 366 "parser.ypp"
+#line 367 "parser.ypp"
     {/*add_command(cTOKENALT,NULL);*/}
     break;
 
   case 116:
 /* Line 661 of lalr1.cc  */
-#line 367 "parser.ypp"
+#line 368 "parser.ypp"
     {/*add_command(cSPLITALT2,NULL);*/}
     break;
 
   case 117:
 /* Line 661 of lalr1.cc  */
-#line 368 "parser.ypp"
+#line 369 "parser.ypp"
     {/*add_command(cSPLITALT,NULL);*/}
     break;
 
   case 118:
 /* Line 661 of lalr1.cc  */
-#line 369 "parser.ypp"
+#line 370 "parser.ypp"
     {/*create_function(fDATE);*/}
     break;
 
   case 119:
 /* Line 661 of lalr1.cc  */
-#line 370 "parser.ypp"
+#line 371 "parser.ypp"
     {/*create_function(fTIME);*/}
     break;
 
   case 120:
 /* Line 661 of lalr1.cc  */
-#line 371 "parser.ypp"
+#line 372 "parser.ypp"
     { /*create_function (fARG); */}
     break;
 
   case 121:
 /* Line 661 of lalr1.cc  */
-#line 372 "parser.ypp"
+#line 373 "parser.ypp"
     { /*create_function (fENV); */}
     break;
 
   case 122:
 /* Line 661 of lalr1.cc  */
-#line 373 "parser.ypp"
+#line 374 "parser.ypp"
     { /*add_command (cPUSHFREE, NULL);*/ }
     break;
 
   case 123:
 /* Line 661 of lalr1.cc  */
-#line 373 "parser.ypp"
+#line 374 "parser.ypp"
     { /*create_execute (ftSTRING); add_command (cSWAP, NULL); add_command (cPOP, NULL); */}
     break;
 
   case 124:
 /* Line 661 of lalr1.cc  */
-#line 376 "parser.ypp"
+#line 377 "parser.ypp"
     {/*add_command(cORSHORT,NULL);pushlabel();*/}
     break;
 
   case 125:
 /* Line 661 of lalr1.cc  */
-#line 376 "parser.ypp"
+#line 377 "parser.ypp"
     {/*poplabel();create_boole('|');*/}
     break;
 
   case 126:
 /* Line 661 of lalr1.cc  */
-#line 377 "parser.ypp"
+#line 378 "parser.ypp"
     {/*add_command(cANDSHORT,NULL);pushlabel();*/}
     break;
 
   case 127:
 /* Line 661 of lalr1.cc  */
-#line 377 "parser.ypp"
+#line 378 "parser.ypp"
     {/*poplabel();create_boole('&');*/}
     break;
 
   case 128:
 /* Line 661 of lalr1.cc  */
-#line 378 "parser.ypp"
+#line 379 "parser.ypp"
     {/*create_boole('!');*/}
     break;
 
   case 129:
 /* Line 661 of lalr1.cc  */
-#line 379 "parser.ypp"
+#line 380 "parser.ypp"
     {/*create_numrelop('=');*/}
     break;
 
   case 130:
 /* Line 661 of lalr1.cc  */
-#line 380 "parser.ypp"
+#line 381 "parser.ypp"
     {/*create_numrelop('!');*/}
     break;
 
   case 131:
 /* Line 661 of lalr1.cc  */
-#line 381 "parser.ypp"
+#line 382 "parser.ypp"
     {/*create_numrelop('<');*/}
     break;
 
   case 132:
 /* Line 661 of lalr1.cc  */
-#line 382 "parser.ypp"
+#line 383 "parser.ypp"
     {/*create_numrelop('{');*/}
     break;
 
   case 133:
 /* Line 661 of lalr1.cc  */
-#line 383 "parser.ypp"
+#line 384 "parser.ypp"
     {/*create_numrelop('>');*/}
     break;
 
   case 134:
 /* Line 661 of lalr1.cc  */
-#line 384 "parser.ypp"
+#line 385 "parser.ypp"
     {/*create_numrelop('}');*/}
     break;
 
   case 135:
 /* Line 661 of lalr1.cc  */
-#line 385 "parser.ypp"
+#line 386 "parser.ypp"
     {/*add_command(cTESTEOF,NULL);*/}
     break;
 
   case 136:
 /* Line 661 of lalr1.cc  */
-#line 386 "parser.ypp"
+#line 387 "parser.ypp"
     {/*add_command(cGLOB,NULL);*/}
     break;
 
   case 137:
 /* Line 661 of lalr1.cc  */
-#line 387 "parser.ypp"
+#line 388 "parser.ypp"
     { (yyval.number_expression) = new ConstNumberExprAST((yysemantic_stack_[(1) - (1)].number));  }
     break;
 
   case 138:
 /* Line 661 of lalr1.cc  */
-#line 388 "parser.ypp"
+#line 389 "parser.ypp"
     {/*add_command(cARDIM,"");*/}
     break;
 
   case 139:
 /* Line 661 of lalr1.cc  */
-#line 389 "parser.ypp"
+#line 390 "parser.ypp"
     {/*add_command(cARDIM,"");*/}
     break;
 
   case 140:
 /* Line 661 of lalr1.cc  */
-#line 390 "parser.ypp"
+#line 391 "parser.ypp"
     {/*add_command(cARSIZE,"");*/}
     break;
 
   case 141:
 /* Line 661 of lalr1.cc  */
-#line 391 "parser.ypp"
+#line 392 "parser.ypp"
     {/*add_command(cARSIZE,"");*/}
     break;
 
   case 142:
 /* Line 661 of lalr1.cc  */
-#line 392 "parser.ypp"
+#line 393 "parser.ypp"
     {/*add_command(cNUMBER_FUNCTION_OR_ARRAY,$1);*/}
     break;
 
   case 143:
 /* Line 661 of lalr1.cc  */
-#line 393 "parser.ypp"
+#line 394 "parser.ypp"
     {/*add_command(cPUSHNUMSYM,dotify($1));*/}
     break;
 
   case 144:
 /* Line 661 of lalr1.cc  */
-#line 394 "parser.ypp"
+#line 395 "parser.ypp"
     {/*create_numbin('+');*/}
     break;
 
   case 145:
 /* Line 661 of lalr1.cc  */
-#line 395 "parser.ypp"
+#line 396 "parser.ypp"
     {/*create_numbin('-');*/}
     break;
 
   case 146:
 /* Line 661 of lalr1.cc  */
-#line 396 "parser.ypp"
+#line 397 "parser.ypp"
     {/*create_numbin('*');*/}
     break;
 
   case 147:
 /* Line 661 of lalr1.cc  */
-#line 397 "parser.ypp"
+#line 398 "parser.ypp"
     {/*create_numbin('/');*/}
     break;
 
   case 148:
 /* Line 661 of lalr1.cc  */
-#line 398 "parser.ypp"
+#line 399 "parser.ypp"
     {/*create_numbin('%');*/}
     break;
 
   case 149:
 /* Line 661 of lalr1.cc  */
-#line 399 "parser.ypp"
+#line 400 "parser.ypp"
     {/*create_numbin('^');*/}
     break;
 
   case 150:
 /* Line 661 of lalr1.cc  */
-#line 400 "parser.ypp"
+#line 401 "parser.ypp"
     { /*add_command(cNEGATE,NULL);*/ }
     break;
 
   case 151:
 /* Line 661 of lalr1.cc  */
-#line 401 "parser.ypp"
+#line 402 "parser.ypp"
     { /* do nothing */ }
     break;
 
   case 152:
 /* Line 661 of lalr1.cc  */
-#line 402 "parser.ypp"
+#line 403 "parser.ypp"
     {/*create_strrelop('=');*/}
     break;
 
   case 153:
 /* Line 661 of lalr1.cc  */
-#line 403 "parser.ypp"
+#line 404 "parser.ypp"
     {/*create_strrelop('!');*/}
     break;
 
   case 154:
 /* Line 661 of lalr1.cc  */
-#line 404 "parser.ypp"
+#line 405 "parser.ypp"
     {/*create_strrelop('<');*/}
     break;
 
   case 155:
 /* Line 661 of lalr1.cc  */
-#line 405 "parser.ypp"
+#line 406 "parser.ypp"
     {/*create_strrelop('{');*/}
     break;
 
   case 156:
 /* Line 661 of lalr1.cc  */
-#line 406 "parser.ypp"
+#line 407 "parser.ypp"
     {/*create_strrelop('>');*/}
     break;
 
   case 157:
 /* Line 661 of lalr1.cc  */
-#line 407 "parser.ypp"
+#line 408 "parser.ypp"
     {/*create_strrelop('}');*/}
     break;
 
   case 160:
 /* Line 661 of lalr1.cc  */
-#line 412 "parser.ypp"
+#line 413 "parser.ypp"
     {/*create_pusharrayref(dotify($1),stNUMBERARRAYREF);*/}
     break;
 
   case 161:
 /* Line 661 of lalr1.cc  */
-#line 415 "parser.ypp"
+#line 416 "parser.ypp"
     {/*create_pusharrayref(dotify($1),stSTRINGARRAYREF);*/}
     break;
 
   case 162:
 /* Line 661 of lalr1.cc  */
-#line 418 "parser.ypp"
+#line 419 "parser.ypp"
     {/*create_function(fSIN);*/}
     break;
 
   case 163:
 /* Line 661 of lalr1.cc  */
-#line 419 "parser.ypp"
+#line 420 "parser.ypp"
     {/*create_function(fASIN);*/}
     break;
 
   case 164:
 /* Line 661 of lalr1.cc  */
-#line 420 "parser.ypp"
+#line 421 "parser.ypp"
     {/*create_function(fCOS);*/}
     break;
 
   case 165:
 /* Line 661 of lalr1.cc  */
-#line 421 "parser.ypp"
+#line 422 "parser.ypp"
     {/*create_function(fACOS)*/;}
     break;
 
   case 166:
 /* Line 661 of lalr1.cc  */
-#line 422 "parser.ypp"
+#line 423 "parser.ypp"
     {/*create_function(fTAN);*/}
     break;
 
   case 167:
 /* Line 661 of lalr1.cc  */
-#line 423 "parser.ypp"
+#line 424 "parser.ypp"
     {/*create_function(fATAN);*/}
     break;
 
   case 168:
 /* Line 661 of lalr1.cc  */
-#line 424 "parser.ypp"
+#line 425 "parser.ypp"
     {/*create_function(fATAN2);*/}
     break;
 
   case 169:
 /* Line 661 of lalr1.cc  */
-#line 425 "parser.ypp"
+#line 426 "parser.ypp"
     {/*create_function(fEXP);*/}
     break;
 
   case 170:
 /* Line 661 of lalr1.cc  */
-#line 426 "parser.ypp"
+#line 427 "parser.ypp"
     {/*create_function(fLOG);*/}
     break;
 
   case 171:
 /* Line 661 of lalr1.cc  */
-#line 427 "parser.ypp"
+#line 428 "parser.ypp"
     {/*create_function(fLOG2);*/}
     break;
 
   case 172:
 /* Line 661 of lalr1.cc  */
-#line 428 "parser.ypp"
+#line 429 "parser.ypp"
     {/*create_function(fINT);*/}
     break;
 
   case 173:
 /* Line 661 of lalr1.cc  */
-#line 429 "parser.ypp"
+#line 430 "parser.ypp"
     {/*create_function(fSQR);*/}
     break;
 
   case 174:
 /* Line 661 of lalr1.cc  */
-#line 430 "parser.ypp"
+#line 431 "parser.ypp"
     {/*create_function(fSQRT);*/}
     break;
 
   case 175:
 /* Line 661 of lalr1.cc  */
-#line 431 "parser.ypp"
+#line 432 "parser.ypp"
     {/*create_function(fFRAC);*/}
     break;
 
   case 176:
 /* Line 661 of lalr1.cc  */
-#line 432 "parser.ypp"
+#line 433 "parser.ypp"
     {/*create_function(fABS);*/}
     break;
 
   case 177:
 /* Line 661 of lalr1.cc  */
-#line 433 "parser.ypp"
+#line 434 "parser.ypp"
     {/*create_function(fSIG);*/}
     break;
 
   case 178:
 /* Line 661 of lalr1.cc  */
-#line 434 "parser.ypp"
+#line 435 "parser.ypp"
     {/*create_function(fRAN);*/}
     break;
 
   case 179:
 /* Line 661 of lalr1.cc  */
-#line 435 "parser.ypp"
+#line 436 "parser.ypp"
     {/*create_function(fRAN2);*/}
     break;
 
   case 180:
 /* Line 661 of lalr1.cc  */
-#line 436 "parser.ypp"
+#line 437 "parser.ypp"
     {/*create_function(fMIN);*/}
     break;
 
   case 181:
 /* Line 661 of lalr1.cc  */
-#line 437 "parser.ypp"
+#line 438 "parser.ypp"
     {/*create_function(fMAX);*/}
     break;
 
   case 182:
 /* Line 661 of lalr1.cc  */
-#line 438 "parser.ypp"
+#line 439 "parser.ypp"
     {/*create_function(fLEN);*/}
     break;
 
   case 183:
 /* Line 661 of lalr1.cc  */
-#line 439 "parser.ypp"
+#line 440 "parser.ypp"
     {/*create_function(fVAL);*/}
     break;
 
   case 184:
 /* Line 661 of lalr1.cc  */
-#line 440 "parser.ypp"
+#line 441 "parser.ypp"
     {/*create_function(fASC);*/}
     break;
 
   case 185:
 /* Line 661 of lalr1.cc  */
-#line 441 "parser.ypp"
+#line 442 "parser.ypp"
     {/*create_function(fINSTR);*/}
     break;
 
   case 186:
 /* Line 661 of lalr1.cc  */
-#line 442 "parser.ypp"
+#line 443 "parser.ypp"
     {/*create_function(fINSTR2);*/}
     break;
 
   case 187:
 /* Line 661 of lalr1.cc  */
-#line 443 "parser.ypp"
+#line 444 "parser.ypp"
     {/*create_function(fRINSTR);*/}
     break;
 
   case 188:
 /* Line 661 of lalr1.cc  */
-#line 444 "parser.ypp"
+#line 445 "parser.ypp"
     {/*create_function(fRINSTR2);*/}
     break;
 
   case 189:
 /* Line 661 of lalr1.cc  */
-#line 445 "parser.ypp"
+#line 446 "parser.ypp"
     {/*create_function(fSYSTEM);*/}
     break;
 
   case 190:
 /* Line 661 of lalr1.cc  */
-#line 446 "parser.ypp"
+#line 447 "parser.ypp"
     {/*create_function(fAND);*/}
     break;
 
   case 191:
 /* Line 661 of lalr1.cc  */
-#line 447 "parser.ypp"
+#line 448 "parser.ypp"
     {/*create_function(fOR);*/}
     break;
 
   case 192:
 /* Line 661 of lalr1.cc  */
-#line 448 "parser.ypp"
+#line 449 "parser.ypp"
     {/*create_function(fEOR);*/}
     break;
 
   case 193:
 /* Line 661 of lalr1.cc  */
-#line 449 "parser.ypp"
+#line 450 "parser.ypp"
     {/*add_command(cTOKEN2,NULL);*/}
     break;
 
   case 194:
 /* Line 661 of lalr1.cc  */
-#line 450 "parser.ypp"
+#line 451 "parser.ypp"
     {/*add_command(cTOKEN,NULL);*/}
     break;
 
   case 195:
 /* Line 661 of lalr1.cc  */
-#line 451 "parser.ypp"
+#line 452 "parser.ypp"
     {/*add_command(cSPLIT2,NULL);*/}
     break;
 
   case 196:
 /* Line 661 of lalr1.cc  */
-#line 452 "parser.ypp"
+#line 453 "parser.ypp"
     {/*add_command(cSPLIT,NULL);*/}
     break;
 
   case 197:
 /* Line 661 of lalr1.cc  */
-#line 453 "parser.ypp"
+#line 454 "parser.ypp"
     {/*create_myopen (OPEN_FUNCTION);*/}
     break;
 
   case 198:
 /* Line 661 of lalr1.cc  */
-#line 454 "parser.ypp"
+#line 455 "parser.ypp"
     {/*create_myopen (OPEN_FUNCTION + OPEN_HAS_MODE);*/}
     break;
 
   case 199:
 /* Line 661 of lalr1.cc  */
-#line 455 "parser.ypp"
+#line 456 "parser.ypp"
     {/*create_myopen (OPEN_FUNCTION + OPEN_HAS_STREAM);*/}
     break;
 
   case 200:
 /* Line 661 of lalr1.cc  */
-#line 456 "parser.ypp"
+#line 457 "parser.ypp"
     {/*create_myopen (OPEN_FUNCTION + OPEN_HAS_STREAM + OPEN_HAS_MODE);*/}
     break;
 
   case 201:
 /* Line 661 of lalr1.cc  */
-#line 457 "parser.ypp"
+#line 458 "parser.ypp"
     { /*create_function (fTELL); */}
     break;
 
   case 202:
 /* Line 661 of lalr1.cc  */
-#line 458 "parser.ypp"
+#line 459 "parser.ypp"
     { /*create_function (fPEEKFILE);*/ }
     break;
 
   case 203:
 /* Line 661 of lalr1.cc  */
-#line 459 "parser.ypp"
+#line 460 "parser.ypp"
     { /*add_command (cPUSHFREE, NULL);*/ }
     break;
 
   case 204:
 /* Line 661 of lalr1.cc  */
-#line 459 "parser.ypp"
+#line 460 "parser.ypp"
     { /*create_execute (ftNUMBER); add_command (cSWAP, NULL); add_command (cPOP, NULL);*/ }
     break;
 
   case 207:
 /* Line 661 of lalr1.cc  */
-#line 466 "parser.ypp"
+#line 467 "parser.ypp"
     {/*create_dim(dotify($1),'N');*/}
     break;
 
   case 208:
 /* Line 661 of lalr1.cc  */
-#line 467 "parser.ypp"
+#line 468 "parser.ypp"
     {/*create_dim(dotify($1),'S');*/}
     break;
 
   case 209:
 /* Line 661 of lalr1.cc  */
-#line 468 "parser.ypp"
+#line 469 "parser.ypp"
     {/*create_dim(dotify($3),'N');*/}
     break;
 
   case 210:
 /* Line 661 of lalr1.cc  */
-#line 469 "parser.ypp"
+#line 470 "parser.ypp"
     {/*create_dim(dotify($3),'S');*/}
     break;
 
   case 211:
 /* Line 661 of lalr1.cc  */
-#line 472 "parser.ypp"
+#line 473 "parser.ypp"
     {/*$$ = dotify ($1);*/}
     break;
 
   case 212:
 /* Line 661 of lalr1.cc  */
-#line 473 "parser.ypp"
+#line 474 "parser.ypp"
     { /*add_command (cPUSHFREE, NULL); $$ = dotify ($1); */}
     break;
 
   case 213:
 /* Line 661 of lalr1.cc  */
-#line 476 "parser.ypp"
+#line 477 "parser.ypp"
     {/*$$ = dotify ($1);*/}
     break;
 
   case 214:
 /* Line 661 of lalr1.cc  */
-#line 479 "parser.ypp"
+#line 480 "parser.ypp"
     {/*$$ = dotify ($1);*/}
     break;
 
   case 215:
 /* Line 661 of lalr1.cc  */
-#line 480 "parser.ypp"
+#line 481 "parser.ypp"
     {/* add_command (cPUSHFREE, NULL); $$ = dotify ($1); */}
     break;
 
   case 216:
 /* Line 661 of lalr1.cc  */
-#line 483 "parser.ypp"
+#line 484 "parser.ypp"
     {/*$$ = dotify ($1);*/}
     break;
 
   case 217:
 /* Line 661 of lalr1.cc  */
-#line 486 "parser.ypp"
+#line 487 "parser.ypp"
     { /*if (cli != NULL) { cli->items++; }*/ }
     break;
 
   case 218:
 /* Line 661 of lalr1.cc  */
-#line 487 "parser.ypp"
+#line 488 "parser.ypp"
     { /*if (cli != NULL) { cli->items++; }*/ }
     break;
 
   case 221:
 /* Line 661 of lalr1.cc  */
-#line 494 "parser.ypp"
+#line 495 "parser.ypp"
     { unclosed_subs++; }
     break;
 
   case 222:
 /* Line 661 of lalr1.cc  */
-#line 494 "parser.ypp"
+#line 495 "parser.ypp"
     { not_inside_loop_or_conditional ("define a function");
 if (function_type!=ftNONE) {printf("functions cannot be nested");}}
     break;
 
   case 223:
 /* Line 661 of lalr1.cc  */
-#line 496 "parser.ypp"
+#line 497 "parser.ypp"
     {
 	   
 }
@@ -1609,7 +1610,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 224:
 /* Line 661 of lalr1.cc  */
-#line 499 "parser.ypp"
+#line 500 "parser.ypp"
     {
 	   
 }
@@ -1617,7 +1618,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 225:
 /* Line 661 of lalr1.cc  */
-#line 503 "parser.ypp"
+#line 504 "parser.ypp"
     {
 	
    }
@@ -1625,7 +1626,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 226:
 /* Line 661 of lalr1.cc  */
-#line 508 "parser.ypp"
+#line 509 "parser.ypp"
     {
 		if (unclosed_subs)
 		{
@@ -1636,13 +1637,13 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 227:
 /* Line 661 of lalr1.cc  */
-#line 514 "parser.ypp"
+#line 515 "parser.ypp"
     {unclosed_subs--;}
     break;
 
   case 228:
 /* Line 661 of lalr1.cc  */
-#line 517 "parser.ypp"
+#line 518 "parser.ypp"
     {
 	//function_type=ftNUMBER;current_function = dotify ($1); $$ = dotify ($1);
 	}
@@ -1650,13 +1651,13 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 229:
 /* Line 661 of lalr1.cc  */
-#line 520 "parser.ypp"
+#line 521 "parser.ypp"
     {/*function_type=ftSTRING;current_function = dotify ($1); $$ = dotify ($1);*/}
     break;
 
   case 230:
 /* Line 661 of lalr1.cc  */
-#line 523 "parser.ypp"
+#line 524 "parser.ypp"
     {
 	
                       }
@@ -1664,7 +1665,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 231:
 /* Line 661 of lalr1.cc  */
-#line 526 "parser.ypp"
+#line 527 "parser.ypp"
     {
 						  
                       }
@@ -1672,7 +1673,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 232:
 /* Line 661 of lalr1.cc  */
-#line 529 "parser.ypp"
+#line 530 "parser.ypp"
     {
 						  
                       }
@@ -1680,7 +1681,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 233:
 /* Line 661 of lalr1.cc  */
-#line 532 "parser.ypp"
+#line 533 "parser.ypp"
     {
 						  
                       }
@@ -1688,7 +1689,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 234:
 /* Line 661 of lalr1.cc  */
-#line 537 "parser.ypp"
+#line 538 "parser.ypp"
     {
 //                    function_type = ftNUMBER;
 //                    cfunction_type = YABMOD_INTERFACE_TYPE_SCALAR_NUMBER;
@@ -1699,7 +1700,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 235:
 /* Line 661 of lalr1.cc  */
-#line 543 "parser.ypp"
+#line 544 "parser.ypp"
     {
 //         function_type = ftSTRING;
 //         cfunction_type = YABMOD_INTERFACE_TYPE_SCALAR_STRING;
@@ -1710,7 +1711,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 239:
 /* Line 661 of lalr1.cc  */
-#line 556 "parser.ypp"
+#line 557 "parser.ypp"
     {
 //                          create_require (stNUMBER); create_makelocal (dotify ($1), syNUMBER); add_command (cPOPNUMSYM, dotify ($1));
                       }
@@ -1718,7 +1719,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 240:
 /* Line 661 of lalr1.cc  */
-#line 559 "parser.ypp"
+#line 560 "parser.ypp"
     {
 //         create_require (stSTRING); create_makelocal (dotify ($1), sySTRING); add_command (cPOPSTRSYM, dotify ($1));
      }
@@ -1726,7 +1727,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 241:
 /* Line 661 of lalr1.cc  */
-#line 562 "parser.ypp"
+#line 563 "parser.ypp"
     {
 //         create_require (stNUMBERARRAYREF); create_arraylink (dotify ($1), stNUMBERARRAYREF);
      }
@@ -1734,7 +1735,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 242:
 /* Line 661 of lalr1.cc  */
-#line 565 "parser.ypp"
+#line 566 "parser.ypp"
     {
 //         create_require (stSTRINGARRAYREF); create_arraylink (dotify ($1), stSTRINGARRAYREF);
      }
@@ -1742,61 +1743,61 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 245:
 /* Line 661 of lalr1.cc  */
-#line 574 "parser.ypp"
+#line 575 "parser.ypp"
     {/* create_makelocal (dotify ($1), syNUMBER);*/ }
     break;
 
   case 246:
 /* Line 661 of lalr1.cc  */
-#line 575 "parser.ypp"
+#line 576 "parser.ypp"
     {/* create_makelocal (dotify ($1), sySTRING); */}
     break;
 
   case 247:
 /* Line 661 of lalr1.cc  */
-#line 576 "parser.ypp"
+#line 577 "parser.ypp"
     { /*create_makelocal (dotify ($1), syARRAY); create_dim (dotify ($1), 'n'); */}
     break;
 
   case 248:
 /* Line 661 of lalr1.cc  */
-#line 577 "parser.ypp"
+#line 578 "parser.ypp"
     { /*create_makelocal (dotify ($1), syARRAY); create_dim (dotify ($1), 's'); */}
     break;
 
   case 251:
 /* Line 661 of lalr1.cc  */
-#line 584 "parser.ypp"
+#line 585 "parser.ypp"
     { /*create_makestatic (dotify ($1), syNUMBER);*/ }
     break;
 
   case 252:
 /* Line 661 of lalr1.cc  */
-#line 585 "parser.ypp"
+#line 586 "parser.ypp"
     { /*create_makestatic (dotify ($1), sySTRING);*/ }
     break;
 
   case 253:
 /* Line 661 of lalr1.cc  */
-#line 586 "parser.ypp"
+#line 587 "parser.ypp"
     { /*create_makestatic (dotify ($1), syARRAY); create_dim (dotify ($1), 'N'); */}
     break;
 
   case 254:
 /* Line 661 of lalr1.cc  */
-#line 587 "parser.ypp"
+#line 588 "parser.ypp"
     {/* create_makestatic (dotify ($1), syARRAY); create_dim (dotify ($1), 'S'); */}
     break;
 
   case 258:
 /* Line 661 of lalr1.cc  */
-#line 595 "parser.ypp"
+#line 596 "parser.ypp"
     {/*create_require(stNUMBER);create_makelocal(dotify ($1),syNUMBER);add_command(cPOPNUMSYM,dotify ($1));*/}
     break;
 
   case 259:
 /* Line 661 of lalr1.cc  */
-#line 596 "parser.ypp"
+#line 597 "parser.ypp"
     {
 	   
 }
@@ -1804,7 +1805,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 260:
 /* Line 661 of lalr1.cc  */
-#line 599 "parser.ypp"
+#line 600 "parser.ypp"
     {
 	   
 }
@@ -1812,7 +1813,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 261:
 /* Line 661 of lalr1.cc  */
-#line 602 "parser.ypp"
+#line 603 "parser.ypp"
     {
 	   
 }
@@ -1820,13 +1821,13 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 262:
 /* Line 661 of lalr1.cc  */
-#line 607 "parser.ypp"
+#line 608 "parser.ypp"
     { unclosed_fors++; }
     break;
 
   case 263:
 /* Line 661 of lalr1.cc  */
-#line 608 "parser.ypp"
+#line 609 "parser.ypp"
     {
 				 
 			}
@@ -1834,28 +1835,28 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 264:
 /* Line 661 of lalr1.cc  */
-#line 612 "parser.ypp"
+#line 613 "parser.ypp"
     {
 	 }
     break;
 
   case 265:
 /* Line 661 of lalr1.cc  */
-#line 614 "parser.ypp"
+#line 615 "parser.ypp"
     {/*
               swap();popgoto();poplabel();*/}
     break;
 
   case 266:
 /* Line 661 of lalr1.cc  */
-#line 616 "parser.ypp"
+#line 617 "parser.ypp"
     {/*create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);*/
 		}
     break;
 
   case 267:
 /* Line 661 of lalr1.cc  */
-#line 620 "parser.ypp"
+#line 621 "parser.ypp"
     {
 		if (unclosed_fors) {
 			printf ("%d \"for\" loop%s not closed", unclosed_fors, (unclosed_fors > 1) ? "s" : "");
@@ -1865,50 +1866,50 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 268:
 /* Line 661 of lalr1.cc  */
-#line 625 "parser.ypp"
+#line 626 "parser.ypp"
     {unclosed_fors--;}
     break;
 
   case 269:
 /* Line 661 of lalr1.cc  */
-#line 628 "parser.ypp"
+#line 629 "parser.ypp"
     {/* pop (stSTRING);*/ }
     break;
 
   case 270:
 /* Line 661 of lalr1.cc  */
-#line 629 "parser.ypp"
+#line 630 "parser.ypp"
     {  }
     break;
 
   case 271:
 /* Line 661 of lalr1.cc  */
-#line 632 "parser.ypp"
+#line 633 "parser.ypp"
     {/*create_pushnum(1);*/}
     break;
 
   case 273:
 /* Line 661 of lalr1.cc  */
-#line 636 "parser.ypp"
+#line 637 "parser.ypp"
     { unclosed_switches ++; }
     break;
 
   case 274:
 /* Line 661 of lalr1.cc  */
-#line 636 "parser.ypp"
+#line 637 "parser.ypp"
     {
 	}
     break;
 
   case 275:
 /* Line 661 of lalr1.cc  */
-#line 638 "parser.ypp"
+#line 639 "parser.ypp"
     { unclosed_switches --; }
     break;
 
   case 276:
 /* Line 661 of lalr1.cc  */
-#line 638 "parser.ypp"
+#line 639 "parser.ypp"
     {continue_corrections --;
 					 
 				}
@@ -1916,19 +1917,19 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 277:
 /* Line 661 of lalr1.cc  */
-#line 643 "parser.ypp"
+#line 644 "parser.ypp"
     { yylineno += (yysemantic_stack_[(1) - (1)].separator); }
     break;
 
   case 278:
 /* Line 661 of lalr1.cc  */
-#line 644 "parser.ypp"
+#line 645 "parser.ypp"
     { yylineno += (yysemantic_stack_[(2) - (2)].separator); }
     break;
 
   case 282:
 /* Line 661 of lalr1.cc  */
-#line 652 "parser.ypp"
+#line 653 "parser.ypp"
     {
 	   
 }
@@ -1936,7 +1937,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 283:
 /* Line 661 of lalr1.cc  */
-#line 655 "parser.ypp"
+#line 656 "parser.ypp"
     {
 		   
 	}
@@ -1944,13 +1945,13 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 285:
 /* Line 661 of lalr1.cc  */
-#line 661 "parser.ypp"
+#line 662 "parser.ypp"
     { yylineno+=(yysemantic_stack_[(2) - (2)].separator); }
     break;
 
   case 286:
 /* Line 661 of lalr1.cc  */
-#line 661 "parser.ypp"
+#line 662 "parser.ypp"
     {
 
 	   
@@ -1959,212 +1960,212 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 288:
 /* Line 661 of lalr1.cc  */
-#line 667 "parser.ypp"
+#line 668 "parser.ypp"
     { unclosed_dos++; }
     break;
 
   case 289:
 /* Line 661 of lalr1.cc  */
-#line 667 "parser.ypp"
+#line 668 "parser.ypp"
     {/*add_command(cCONTINUE_HERE,NULL);create_break_mark(0,1);pushgoto();*/}
     break;
 
   case 291:
 /* Line 661 of lalr1.cc  */
-#line 672 "parser.ypp"
+#line 673 "parser.ypp"
     {if (unclosed_dos) { printf ("%d \"do\" loop%s not closed", unclosed_dos, (unclosed_dos > 1) ? "s" : ""); } }
     break;
 
   case 292:
 /* Line 661 of lalr1.cc  */
-#line 673 "parser.ypp"
+#line 674 "parser.ypp"
     {unclosed_dos--;}
     break;
 
   case 293:
 /* Line 661 of lalr1.cc  */
-#line 673 "parser.ypp"
+#line 674 "parser.ypp"
     {/*popgoto();create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);*/}
     break;
 
   case 294:
 /* Line 661 of lalr1.cc  */
-#line 676 "parser.ypp"
+#line 677 "parser.ypp"
     { unclosed_whiles++; }
     break;
 
   case 295:
 /* Line 661 of lalr1.cc  */
-#line 676 "parser.ypp"
+#line 677 "parser.ypp"
     {/*add_command(cCONTINUE_HERE,NULL);create_break_mark(0,1);pushgoto()*/}
     break;
 
   case 296:
 /* Line 661 of lalr1.cc  */
-#line 677 "parser.ypp"
+#line 678 "parser.ypp"
     {/*add_command(cDECIDE,NULL);
          pushlabel();*/}
     break;
 
   case 298:
 /* Line 661 of lalr1.cc  */
-#line 683 "parser.ypp"
+#line 684 "parser.ypp"
     {if (unclosed_whiles) { printf ("%d \"while\" loop%s not closed", unclosed_whiles, (unclosed_whiles > 1) ? "s" : ""); } }
     break;
 
   case 299:
 /* Line 661 of lalr1.cc  */
-#line 684 "parser.ypp"
+#line 685 "parser.ypp"
     {unclosed_whiles--;}
     break;
 
   case 300:
 /* Line 661 of lalr1.cc  */
-#line 684 "parser.ypp"
+#line 685 "parser.ypp"
     { }
     break;
 
   case 301:
 /* Line 661 of lalr1.cc  */
-#line 687 "parser.ypp"
+#line 688 "parser.ypp"
     { unclosed_repeats++; }
     break;
 
   case 302:
 /* Line 661 of lalr1.cc  */
-#line 687 "parser.ypp"
+#line 688 "parser.ypp"
     {/*add_command(cCONTINUE_HERE,NULL);create_break_mark(0,1);pushgoto();*/}
     break;
 
   case 304:
 /* Line 661 of lalr1.cc  */
-#line 692 "parser.ypp"
+#line 693 "parser.ypp"
     {if (unclosed_repeats) { printf ("%d \"repeat\" loop%s not closed", unclosed_repeats, (unclosed_repeats > 1) ? "s" : ""); } }
     break;
 
   case 305:
 /* Line 661 of lalr1.cc  */
-#line 694 "parser.ypp"
+#line 695 "parser.ypp"
     {unclosed_repeats--;}
     break;
 
   case 306:
 /* Line 661 of lalr1.cc  */
-#line 694 "parser.ypp"
+#line 695 "parser.ypp"
     {/*add_command(cDECIDE,NULL);popgoto();create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);*/}
     break;
 
   case 307:
 /* Line 661 of lalr1.cc  */
-#line 697 "parser.ypp"
+#line 698 "parser.ypp"
     {/*add_command(cDECIDE,NULL);storelabel();pushlabel();*/}
     break;
 
   case 308:
 /* Line 661 of lalr1.cc  */
-#line 698 "parser.ypp"
+#line 699 "parser.ypp"
     {/*swap();matchgoto();swap();poplabel();*/}
     break;
 
   case 309:
 /* Line 661 of lalr1.cc  */
-#line 700 "parser.ypp"
+#line 701 "parser.ypp"
     {/*poplabel();*/}
     break;
 
   case 311:
 /* Line 661 of lalr1.cc  */
-#line 704 "parser.ypp"
+#line 705 "parser.ypp"
     { /*add_command (cDECIDE, NULL); storelabel (); pushlabel ();*/ }
     break;
 
   case 312:
 /* Line 661 of lalr1.cc  */
-#line 705 "parser.ypp"
+#line 706 "parser.ypp"
     { unclosed_ifs--; }
     break;
 
   case 313:
 /* Line 661 of lalr1.cc  */
-#line 705 "parser.ypp"
+#line 706 "parser.ypp"
     {/* swap (); matchgoto (); swap (); poplabel (); poplabel (); */}
     break;
 
   case 314:
 /* Line 661 of lalr1.cc  */
-#line 706 "parser.ypp"
+#line 707 "parser.ypp"
     { /*add_command (cDECIDE, NULL); storelabel (); pushlabel ();*/ }
     break;
 
   case 315:
 /* Line 661 of lalr1.cc  */
-#line 707 "parser.ypp"
+#line 708 "parser.ypp"
     {/* unclosed_ifs--; } { swap (); matchgoto (); swap (); poplabel (); poplabel ();*/ }
     break;
 
   case 316:
 /* Line 661 of lalr1.cc  */
-#line 710 "parser.ypp"
+#line 711 "parser.ypp"
     {if (unclosed_ifs) { printf ("%d \"if\" statement%s not closed", unclosed_ifs, (unclosed_ifs > 1) ? "s" : ""); } }
     break;
 
   case 317:
 /* Line 661 of lalr1.cc  */
-#line 711 "parser.ypp"
+#line 712 "parser.ypp"
     {unclosed_ifs--;}
     break;
 
   case 318:
 /* Line 661 of lalr1.cc  */
-#line 714 "parser.ypp"
+#line 715 "parser.ypp"
     { unclosed_ifs ++; }
     break;
 
   case 322:
 /* Line 661 of lalr1.cc  */
-#line 723 "parser.ypp"
+#line 724 "parser.ypp"
     {/*add_command(cDECIDE,NULL);pushlabel();*/}
     break;
 
   case 323:
 /* Line 661 of lalr1.cc  */
-#line 725 "parser.ypp"
+#line 726 "parser.ypp"
     {/*swap();matchgoto();swap();poplabel();*/}
     break;
 
   case 325:
 /* Line 661 of lalr1.cc  */
-#line 729 "parser.ypp"
+#line 730 "parser.ypp"
     {/*create_myread ('n', until_eol); add_command (cPOPNUMSYM, dotify ($1)); */}
     break;
 
   case 326:
 /* Line 661 of lalr1.cc  */
-#line 730 "parser.ypp"
+#line 731 "parser.ypp"
     {/*create_myread('s',until_eol);add_command(cPOPSTRSYM, dotify ($1));*/}
     break;
 
   case 327:
 /* Line 661 of lalr1.cc  */
-#line 731 "parser.ypp"
+#line 732 "parser.ypp"
     {/*create_myread('n',until_eol);create_doarray(dotify ($1),ASSIGNNUMBERARRAY);*/}
     break;
 
   case 328:
 /* Line 661 of lalr1.cc  */
-#line 732 "parser.ypp"
+#line 733 "parser.ypp"
     {/*create_myread('s',until_eol);create_doarray(dotify ($1),ASSIGNSTRINGARRAY);*/}
     break;
 
   case 329:
 /* Line 661 of lalr1.cc  */
-#line 735 "parser.ypp"
+#line 736 "parser.ypp"
     { printf("ERROR: print with no arg not supprted yet\n"); exit(1); }
     break;
 
   case 330:
 /* Line 661 of lalr1.cc  */
-#line 736 "parser.ypp"
+#line 737 "parser.ypp"
     {
 		debug("got first print argument as number\n");
 		(yyval.print_list) = new PrintListAST();
@@ -2174,67 +2175,67 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 331:
 /* Line 661 of lalr1.cc  */
-#line 742 "parser.ypp"
-    { /*create_print ('u'); */}
+#line 743 "parser.ypp"
+    { printf("ERROR: print syntax not supprted yet\n"); exit(1);}
     break;
 
   case 332:
 /* Line 661 of lalr1.cc  */
-#line 744 "parser.ypp"
-    { debug("print with string\n"); }
+#line 745 "parser.ypp"
+    { printf("ERROR: print syntax not supprted yet\n"); exit(1); }
     break;
 
   case 333:
 /* Line 661 of lalr1.cc  */
-#line 746 "parser.ypp"
+#line 747 "parser.ypp"
     { (yyval.print_list) = (yysemantic_stack_[(3) - (1)].print_list) ; (yyval.print_list)->additem(ExprASTPtr((yysemantic_stack_[(3) - (3)].number_expression))) ; }
     break;
 
   case 334:
 /* Line 661 of lalr1.cc  */
-#line 748 "parser.ypp"
+#line 749 "parser.ypp"
     {/* create_print ('b'); create_print ('u'); */}
     break;
 
   case 335:
 /* Line 661 of lalr1.cc  */
-#line 750 "parser.ypp"
+#line 751 "parser.ypp"
     { /*create_print ('b'); create_print ('s');*/ }
     break;
 
   case 336:
 /* Line 661 of lalr1.cc  */
-#line 753 "parser.ypp"
+#line 754 "parser.ypp"
     {/*create_pushnum(STDIO_STREAM);create_pps(cPUSHSTREAM,1);*/}
     break;
 
   case 338:
 /* Line 661 of lalr1.cc  */
-#line 754 "parser.ypp"
+#line 755 "parser.ypp"
     {/*add_command(cPUSHNUMSYM,dotify ($2));create_pps(cPUSHSTREAM,1);*/}
     break;
 
   case 340:
 /* Line 661 of lalr1.cc  */
-#line 755 "parser.ypp"
+#line 756 "parser.ypp"
     {/*create_pushnum ($2); create_pps(cPUSHSTREAM,1);*/}
     break;
 
   case 342:
 /* Line 661 of lalr1.cc  */
-#line 756 "parser.ypp"
+#line 757 "parser.ypp"
     {/*create_pps(cPUSHSTREAM,1);*/}
     break;
 
   case 344:
 /* Line 661 of lalr1.cc  */
-#line 760 "parser.ypp"
+#line 761 "parser.ypp"
     {/* create_print ('s');*/ }
     break;
 
   case 345:
 /* Line 661 of lalr1.cc  */
-#line 763 "parser.ypp"
+#line 764 "parser.ypp"
     {
 		debug("empty print_intro\n");
 		/*构造一个默认的 打印目标*/
@@ -2244,56 +2245,56 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 346:
 /* Line 661 of lalr1.cc  */
-#line 768 "parser.ypp"
+#line 769 "parser.ypp"
     {  /* 构造一个使用常数表的打印目标*/ }
     break;
 
   case 347:
 /* Line 661 of lalr1.cc  */
-#line 769 "parser.ypp"
+#line 770 "parser.ypp"
     {/*create_pushnum ($2); create_pps(cPUSHSTREAM,0);*/}
     break;
 
   case 348:
 /* Line 661 of lalr1.cc  */
-#line 770 "parser.ypp"
+#line 771 "parser.ypp"
     {/*create_pps(cPUSHSTREAM,0);*/}
     break;
 
   case 349:
 /* Line 661 of lalr1.cc  */
-#line 773 "parser.ypp"
+#line 774 "parser.ypp"
     {/* add_command (cOPTEXPLICIT, NULL); */}
     break;
 
   case 350:
 /* Line 661 of lalr1.cc  */
-#line 776 "parser.ypp"
+#line 777 "parser.ypp"
     { /*add_command (cPUSHNUMSYM, dotify ($1)); create_pushnum (1); create_numbin ('-'); add_command (cPOPNUMSYM, dotify ($1));*/ }
     break;
 
   case 351:
 /* Line 661 of lalr1.cc  */
-#line 777 "parser.ypp"
+#line 778 "parser.ypp"
     {/* add_command (cPUSHNUMSYM, dotify ($3)); create_pushnum (1); create_numbin ('-'); add_command (cPOPNUMSYM, dotify ($3)); */}
     break;
 
   case 352:
 /* Line 661 of lalr1.cc  */
-#line 780 "parser.ypp"
+#line 781 "parser.ypp"
     { /*add_command (cPUSHNUMSYM, dotify ($1)); create_pushnum (1); create_numbin ('+'); add_command (cPOPNUMSYM, dotify ($1));*/ }
     break;
 
   case 353:
 /* Line 661 of lalr1.cc  */
-#line 781 "parser.ypp"
+#line 782 "parser.ypp"
     {
 	/*   add_command (cPUSHNUMSYM, dotify ($3)); create_pushnum (1); create_numbin ('+'); add_command (cPOPNUMSYM, dotify ($3));*/ }
     break;
 
   case 354:
 /* Line 661 of lalr1.cc  */
-#line 785 "parser.ypp"
+#line 786 "parser.ypp"
     {
 //                          if (cli->next == NULL) {
 //                             cmd = add_command (cSTRUCT, dotify ($3));
@@ -2308,7 +2309,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 355:
 /* Line 661 of lalr1.cc  */
-#line 795 "parser.ypp"
+#line 796 "parser.ypp"
     {
 //                          add_command (cENDSTRUCT, NULL)->args = cli->items;
 //                          next_cli = cli->next;
@@ -2319,7 +2320,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 356:
 /* Line 661 of lalr1.cc  */
-#line 801 "parser.ypp"
+#line 802 "parser.ypp"
     {
 //         if (cli->next == NULL) {
 //            cmd = add_command (cSTRUCT, dotify ($3));
@@ -2334,7 +2335,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 357:
 /* Line 661 of lalr1.cc  */
-#line 811 "parser.ypp"
+#line 812 "parser.ypp"
     {
 //         add_command (cENDSTRUCT, NULL)->args = cli->items;
 //         next_cli = cli->next;
@@ -2345,7 +2346,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 361:
 /* Line 661 of lalr1.cc  */
-#line 824 "parser.ypp"
+#line 825 "parser.ypp"
     {
 //         cmd = add_command (cSTRUCTVAR, $2);
 //         cmd->args = cli->items;
@@ -2358,7 +2359,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 362:
 /* Line 661 of lalr1.cc  */
-#line 832 "parser.ypp"
+#line 833 "parser.ypp"
     {
 //         cmd = add_command (cSTRUCTVAR, $2);
 //         cmd->args = cli->items;
@@ -2371,7 +2372,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 363:
 /* Line 661 of lalr1.cc  */
-#line 840 "parser.ypp"
+#line 841 "parser.ypp"
     {
 //         cmd = add_command (cSTRUCTVAR, $2);
 //         cmd->args = cli->items;
@@ -2384,7 +2385,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 364:
 /* Line 661 of lalr1.cc  */
-#line 848 "parser.ypp"
+#line 849 "parser.ypp"
     {
 //         cmd = add_command (cSTRUCTVAR, $2);
 //         cmd->args = cli->items;
@@ -2397,7 +2398,7 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 365:
 /* Line 661 of lalr1.cc  */
-#line 858 "parser.ypp"
+#line 859 "parser.ypp"
     {
 //             old_cli = cli;
 //             cli = xmalloc (sizeof (struct cli));
@@ -2408,44 +2409,44 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 366:
 /* Line 661 of lalr1.cc  */
-#line 866 "parser.ypp"
+#line 867 "parser.ypp"
     { /*$$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);*/ }
     break;
 
   case 367:
 /* Line 661 of lalr1.cc  */
-#line 867 "parser.ypp"
+#line 868 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1); */}
     break;
 
   case 368:
 /* Line 661 of lalr1.cc  */
-#line 870 "parser.ypp"
+#line 871 "parser.ypp"
     {
 	/*add_command (cPUSHFREE, NULL); } call_list ')' { $$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1); */}
     break;
 
   case 369:
 /* Line 661 of lalr1.cc  */
-#line 872 "parser.ypp"
+#line 873 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 370:
 /* Line 661 of lalr1.cc  */
-#line 873 "parser.ypp"
+#line 874 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 371:
 /* Line 661 of lalr1.cc  */
-#line 874 "parser.ypp"
+#line 875 "parser.ypp"
     { /*add_command (cPUSHFREE, NULL); } call_list ')' { $$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 372:
 /* Line 661 of lalr1.cc  */
-#line 877 "parser.ypp"
+#line 878 "parser.ypp"
     {
 // 	$$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);
  	}
@@ -2453,91 +2454,91 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 
   case 373:
 /* Line 661 of lalr1.cc  */
-#line 880 "parser.ypp"
+#line 881 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 374:
 /* Line 661 of lalr1.cc  */
-#line 881 "parser.ypp"
+#line 882 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1); */}
     break;
 
   case 375:
 /* Line 661 of lalr1.cc  */
-#line 882 "parser.ypp"
+#line 883 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 376:
 /* Line 661 of lalr1.cc  */
-#line 885 "parser.ypp"
+#line 886 "parser.ypp"
     { /*$$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);*/ }
     break;
 
   case 377:
 /* Line 661 of lalr1.cc  */
-#line 886 "parser.ypp"
+#line 887 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 378:
 /* Line 661 of lalr1.cc  */
-#line 889 "parser.ypp"
+#line 890 "parser.ypp"
     { /*add_command (cPUSHFREE, NULL); } call_list ')' { $$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);*/ }
     break;
 
   case 379:
 /* Line 661 of lalr1.cc  */
-#line 890 "parser.ypp"
+#line 891 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 380:
 /* Line 661 of lalr1.cc  */
-#line 891 "parser.ypp"
+#line 892 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 381:
 /* Line 661 of lalr1.cc  */
-#line 892 "parser.ypp"
+#line 893 "parser.ypp"
     {/* add_command (cPUSHFREE, NULL);*/ }
     break;
 
   case 382:
 /* Line 661 of lalr1.cc  */
-#line 892 "parser.ypp"
+#line 893 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1); */}
     break;
 
   case 383:
 /* Line 661 of lalr1.cc  */
-#line 895 "parser.ypp"
+#line 896 "parser.ypp"
     { /*$$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);*/ }
     break;
 
   case 384:
 /* Line 661 of lalr1.cc  */
-#line 896 "parser.ypp"
+#line 897 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 385:
 /* Line 661 of lalr1.cc  */
-#line 897 "parser.ypp"
+#line 898 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 386:
 /* Line 661 of lalr1.cc  */
-#line 898 "parser.ypp"
+#line 899 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1); */}
     break;
 
 
 /* Line 661 of lalr1.cc  */
-#line 2541 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 2542 "/home/cai/projects/basic/compiler/parser.cpp"
 	default:
           break;
       }
@@ -4097,42 +4098,42 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
          0,   181,   181,   194,   195,   198,   199,   199,   208,   209,
      212,   213,   214,   215,   216,   217,   218,   219,   220,   221,
      222,   223,   227,   233,   234,   235,   236,   237,   238,   238,
-     239,   239,   240,   247,   252,   252,   253,   253,   254,   257,
-     262,   263,   264,   267,   268,   269,   270,   271,   272,   273,
-     274,   274,   275,   275,   276,   277,   278,   281,   282,   285,
-     286,   287,   287,   290,   290,   291,   291,   292,   293,   296,
-     297,   300,   303,   304,   307,   308,   309,   312,   313,   316,
-     317,   318,   319,   322,   323,   326,   327,   330,   331,   332,
-     333,   334,   335,   340,   341,   344,   345,   346,   347,   348,
-     349,   352,   353,   354,   355,   356,   357,   358,   359,   360,
-     361,   362,   363,   364,   365,   366,   367,   368,   369,   370,
-     371,   372,   373,   373,   376,   376,   377,   377,   378,   379,
-     380,   381,   382,   383,   384,   385,   386,   387,   388,   389,
-     390,   391,   392,   393,   394,   395,   396,   397,   398,   399,
-     400,   401,   402,   403,   404,   405,   406,   407,   408,   409,
-     412,   415,   418,   419,   420,   421,   422,   423,   424,   425,
-     426,   427,   428,   429,   430,   431,   432,   433,   434,   435,
-     436,   437,   438,   439,   440,   441,   442,   443,   444,   445,
-     446,   447,   448,   449,   450,   451,   452,   453,   454,   455,
-     456,   457,   458,   459,   459,   462,   463,   466,   467,   468,
-     469,   472,   473,   476,   479,   480,   483,   486,   487,   490,
-     491,   494,   494,   496,   499,   494,   508,   514,   517,   520,
-     523,   526,   529,   523,   537,   543,   551,   552,   553,   556,
-     559,   562,   565,   570,   571,   574,   575,   576,   577,   580,
-     581,   584,   585,   586,   587,   590,   591,   592,   595,   596,
-     599,   602,   607,   608,   612,   614,   607,   620,   625,   628,
-     629,   632,   633,   636,   636,   638,   636,   643,   644,   647,
-     648,   651,   652,   652,   660,   661,   661,   661,   667,   667,
-     667,   672,   673,   673,   676,   676,   677,   676,   683,   684,
-     684,   687,   687,   687,   692,   694,   693,   697,   698,   700,
-     697,   704,   705,   704,   706,   706,   710,   711,   714,   717,
-     718,   721,   723,   725,   722,   729,   730,   731,   732,   735,
-     736,   741,   743,   745,   747,   749,   753,   753,   754,   754,
-     755,   755,   756,   756,   759,   763,   768,   769,   770,   773,
-     776,   777,   780,   781,   785,   785,   801,   801,   819,   820,
-     823,   824,   832,   840,   848,   858,   866,   867,   870,   872,
-     873,   874,   877,   880,   881,   882,   885,   886,   889,   890,
-     891,   892,   892,   895,   896,   897,   898
+     239,   239,   240,   247,   253,   253,   254,   254,   255,   258,
+     263,   264,   265,   268,   269,   270,   271,   272,   273,   274,
+     275,   275,   276,   276,   277,   278,   279,   282,   283,   286,
+     287,   288,   288,   291,   291,   292,   292,   293,   294,   297,
+     298,   301,   304,   305,   308,   309,   310,   313,   314,   317,
+     318,   319,   320,   323,   324,   327,   328,   331,   332,   333,
+     334,   335,   336,   341,   342,   345,   346,   347,   348,   349,
+     350,   353,   354,   355,   356,   357,   358,   359,   360,   361,
+     362,   363,   364,   365,   366,   367,   368,   369,   370,   371,
+     372,   373,   374,   374,   377,   377,   378,   378,   379,   380,
+     381,   382,   383,   384,   385,   386,   387,   388,   389,   390,
+     391,   392,   393,   394,   395,   396,   397,   398,   399,   400,
+     401,   402,   403,   404,   405,   406,   407,   408,   409,   410,
+     413,   416,   419,   420,   421,   422,   423,   424,   425,   426,
+     427,   428,   429,   430,   431,   432,   433,   434,   435,   436,
+     437,   438,   439,   440,   441,   442,   443,   444,   445,   446,
+     447,   448,   449,   450,   451,   452,   453,   454,   455,   456,
+     457,   458,   459,   460,   460,   463,   464,   467,   468,   469,
+     470,   473,   474,   477,   480,   481,   484,   487,   488,   491,
+     492,   495,   495,   497,   500,   495,   509,   515,   518,   521,
+     524,   527,   530,   524,   538,   544,   552,   553,   554,   557,
+     560,   563,   566,   571,   572,   575,   576,   577,   578,   581,
+     582,   585,   586,   587,   588,   591,   592,   593,   596,   597,
+     600,   603,   608,   609,   613,   615,   608,   621,   626,   629,
+     630,   633,   634,   637,   637,   639,   637,   644,   645,   648,
+     649,   652,   653,   653,   661,   662,   662,   662,   668,   668,
+     668,   673,   674,   674,   677,   677,   678,   677,   684,   685,
+     685,   688,   688,   688,   693,   695,   694,   698,   699,   701,
+     698,   705,   706,   705,   707,   707,   711,   712,   715,   718,
+     719,   722,   724,   726,   723,   730,   731,   732,   733,   736,
+     737,   742,   744,   746,   748,   750,   754,   754,   755,   755,
+     756,   756,   757,   757,   760,   764,   769,   770,   771,   774,
+     777,   778,   781,   782,   786,   786,   802,   802,   820,   821,
+     824,   825,   833,   841,   849,   859,   867,   868,   871,   873,
+     874,   875,   878,   881,   882,   883,   886,   887,   890,   891,
+     892,   893,   893,   896,   897,   898,   899
   };
 
   // Print the state stack on the debug stream.
@@ -4234,4 +4235,4 @@ if (function_type!=ftNONE) {printf("functions cannot be nested");}}
 #line 22 "parser.ypp"
 } // qb
 /* Line 1106 of lalr1.cc  */
-#line 4238 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 4239 "/home/cai/projects/basic/compiler/parser.cpp"

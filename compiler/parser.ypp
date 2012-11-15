@@ -247,8 +247,9 @@ non_empty_statement: number_assignment
    | tPRINT print_intro print_list ';' {
 	   // 构造打印语句
 	   debug("got PRINT now\n");
+	   
 	   $$ = new PrintStmtAST(PrintIntroASTPtr($2),PrintListASTPtr($3));
-   }
+   }   
    | tINPUT { until_eol = false; } input_body {}
    | tLINE tINPUT { until_eol = true; } input_body {}
    | tRETURN {
@@ -739,9 +740,9 @@ print_list:  /* empty */ { printf("ERROR: print with no arg not supprted yet\n")
 		$$->additem(ExprASTPtr($1));
    }
    | number_expression tUSING string_expression
-        { /*create_print ('u'); */}
+        { printf("ERROR: print syntax not supprted yet\n"); exit(1);}
    | string_expression
-        { debug("print with string\n"); }
+        { printf("ERROR: print syntax not supprted yet\n"); exit(1); }
    | print_list ',' number_expression
         { $$ = $1 ; $$->additem(ExprASTPtr($3)) ; }
    | print_list ',' number_expression tUSING string_expression
