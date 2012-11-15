@@ -126,19 +126,21 @@ llvm::Value* PrintStmtAST::Codegen(llvm::BasicBlock * insertto)
 					
 					if( dynamic_cast<PointerTypeAST*>(argitem->type.get()) ){
 						//指针类型
-						printfmt += "\t%p"; //TODO: 字符串
+						printfmt += "%p\t"; //TODO: 字符串
 					debug("add code for print list args type %%p\n");
 						
 					}else{
 					debug("add code for print list args type %%ld\n");
-						printfmt += "\t%ld";
+						printfmt += "%ld\t";
 					}
 					args.push_back(	argitem->Codegen(insertto) );
 					break;
 				case sizeof(int):
-					printfmt += "\t%d";
+					printfmt += "%d\t";
 					args.push_back(	argitem->Codegen(insertto) );
 					break;
+				case 0:
+					printfmt +="\n"; // 很重要,呵呵
 				default:
 					//TODO, 目前只需要支持 number , brt_print 也只是支持数字
 					debug("print argument not supported\n");
