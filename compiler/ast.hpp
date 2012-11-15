@@ -243,6 +243,7 @@ public:
     FunctionDeclarAST(const std::string _name, ExprTypeASTPtr _type);
 	Linkage		linkage; //链接类型。static? extern ?
 	std::list<VariableDimASTPtr> args_type; //checked by CallExpr
+    virtual llvm::Value* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)=0;
 };
 
 //函数体
@@ -254,7 +255,7 @@ public:
 
 	StatementsASTPtr	body; //函数体
 
-//	std::list<DimAST>	dims;//定义的本地变量
+    virtual llvm::Value* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };
 
 class DefaultMainFunctionAST : public FunctionDimAST

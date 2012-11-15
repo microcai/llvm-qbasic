@@ -257,3 +257,12 @@ llvm::Value* NumberCalcExprAST::getval(
 	
 	exit(1);
 }
+
+llvm::Value* FunctionDimAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
+{
+	BOOST_ASSERT(!TheFunction);
+	BOOST_ASSERT(!insertto);
+
+
+	// now code up the function body
+}
