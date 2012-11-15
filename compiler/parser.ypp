@@ -105,6 +105,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 	VariableDimAST*dim_list;
     VariableRefExprAST*varable_ref;
 	NumberAssigmentAST*number_assignment;
+	FunctionDimAST	 *function_definition;
 }
 
 /*
@@ -122,6 +123,8 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %type <statement_list>		list_of_statement_lists
 %type <varable_ref>			numsym_s
 %type <number_assignment>	number_assignment
+
+// %type <function_declar>		function_declar
 
 %type <symbol> function_name
 %type <symbol> number_function_or_array_any_params
@@ -568,25 +571,23 @@ begin_sub:	tSUB { unclosed_subs++; }
 	| tFUNCTION { unclosed_subs++; }
 	;
 
-function_definition: begin_sub {
-		not_inside_loop_or_conditional ("define a function");
-		if (function_type!=ftNONE) {debug("functions cannot be nested");}
-	}
-	function_name {
-		
-	}
-   '(' param_list ')' {
-
-	}
-   statement_list {		}
-   dim_as_type {
-		debug("function dim as ...\n");
-	   //$$ = $11;
-	}
-   endsub {
+function_definition:
+	begin_sub { not_inside_loop_or_conditional ("define a function");
+				if (function_type!=ftNONE) {debug("functions cannot be nested");}
+	}  function_name {  }
+			'(' param_list ')' {	}
+					dim_as_type {
+						debug("function dim as ... %p\n", $9 );
+						//$<exprtype>$ = $9;
+						$<function_definition>$ = new FunctionDimAST( $3, ExprTypeASTPtr($9) );
+			// 到这里可以算是函数定义成功了.
+	} statement_list {
+		$<statement_list>$ = $11;
+	}	
+	endsub {	   
 		/** TODO support for functions*/
-   }
-   ;
+	}
+	;
 
 endsub: tEOPROG {
 		if (unclosed_subs)

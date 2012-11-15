@@ -82,10 +82,11 @@ namespace qb {
 	VariableDimAST*dim_list;
     VariableRefExprAST*varable_ref;
 	NumberAssigmentAST*number_assignment;
+	FunctionDimAST	 *function_definition;
 
 
 /* Line 36 of lalr1.cc  */
-#line 89 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 90 "/home/cai/projects/basic/compiler/parser.hpp"
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -397,7 +398,7 @@ namespace qb {
 #line 22 "parser.ypp"
 } // qb
 /* Line 36 of lalr1.cc  */
-#line 401 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 402 "/home/cai/projects/basic/compiler/parser.hpp"
 
 
 

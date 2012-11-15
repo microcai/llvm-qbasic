@@ -236,20 +236,14 @@ public:
     virtual llvm::Value* getval(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };
 
-// 前向函数声明
-class FunctionDeclarAST: public DimAST
+
+//函数 AST , 有 body 没 body 来区别是不是定义或者声明
+class FunctionDimAST: public DimAST
 {
 public:
-    FunctionDeclarAST(const std::string _name, ExprTypeASTPtr _type);
 	Linkage		linkage; //链接类型。static? extern ?
 	std::list<VariableDimASTPtr> args_type; //checked by CallExpr
-    virtual llvm::Value* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)=0;
-};
 
-//函数体
-class FunctionDimAST: public FunctionDeclarAST
-{
-public:
     FunctionDimAST(const std::string _name, ExprTypeASTPtr _type);;
 	std::list<VariableDimAST> args; //定义的参数
 
