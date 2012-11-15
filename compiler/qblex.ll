@@ -155,6 +155,8 @@ end{whitespace}*data return token::tENDDATA;
 end{whitespace}*if|fi return token::tENDIF;
 end{whitespace}*struct|end{whitespace}*structure return token::tENDSTRUCT;
 end{whitespace}*sub|end{whitespace}*subroutine return token::tENDSUB;
+end{whitespace}*function return token::tENDFUNCTION;
+
 end{whitespace}*switch|end{whitespace}*select return token::tSEND;
 eor|xor return token::tEOR;
 exit|end return token::tEXIT;
@@ -182,6 +184,7 @@ seek return token::tSEEK;
 static return token::tSTATIC;
 step return token::tSTEP;
 struct|structure return token::tSTRUCT;
+function         return token::tFUNCTION;
 sub|subroutine return token::tSUB;
 switch|select return token::tSWITCH;
 then return token::tTHEN;

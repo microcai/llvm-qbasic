@@ -142,7 +142,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %token <separator> tSEPARATOR
 
 %token tAND tOR tNOT tEOR
-%token tBREAK tCONTINUE tSUB tENDSUB tRETURN
+%token tBREAK tCONTINUE tSUB tENDSUB tRETURN tFUNCTION tENDFUNCTION
 %token tCOMPILE tEXECUTERETURNNUMBER tEXECUTERETURNSTRING
 %token tCSUB tFROM
 %token tGOTO tGOSUB tLABEL
