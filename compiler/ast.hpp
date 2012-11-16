@@ -233,6 +233,11 @@ public:
     virtual llvm::Value* getval(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };
 
+// 函数调用, 也是个数字表达式
+class NumberCallExpr : public NumberExprAST {
+	
+};
+
 // IF 语句
 class IFStmtAST : public StatementAST
 {
