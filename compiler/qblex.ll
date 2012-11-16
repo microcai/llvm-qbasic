@@ -151,13 +151,15 @@ do return token::tDO;
 elseif|elsif|elif return token::tELSEIF;
 else return token::tELSE;
 enable|option return token::tENABLE;
+
 end{whitespace}*data return token::tENDDATA;
 end{whitespace}*if|fi return token::tENDIF;
 end{whitespace}*struct|end{whitespace}*structure return token::tENDSTRUCT;
 end{whitespace}*sub|end{whitespace}*subroutine return token::tENDSUB;
 end{whitespace}*function return token::tENDFUNCTION;
-
+end|{whitespace}*while	 return token::tWEND;
 end{whitespace}*switch|end{whitespace}*select return token::tSEND;
+
 eor|xor return token::tEOR;
 exit|end return token::tEXIT;
 explicit return token::tEXPLICIT;
