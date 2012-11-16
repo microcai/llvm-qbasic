@@ -22,7 +22,7 @@ end if
 
 while b > 400
 	a = a + b
-	print  b
+	print  b  , 1
 	b = b - 1
 end while
 

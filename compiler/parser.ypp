@@ -278,7 +278,7 @@ printinto: '#' tInteger ','  { debug("print has got itger\n") ;}
 	| /*empty*/	{  debug("empty printinto\n");	}
 	;
 	
-expression_list: expression_list ',' expression
+expression_list: expression_list ',' expression { $$ = $1 ; $$->Append($3); }
 	| expression {
 		$$ =  new ExprListAST;
 		$$->Append($1);
@@ -309,10 +309,6 @@ expression:
 		}
 		| tNUMBER //浮点数
 		;
-
-expression_list : expression_list ',' expression
-			| expression
-			;
 
 varref:	varref '.' tID { debug("ref menber %s . %s , not supported yet\n", $1->ID.c_str()  , $3->c_str() ); 			exit(1); // 逐级传递
 	}// 成员变量
