@@ -745,8 +745,7 @@ until: tEOPROG {if (unclosed_repeats) { debug ("%d \"repeat\" loop%s not closed"
 
 if_clause: if_part number_expression {
 				/*构造 IF 语句, 填充 条件表达式*/
-				NumberExprASTPtr ne = NumberExprASTPtr($2);
-
+				NumberExprASTPtr ne = NumberExprASTPtr($2);				
 								
 			} tTHEN statement_list {  /*填充真语句*/ }
 			elseif_part 
@@ -924,8 +923,9 @@ numsym_s: tNUMSYM {
    ;
 
 numsym_a: tNUMSYM '(' {
-	/*add_command (cPUSHFREE, NULL); } call_list ')' { $$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1); */}
-   | numsym_a '.' tNUMSYM '(' call_list ')' { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
+		//该决定是否为函数还是数组了
+	}
+	| numsym_a '.' tNUMSYM '(' call_list ')' { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
    | numsym_a '.' tNUMSYM { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
    | numsym_s '.' tNUMSYM '(' { /*add_command (cPUSHFREE, NULL); } call_list ')' { $$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
    ;

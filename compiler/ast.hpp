@@ -249,6 +249,7 @@ public:
 
 	StatementsASTPtr	body; //函数体
 
+	//如果是声明, 为 dim 生成 llvm::Function * 声明供使用
     virtual llvm::Value* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };
 
