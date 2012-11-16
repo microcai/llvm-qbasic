@@ -1,5 +1,7 @@
 /*
-	asdfasdfasdfas flasjdhfkjsdf
+	llvm-QBASIC Compiler test
+
+	the function call and while and if .  3 cases test	
 */
 
 sub main2()
