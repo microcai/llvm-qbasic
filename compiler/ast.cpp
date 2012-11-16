@@ -119,7 +119,7 @@ DefaultMainFunctionAST::DefaultMainFunctionAST(StatementAST * body)
 }
 
 
-WhileLoopAST::WhileLoopAST(NumberExprASTPtr _condition)
-	:condition(_condition)
+WhileLoopAST::WhileLoopAST(NumberExprASTPtr _condition , StatementASTPtr body)
+	:condition(_condition),LoopAST(body)
 {
 }

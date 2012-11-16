@@ -253,8 +253,9 @@ public:
 // 所有循环语句的基类, while until for 三种循环
 class LoopAST : public StatementAST
 {
-public:
 	StatementASTPtr		loopbody; // 循环体
+public:
+	LoopAST(StatementASTPtr body):loopbody(body){}
 	// 生成循环体
     llvm::BasicBlock*	bodygen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
     virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto) = 0;
@@ -266,7 +267,7 @@ class WhileLoopAST : public LoopAST
 	//循环条件
 	NumberExprASTPtr	condition;
 public:
-	WhileLoopAST(NumberExprASTPtr _condition);
+	WhileLoopAST(NumberExprASTPtr _condition , StatementASTPtr body);
 
     virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };

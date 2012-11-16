@@ -114,6 +114,7 @@ lcchar [\\_]
    return token::tSEPARATOR;
 }
 
+
 \n {
    yylval->separator = 1;
    return token::tSEPARATOR;
@@ -128,8 +129,10 @@ lcchar [\\_]
    return token::tSEPARATOR;
 }
 
-{whitespace}+ /* eat whitespace */
 
+
+while return token::tWHILE;
+wend return token::tWEND;
 
 long return token::tLONG;/* variables type*/
 
@@ -193,8 +196,6 @@ then return token::tTHEN;
 to return token::tTO;
 until return token::tUNTIL;
 using return token::tUSING;
-wend return token::tWEND;
-while return token::tWHILE;
 
 abs return token::tABS;
 acos return token::tACOS;
@@ -256,6 +257,8 @@ call return token::tCALL;
 "<" return token::tLTN;
 "<>" return token::tNEQ;
 "!" return token::tNOT;
+
+{whitespace}+ /* eat whitespace */
 
 [-+*/:(),.;] {
    return yytext[1 - 1];
@@ -361,6 +364,7 @@ __[_a-z0-9]*|__[_a-z0-9]*\$ {
 . {
    return yytext[1 - 1];
 }
+
 
 %%
 
