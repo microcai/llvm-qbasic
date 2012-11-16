@@ -236,6 +236,8 @@ public:
 
 // 函数调用, 也是个数字表达式 , 更是一个名称引用表达式!
 class CallExprAST : public VariableRefExprAST {
+
+	llvm::Function * target; // resolved target
 public:
 	// the type of the return function , also is the type of itself. default return type is number
     CallExprAST(ReferenceAST * target ,  ExprListAST * args = NULL);

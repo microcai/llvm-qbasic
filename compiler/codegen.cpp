@@ -143,14 +143,38 @@ llvm::Value* VariableRefExprAST::getval(StatementAST * parent,llvm::Function* Th
 // resolve the function name to type and arge list, check for consistence
 llvm::AllocaInst* CallExprAST::nameresolve(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto)
 {
-	
+	//TODO 搜索函数类型信息, 做各种参数比较
+	llvm::IRBuilder<>	builder(insertto);
+
+	debug("===searching for function %s ====\n",var->ID.c_str() );
+
+	if( ! (this->target = module->getFunction(this->var->ID)) ){
+		// 生成函数定义
+
+		//TODO 安装正确的类型生成
+
+		//FIXME 现在就当是无参数无返回值的好了
+		
+		std::vector<llvm::Type *> targetArgs;
+
+		llvm::Constant * f = module->getOrInsertFunction(
+			var->ID,llvm::FunctionType::get(builder.getInt32Ty(),targetArgs,true));
+
+		debug("target is %p\n",target);
+		
+		this->target = llvm::cast<llvm::Function>(f);		
+	}
 	return NULL;
 }
 
 //TODO call function and use the result
 llvm::Value* CallExprAST::getval(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto)
 {
-	
+	debug("===I will call to %s ====\n",var->ID.c_str() );
+
+	llvm::IRBuilder<>	builder(insertto);
+
+	builder.CreateCall(target);
 }
 
 llvm::BasicBlock* DimAST::Codegen(llvm::Function*, llvm::BasicBlock* insertto)
