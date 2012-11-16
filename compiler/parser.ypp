@@ -147,7 +147,6 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %token tCALL tBREAK tCONTINUE tSUB tENDSUB tRETURN tFUNCTION tENDFUNCTION
 
 %token tAND tOR tNOT tEOR
-%token tCOMPILE tEXECUTERETURNNUMBER tEXECUTERETURNSTRING
 %token tCSUB tFROM
 %token tGOTO tGOSUB tLABEL
 %token tENABLE tDISABLE
@@ -225,9 +224,7 @@ statement_list: statement { $$ = new StatementAST(); $$->addchild(StatementASTPt
    ;
 
 statement: /* empty */ { $$ = new EmptyStmtAST(); debug("got empty statement %p\n" , $$); }
-   | non_empty_statement { $$ = $1;
-	   debug( "got non_empty_statement %p\n", $$ );
-}
+   | non_empty_statement { $$ = $1; debug( "got non_empty_statement %p\n", $$ ); }
    ;
 
 non_empty_statement: number_assignment
@@ -292,7 +289,6 @@ non_empty_statement: number_assignment
 		debug("got label!\n");
    }
    | tPOKE hashed_number ',' number_expression {  }
-   | tCOMPILE string_expression {  }
    | tDIM dim_list {  $$ = $2; 	}
    ;
 
