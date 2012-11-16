@@ -370,25 +370,25 @@ llvm::BasicBlock* WhileLoopAST::Codegen(llvm::Function* TheFunction, llvm::Basic
 	BOOST_ASSERT(TheFunction);
 	debug("generation code for while statement\n");
 
-	// true cond is always there
-	llvm::BasicBlock* cond_while = llvm::BasicBlock::Create(TheFunction->getContext(), "while_condition", TheFunction);
+	llvm::BasicBlock* cond_while = llvm::BasicBlock::Create(TheFunction->getContext(), "", TheFunction);
 
-	llvm::BasicBlock* while_body = llvm::BasicBlock::Create(TheFunction->getContext(), "while_body", TheFunction);
+	llvm::BasicBlock* while_body = llvm::BasicBlock::Create(TheFunction->getContext(), "", TheFunction);
 
 
-	llvm::BasicBlock* cond_continue = llvm::BasicBlock::Create(TheFunction->getContext(), "end_while", TheFunction);
+	llvm::BasicBlock* cond_continue = llvm::BasicBlock::Create(TheFunction->getContext(), "", TheFunction);
 
-	llvm::IRBuilder<> builder(cond_while);
+	llvm::IRBuilder<> builder(TheFunction->getContext());
+	builder.SetInsertPoint(insertto);
+	builder.CreateBr(cond_while);
 
-	llvm::Value * expcond = this->condition->getval(this,TheFunction,insertto);
+	builder.SetInsertPoint(cond_while);
+	llvm::Value * expcond = this->condition->getval(this,TheFunction,cond_while);
 	expcond = builder.CreateICmpEQ(expcond, qbc::getconstlong(0), "tmp");
 	builder.CreateCondBr(expcond, cond_continue, while_body);
 
-	// generating true
 	this->bodygen(TheFunction,while_body);
 	builder.SetInsertPoint(while_body);
 	builder.CreateBr(cond_while);
-
-	builder.CreateBr(cond_continue);
+	
 	return cond_continue;	
 }

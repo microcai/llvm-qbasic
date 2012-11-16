@@ -97,6 +97,7 @@ lcchar [\\_]
    yylval->separator = 0;
    return token::tSEPARATOR;
 }
+"rem"  return token::tSEPARATOR;
 
 "doc"|"docu"|"documentation" /* add to program documentation */ {
  //  add_doc (strdup (""));
@@ -160,7 +161,7 @@ end{whitespace}*if|fi return token::tENDIF;
 end{whitespace}*struct|end{whitespace}*structure return token::tENDSTRUCT;
 end{whitespace}*sub|end{whitespace}*subroutine return token::tENDSUB;
 end{whitespace}*function return token::tENDFUNCTION;
-end|{whitespace}*while	 return token::tWEND;
+end{whitespace}*while	 return token::tWEND;
 end{whitespace}*switch|end{whitespace}*select return token::tSEND;
 
 eor|xor return token::tEOR;
