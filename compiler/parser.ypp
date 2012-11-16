@@ -189,7 +189,6 @@ lines: lines line { $$ = $1; $$->addchild($2); }
 	} ;
 
 line: statements tNEWLINE { $$=$1 ;}
-	| statements expression tNEWLINE { debug("here==3======\n");exit(1);	}
 	| expression tNEWLINE { /*TODO*/debug("here====5====\n"); exit(1);	}
 	| tNEWLINE { $$= new EmptyStmtAST();}
 	;
@@ -294,6 +293,11 @@ expression:
 		| expression '-' expression {   $$ = new CalcExprAST( $1, OPERATOR_SUB , $3 );  }
 		| expression '*' expression {   $$ = new CalcExprAST( $1, OPERATOR_MUL , $3 );  }
 		| expression '/' expression {   $$ = new CalcExprAST( $1, OPERATOR_DIV , $3 );  }
+		| expression tLTN expression {   $$ = new CalcExprAST( $1, OPERATOR_LESS , $3 );  }
+		| expression tLEQ expression {   $$ = new CalcExprAST( $1, OPERATOR_LESSEQU , $3 );  }
+		| expression tGTN expression {   $$ = new CalcExprAST( $1, OPERATOR_GREATER , $3 );  }
+		| expression tGEQ expression {   $$ = new CalcExprAST( $1, OPERATOR_GREATEREQUL , $3 );  }
+
  		| varref	{
 			//TODO the VariableRefExprAST
 			$$ = new VariableRefExprAST( ReferenceASTPtr($1) );

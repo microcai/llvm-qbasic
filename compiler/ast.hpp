@@ -29,15 +29,6 @@
 #include <llvm/Type.h>
 #include <llvm/Instructions.h>
 
-enum CompOperator{
-	Equl = 1, // == , =
-	NotEqul , // <> , >< , != as in basic
-	Less , // <
-	LessEqul, // <=
-	Greater, // >
-	GreaterEqul, // >=
-};
-
 enum MathOperator{
 	OPERATOR_ADD = 1 , // +
 	OPERATOR_SUB , // -
@@ -45,6 +36,13 @@ enum MathOperator{
 	OPERATOR_DIV , // /
 	Mod , // % , MOD
 	Power , // ^
+
+	Equl , // == , =
+	NotEqul , // <> , >< , != as in basic
+	OPERATOR_LESS , // <
+	OPERATOR_LESSEQU, // <=
+	OPERATOR_GREATER, // >
+	OPERATOR_GREATEREQUL, // >=
 };
 
 

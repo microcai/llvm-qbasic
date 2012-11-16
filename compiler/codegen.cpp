@@ -17,9 +17,6 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#undef NDEBUG
-#include <assert.h>
-
 #include <iostream>
 #include <boost/lexical_cast.hpp>
 #include <boost/weak_ptr.hpp>
@@ -86,6 +83,17 @@ llvm::Value* CalcExprAST::getval(
 			return builder.CreateMul(LHS,RHS);
 		case OPERATOR_DIV:
 			return builder.CreateSDiv(LHS,RHS);
+		case OPERATOR_LESS:
+			return builder.CreateICmpSLT(LHS,RHS);
+		case OPERATOR_LESSEQU:
+			return builder.CreateICmpSLE(LHS,RHS);
+		case OPERATOR_GREATER:
+			return builder.CreateICmpSGT(LHS,RHS);
+		case OPERATOR_GREATEREQUL:
+			return builder.CreateICmpSGE(LHS,RHS);
+		default:
+			debug("operator not supported yet\n");
+			exit(1);
 	}
 
 	return insertto;
