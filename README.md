@@ -14,6 +14,7 @@ llvm-qbc is a QBASIC compiler as well as an runtime library ( statically linked 
 	[2] function define and invoke ( no parameter )
 	[3] if statement
 	[4] while statement
+	[5]	being able to print numbers ( no string support yet)
 
 # Implementation Detail
 
