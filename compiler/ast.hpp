@@ -162,8 +162,9 @@ typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
 
 class ExprListAST : public AST //
 {
-	std::vector<ExprASTPtr>	expression_list;
 public:
+	std::vector<ExprASTPtr>	expression_list;
+
     ExprListAST(){}
 	void Append(ExprAST* exp);
 };

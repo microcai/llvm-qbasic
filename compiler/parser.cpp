@@ -543,6 +543,7 @@ namespace qb {
 #line 241 "parser.ypp"
     {
 
+		(yysemantic_stack_[(3) - (3)].expression_list)->Append( new EmptyExprAST );
 		(yyval.printstatement) = new PrintStmtAST( (yysemantic_stack_[(3) - (2)].printinto), (yysemantic_stack_[(3) - (3)].expression_list) );
 		
 		debug("got print1 done\n");
@@ -551,31 +552,35 @@ namespace qb {
 
   case 29:
 /* Line 661 of lalr1.cc  */
-#line 247 "parser.ypp"
-    { debug("got print2 done\n") ;}
+#line 248 "parser.ypp"
+    {
+		(yyval.printstatement) = new PrintStmtAST( (yysemantic_stack_[(4) - (2)].printinto), (yysemantic_stack_[(4) - (3)].expression_list) );
+	}
     break;
 
   case 30:
 /* Line 661 of lalr1.cc  */
-#line 248 "parser.ypp"
-    { debug("got print3 done\n") ;}
+#line 251 "parser.ypp"
+    {
+		(yyval.printstatement) = new PrintStmtAST( (yysemantic_stack_[(4) - (2)].printinto), (yysemantic_stack_[(4) - (3)].expression_list) );
+	}
     break;
 
   case 31:
 /* Line 661 of lalr1.cc  */
-#line 252 "parser.ypp"
+#line 257 "parser.ypp"
     { debug("print has got itger\n") ;}
     break;
 
   case 32:
 /* Line 661 of lalr1.cc  */
-#line 253 "parser.ypp"
+#line 258 "parser.ypp"
     {  debug("empty printinto\n");	}
     break;
 
   case 34:
 /* Line 661 of lalr1.cc  */
-#line 257 "parser.ypp"
+#line 262 "parser.ypp"
     {
 		(yyval.expression_list) =  new ExprListAST;
 		(yyval.expression_list)->Append((yysemantic_stack_[(1) - (1)].expression));
@@ -584,13 +589,13 @@ namespace qb {
 
   case 36:
 /* Line 661 of lalr1.cc  */
-#line 264 "parser.ypp"
+#line 269 "parser.ypp"
     { debug("functioncall with no arg\n");}
     break;
 
   case 43:
 /* Line 661 of lalr1.cc  */
-#line 272 "parser.ypp"
+#line 277 "parser.ypp"
     {
 			//常量
 			(yyval.expression) = new ConstNumberExprAST( (yysemantic_stack_[(1) - (1)].integer) );
@@ -599,13 +604,13 @@ namespace qb {
 
   case 47:
 /* Line 661 of lalr1.cc  */
-#line 283 "parser.ypp"
+#line 288 "parser.ypp"
     { debug("ref menber %s . %s , not supported yet\n", (yysemantic_stack_[(3) - (1)].varref)->ID.c_str()  , (yysemantic_stack_[(3) - (3)].id)->c_str() ); exit(1); }
     break;
 
   case 49:
 /* Line 661 of lalr1.cc  */
-#line 285 "parser.ypp"
+#line 290 "parser.ypp"
     {
 		// 变量的引用? 反正是一个标识符的引用,
 		// 所以我构建一个标识符引用语句. 这个会被用来构建函数调用和数组语句以及变量.
@@ -616,7 +621,7 @@ namespace qb {
 
 
 /* Line 661 of lalr1.cc  */
-#line 620 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 625 "/home/cai/projects/basic/compiler/parser.cpp"
 	default:
           break;
       }
@@ -1024,9 +1029,9 @@ namespace qb {
   {
          0,   152,   152,   162,   177,   178,   183,   184,   185,   186,
      189,   190,   191,   192,   193,   196,   197,   198,   201,   204,
-     209,   218,   230,   231,   234,   234,   236,   237,   241,   247,
-     248,   252,   253,   256,   257,   263,   264,   265,   266,   268,
-     269,   270,   271,   272,   276,   279,   280,   283,   284,   285
+     209,   218,   230,   231,   234,   234,   236,   237,   241,   248,
+     251,   257,   258,   261,   262,   268,   269,   270,   271,   273,
+     274,   275,   276,   277,   281,   284,   285,   288,   289,   290
   };
 
   // Print the state stack on the debug stream.
@@ -1118,4 +1123,4 @@ namespace qb {
 #line 22 "parser.ypp"
 } // qb
 /* Line 1106 of lalr1.cc  */
-#line 1122 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 1127 "/home/cai/projects/basic/compiler/parser.cpp"

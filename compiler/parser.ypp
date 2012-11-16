@@ -240,12 +240,17 @@ dimlist: dimlist ',' tID tAS type
 printstatement :
 	tPRINT  printinto  expression_list  {
 
+		$3->Append( new EmptyExprAST );
 		$$ = new PrintStmtAST( $2, $3 );
 		
 		debug("got print1 done\n");
 	}
-	|tPRINT printinto  expression_list ',' { debug("got print2 done\n") ;}
-	|tPRINT  printinto  expression_list ';' { debug("got print3 done\n") ;}
+	|tPRINT printinto  expression_list ',' {
+		$$ = new PrintStmtAST( $2, $3 );
+	}
+	|tPRINT  printinto  expression_list ';' {
+		$$ = new PrintStmtAST( $2, $3 );
+	}
 
 	;
 

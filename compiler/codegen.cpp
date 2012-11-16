@@ -183,15 +183,13 @@ llvm::BasicBlock* PrintStmtAST::Codegen(llvm::Function *TheFunction,llvm::BasicB
 
 	std::vector<llvm::Value*> args; // 先插入第3个开始的参数.
 	std::string	printfmt;
-#if 0
+
 	//第三个参数开始是 ... 参数对.
-	if(callargs->size() > 0){
+	if(! callargs->expression_list.empty()){
 		// TODO : 支持字符串的版本修改第三个参数开始为参数对.
-		//std::for_E	BOOST_FOREACH(ExprASTPtr argitem,callargs->printlist);
-		for( std::vector<ExprASTPtr>::iterator it = callargs->printlist.begin();
-			it != callargs->printlist.end() ; it++)
+		//std::for_E
+		BOOST_FOREACH(ExprASTPtr argitem,callargs->expression_list)
 		{
-			ExprASTPtr argitem = *it;
 			switch(argitem->type->size()){ //按照大小来啊,果然
 				case sizeof(long): // 整数产量的类型
 
@@ -218,7 +216,7 @@ llvm::BasicBlock* PrintStmtAST::Codegen(llvm::Function *TheFunction,llvm::BasicB
 			}
 		}
 	}
-#endif
+
 	// 现在 brt 忽略第一个参数 , 其实质是 一个 map 到 FILE* 的转化, 由 btr_print 实现
 	//第二个参数是打印列表.
 	args.insert(args.begin(), builder.CreateGlobalStringPtr(printfmt.c_str()));
