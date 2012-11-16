@@ -3,8 +3,15 @@
 */
 
 sub main()
+dim a as long
+dim b as long
 
-print a.b.c
+a=1
+b=2
+
+print a , b
+
+print b
 
 end sub
 

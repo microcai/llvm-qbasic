@@ -186,15 +186,15 @@ public:
 	// get pointer to the val, then the llvm::Value can be used to CreateStore
 	virtual	llvm::Value *getptr(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto);
 };
-typedef 	boost::shared_ptr<VariableRefExprAST> VariableExprASTPtr;
+typedef 	boost::shared_ptr<VariableRefExprAST> VariableRefExprASTPtr;
 
 //整数类型. 最简单的类型.可以直接生成  llvm-IR 代码
 class NumberExprAST : public ExprAST
 {
-	VariableExprASTPtr var_num;
+	VariableRefExprASTPtr var_num;
 public:
     NumberExprAST():ExprAST(ExprTypeASTPtr(new NumberTypeAST())){};
-	NumberExprAST(VariableExprASTPtr);
+	NumberExprAST(VariableRefExprASTPtr);
 
 	virtual llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto);
 };
@@ -209,30 +209,6 @@ public:
     ConstNumberExprAST(const int64_t);
 	llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto); // final , 不允许继承了.
 };
-
-// 结构体变量，就是各种变量类型的集合
-class StructVariableExprAST: public VariableRefExprAST
-{
-	std::list<VariableExprASTPtr>	members; //各个成员
-};
-
-typedef boost::shared_ptr<StructVariableExprAST> StructVariableExprASTPtr;
-
-//结构体成员的引用
-class StructVariableRefExprAST: public VariableRefExprAST
-{
-	StructVariableExprASTPtr	structvar; //引用的结构体
-	std::string			nameormember; //引用的成员
-};
-
-//数组变量的使用
-class ArrayVariableRefExprAST:public VariableRefExprAST
-{
-	VariableExprASTPtr items; //数组变量的话，数组的成员的类型
-
-	ExprASTPtr		index; //下表操作还是一个表达式
-};
-typedef boost::shared_ptr<VariableRefExprAST> VariableRefExprASTPtr;
 
 class AssigmentAST : public StatementAST
 {

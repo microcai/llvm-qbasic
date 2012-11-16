@@ -87,7 +87,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 	
 	WhileLoopAST* while_loop;
 	
-	VariableDimAST*dim_list;
+	VariableDimAST*		dim_list;
 	FunctionDimAST	 *function_definition;
 
 	PrintIntroAST *print_intro;
@@ -136,7 +136,6 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %token <string>	tSTRING
 %token <number> tNUMBER
 
-%type <varref>						varref
 %type <expression>					expression
 %type <expression_list>				expression_list
 %type <printinto>					printinto
@@ -144,8 +143,13 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %type <statement_list>				lines
 %type <statement_list>				line
 %type <statement_list>				statements
-
+%type <statement>					statement
+%type <dim_list>					dimlist
 %type <function_definition>			subdefine
+%type <exprtype>					exprtype
+
+%type <varref>						varref
+%type <variable_assignment>			assigment
 
 %%
 
@@ -180,25 +184,26 @@ lines: lines line { $$ = $1; $$->addchild($2); }
 		$$->addchild($1);
 	} ;
 
-line: statements tNEWLINE { $$=$1 ;  debug("here=====2===\n");	}
+line: statements tNEWLINE { $$=$1 ;}
 	| statements expression tNEWLINE { debug("here==3======\n");exit(1);	}
 	| expression tNEWLINE { /*TODO*/debug("here====5====\n"); exit(1);	}
-	| tNEWLINE { $$= new EmptyStmtAST(); debug("here=====1===\n");	}
+	| tNEWLINE { $$= new EmptyStmtAST();}
 	;
 
-statements : statements ':' statement
-		| statement
-		| subdefine
-		| function_definition
-		| expression ':'
+statements : statements ':' statement { /*TODO*/debug("here====2====\n"); exit(1);	}
+		| statement {$$= $1;}
+		| subdefine {$$= $1;}
+		| function_definition { /*TODO*/debug("here====2====\n"); exit(1);	}
+		| expression ':' { /*TODO*/debug("here====2====\n"); exit(1);	}
 		;
 
-statement : printstatement
-		| tDIM dimlist
-		| assigment
+statement : printstatement { $$ = $1; }
+		| tDIM dimlist { $$ = $2; }
+		| assigment {$$= $1;}
+		| tLET assigment { $$ = $2;}
 		;
 		
-function_definition: tFUNCTION tID '(' dimlist ')' tAS type
+function_definition: tFUNCTION tID '(' dimlist ')' tAS exprtype
 				lines
 				tFUNCTIONEND
 			|tFUNCTION tID '(' dimlist ')' // default type , int
@@ -227,14 +232,24 @@ subdefine: tSUB  tID '(' ')'
 			}
 		  ;
 
-assigment: varref tEQU expression
-		| tLET varref tEQU expression
-		;
+assigment: varref tEQU expression {
+		VariableRefExprAST * varrefast = new VariableRefExprAST( ReferenceASTPtr($1) );
+		$$ = new AssigmentAST(VariableRefExprASTPtr(varrefast), ExprASTPtr($3));
+	};
 
-type: tLONG | tID ;
+exprtype: tLONG	{
+	$$ = new NumberTypeAST;
+	}
+	| tID {
+		debug("define as user type not supported\n");
+		exit(1);
+	};
 
-dimlist: dimlist ',' tID tAS type
-	| tID tAS type
+dimlist: dimlist ',' tID tAS exprtype { debug("define multiple line is not supported yet\n");exit(1);}
+	| tID tAS exprtype {
+		debug("definning %s is type %p\n",$1->c_str(), $3);
+		$$ = new VariableDimAST( *$1  , ExprTypeASTPtr ( $3 ));
+	}
 	;
 
 printstatement :

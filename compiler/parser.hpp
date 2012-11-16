@@ -93,7 +93,7 @@ namespace qb {
 	
 	WhileLoopAST* while_loop;
 	
-	VariableDimAST*dim_list;
+	VariableDimAST*		dim_list;
 	FunctionDimAST	 *function_definition;
 
 	PrintIntroAST *print_intro;

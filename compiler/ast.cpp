@@ -92,7 +92,7 @@ AssigmentAST::AssigmentAST(VariableRefExprASTPtr _lval, ExprASTPtr _rval)
 	
 }
 
-NumberExprAST::NumberExprAST(VariableExprASTPtr _var_num)
+NumberExprAST::NumberExprAST(VariableRefExprASTPtr _var_num)
 	:var_num(_var_num),ExprAST(ExprTypeASTPtr(new NumberTypeAST()))
 {
 	debug("numver expresion is a local var reference code %p\n",var_num.get());
