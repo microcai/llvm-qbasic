@@ -272,20 +272,11 @@ non_empty_statement: number_assignment
 	   if(current_function.empty())
 			useDefautSubMain = true;
    }
-   | tRETURN {
-	   
-             }
-   | tRETURN number_expression {
-
-	   
+   | tRETURN {}
+   | tRETURN number_expression {	   
    }
 
    | tRETURN string_expression { }
-   | tDIM dim_list {
-	   debug("got syntax of \"dim local var\" now\n");
-
-	   $$ = $2;	   
-	}
    | tSYSTEM '(' string_expression ')' { }
    | tEXIT {}
    | tEXIT number_expression {}
@@ -295,7 +286,6 @@ non_empty_statement: number_assignment
    | tSEEK hashed_number ',' number_expression {}
    | tSEEK hashed_number ',' number_expression ',' string_expression {}
    | tGOTO numsym_s {
-
    }
    | tGOSUB numsym_s {  }
    | tLABEL numsym_s {
@@ -303,6 +293,7 @@ non_empty_statement: number_assignment
    }
    | tPOKE hashed_number ',' number_expression {  }
    | tCOMPILE string_expression {  }
+   | tDIM dim_list {  $$ = $2; 	}
    ;
 
 number_assignment: numsym_s tEQU number_expression {
