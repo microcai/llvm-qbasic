@@ -803,7 +803,9 @@ input: numsym_s {/*create_myread ('n', until_eol); add_command (cPOPNUMSYM, doti
    | strsym_a {/*create_myread('s',until_eol);create_doarray(dotify ($1),ASSIGNSTRINGARRAY);*/}
    ;
 
-print_list:  /* empty */ { debug("ERROR: print with no arg not supprted yet\n"); exit(1); }
+print_list:  /* empty */ {
+		$$ = new PrintListAST();
+	}
    | number_expression {
 		debug("got first print argument as number\n");
 		$$ = new PrintListAST();
