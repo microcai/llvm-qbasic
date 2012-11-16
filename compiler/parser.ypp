@@ -314,8 +314,6 @@ non_empty_statement: number_assignment
    | tCLOSE hashed_number {}
    | tSEEK hashed_number ',' number_expression {}
    | tSEEK hashed_number ',' number_expression ',' string_expression {}
-   | tENABLE { /*create_pushnum (TRUE); */} option
-   | tDISABLE { /*create_pushnum (FALSE); */} option
    | tDEC dec_list
    | tINC inc_list
    | tGOTO numsym_s {
@@ -841,9 +839,6 @@ print_intro: /* empty */ {
    | '#' numsym_s {  /* 构造一个使用常数表的打印目标*/ }
    | '#' tNUMBER {/*create_pushnum ($2); create_pps(cPUSHSTREAM,0);*/}
    | '#' '(' number_expression ')' {/*create_pps(cPUSHSTREAM,0);*/}
-   ;
-
-option: tEXPLICIT {/* add_command (cOPTEXPLICIT, NULL); */}
    ;
 
 dec_list: numsym_s { /*add_command (cPUSHNUMSYM, dotify ($1)); create_pushnum (1); create_numbin ('-'); add_command (cPOPNUMSYM, dotify ($1));*/ }
