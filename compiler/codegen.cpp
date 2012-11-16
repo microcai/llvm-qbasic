@@ -323,11 +323,15 @@ llvm::BasicBlock* IFStmtAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlo
 
 	// true cond is always there
 	llvm::BasicBlock* cond_true = llvm::BasicBlock::Create(TheFunction->getContext(), "cond_true", TheFunction);
-	llvm::BasicBlock* cond_continue = llvm::BasicBlock::Create(TheFunction->getContext(), "continue", TheFunction);
-	llvm::BasicBlock* cond_false  =cond_continue;
+	llvm::BasicBlock* cond_false ;
 
 	if( this->_else.get()){
 		cond_false = llvm::BasicBlock::Create(TheFunction->getContext(), "cond_false",TheFunction);		
+	}
+	llvm::BasicBlock* cond_continue = llvm::BasicBlock::Create(TheFunction->getContext(), "continue", TheFunction);
+	
+	if(! this->_else.get()){
+		cond_false = cond_continue;
 	}
 
 	llvm::IRBuilder<> builder(insertto);
