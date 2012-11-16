@@ -117,3 +117,9 @@ DefaultMainFunctionAST::DefaultMainFunctionAST(StatementAST * body)
 {
 	this->body = StatementASTPtr(body);
 }
+
+
+WhileLoopAST::WhileLoopAST(NumberExprASTPtr _condition)
+	:condition(_condition)
+{
+}

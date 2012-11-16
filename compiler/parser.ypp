@@ -721,12 +721,12 @@ loop: tEOPROG {if (unclosed_dos) { debug ("%d \"do\" loop%s not closed", unclose
    | tLOOP {unclosed_dos--;} {/*popgoto();create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);*/}
    ;
 
-while_loop: tWHILE { unclosed_whiles++; } {/*add_command(cCONTINUE_HERE,NULL);create_break_mark(0,1);pushgoto()*/} number_expression
-         {/*add_command(cDECIDE,NULL);
-         pushlabel();*/}
-         statement_list
-             wend
-   ;
+while_loop:
+	tWHILE { unclosed_whiles++; } number_expression
+		statement_list
+	wend {
+		//TODO 添加 while 循环
+	};
 
 wend: tEOPROG {if (unclosed_whiles) { debug ("%d \"while\" loop%s not closed", unclosed_whiles, (unclosed_whiles > 1) ? "s" : ""); } }
    | tWEND {unclosed_whiles--;} { }

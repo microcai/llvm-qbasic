@@ -239,6 +239,7 @@ public:
     virtual llvm::Value* getval(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };
 
+// IF 语句
 class IFStmtAST : public StatementAST
 {
 public:
@@ -246,6 +247,27 @@ public:
 	NumberExprASTPtr _expr;
 	StatementASTPtr _then;
 	StatementASTPtr _else;
+    virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+};
+
+// 所有循环语句的基类, while until for 三种循环
+class LoopAST : public StatementAST
+{
+public:
+	StatementASTPtr		loopbody; // 循环体
+	// 生成循环体
+    llvm::BasicBlock*	bodygen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+    virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto) = 0;
+};
+
+// while 语句
+class WhileLoopAST : public LoopAST
+{
+	//循环条件
+	NumberExprASTPtr	condition;
+public:
+	WhileLoopAST(NumberExprASTPtr _condition);
+
     virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };
 
