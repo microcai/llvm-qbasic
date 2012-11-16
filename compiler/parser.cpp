@@ -44,7 +44,6 @@
 
 extern	StatementAST * program;
 
-
 extern int yylex(qb::parser::semantic_type * yylval_param );
 
 //extern int yylex_destroy(void);
@@ -52,12 +51,6 @@ extern int yylex(qb::parser::semantic_type * yylval_param );
 extern int yylineno;
 
 #define debug printf
-
-/* Types of functions. */
-enum {
-   ftNONE, ftNUMBER, ftSTRING
-};
-
 
 /* Global variables. */
 std::string current_function;  /* name of currently parsed function */
@@ -72,27 +65,7 @@ int unclosed_repeats = 0;       /* unclosed "repeat" count */
 int unclosed_subs = 0;          /* unclosed subroutine count */
 int unclosed_switches = 0;      /* unclosed "switch" count */
 int unclosed_whiles = 0;        /* unclosed "while" count */
-bool until_eol = false;          /* read to end of line? */
 bool useDefautSubMain = false;	/* shall we treat the while file as an sub main ? */
-
-/* Sanity check routine. */
-void not_inside_loop_or_conditional (char *what) {
-   /* Display an error if necessary. */
-   if ((unclosed_dos || unclosed_fors || unclosed_repeats || unclosed_whiles) || (unclosed_ifs || unclosed_switches)) {
-      if ((unclosed_dos || unclosed_fors || unclosed_repeats || unclosed_whiles) && (unclosed_ifs || unclosed_switches)) {
-         debug ("cannot %s inside a loop, \"if\" statement, or \"switch\" construct", what);
-      }
-      else if (unclosed_dos || unclosed_fors || unclosed_repeats || unclosed_whiles) {
-         debug ("cannot %s inside a loop", what);
-      }
-      else if (unclosed_ifs || unclosed_switches) {
-         debug ("cannot %s inside an \"if\" statement or \"switch\" construct", what);
-      }
-   }
-
-   /* Return. */
-   return;
-}
 
 void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 {
@@ -101,9 +74,8 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 }
 
 
-
 /* Line 278 of lalr1.cc  */
-#line 107 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 79 "/home/cai/projects/basic/compiler/parser.cpp"
 
 
 #include "parser.hpp"
@@ -111,7 +83,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 /* User implementation prologue.  */
 
 /* Line 284 of lalr1.cc  */
-#line 115 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 87 "/home/cai/projects/basic/compiler/parser.cpp"
 
 
 # ifndef YY_NULL
@@ -207,7 +179,7 @@ do {					\
 #line 22 "parser.ypp"
 namespace qb {
 /* Line 352 of lalr1.cc  */
-#line 211 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 183 "/home/cai/projects/basic/compiler/parser.cpp"
 
   /// Build a parser object.
   parser::parser ()
@@ -470,7 +442,7 @@ namespace qb {
       {
 	  case 2:
 /* Line 661 of lalr1.cc  */
-#line 159 "parser.ypp"
+#line 138 "parser.ypp"
     {
 			if(useDefautSubMain){
 				debug("program ended\n");
@@ -483,9 +455,99 @@ namespace qb {
 		}
     break;
 
+  case 3:
+/* Line 661 of lalr1.cc  */
+#line 148 "parser.ypp"
+    {
+
+			debug("!!!no new line at the end of file!!!\n");
+			if(useDefautSubMain){
+				debug("program ended\n");
+				//program = new DefaultMainFunctionAST( $1 );
+			}else{
+				//program = $1;
+				debug("module ended\n");
+			}
+			YYACCEPT;
+			
+		}
+    break;
+
+  case 20:
+/* Line 661 of lalr1.cc  */
+#line 188 "parser.ypp"
+    {
+				debug("got a sub define\n");
+			}
+    break;
+
+  case 21:
+/* Line 661 of lalr1.cc  */
+#line 193 "parser.ypp"
+    {
+				debug("got a sub define 2\n");
+			}
+    break;
+
+  case 28:
+/* Line 661 of lalr1.cc  */
+#line 209 "parser.ypp"
+    { debug("got print1 done\n") ;}
+    break;
+
+  case 29:
+/* Line 661 of lalr1.cc  */
+#line 210 "parser.ypp"
+    { debug("got print2 done\n") ;}
+    break;
+
+  case 30:
+/* Line 661 of lalr1.cc  */
+#line 211 "parser.ypp"
+    { debug("got print3 done\n") ;}
+    break;
+
+  case 31:
+/* Line 661 of lalr1.cc  */
+#line 215 "parser.ypp"
+    { debug("print has got itger\n") ;}
+    break;
+
+  case 32:
+/* Line 661 of lalr1.cc  */
+#line 216 "parser.ypp"
+    {  debug("empty printinto\n");	}
+    break;
+
+  case 36:
+/* Line 661 of lalr1.cc  */
+#line 224 "parser.ypp"
+    { debug("functioncall with no arg\n");}
+    break;
+
+  case 43:
+/* Line 661 of lalr1.cc  */
+#line 232 "parser.ypp"
+    {
+			//常量
+			
+		}
+    break;
+
+  case 49:
+/* Line 661 of lalr1.cc  */
+#line 245 "parser.ypp"
+    {
+		// 变量的引用? 反正是一个标识符的引用,
+		// 所以我构建一个标识符引用语句. 这个会被用来构建函数调用和数组语句
+		(yyval.varref) = new ReferenceAST( (yysemantic_stack_[(1) - (1)].id) );
+		debug("idref\n");
+	}
+    break;
+
 
 /* Line 661 of lalr1.cc  */
-#line 489 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 551 "/home/cai/projects/basic/compiler/parser.cpp"
 	default:
           break;
       }
@@ -671,19 +733,20 @@ namespace qb {
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
-  const signed char parser::yypact_ninf_ = -31;
-  const signed char
+  const signed char parser::yypact_ninf_ = -56;
+  const short int
   parser::yypact_[] =
   {
-        35,   -30,   -31,   -24,   -31,   -16,    19,    17,    20,    22,
-      83,    15,   -31,   -15,   -31,   -31,   -31,   -11,    66,    67,
-      82,    69,   -31,     9,   -31,    56,    70,    71,    72,    -7,
-      46,    46,   -31,   -31,   -31,   -31,    46,    56,    73,    75,
-     -16,   -16,    14,    77,    56,    -9,    56,    56,    56,    56,
-      56,    56,    56,    47,    49,   -31,    72,   -31,   -31,    29,
-      57,   -31,   -31,   -31,    88,    72,   -31,    53,    72,    81,
-      81,   -31,   -31,    21,   -31,   -31,   -31,    89,    14,    56,
-     -31,   -31,    14,   -31,   -31
+        88,   -30,    17,   -56,    49,    63,   -25,   -56,   -56,   -56,
+     -56,    79,    15,   -56,   103,   -56,   -56,   -56,   -56,    -6,
+      35,    25,    61,    86,    80,    43,    89,    50,   -56,   -56,
+     -56,    -1,   -56,    99,    50,    50,    50,    50,   -56,   -56,
+      50,   106,   115,    97,   102,    49,   -12,   116,    50,   110,
+      12,   129,     2,   -56,   -56,    56,    13,    13,   -56,   -56,
+     129,   -56,   -56,   -56,    46,    31,    88,    98,   107,   -56,
+     -56,   -56,   128,   129,   -56,     1,   -56,   -56,   -56,    50,
+      64,    88,   130,   -12,   129,   129,   -56,    77,   -12,   -56,
+     -56,   -56
   };
 
   /* YYDEFACT[S] -- default reduction number in state S.  Performed when
@@ -692,72 +755,79 @@ namespace qb {
   const unsigned char
   parser::yydefact_[] =
   {
-         0,     0,    13,     0,    16,     0,     0,     0,    40,     0,
-       0,     0,     4,     0,     9,    17,    10,     0,     0,     0,
-       0,    11,    40,     0,    37,     0,     0,    24,    29,    36,
-       0,     0,     1,     2,     3,     5,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     8,    18,    39,    38,     0,
-       0,    20,    21,    23,     0,    19,    34,    25,    28,    31,
-      30,    32,    33,     0,     6,     7,    12,    15,     0,    27,
-      26,    35,     0,    22,    14
+        35,     0,     0,    18,     0,     0,    32,     8,    49,    43,
+      44,     0,    35,     5,     0,    10,    11,    19,    14,     0,
+       0,     0,     0,     0,    15,     0,     0,    35,     1,     2,
+       4,     0,     6,     0,    35,    35,    35,    35,     7,    12,
+      35,     0,     0,    35,     0,     0,     0,     0,    35,     0,
+      28,    34,     0,     3,     9,     0,    40,    39,    41,    42,
+      22,    48,    47,    36,    46,     0,    35,     0,     0,    24,
+      25,    27,     0,    23,    31,    35,    30,    38,    37,    35,
+      35,    35,    17,     0,    33,    45,    20,    35,     0,    26,
+      21,    16
   };
 
   /* YYPGOTO[NTERM-NUM].  */
-  const signed char
+  const short int
   parser::yypgoto_[] =
   {
-       -31,   -31,   -31,   102,    68,    78,   -31,    -1,    60,   -31,
-      74,   -25,     2
+       -56,   -56,   -55,   -11,   140,   121,   -56,   -56,   -16,    30,
+     -56,   -56,   -56,   -21,   -56,     0
   };
 
   /* YYDEFGOTO[NTERM-NUM].  */
   const signed char
   parser::yydefgoto_[] =
   {
-        -1,    10,    11,    12,    13,    14,    15,    63,    21,    16,
-      27,    28,    29
+        -1,    11,    12,    13,    14,    15,    16,    17,    71,    24,
+      18,    27,    50,    19,    65,    52
   };
 
   /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
      positive, shift that token.  If negative, reduce the rule which
      number is the opposite.  If YYTABLE_NINF_, syntax error.  */
-  const signed char parser::yytable_ninf_ = -1;
-  const unsigned char
+  const signed char parser::yytable_ninf_ = -30;
+  const signed char
   parser::yytable_[] =
   {
-        45,    37,    17,    18,    48,    49,    50,    51,    23,    19,
-      38,    39,    56,    17,    38,    39,    35,    20,    33,    65,
-      36,    44,    68,    69,    70,    71,    72,    73,    66,    52,
-      38,    39,    17,    17,    48,    49,    50,    51,    17,     1,
-       2,     3,     4,     5,     6,     7,    61,    62,     8,     9,
-      22,    24,    22,    25,    68,    30,    26,    31,    81,     1,
-       2,     3,     4,     5,     6,     7,    76,    43,     8,     9,
-       1,     2,     3,     4,     5,     6,     7,    83,    74,    22,
-      75,    84,    36,    32,    36,    48,    49,    50,    51,    22,
-      24,    79,    25,    80,    77,    43,    50,    51,    53,    54,
-      59,    60,    40,    41,    46,    42,    57,    43,    58,    47,
-      64,    78,    82,    34,    55,     0,     0,     0,     0,     0,
-      67
+        20,    30,    53,    21,   -29,    25,    51,    34,    35,    36,
+      37,    80,    20,    56,    57,    58,    59,    26,    29,    60,
+      69,    70,    64,    41,    42,    38,    87,    73,    36,    37,
+      32,    39,   -29,    55,     8,     9,    33,    10,   -29,     1,
+      43,     2,     3,     4,     5,     6,     7,    40,     8,     9,
+      22,    10,    75,    76,    84,    48,    41,    42,    85,    34,
+      35,    36,    37,    44,    41,    42,    20,    89,    40,    30,
+      78,    79,    91,    43,    67,    68,    30,    41,    42,    28,
+      20,    20,    23,     8,     9,    77,    10,    20,     1,    86,
+       2,     3,     4,     5,     6,     7,     8,     8,     9,    45,
+      10,     1,    90,     2,     3,     4,     5,     6,     7,    46,
+       8,     9,     1,    10,     2,     3,     4,     5,     6,     7,
+      47,     8,     9,    49,    10,     2,     3,     4,     5,     6,
+       8,     9,     8,    10,    32,    23,    63,    81,    47,    61,
+      33,    66,    34,    35,    36,    37,    82,    47,    62,    72,
+      74,    83,    31,    88,    54
   };
 
   /* YYCHECK.  */
-  const signed char
+  const unsigned char
   parser::yycheck_[] =
   {
-        25,    12,     0,    33,    13,    14,    15,    16,     6,    33,
-      21,    22,    37,    11,    21,    22,    31,    33,     3,    44,
-      35,    12,    47,    48,    49,    50,    51,    52,    37,    36,
-      21,    22,    30,    31,    13,    14,    15,    16,    36,    24,
-      25,    26,    27,    28,    29,    30,    32,    33,    33,    34,
-      33,    34,    33,    36,    79,    35,    39,    35,    37,    24,
-      25,    26,    27,    28,    29,    30,    37,    38,    33,    34,
-      24,    25,    26,    27,    28,    29,    30,    78,    31,    33,
-      31,    82,    35,     0,    35,    13,    14,    15,    16,    33,
-      34,    38,    36,    40,    37,    38,    15,    16,    30,    31,
-      40,    41,    36,    36,    34,    23,    33,    38,    33,    38,
-      33,    23,    23,    11,    36,    -1,    -1,    -1,    -1,    -1,
-      46
+         0,    12,     3,    33,     3,     5,    27,    13,    14,    15,
+      16,    66,    12,    34,    35,    36,    37,    42,     3,    40,
+      32,    33,    43,    21,    22,    31,    81,    48,    15,    16,
+      31,    37,    31,    33,    33,    34,    37,    36,    37,    24,
+      38,    26,    27,    28,    29,    30,    31,    12,    33,    34,
+      33,    36,    40,    41,    75,    12,    21,    22,    79,    13,
+      14,    15,    16,    38,    21,    22,    66,    83,    12,    80,
+      39,    40,    88,    38,    44,    45,    87,    21,    22,     0,
+      80,    81,    33,    33,    34,    39,    36,    87,    24,    25,
+      26,    27,    28,    29,    30,    31,    33,    33,    34,    38,
+      36,    24,    25,    26,    27,    28,    29,    30,    31,    23,
+      33,    34,    24,    36,    26,    27,    28,    29,    30,    31,
+      40,    33,    34,    34,    36,    26,    27,    28,    29,    30,
+      33,    34,    33,    36,    31,    33,    39,    39,    40,    33,
+      37,    39,    13,    14,    15,    16,    39,    40,    33,    33,
+      40,    23,    12,    23,    33
   };
 
   /* STOS_[STATE-NUM] -- The (internal number of the) accessing
@@ -765,15 +835,16 @@ namespace qb {
   const unsigned char
   parser::yystos_[] =
   {
-         0,    24,    25,    26,    27,    28,    29,    30,    33,    34,
-      42,    43,    44,    45,    46,    47,    50,    53,    33,    33,
-      33,    49,    33,    53,    34,    36,    39,    51,    52,    53,
-      35,    35,     0,     3,    44,    31,    35,    12,    21,    22,
-      36,    36,    23,    38,    12,    52,    34,    38,    13,    14,
-      15,    16,    36,    45,    45,    46,    52,    33,    33,    49,
-      49,    32,    33,    48,    33,    52,    37,    51,    52,    52,
-      52,    52,    52,    52,    31,    31,    37,    37,    23,    38,
-      40,    37,    23,    48,    48
+         0,    24,    26,    27,    28,    29,    30,    31,    33,    34,
+      36,    44,    45,    46,    47,    48,    49,    50,    53,    56,
+      58,    33,    33,    33,    52,    58,    42,    54,     0,     3,
+      46,    47,    31,    37,    13,    14,    15,    16,    31,    37,
+      12,    21,    22,    38,    38,    38,    23,    40,    12,    34,
+      55,    56,    58,     3,    48,    58,    56,    56,    56,    56,
+      56,    33,    33,    39,    56,    57,    39,    52,    52,    32,
+      33,    51,    33,    56,    40,    40,    41,    39,    39,    40,
+      45,    39,    39,    23,    56,    56,    25,    45,    23,    51,
+      25,    51
   };
 
 #if YYDEBUG
@@ -785,8 +856,8 @@ namespace qb {
          0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,    45,    43,    42,    47,   268,   269,   270,
      271,   272,    46,   273,   274,   275,   276,   277,   278,   279,
-     280,   281,   282,   283,   284,    58,    40,    41,    44,    35,
-      59
+     280,   281,   282,   283,   284,   285,   286,    58,    40,    41,
+      44,    59,    35
   };
 #endif
 
@@ -794,22 +865,22 @@ namespace qb {
   const unsigned char
   parser::yyr1_[] =
   {
-         0,    41,    42,    43,    43,    44,    44,    44,    45,    45,
-      46,    46,    46,    46,    46,    46,    46,    46,    47,    47,
-      48,    48,    49,    49,    50,    50,    50,    50,    51,    51,
-      52,    52,    52,    52,    52,    52,    52,    52,    53,    53,
-      53
+         0,    43,    44,    44,    45,    45,    46,    46,    46,    47,
+      47,    47,    47,    47,    48,    48,    48,    48,    48,    48,
+      49,    49,    50,    50,    51,    51,    52,    52,    53,    53,
+      53,    54,    54,    55,    55,    56,    56,    56,    56,    56,
+      56,    56,    56,    56,    56,    57,    57,    58,    58,    58
   };
 
   /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
   const unsigned char
   parser::yyr2_[] =
   {
-         0,     2,     2,     2,     1,     2,     4,     4,     3,     1,
-       1,     2,     5,     1,     7,     5,     1,     1,     3,     4,
-       1,     1,     5,     3,     2,     4,     5,     5,     3,     1,
-       3,     3,     3,     3,     3,     4,     1,     1,     3,     3,
-       1
+         0,     2,     2,     3,     2,     1,     2,     2,     1,     3,
+       1,     1,     2,     2,     1,     2,     7,     5,     1,     1,
+       6,     7,     3,     4,     1,     1,     5,     3,     3,     4,
+       4,     3,     0,     3,     1,     0,     3,     4,     4,     3,
+       3,     3,     3,     1,     1,     3,     1,     3,     3,     1
   };
 
 #if YYDEBUG
@@ -822,10 +893,11 @@ namespace qb {
   "tGEQ", "tLEQ", "tLTN", "tGTN", "tEQU", "'-'", "'+'", "'*'", "'/'",
   "tMOD", "UPLUS", "UMINUS", "tPOW", "tDREF", "'.'", "tAS", "tSUB",
   "tSUBEND", "tFUNCTION", "tFUNCTIONEND", "tDIM", "tLET", "tPRINT",
-  "tNEWLINE", "tLONG", "tID", "tInteger", "':'", "'('", "')'", "','",
-  "'#'", "';'", "$accept", "program", "lines", "line", "statements",
-  "statement", "assigment", "type", "dimlist", "printstatement",
-  "printllist", "expression", "varref", YY_NULL
+  "tNEWLINE", "tLONG", "tID", "tInteger", "tSTRING", "tNUMBER", "':'",
+  "'('", "')'", "','", "';'", "'#'", "$accept", "program", "lines", "line",
+  "statements", "statement", "subdefine", "assigment", "type", "dimlist",
+  "printstatement", "printinto", "printllist", "expression",
+  "expression_list", "varref", YY_NULL
   };
 
 
@@ -833,21 +905,24 @@ namespace qb {
   const parser::rhs_number_type
   parser::yyrhs_[] =
   {
-        42,     0,    -1,    43,     3,    -1,    43,    44,    -1,    44,
-      -1,    45,    31,    -1,    33,    35,    45,    31,    -1,    34,
-      35,    45,    31,    -1,    45,    35,    46,    -1,    46,    -1,
-      50,    -1,    28,    49,    -1,    24,    33,    36,    49,    37,
-      -1,    25,    -1,    26,    33,    36,    49,    37,    23,    48,
-      -1,    26,    33,    36,    49,    37,    -1,    27,    -1,    47,
-      -1,    53,    12,    52,    -1,    29,    53,    12,    52,    -1,
-      32,    -1,    33,    -1,    49,    38,    33,    23,    48,    -1,
-      33,    23,    48,    -1,    30,    51,    -1,    30,    39,    34,
-      51,    -1,    30,    39,    34,    51,    40,    -1,    30,    39,
-      34,    51,    38,    -1,    51,    38,    52,    -1,    52,    -1,
-      52,    14,    52,    -1,    52,    13,    52,    -1,    52,    15,
-      52,    -1,    52,    16,    52,    -1,    36,    52,    37,    -1,
-      53,    36,    52,    37,    -1,    53,    -1,    34,    -1,    53,
-      22,    33,    -1,    53,    21,    33,    -1,    33,    -1
+        44,     0,    -1,    45,     3,    -1,    45,    47,     3,    -1,
+      45,    46,    -1,    46,    -1,    47,    31,    -1,    56,    31,
+      -1,    31,    -1,    47,    37,    48,    -1,    48,    -1,    49,
+      -1,    56,    37,    -1,    56,    31,    -1,    53,    -1,    28,
+      52,    -1,    26,    33,    38,    52,    39,    23,    51,    -1,
+      26,    33,    38,    52,    39,    -1,    27,    -1,    50,    -1,
+      24,    33,    38,    39,    45,    25,    -1,    24,    33,    38,
+      52,    39,    45,    25,    -1,    58,    12,    56,    -1,    29,
+      58,    12,    56,    -1,    32,    -1,    33,    -1,    52,    40,
+      33,    23,    51,    -1,    33,    23,    51,    -1,    30,    54,
+      55,    -1,    30,    54,    55,    40,    -1,    30,    54,    55,
+      41,    -1,    42,    34,    40,    -1,    -1,    55,    40,    56,
+      -1,    56,    -1,    -1,    58,    38,    39,    -1,    58,    38,
+      57,    39,    -1,    58,    38,    56,    39,    -1,    56,    14,
+      56,    -1,    56,    13,    56,    -1,    56,    15,    56,    -1,
+      56,    16,    56,    -1,    34,    -1,    36,    -1,    57,    40,
+      56,    -1,    56,    -1,    58,    22,    33,    -1,    58,    21,
+      33,    -1,    33,    -1
   };
 
   /* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
@@ -855,22 +930,22 @@ namespace qb {
   const unsigned char
   parser::yyprhs_[] =
   {
-         0,     0,     3,     6,     9,    11,    14,    19,    24,    28,
-      30,    32,    35,    41,    43,    51,    57,    59,    61,    65,
-      70,    72,    74,    80,    84,    87,    92,    98,   104,   108,
-     110,   114,   118,   122,   126,   130,   135,   137,   139,   143,
-     147
+         0,     0,     3,     6,    10,    13,    15,    18,    21,    23,
+      27,    29,    31,    34,    37,    39,    42,    50,    56,    58,
+      60,    67,    75,    79,    84,    86,    88,    94,    98,   102,
+     107,   112,   116,   117,   121,   123,   124,   128,   133,   138,
+     142,   146,   150,   154,   156,   158,   162,   164,   168,   172
   };
 
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
   const unsigned char
   parser::yyrline_[] =
   {
-         0,   159,   159,   171,   172,   174,   175,   176,   178,   179,
-     182,   183,   184,   185,   186,   187,   188,   189,   193,   194,
-     197,   197,   199,   200,   203,   204,   205,   206,   209,   210,
-     213,   214,   215,   216,   217,   218,   219,   220,   223,   224,
-     225
+         0,   138,   138,   148,   163,   164,   166,   167,   168,   171,
+     172,   173,   174,   175,   178,   179,   180,   181,   182,   183,
+     186,   191,   198,   199,   202,   202,   204,   205,   209,   210,
+     211,   215,   216,   219,   220,   223,   224,   225,   226,   228,
+     229,   230,   231,   232,   236,   239,   240,   243,   244,   245
   };
 
   // Print the state stack on the debug stream.
@@ -913,9 +988,9 @@ namespace qb {
            0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,    39,     2,     2,     2,     2,
-      36,    37,    15,    14,    38,    13,    22,    16,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,    35,    40,
+       2,     2,     2,     2,     2,    42,     2,     2,     2,     2,
+      38,    39,    15,    14,    40,    13,    22,    16,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,    37,    41,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -938,7 +1013,7 @@ namespace qb {
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    17,    18,
       19,    20,    21,    23,    24,    25,    26,    27,    28,    29,
-      30,    31,    32,    33,    34
+      30,    31,    32,    33,    34,    35,    36
     };
     if ((unsigned int) t <= yyuser_token_number_max_)
       return translate_table[t];
@@ -947,19 +1022,19 @@ namespace qb {
   }
 
   const int parser::yyeof_ = 0;
-  const int parser::yylast_ = 120;
-  const int parser::yynnts_ = 13;
+  const int parser::yylast_ = 154;
+  const int parser::yynnts_ = 16;
   const int parser::yyempty_ = -2;
-  const int parser::yyfinal_ = 32;
+  const int parser::yyfinal_ = 28;
   const int parser::yyterror_ = 1;
   const int parser::yyerrcode_ = 256;
-  const int parser::yyntokens_ = 41;
+  const int parser::yyntokens_ = 43;
 
-  const unsigned int parser::yyuser_token_number_max_ = 284;
+  const unsigned int parser::yyuser_token_number_max_ = 286;
   const parser::token_number_type parser::yyundef_token_ = 2;
 
 /* Line 1106 of lalr1.cc  */
 #line 22 "parser.ypp"
 } // qb
 /* Line 1106 of lalr1.cc  */
-#line 966 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 1041 "/home/cai/projects/basic/compiler/parser.cpp"

@@ -1,14 +1,11 @@
-sub main ( )
+/*
+	asdfasdfasdfas flasjdhfkjsdf
+*/
 
-DIM A as int
+sub main()
 
-A = 100
+print # 1, 123 , 123 ;
 
-WHILE A
-	print A ,
-	A = A-1
-wend
-
-print
+myfunc( 1 , 2 ,3)
 
 end sub

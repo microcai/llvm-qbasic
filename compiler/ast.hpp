@@ -71,6 +71,12 @@ private:
 	AST & operator =( const AST &  );
 };
 
+// 引用语句, 只要是包含了一个"标识符" 并在随后的语句中提供标识符的"解析操作"
+class ReferenceAST : public AST {
+	std::string ID; //标识符
+public:
+    ReferenceAST( std::string * tID):ID(*tID){};	
+};
 
 //语句有, 声明语句和表达式语句和函数调用语句
 class StatementAST;

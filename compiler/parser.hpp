@@ -67,14 +67,16 @@ namespace qb {
     union semantic_type
     {
 /* Line 36 of lalr1.cc  */
-#line 93 "parser.ypp"
+#line 65 "parser.ypp"
 
-	char *string;         /* quoted string */
-	char *symbol;         /* general symbol */
-	double number;        /* double number */
-	int separator;        /* separator */
-	ExprTypeAST *  exprtype;
+	char *				string;         /* quoted string */
+	std::string *		id;         /* general symbol */
+	double 				number;        /* double number */
+	long				integer;			/* long number */
 
+	ReferenceAST*		varref;
+	
+	ExprTypeAST *  		exprtype;
 	NumberExprAST* number_expression;
     VariableRefExprAST*varable_ref;	
 	
@@ -94,7 +96,7 @@ namespace qb {
 
 
 /* Line 36 of lalr1.cc  */
-#line 98 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 100 "/home/cai/projects/basic/compiler/parser.hpp"
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -132,7 +134,9 @@ namespace qb {
      tNEWLINE = 281,
      tLONG = 282,
      tID = 283,
-     tInteger = 284
+     tInteger = 284,
+     tSTRING = 285,
+     tNUMBER = 286
    };
 
     };
@@ -218,7 +222,7 @@ namespace qb {
     typedef unsigned char token_number_type;
     /* Tables.  */
     /// For a state, the index in \a yytable_ of its portion.
-    static const signed char yypact_[];
+    static const short int yypact_[];
     static const signed char yypact_ninf_;
 
     /// For a state, default reduction number.
@@ -226,7 +230,7 @@ namespace qb {
     /// Zero means the default is an error.
     static const unsigned char yydefact_[];
 
-    static const signed char yypgoto_[];
+    static const short int yypgoto_[];
     static const signed char yydefgoto_[];
 
     /// What to do in a state.
@@ -234,10 +238,10 @@ namespace qb {
     /// - if positive, shift that token.
     /// - if negative, reduce the rule which number is the opposite.
     /// - if zero, do what YYDEFACT says.
-    static const unsigned char yytable_[];
+    static const signed char yytable_[];
     static const signed char yytable_ninf_;
 
-    static const signed char yycheck_[];
+    static const unsigned char yycheck_[];
 
     /// For a state, its accessing symbol.
     static const unsigned char yystos_[];
@@ -305,7 +309,7 @@ namespace qb {
 #line 22 "parser.ypp"
 } // qb
 /* Line 36 of lalr1.cc  */
-#line 309 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 313 "/home/cai/projects/basic/compiler/parser.hpp"
 
 
 

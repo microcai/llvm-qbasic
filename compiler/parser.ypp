@@ -31,7 +31,6 @@
 
 extern	StatementAST * program;
 
-
 extern int yylex(qb::parser::semantic_type * yylval_param );
 
 //extern int yylex_destroy(void);
@@ -39,12 +38,6 @@ extern int yylex(qb::parser::semantic_type * yylval_param );
 extern int yylineno;
 
 #define debug printf
-
-/* Types of functions. */
-enum {
-   ftNONE, ftNUMBER, ftSTRING
-};
-
 
 /* Global variables. */
 std::string current_function;  /* name of currently parsed function */
@@ -59,27 +52,7 @@ int unclosed_repeats = 0;       /* unclosed "repeat" count */
 int unclosed_subs = 0;          /* unclosed subroutine count */
 int unclosed_switches = 0;      /* unclosed "switch" count */
 int unclosed_whiles = 0;        /* unclosed "while" count */
-bool until_eol = false;          /* read to end of line? */
 bool useDefautSubMain = false;	/* shall we treat the while file as an sub main ? */
-
-/* Sanity check routine. */
-void not_inside_loop_or_conditional (char *what) {
-   /* Display an error if necessary. */
-   if ((unclosed_dos || unclosed_fors || unclosed_repeats || unclosed_whiles) || (unclosed_ifs || unclosed_switches)) {
-      if ((unclosed_dos || unclosed_fors || unclosed_repeats || unclosed_whiles) && (unclosed_ifs || unclosed_switches)) {
-         debug ("cannot %s inside a loop, \"if\" statement, or \"switch\" construct", what);
-      }
-      else if (unclosed_dos || unclosed_fors || unclosed_repeats || unclosed_whiles) {
-         debug ("cannot %s inside a loop", what);
-      }
-      else if (unclosed_ifs || unclosed_switches) {
-         debug ("cannot %s inside an \"if\" statement or \"switch\" construct", what);
-      }
-   }
-
-   /* Return. */
-   return;
-}
 
 void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 {
@@ -87,16 +60,17 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 	exit(1);
 }
 
-
 %}
 
 %union {
-	char *string;         /* quoted string */
-	char *symbol;         /* general symbol */
-	double number;        /* double number */
-	int separator;        /* separator */
-	ExprTypeAST *  exprtype;
+	char *				string;         /* quoted string */
+	std::string *		id;         /* general symbol */
+	double 				number;        /* double number */
+	long				integer;			/* long number */
 
+	ReferenceAST*		varref;
+	
+	ExprTypeAST *  		exprtype;
 	NumberExprAST* number_expression;
     VariableRefExprAST*varable_ref;	
 	
@@ -152,7 +126,12 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %token tLONG 
 
 // 数据 , 标识符, 变量名, 函数名, 等等
-%token tID tInteger
+%token <id>		tID
+%token <integer> tInteger
+%token <string>	tSTRING
+%token <number> tNUMBER
+
+%type <varref> varref
 
 %%
 
@@ -166,29 +145,55 @@ program: lines tEOPROG {
 			}
 			YYACCEPT;
 		}
+		| lines statements tEOPROG {
+
+			debug("!!!no new line at the end of file!!!\n");
+			if(useDefautSubMain){
+				debug("program ended\n");
+				//program = new DefaultMainFunctionAST( $1 );
+			}else{
+				//program = $1;
+				debug("module ended\n");
+			}
+			YYACCEPT;
+			
+		}
 		;
 
 lines : lines line
 	| line ;
 
-line :   statements tNEWLINE
-	| tID ':' statements tNEWLINE ;
-	| tInteger ':' statements tNEWLINE ;
+line : statements tNEWLINE
+	| expression tNEWLINE
+	| tNEWLINE
+	;
 
 statements : statements ':' statement
 		| statement
+		| subdefine
+		| expression ':'
+		| expression tNEWLINE
 		;
 
 statement : printstatement
 		| tDIM dimlist
-		| tSUB tID '(' dimlist ')'
-		| tSUBEND
 		| tFUNCTION tID '(' dimlist ')' tAS type
 		| tFUNCTION tID '(' dimlist ')'
 		| tFUNCTIONEND
 		| assigment
 		;
 
+subdefine: tSUB  tID '(' ')'
+				lines
+			tSUBEND {
+				debug("got a sub define\n");
+			}
+		| tSUB  tID '(' dimlist ')'
+				lines
+			tSUBEND {
+				debug("got a sub define 2\n");
+			}
+		  ;
 
 assigment: varref tEQU expression
 		| tLET varref tEQU expression
@@ -200,27 +205,47 @@ dimlist: dimlist ',' tID tAS type
 	| tID tAS type
 	;
 
-printstatement : tPRINT printllist
-	|tPRINT '#' tInteger printllist
-	|tPRINT '#' tInteger printllist ';'
-	|tPRINT '#' tInteger printllist ','
+printstatement :
+	tPRINT  printinto  printllist  { debug("got print1 done\n") ;}
+	|tPRINT printinto  printllist ',' { debug("got print2 done\n") ;}
+	|tPRINT  printinto  printllist ';' { debug("got print3 done\n") ;}
+
 	;
 
-printllist : printllist ',' expression
+printinto: '#' tInteger ','  { debug("print has got itger\n") ;}
+	| /*empty*/	{  debug("empty printinto\n");	}
+	;
+	
+printllist: printllist ',' expression
 	| expression
 	;
 
-expression : expression '+' expression
+expression:
+		| varref '('  ')' { debug("functioncall with no arg\n");} // 这个也是函数调用
+		| varref  '(' expression_list ')' // 这个可能是函数调用, 也许是数组哦 :)
+		| varref  
+		 '(' expression ')'
+		| expression '+' expression
 		| expression '-' expression
 		| expression '*' expression
 		| expression '/' expression
-		| '(' expression ')'
-		| varref '(' expression ')' // 这个也是函数调用
-		| varref
-		| tInteger //常量
-;
+		| tInteger  {
+			//常量
+			
+		}
+		| tNUMBER //浮点数
+		;
+
+expression_list : expression_list ',' expression
+			| expression
+			;
 
 varref:	varref '.' tID // 成员变量
 	| varref tDREF  tID  // 指针解引用
-	| tID
+	| tID {
+		// 变量的引用? 反正是一个标识符的引用,
+		// 所以我构建一个标识符引用语句. 这个会被用来构建函数调用和数组语句
+		$$ = new ReferenceAST( $1 );
+		debug("idref\n");
+	}
 	;

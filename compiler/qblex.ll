@@ -26,6 +26,8 @@
 %option nounistd
 %option bison-bridge
 %x block_comment
+%x remark
+%x documentation
 
 %{
 
@@ -55,199 +57,49 @@ lcchar [\\_]
 %%
 
 <INITIAL><<EOF>> {
-
    return token::tEOPROG;
-   
 }
 
 "/*" {
-   yylval->separator = 0;
    BEGIN (block_comment);
-}
-<block_comment>{
-"*/" {
-   BEGIN (INITIAL);
-   return token::tSEPARATOR;
-}
-\n {
-   yylval->separator += 1;
-}
-<<EOF>> {
-   error ("block comment not terminated");
-}
-. /* eat comment */
 }
 
 "//".* /* eat comment */ {
-   yylval->separator = 0;
-   return token::tSEPARATOR;
+   
 }
 
 "'".* /* eat comment */ {
-   yylval->separator = 0;
-   return token::tSEPARATOR;
 }
 
-^"#".* /* eat comment */ {
-   yylval->separator = 0;
-   return token::tSEPARATOR;
+\n* {
+	yylineno += strlen(yytext);
+   return token::tNEWLINE;
 }
 
-"rem"{whitespace}+.*|"remark"{whitespace}+.*|"comment"{whitespace}+.* /* eat comment */ {
-   yylval->separator = 0;
-   return token::tSEPARATOR;
-}
-"rem"  return token::tSEPARATOR;
+end{whitespace}*sub|end{whitespace}*subroutine return token::tSUBEND;
+end{whitespace}*function return token::tFUNCTIONEND;
 
-"doc"|"docu"|"documentation" /* add to program documentation */ {
- //  add_doc (strdup (""));
-   yylval->separator = 0;
-   return token::tSEPARATOR;
-}
-
-"doc"{whitespace}+.*|"docu"{whitespace}+.*|"documentation"{whitespace}+.* /* add to program documentation */ {
-   for (count = 1; *yytext != ' ' && *yytext != '\r' && *yytext != '\t' && *yytext != '\f' && *yytext != '\v'; count++) {
-      yytext ++;
-   }
-   yytext ++;
-  // add_doc (mystrdup (yytext));
-   yylval->separator = 0;
-   return token::tSEPARATOR;
-}
-
-
-\n {
-   yylval->separator = 1;
-   return token::tSEPARATOR;
-}
-
-{lcchar}{whitespace}*\n {  /* handle line continuation */
-   yylineno += 1;
-}
-
-: {
-   yylval->separator = 0;
-   return token::tSEPARATOR;
-}
-
-
-
-while return token::tWHILE;
-wend return token::tWEND;
+function         return token::tFUNCTION;
+sub|subroutine return token::tSUB;
 
 long return token::tLONG;/* variables type*/
 
 as return token::tAS;
+dim 	 return token::tDIM;
 
-arraydim return token::tARDIM;
-arraysize return token::tARSIZE;
-break return token::tBREAK;
-case return token::tCASE;
-continue return token::tCONTINUE;
-csub return token::tCSUB;
-data return token::tDATA;
-dec|decrement return token::tDEC;
-default return token::tDEFAULT;
-dim 	{ printf("got DIM\n");   return token::tDIM;}
-disable return token::tDISABLE;
-do return token::tDO;
-elseif|elsif|elif return token::tELSEIF;
-else return token::tELSE;
-enable|option return token::tENABLE;
-
-end{whitespace}*data return token::tENDDATA;
-end{whitespace}*if|fi return token::tENDIF;
-end{whitespace}*struct|end{whitespace}*structure return token::tENDSTRUCT;
-end{whitespace}*sub|end{whitespace}*subroutine return token::tENDSUB;
-end{whitespace}*function return token::tENDFUNCTION;
-end{whitespace}*while	 return token::tWEND;
-end{whitespace}*switch|end{whitespace}*select return token::tSEND;
-
-eor|xor return token::tEOR;
-exit|end return token::tEXIT;
-explicit return token::tEXPLICIT;
-for return token::tFOR;
-from return token::tFROM;
-gosub return token::tGOSUB;
-goto return token::tGOTO;
-if return token::tIF;
-inc|increment return token::tINC;
-input return token::tINPUT;
-label return token::tLABEL;
 let return token::tLET;
-line return token::tLINE;
-local return token::tLOCAL;
-loop return token::tLOOP;
-next return token::tNEXT;
-poke return token::tPOKE;
-print|\? return token::tPRINT;
-read return token::tREAD;
-repeat return token::tREPEAT;
-restore return token::tRESTORE;
-return return token::tRETURN;
-seek return token::tSEEK;
-static return token::tSTATIC;
-step return token::tSTEP;
-struct|structure return token::tSTRUCT;
-function         return token::tFUNCTION;
-sub|subroutine return token::tSUB;
-switch|select return token::tSWITCH;
-then return token::tTHEN;
-to return token::tTO;
-until return token::tUNTIL;
-using return token::tUSING;
 
-abs return token::tABS;
-acos return token::tACOS;
-asc return token::tASC;
-asin return token::tASIN;
-atan return token::tATAN;
-chr\$ return token::tCHR;
-close return token::tCLOSE;
-cos return token::tCOS;
-eof return token::tEOF;
-exp return token::tEXP;
-frac return token::tFRAC;
-glob return token::tGLOB;
-instr return token::tINSTR;
-int return token::tINT;
-intger return token::tINT;
-left\$ return token::tLEFT;
-len return token::tLEN;
-log return token::tLOG;
-lower\$ return token::tLOWER;
-ltrim\$ return token::tLTRIM;
-max return token::tMAX;
-mid\$ return token::tMID;
-min return token::tMIN;
-open return token::tOPEN;
-peek return token::tPEEK;
-ran return token::tRAN;
+print return token::tPRINT;
+
+"->"	return token::tDREF;
+
 \^|\*\* return token::tPOW;
-right\$ return token::tRIGHT;
-rinstr return token::tRINSTR;
-rtrim\$ return token::tRTRIM;
-sig return token::tSIG;
-sin return token::tSIN;
-split return token::tSPLIT;
-split\$ return token::tSPLITALT;
-sqr return token::tSQR;
-sqrt return token::tSQRT;
-str\$ return token::tSTR;
-system return token::tSYSTEM;
-tan return token::tTAN;
-tell return token::tTELL;
-token return token::tTOKEN;
-token\$ return token::tTOKENALT;
-trim\$ return token::tTRIM;
-upper\$ return token::tUPPER;
-val return token::tVAL;
-call return token::tCALL;
-
 "and" return token::tAND;
+"&&" return token::tAND;
 "mod"|"%" return token::tMOD;
 "not" return token::tNOT;
 "or" return token::tOR;
+"==" return token::tEQU;
 "=" return token::tEQU;
 ">=" return token::tGEQ;
 ">" return token::tGTN;
@@ -292,55 +144,45 @@ false {
    return token::tNUMBER;
 }
 
-__date\$ {
-   return token::tDATE;
+
+
+-[0-9]* {
+   yylval->integer = atol (yytext);
+   printf("got %d\n",yylval->integer);
+   return token::tInteger;
 }
 
-__time\$ {
-   return token::tTIME;
+\+[0-9]* {
+   yylval->integer = atol (yytext);
+   printf("got %d\n",yylval->integer);
+   return token::tInteger;
 }
 
-__env\$|__environment\$ {
-   return token::tENV;
+
+[0-9]* {
+   yylval->integer = atol (yytext);
+   printf("got %d\n",yylval->integer);
+   return token::tInteger;
 }
 
-__numparams? {
-   yylval->symbol = strdup ("__numparam");
-   return token::tNUMSYM;
-}
+(([0-9]+|([0-9]*\.[0-9]+))([eE][-+]?[0-9]+)?) {
+   yylval->number = strtod (yytext, NULL);
+      printf("got %f\n",yylval->number);
 
-__system\$ {
-   yylval->symbol = strdup (SYSTEM_NAME);
-   return token::tSTRING;
-}
-
-__version\$ {
-   yylval->string = strdup (VERSION);
-   return token::tSTRING;
-}
-
-__arg\$|__args\$|__argument\$|__arguments\$ {
-   return token::tARG;
-}
-
-__[_a-z0-9]*|__[_a-z0-9]*\$ {
-   error ("symbol prefix \"__\" is reserved for internal variables");
+   return token::tNUMBER;
 }
 
 {name} {
-   yylval->symbol = strdup (yytext);
-   return token::tNUMSYM;
+   yylval->id = new std::string (yytext);
+   printf("got %s\n", yytext);
+   return token::tID;
 }
 
 {name}\$ {
-   yylval->symbol = strdup (yytext);
-   return token::tSTRSYM;
+   yylval->id = new std::string (yytext);
+   return token::tID;
 }
 
-(([0-9]+|([0-9]*\.[0-9]*))([eE][-+]?[0-9]+)?) {
-   yylval->number = strtod (yytext, NULL);
-   return token::tNUMBER;
-}
 
 \"[^"\n]*(\"|\n) {
    if (yytext[yyleng - 1] == '\n') {
@@ -361,6 +203,17 @@ __[_a-z0-9]*|__[_a-z0-9]*\$ {
 
 . {
    return yytext[1 - 1];
+}
+
+<block_comment>{
+
+"*/"    BEGIN (INITIAL);
+
+<<EOF>>   error ("block comment not terminated");
+
+.
+\n yylineno ++;
+
 }
 
 
