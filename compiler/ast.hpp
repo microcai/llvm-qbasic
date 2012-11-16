@@ -174,6 +174,8 @@ public:
 	VariableDimAST	*	define; //在未来解析
     ReferenceASTPtr		var; //指向引用的变量名字.
 
+    virtual bool canllvm();;
+
     VariableRefExprAST(ReferenceASTPtr varname ); //用构变量构筑
 
 	// helper function , resolve the name to llvm::AllocaInst

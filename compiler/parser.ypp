@@ -144,6 +144,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %type <printstatement>				printstatement
 %type <statement_list>				lines
 %type <statement_list>				line
+%type <statement_list>				statements
 
 %type <function_definition>			subdefine
 
@@ -180,9 +181,9 @@ lines: lines line { $$ = $1; $$->addchild($2); }
 		$$->addchild($1);
 	} ;
 
-line: statements tNEWLINE { debug("here=====2===\n");	}
-	| statements expression tNEWLINE { debug("here==3======\n");	}
-	| expression tNEWLINE { debug("here====5====\n");	}
+line: statements tNEWLINE { $$=$1 ;  debug("here=====2===\n");	}
+	| statements expression tNEWLINE { debug("here==3======\n");exit(1);	}
+	| expression tNEWLINE { /*TODO*/debug("here====5====\n"); exit(1);	}
 	| tNEWLINE { $$= new EmptyStmtAST(); debug("here=====1===\n");	}
 	;
 
@@ -268,12 +269,16 @@ expression_list: expression_list ',' expression
 expression:
 		| varref '('  ')' { debug("functioncall with no arg\n");} // 这个也是函数调用
 		| varref  '(' expression_list ')' // 这个可能是函数调用, 也许是数组哦 :)
-		| varref  
 		 '(' expression ')'
 		| expression '+' expression
 		| expression '-' expression
 		| expression '*' expression
 		| expression '/' expression
+ 		| varref	{
+			//TODO the VariableRefExprAST
+			$$ = new VariableRefExprAST( ReferenceASTPtr($1) );
+			debug("do we got this?\n");			
+		}
 		| tInteger  {
 			//常量
 			$$ = new ConstNumberExprAST( $1 );
@@ -291,6 +296,6 @@ varref:	varref '.' tID { debug("ref menber %s . %s , not supported yet\n", $1->I
 		// 变量的引用? 反正是一个标识符的引用,
 		// 所以我构建一个标识符引用语句. 这个会被用来构建函数调用和数组语句以及变量.
 		$$ = new ReferenceAST( $1 );
-		debug("idref\n");
+		debug("idref %s\n", $1->c_str());
 	}
 	;

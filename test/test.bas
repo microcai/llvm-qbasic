@@ -4,10 +4,7 @@
 
 sub main()
 
-	print 1
-
-	print 1
-	print 1,
-	print 1
+print a
 
 end sub
+

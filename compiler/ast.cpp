@@ -99,6 +99,12 @@ NumberExprAST::NumberExprAST(VariableExprASTPtr _var_num)
 	// the varable is a type of number, right ?	
 }
 
+// TODO FIXME 
+bool VariableRefExprAST::canllvm()
+{
+	return true;
+}
+
 CalcExprAST::CalcExprAST(ExprASTPtr lhs, MathOperator OP, ExprASTPtr rhs)
 	:rval(rhs),lval(lhs),op(OP),ExprAST(ExprTypeASTPtr(new UnknowTypeAST()))
 {
@@ -133,3 +139,4 @@ void ExprListAST::Append(ExprAST* exp)
 {
     expression_list.push_back( ExprASTPtr(exp));
 }
+
