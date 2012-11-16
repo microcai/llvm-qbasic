@@ -321,20 +321,32 @@ llvm::BasicBlock* IFStmtAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlo
 	BOOST_ASSERT(TheFunction);
 	debug("if else statement\n");
 
-//	llvm::BasicBlock* entry = llvm::BasicBlock::Create(getGlobalContext(), "entry", TheFunction);
-//	llvm::BasicBlock* cond_false = llvm::BasicBlock::Create(getGlobalContext(), "cond_false", TheFunction);
+	// true cond is always there
 	llvm::BasicBlock* cond_true = llvm::BasicBlock::Create(TheFunction->getContext(), "cond_true", TheFunction);
 	llvm::BasicBlock* cond_continue = llvm::BasicBlock::Create(TheFunction->getContext(), "continue", TheFunction);
-//	llvm::BasicBlock* cond_false_2 = llvm::BasicBlock::Create(TheFunction->getContext(), "cond_false", TheFunction);
+	llvm::BasicBlock* cond_false  =cond_continue;
+
+	if( this->_else.get()){
+		cond_false = llvm::BasicBlock::Create(TheFunction->getContext(), "cond_false",TheFunction);		
+	}
+
 	llvm::IRBuilder<> builder(insertto);
 
 	llvm::Value * expcond = this->_expr->getval(this,TheFunction,insertto);
-
 	expcond = builder.CreateICmpNE(expcond, qbc::getconstlong(0), "tmp");
+	builder.CreateCondBr(expcond, cond_true, cond_false);
 
-	builder.CreateCondBr(expcond, cond_true, cond_continue);
-	builder.SetInsertPoint(cond_true);
+	// generating true	
 	this->_then->Codegen(TheFunction,cond_true);
+	builder.SetInsertPoint(cond_true);
+	builder.CreateBr(cond_continue);
+
+	// generating false , if there is any
+	if( this->_else.get()){
+		this->_else->Codegen(TheFunction,cond_false);
+		builder.SetInsertPoint(cond_false);
+		builder.CreateBr(cond_continue);
+	}
 	builder.CreateBr(cond_continue);
 	return cond_continue;
 }
