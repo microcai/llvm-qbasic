@@ -274,6 +274,10 @@ llvm::AllocaInst* VariableRefExprAST::nameresolve(
 			exit(1);
 		}
 	}
+	if(!this->define->AllocaInstRef){
+		debug("=========== varable\"%s\" ======== not defined\n",var.c_str());
+		exit(1);
+	}
 	return this->define->AllocaInstRef;
 }
 llvm::BasicBlock* NumberAssigmentAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)

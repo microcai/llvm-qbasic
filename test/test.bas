@@ -1,6 +1,4 @@
 sub main ( )
-DIM A as int
-dim B as intger
 
 A=12345 : B=15
 
@@ -9,5 +7,8 @@ if 0 then
 else
 	print B , A 
 endif
+
+DIM A as int
+dim B as intger
 
 end sub
