@@ -69,11 +69,17 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 	long				integer;			/* long number */
 
 	ReferenceAST*		varref;
+	ExprAST*			expression;
+	ExprListAST*		expression_list;
+
+	PrintIntroAST*		printinto;
+	
 	
 	ExprTypeAST *  		exprtype;
 	NumberExprAST* number_expression;
     VariableRefExprAST*varable_ref;	
-	
+
+    PrintStmtAST*		printstatement;
 	StatementAST* statement;
 	StatementAST* statement_list;
 	AssigmentAST*variable_assignment;
@@ -85,7 +91,6 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 	FunctionDimAST	 *function_definition;
 
 	PrintIntroAST *print_intro;
-	PrintListAST * print_list;
 	std::string 	*cppstring;
 }
 
@@ -131,7 +136,11 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %token <string>	tSTRING
 %token <number> tNUMBER
 
-%type <varref> varref
+%type <varref>						varref
+%type <expression>					expression
+%type <expression_list>				expression_list
+%type <printinto>					printinto
+%type <printstatement>				printstatement
 
 %%
 
@@ -164,6 +173,7 @@ lines : lines line
 	| line ;
 
 line : statements tNEWLINE
+	| statements expression tNEWLINE
 	| expression tNEWLINE
 	| tNEWLINE
 	;
@@ -172,7 +182,6 @@ statements : statements ':' statement
 		| statement
 		| subdefine
 		| expression ':'
-		| expression tNEWLINE
 		;
 
 statement : printstatement
@@ -206,9 +215,14 @@ dimlist: dimlist ',' tID tAS type
 	;
 
 printstatement :
-	tPRINT  printinto  printllist  { debug("got print1 done\n") ;}
-	|tPRINT printinto  printllist ',' { debug("got print2 done\n") ;}
-	|tPRINT  printinto  printllist ';' { debug("got print3 done\n") ;}
+	tPRINT  printinto  expression_list  {
+
+		$$ = new PrintStmtAST( $2, $3 );
+		
+		debug("got print1 done\n");
+	}
+	|tPRINT printinto  expression_list ',' { debug("got print2 done\n") ;}
+	|tPRINT  printinto  expression_list ';' { debug("got print3 done\n") ;}
 
 	;
 
@@ -216,8 +230,11 @@ printinto: '#' tInteger ','  { debug("print has got itger\n") ;}
 	| /*empty*/	{  debug("empty printinto\n");	}
 	;
 	
-printllist: printllist ',' expression
-	| expression
+expression_list: expression_list ',' expression
+	| expression {
+		$$ =  new ExprListAST;
+		$$->Append($1);
+	}
 	;
 
 expression:
@@ -231,7 +248,7 @@ expression:
 		| expression '/' expression
 		| tInteger  {
 			//常量
-			
+			$$ = new ConstNumberExprAST( $1 );
 		}
 		| tNUMBER //浮点数
 		;
@@ -240,11 +257,11 @@ expression_list : expression_list ',' expression
 			| expression
 			;
 
-varref:	varref '.' tID { debug("ref menber %s . %s \n", $1->ID.c_str()  , $3 );  }// 成员变量
+varref:	varref '.' tID { debug("ref menber %s . %s , not supported yet\n", $1->ID.c_str()  , $3->c_str() ); exit(1); }// 成员变量
 	| varref tDREF  tID  // 指针解引用
 	| tID {
 		// 变量的引用? 反正是一个标识符的引用,
-		// 所以我构建一个标识符引用语句. 这个会被用来构建函数调用和数组语句
+		// 所以我构建一个标识符引用语句. 这个会被用来构建函数调用和数组语句以及变量.
 		$$ = new ReferenceAST( $1 );
 		debug("idref\n");
 	}

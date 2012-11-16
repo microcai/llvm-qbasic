@@ -57,10 +57,9 @@ void StatementAST::addchild(StatementASTPtr item) {
 }
 
 
-PrintStmtAST::PrintStmtAST(PrintIntroASTPtr intro,PrintListASTPtr args)
+PrintStmtAST::PrintStmtAST(PrintIntroAST * intro,ExprListAST* args)
 	:callargs(args),print_intro(intro)
 {
-	
 }
 
 PrintIntroAST::PrintIntroAST() {}
@@ -124,4 +123,13 @@ WhileLoopAST::WhileLoopAST(ExprASTPtr _condition , StatementASTPtr body)
 	:condition(_condition),LoopAST(body)
 {
 }
-ReferenceAST::ReferenceAST(std::string* tID) :ID(*tID) {}
+
+ReferenceAST::ReferenceAST(std::string* tID) :ID(*tID)
+{
+	
+}
+
+void ExprListAST::Append(ExprAST* exp)
+{
+    expression_list.push_back( ExprASTPtr(exp));
+}

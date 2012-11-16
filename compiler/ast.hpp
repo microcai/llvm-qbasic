@@ -158,8 +158,16 @@ public:
     ExprAST(ExprTypeASTPtr ExprType):type(ExprType){};
 	virtual llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto) = 0;
 };
-
 typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
+
+class ExprListAST : public AST //
+{
+	std::vector<ExprASTPtr>	expression_list;
+public:
+    ExprListAST(){}
+	void Append(ExprAST* exp);
+};
+typedef boost::shared_ptr<ExprListAST> ExprListASTPtr;
 
 class EmptyExprAST : public ExprAST
 {
@@ -324,26 +332,12 @@ public:
 };
 typedef boost::shared_ptr<PrintIntroAST> PrintIntroASTPtr;
 
-class PrintListAST: public AST
-{
-public:
-	std::vector<ExprASTPtr> printlist;
-	int size(){
-		return printlist.size();
-	}
-	void additem(ExprASTPtr item){
-		printlist.push_back(item);		
-	}
-};
-
-typedef boost::shared_ptr<PrintListAST> PrintListASTPtr;
-
 class PrintStmtAST: public StatementAST
 {
 public:
 	PrintIntroASTPtr	print_intro;
-	PrintListASTPtr		callargs;
-	PrintStmtAST(PrintIntroASTPtr,PrintListASTPtr);
+	ExprListASTPtr		callargs;
+	PrintStmtAST(PrintIntroAST *,ExprListAST * );
     virtual llvm::BasicBlock* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
 };
 
