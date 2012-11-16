@@ -280,7 +280,7 @@ llvm::AllocaInst* VariableRefExprAST::nameresolve(
 	}
 	return this->define->AllocaInstRef;
 }
-llvm::BasicBlock* NumberAssigmentAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
+llvm::BasicBlock* AssigmentAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
 {
 	BOOST_ASSERT(TheFunction);
 	debug("called for number assigment\n");

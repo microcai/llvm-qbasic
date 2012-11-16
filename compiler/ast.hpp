@@ -213,12 +213,12 @@ class ArrayVariableRefExprAST:public VariableRefExprAST
 };
 typedef boost::shared_ptr<VariableRefExprAST> VariableRefExprASTPtr;
 
-class NumberAssigmentAST : public StatementAST
+class AssigmentAST : public StatementAST
 {
 public:
-	NumberAssigmentAST(VariableRefExprASTPtr _lvar, NumberExprASTPtr _rval);
+	AssigmentAST(VariableRefExprASTPtr _lvar, ExprASTPtr _rval);
 	VariableRefExprASTPtr lval;
-	NumberExprASTPtr	rval;
+	ExprASTPtr	rval;
     llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };
 

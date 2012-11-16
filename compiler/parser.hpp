@@ -80,7 +80,7 @@ namespace qb {
 	
 	StatementAST* statement;
 	StatementAST* statement_list;
-	NumberAssigmentAST*number_assignment;
+	AssigmentAST*variable_assignment;
 	IFStmtAST * if_clause;
 	
 	WhileLoopAST* while_loop;

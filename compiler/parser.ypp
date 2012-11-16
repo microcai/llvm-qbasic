@@ -101,7 +101,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 	
 	StatementAST* statement;
 	StatementAST* statement_list;
-	NumberAssigmentAST*number_assignment;
+	AssigmentAST*variable_assignment;
 	IFStmtAST * if_clause;
 	
 	WhileLoopAST* while_loop;
@@ -128,7 +128,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %type <statement_list>		statement_list
 %type <statement_list>		list_of_statement_lists
 %type <varable_ref>			numsym_s
-%type <number_assignment>	number_assignment
+%type <variable_assignment>	variable_assignment
 %type <if_clause>			if_clause
 %type <statement_list>		else_part
 
@@ -227,8 +227,8 @@ statement: /* empty */ { $$ = new EmptyStmtAST(); debug("got empty statement %p\
    | non_empty_statement { $$ = $1; debug( "got non_empty_statement %p\n", $$ ); }
    ;
 
-non_empty_statement: number_assignment
-   | tLET number_assignment
+non_empty_statement: variable_assignment
+   | tLET variable_assignment
    | if_clause
    | short_if
    | while_loop
@@ -292,10 +292,10 @@ non_empty_statement: number_assignment
    | tDIM dim_list {  $$ = $2; 	}
    ;
 
-number_assignment: numsym_s tEQU number_expression {
+variable_assignment: numsym_s tEQU number_expression {
 		// 变量赋值
 		debug("变量赋值\n");
-		$$ = new NumberAssigmentAST(VariableRefExprASTPtr($1), NumberExprASTPtr($3));
+		$$ = new AssigmentAST(VariableRefExprASTPtr($1), NumberExprASTPtr($3));
 		if(current_function.empty())
 			useDefautSubMain = true;
 	}

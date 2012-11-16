@@ -694,7 +694,7 @@ namespace qb {
     {
 		// 变量赋值
 		debug("变量赋值\n");
-		(yyval.number_assignment) = new NumberAssigmentAST(VariableRefExprASTPtr((yysemantic_stack_[(3) - (1)].varable_ref)), NumberExprASTPtr((yysemantic_stack_[(3) - (3)].number_expression)));
+		(yyval.variable_assignment) = new AssigmentAST(VariableRefExprASTPtr((yysemantic_stack_[(3) - (1)].varable_ref)), NumberExprASTPtr((yysemantic_stack_[(3) - (3)].number_expression)));
 		if(current_function.empty())
 			useDefautSubMain = true;
 	}
@@ -2466,7 +2466,7 @@ namespace qb {
   "tRINSTR", "'-'", "'+'", "'*'", "'/'", "tMOD", "UPLUS", "UMINUS", "'.'",
   "';'", "','", "'('", "')'", "'#'", "$accept", "program",
   "list_of_statement_lists", "statement_list", "$@1", "statement",
-  "non_empty_statement", "number_assignment", "string_expression",
+  "non_empty_statement", "variable_assignment", "string_expression",
   "string_function", "number_expression", "$@2", "$@3", "number_function",
   "hashed_number", "exprtype", "dim_as_type", "dim_list", "if_clause",
   "$@4", "$@5", "$@6", "short_if", "$@7", "$@8", "$@9", "endif", "if_part",

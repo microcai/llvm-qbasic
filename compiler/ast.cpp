@@ -86,7 +86,7 @@ VariableRefExprAST::VariableRefExprAST(const std::string _name)
 
 }
 
-NumberAssigmentAST::NumberAssigmentAST(VariableRefExprASTPtr _lval, NumberExprASTPtr _rval)
+AssigmentAST::AssigmentAST(VariableRefExprASTPtr _lval, ExprASTPtr _rval)
 	:lval(_lval),rval(_rval)
 {
 	
