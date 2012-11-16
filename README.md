@@ -8,3 +8,13 @@ llvm-qbc is a QBASIC compiler as well as an runtime library ( statically linked 
 	[3] pointer support
 	[2]	call C function as freely as possible
 	[4] highly optimized
+
+# Current Status
+	[1] basic mathmatical operation
+	[2] function define and invoke ( no parameter )
+	[3] if statement
+	[4] while statement
+
+# Implementation Detail
+
+	will dicuss later 
