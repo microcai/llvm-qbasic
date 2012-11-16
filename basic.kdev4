@@ -1,4 +1,3 @@
 [Project]
-Name=basic
 Manager=KDevCMakeManager
-VersionControl=kdevgit
+Name=basic
