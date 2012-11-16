@@ -75,7 +75,8 @@ private:
 class ReferenceAST;
 typedef boost::shared_ptr<ReferenceAST> ReferenceASTPtr;
 
-class ReferenceAST : public AST {
+class ReferenceAST : public AST
+{
 public:
 	std::string ID; //标识符
     ReferenceAST( std::string * tID );
@@ -136,24 +137,11 @@ public:
 
 typedef boost::shared_ptr<VariableDimAST> VariableDimASTPtr;
 
-//定义结构体变量
-class VariableStructDimAST : VariableDimAST
-{
-	//VariableSimpleDimAST	
-	std::list<VariableDimASTPtr> members;
-};
-
-//定义数组
-class VariableArrayDimAST : VariableDimAST
-{
-	VariableDimASTPtr	itemtype;
-	int start,end; //起始位置
-};
-
 // 表达式
 class ExprAST: public AST //
 {
 public:
+	virtual bool	canllvm() = 0; // is this type built-in by llvm-IR ?
 	ExprTypeASTPtr type;
     ExprAST(ExprTypeASTPtr ExprType):type(ExprType){};
 	virtual llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto) = 0;
@@ -164,7 +152,7 @@ class ExprListAST : public AST //
 {
 public:
 	std::vector<ExprASTPtr>	expression_list;
-
+	
     ExprListAST(){}
 	void Append(ExprAST* exp);
 };
@@ -175,18 +163,23 @@ class EmptyExprAST : public ExprAST
 public:	
     EmptyExprAST():ExprAST(ExprTypeASTPtr(new VoidTypeAST())){}
 	llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto){return insertto;}
+
+    virtual bool canllvm() {return false;}
 };
 
+// 引用一个ID标识符标识的变量. 
 class VariableRefExprAST:public ExprAST
 {
 public:
-	VariableDimAST	*	define;
-    VariableRefExprAST(const std::string _name);
-	std::string	var; //指向引用的变量名字.
+	VariableDimAST	*	define; //在未来解析
+    ReferenceASTPtr		var; //指向引用的变量名字.
+
+    VariableRefExprAST(ReferenceASTPtr varname ); //用构变量构筑
 
 	// helper function , resolve the name to llvm::AllocaInst
 	virtual llvm::AllocaInst*nameresolve(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto);
-	
+
+	// get Val for this type. Not that , you simple can't use this for non simple type
 	virtual llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto);
 
 	// get pointer to the val, then the llvm::Value can be used to CreateStore
@@ -210,6 +203,8 @@ class ConstNumberExprAST :public NumberExprAST
 {
 	const int64_t val;
 public:
+	bool canllvm() {return true;}
+	
     ConstNumberExprAST(const int64_t);
 	llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto); // final , 不允许继承了.
 };

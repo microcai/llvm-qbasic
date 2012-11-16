@@ -19,10 +19,17 @@
 
 #include "llvmwrapper.hpp"
 #include "ast.hpp"
+#include "typeast.h"
 
 #define debug printf
 
-UnknowTypeAST::UnknowTypeAST(const std::string _name)
+UnknowTypeAST::UnknowTypeAST()
+	:ExprTypeAST(-1)
+{
+	
+}
+
+UnknowTypeAST::UnknowTypeAST(ReferenceASTPtr _name)
 	:ExprTypeAST(-1),varname(_name)
 {
 
@@ -47,7 +54,7 @@ NumberTypeAST::NumberTypeAST()
 
 ExprTypeASTPtr UnknowTypeAST::resolve(StatementAST* theblock,DimAST ** vardim)
 {
-	debug("finding type for %s\n",varname.c_str());
+	debug("finding type for %s\n",varname->ID.c_str());
 	
 	if(theblock)
 	{
@@ -59,11 +66,11 @@ ExprTypeASTPtr UnknowTypeAST::resolve(StatementAST* theblock,DimAST ** vardim)
 				continue;
 			//	查看变量声明
 			debug("god dim block %p\n",dim);
-			if(dim->name == this->varname){
+			if(dim->name == this->varname->ID){
 				if(vardim)
 					*vardim = dim;
 				if(dim->type->resolved()){
-					debug("变量 %s 的类型找到, 是 %s\n", varname.c_str(), dim->type->name.c_str());
+					debug("变量 %s 的类型找到, 是 %s\n", varname->ID.c_str(), dim->type->name.c_str());
 					return dim->type;
 				}
 				else

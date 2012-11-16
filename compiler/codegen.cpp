@@ -62,7 +62,7 @@ llvm::Value* NumberExprAST::getval(StatementAST * parent,
 		debug("number expr for XXX \n");
 		var->define = 0;
 	}
-	debug("number expr for %s \n" ,var->var.c_str());
+	debug("number expr for %s \n" ,var->var->ID.c_str());
 	return (var->getval(parent,TheFunction,insertto));
 }
 
@@ -262,18 +262,18 @@ llvm::AllocaInst* VariableRefExprAST::nameresolve(
 
 	//TODO: 寻找变量代表的类型
 	if(!exptype->resolved()){
-		debug("var %s type not found\n", var.c_str());
+		debug("var %s type not found\n", var->ID.c_str());
 		DimAST *dim;
  		this->type = dynamic_cast<UnknowTypeAST*>(exptype)->resolve(parent,&dim);
 		this->define = dynamic_cast<VariableDimAST*>(dim);
 		if(!this->define)
 		{
-			debug("%s is not variable\n",var.c_str());
+			debug("%s is not variable\n",var->ID.c_str());
 			exit(1);
 		}
 	}
 	if(!this->define->AllocaInstRef){
-		debug("=========== varable\"%s\" ======== not defined\n",var.c_str());
+		debug("=========== varable\"%s\" ======== not defined\n",var->ID.c_str());
 		exit(1);
 	}
 	return this->define->AllocaInstRef;

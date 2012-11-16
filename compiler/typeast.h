@@ -43,9 +43,10 @@ typedef	boost::shared_ptr<ExprTypeAST> ExprTypeASTPtr;
 class DimAST;
 class UnknowTypeAST : public ExprTypeAST
 {
-	std::string	varname;
+	ReferenceASTPtr	varname;
 public:
-    UnknowTypeAST(const std::string _name);
+	UnknowTypeAST();
+    UnknowTypeAST(ReferenceASTPtr refname);
     size_t size(){return -1;}
     ExprTypeASTPtr resolve(StatementAST* theblock, DimAST ** ); // resolve and return
     llvm::Type* llvmtype(){return NULL;}

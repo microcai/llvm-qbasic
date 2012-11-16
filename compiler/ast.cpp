@@ -80,8 +80,8 @@ VariableDimAST::VariableDimAST(const std::string _name, ExprTypeASTPtr _type)
 {
 }
 
-VariableRefExprAST::VariableRefExprAST(const std::string _name)
-	:ExprAST(ExprTypeASTPtr(new UnknowTypeAST(_name))),var(_name)
+VariableRefExprAST::VariableRefExprAST(ReferenceASTPtr varname)
+	:ExprAST(ExprTypeASTPtr(new UnknowTypeAST(varname))),var(varname)
 {
 
 }
@@ -100,7 +100,7 @@ NumberExprAST::NumberExprAST(VariableExprASTPtr _var_num)
 }
 
 CalcExprAST::CalcExprAST(ExprASTPtr lhs, MathOperator OP, ExprASTPtr rhs)
-	:rval(rhs),lval(lhs),op(OP),ExprAST(ExprTypeASTPtr(new UnknowTypeAST("@@expresion@@")))
+	:rval(rhs),lval(lhs),op(OP),ExprAST(ExprTypeASTPtr(new UnknowTypeAST()))
 {
 	
 }
