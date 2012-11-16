@@ -48,20 +48,14 @@ NumberTypeAST::NumberTypeAST()
 
 ExprTypeASTPtr UnknowTypeAST::resolve(StatementAST* theblock,DimAST ** vardim)
 {
-	BOOST_ASSERT(theblock);
-	
 	debug("finding type for %s\n",varname.c_str());
 	
-	StatementsAST * functionblock = theblock->parent;
-
-	if(functionblock)
+	if(theblock)
 	{
 		//查找变量声明
-		for(std::list< StatementASTPtr >::iterator it = functionblock->statements.begin();
-			it != functionblock->statements.end();
-			it ++ )
+		BOOST_FOREACH( StatementASTPtr stmt , theblock->substatements)
 		{
-			DimAST * dim = dynamic_cast<DimAST*>(it->get());
+			DimAST * dim = dynamic_cast<DimAST*>(stmt.get());
 			if(!dim)
 				continue;
 			//	查看变量声明
@@ -78,8 +72,7 @@ ExprTypeASTPtr UnknowTypeAST::resolve(StatementAST* theblock,DimAST ** vardim)
 			}
 		}
 		//到父类型去
-		if(functionblock->parent)
-			return UnknowTypeAST::resolve(functionblock->parent,vardim);
+		return UnknowTypeAST::resolve(theblock->parent,vardim);
 	}
 	//TODO: 打印行号信息
 	printf("variable %s not defined!", this->name.c_str());

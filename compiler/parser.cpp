@@ -489,7 +489,7 @@ namespace qb {
   case 4:
 /* Line 661 of lalr1.cc  */
 #line 222 "parser.ypp"
-    { (yyval.statement_list) = new StatementsAST((yysemantic_stack_[(1) - (1)].statement));
+    { (yyval.statement_list) = new StatementAST(); (yyval.statement_list)->addchild(StatementASTPtr((yysemantic_stack_[(1) - (1)].statement)));
 			debug("statement_list %p app %p  now\n", (yyval.statement_list) , (yysemantic_stack_[(1) - (1)].statement));
 }
     break;
@@ -506,7 +506,7 @@ namespace qb {
     {
 			(yyval.statement_list) = (yysemantic_stack_[(4) - (1)].statement_list);
 			debug("statement_list %p app %p  now\n", (yyval.statement_list) , (yysemantic_stack_[(4) - (4)].statement));
-			(yyval.statement_list)->append( StatementASTPtr((yysemantic_stack_[(4) - (4)].statement)) );
+			(yyval.statement_list)->addchild( StatementASTPtr((yysemantic_stack_[(4) - (4)].statement)) );
 	}
     break;
 
@@ -1715,7 +1715,7 @@ namespace qb {
 #line 600 "parser.ypp"
     {
 		(yyval.function_definition) = new FunctionDimAST(current_function, ExprTypeASTPtr((yysemantic_stack_[(10) - (8)].exprtype)) );
-		(yyval.function_definition)->body = StatementsASTPtr((yysemantic_stack_[(10) - (9)].statement_list));
+		(yyval.function_definition)->body = StatementASTPtr((yysemantic_stack_[(10) - (9)].statement_list));
 		debug("====end function %s==== %p , body = %p\n",((yysemantic_stack_[(10) - (4)].cppstring))->c_str(),(yyval.function_definition) , (yysemantic_stack_[(10) - (9)].statement_list));
 		delete (yysemantic_stack_[(10) - (4)].cppstring);
 		current_function.clear();
@@ -2040,116 +2040,123 @@ namespace qb {
     {
 				
 				(yyval.if_clause) = new IFStmtAST( NumberExprASTPtr( (yysemantic_stack_[(10) - (2)].number_expression)));
-				(yyval.if_clause)->_then = StatementsASTPtr((yysemantic_stack_[(10) - (4)].statement_list));
-				(yyval.if_clause)->_else = StatementsASTPtr((yysemantic_stack_[(10) - (8)].statement_list));
+				(yyval.if_clause)->_then = StatementASTPtr((yysemantic_stack_[(10) - (4)].statement_list));
+
+				if((yysemantic_stack_[(10) - (4)].statement_list))
+					(yysemantic_stack_[(10) - (4)].statement_list)->parent = (yyval.if_clause);
+				
+				(yyval.if_clause)->_else = StatementASTPtr((yysemantic_stack_[(10) - (8)].statement_list));
+				if((yysemantic_stack_[(10) - (8)].statement_list))
+					(yysemantic_stack_[(10) - (8)].statement_list)->parent = (yyval.if_clause);
+
 			}
     break;
 
   case 284:
 /* Line 661 of lalr1.cc  */
-#line 763 "parser.ypp"
+#line 770 "parser.ypp"
     { /*add_command (cDECIDE, NULL); storelabel (); pushlabel ();*/ }
     break;
 
   case 285:
 /* Line 661 of lalr1.cc  */
-#line 764 "parser.ypp"
+#line 771 "parser.ypp"
     { unclosed_ifs--; }
     break;
 
   case 286:
 /* Line 661 of lalr1.cc  */
-#line 764 "parser.ypp"
+#line 771 "parser.ypp"
     {/* swap (); matchgoto (); swap (); poplabel (); poplabel (); */}
     break;
 
   case 287:
 /* Line 661 of lalr1.cc  */
-#line 765 "parser.ypp"
+#line 772 "parser.ypp"
     { /*add_command (cDECIDE, NULL); storelabel (); pushlabel ();*/ }
     break;
 
   case 288:
 /* Line 661 of lalr1.cc  */
-#line 766 "parser.ypp"
+#line 773 "parser.ypp"
     {/* unclosed_ifs--; } { swap (); matchgoto (); swap (); poplabel (); poplabel ();*/ }
     break;
 
   case 289:
 /* Line 661 of lalr1.cc  */
-#line 769 "parser.ypp"
+#line 776 "parser.ypp"
     {if (unclosed_ifs) { debug ("%d \"if\" statement%s not closed", unclosed_ifs, (unclosed_ifs > 1) ? "s" : ""); } }
     break;
 
   case 290:
 /* Line 661 of lalr1.cc  */
-#line 770 "parser.ypp"
+#line 777 "parser.ypp"
     {unclosed_ifs--;}
     break;
 
   case 291:
 /* Line 661 of lalr1.cc  */
-#line 773 "parser.ypp"
+#line 780 "parser.ypp"
     { unclosed_ifs ++; }
     break;
 
   case 292:
 /* Line 661 of lalr1.cc  */
-#line 776 "parser.ypp"
+#line 783 "parser.ypp"
     { (yyval.statement_list) = 0; }
     break;
 
   case 293:
 /* Line 661 of lalr1.cc  */
-#line 777 "parser.ypp"
+#line 784 "parser.ypp"
     {	(yyval.statement_list) = (yysemantic_stack_[(2) - (2)].statement_list);}
     break;
 
   case 295:
 /* Line 661 of lalr1.cc  */
-#line 782 "parser.ypp"
+#line 789 "parser.ypp"
     {/*add_command(cDECIDE,NULL);pushlabel();*/}
     break;
 
   case 296:
 /* Line 661 of lalr1.cc  */
-#line 784 "parser.ypp"
+#line 791 "parser.ypp"
     {/*swap();matchgoto();swap();poplabel();*/}
     break;
 
   case 298:
 /* Line 661 of lalr1.cc  */
-#line 788 "parser.ypp"
+#line 795 "parser.ypp"
     {/*create_myread ('n', until_eol); add_command (cPOPNUMSYM, dotify ($1)); */}
     break;
 
   case 299:
 /* Line 661 of lalr1.cc  */
-#line 789 "parser.ypp"
+#line 796 "parser.ypp"
     {/*create_myread('s',until_eol);add_command(cPOPSTRSYM, dotify ($1));*/}
     break;
 
   case 300:
 /* Line 661 of lalr1.cc  */
-#line 790 "parser.ypp"
+#line 797 "parser.ypp"
     {/*create_myread('n',until_eol);create_doarray(dotify ($1),ASSIGNNUMBERARRAY);*/}
     break;
 
   case 301:
 /* Line 661 of lalr1.cc  */
-#line 791 "parser.ypp"
+#line 798 "parser.ypp"
     {/*create_myread('s',until_eol);create_doarray(dotify ($1),ASSIGNSTRINGARRAY);*/}
     break;
 
   case 302:
 /* Line 661 of lalr1.cc  */
-#line 794 "parser.ypp"
+#line 801 "parser.ypp"
     { debug("ERROR: print with no arg not supprted yet\n"); exit(1); }
     break;
 
   case 303:
 /* Line 661 of lalr1.cc  */
-#line 795 "parser.ypp"
+#line 802 "parser.ypp"
     {
 		debug("got first print argument as number\n");
 		(yyval.print_list) = new PrintListAST();
@@ -2159,67 +2166,67 @@ namespace qb {
 
   case 304:
 /* Line 661 of lalr1.cc  */
-#line 801 "parser.ypp"
+#line 808 "parser.ypp"
     { debug("ERROR: print syntax not supprted yet\n"); exit(1);}
     break;
 
   case 305:
 /* Line 661 of lalr1.cc  */
-#line 803 "parser.ypp"
+#line 810 "parser.ypp"
     { debug("ERROR: print syntax not supprted yet\n"); exit(1); }
     break;
 
   case 306:
 /* Line 661 of lalr1.cc  */
-#line 805 "parser.ypp"
+#line 812 "parser.ypp"
     { (yyval.print_list) = (yysemantic_stack_[(3) - (1)].print_list) ; (yyval.print_list)->additem(ExprASTPtr((yysemantic_stack_[(3) - (3)].number_expression))) ; }
     break;
 
   case 307:
 /* Line 661 of lalr1.cc  */
-#line 807 "parser.ypp"
+#line 814 "parser.ypp"
     {/* create_print ('b'); create_print ('u'); */}
     break;
 
   case 308:
 /* Line 661 of lalr1.cc  */
-#line 809 "parser.ypp"
+#line 816 "parser.ypp"
     { /*create_print ('b'); create_print ('s');*/ }
     break;
 
   case 309:
 /* Line 661 of lalr1.cc  */
-#line 812 "parser.ypp"
+#line 819 "parser.ypp"
     {/*create_pushnum(STDIO_STREAM);create_pps(cPUSHSTREAM,1);*/}
     break;
 
   case 311:
 /* Line 661 of lalr1.cc  */
-#line 813 "parser.ypp"
+#line 820 "parser.ypp"
     {/*add_command(cPUSHNUMSYM,dotify ($2));create_pps(cPUSHSTREAM,1);*/}
     break;
 
   case 313:
 /* Line 661 of lalr1.cc  */
-#line 814 "parser.ypp"
+#line 821 "parser.ypp"
     {/*create_pushnum ($2); create_pps(cPUSHSTREAM,1);*/}
     break;
 
   case 315:
 /* Line 661 of lalr1.cc  */
-#line 815 "parser.ypp"
+#line 822 "parser.ypp"
     {/*create_pps(cPUSHSTREAM,1);*/}
     break;
 
   case 317:
 /* Line 661 of lalr1.cc  */
-#line 819 "parser.ypp"
+#line 826 "parser.ypp"
     {/* create_print ('s');*/ }
     break;
 
   case 318:
 /* Line 661 of lalr1.cc  */
-#line 822 "parser.ypp"
+#line 829 "parser.ypp"
     {
 		debug("empty print_intro\n");
 		/*构造一个默认的 打印目标*/
@@ -2229,56 +2236,56 @@ namespace qb {
 
   case 319:
 /* Line 661 of lalr1.cc  */
-#line 827 "parser.ypp"
+#line 834 "parser.ypp"
     {  /* 构造一个使用常数表的打印目标*/ }
     break;
 
   case 320:
 /* Line 661 of lalr1.cc  */
-#line 828 "parser.ypp"
+#line 835 "parser.ypp"
     {/*create_pushnum ($2); create_pps(cPUSHSTREAM,0);*/}
     break;
 
   case 321:
 /* Line 661 of lalr1.cc  */
-#line 829 "parser.ypp"
+#line 836 "parser.ypp"
     {/*create_pps(cPUSHSTREAM,0);*/}
     break;
 
   case 322:
 /* Line 661 of lalr1.cc  */
-#line 832 "parser.ypp"
+#line 839 "parser.ypp"
     {/* add_command (cOPTEXPLICIT, NULL); */}
     break;
 
   case 323:
 /* Line 661 of lalr1.cc  */
-#line 835 "parser.ypp"
+#line 842 "parser.ypp"
     { /*add_command (cPUSHNUMSYM, dotify ($1)); create_pushnum (1); create_numbin ('-'); add_command (cPOPNUMSYM, dotify ($1));*/ }
     break;
 
   case 324:
 /* Line 661 of lalr1.cc  */
-#line 836 "parser.ypp"
+#line 843 "parser.ypp"
     {/* add_command (cPUSHNUMSYM, dotify ($3)); create_pushnum (1); create_numbin ('-'); add_command (cPOPNUMSYM, dotify ($3)); */}
     break;
 
   case 325:
 /* Line 661 of lalr1.cc  */
-#line 839 "parser.ypp"
+#line 846 "parser.ypp"
     { /*add_command (cPUSHNUMSYM, dotify ($1)); create_pushnum (1); create_numbin ('+'); add_command (cPOPNUMSYM, dotify ($1));*/ }
     break;
 
   case 326:
 /* Line 661 of lalr1.cc  */
-#line 840 "parser.ypp"
+#line 847 "parser.ypp"
     {
 	/*   add_command (cPUSHNUMSYM, dotify ($3)); create_pushnum (1); create_numbin ('+'); add_command (cPOPNUMSYM, dotify ($3));*/ }
     break;
 
   case 327:
 /* Line 661 of lalr1.cc  */
-#line 844 "parser.ypp"
+#line 851 "parser.ypp"
     {
 //                          if (cli->next == NULL) {
 //                             cmd = add_command (cSTRUCT, dotify ($3));
@@ -2293,7 +2300,7 @@ namespace qb {
 
   case 328:
 /* Line 661 of lalr1.cc  */
-#line 854 "parser.ypp"
+#line 861 "parser.ypp"
     {
 //                          add_command (cENDSTRUCT, NULL)->args = cli->items;
 //                          next_cli = cli->next;
@@ -2304,7 +2311,7 @@ namespace qb {
 
   case 329:
 /* Line 661 of lalr1.cc  */
-#line 860 "parser.ypp"
+#line 867 "parser.ypp"
     {
 //         if (cli->next == NULL) {
 //            cmd = add_command (cSTRUCT, dotify ($3));
@@ -2319,7 +2326,7 @@ namespace qb {
 
   case 330:
 /* Line 661 of lalr1.cc  */
-#line 870 "parser.ypp"
+#line 877 "parser.ypp"
     {
 //         add_command (cENDSTRUCT, NULL)->args = cli->items;
 //         next_cli = cli->next;
@@ -2330,7 +2337,7 @@ namespace qb {
 
   case 334:
 /* Line 661 of lalr1.cc  */
-#line 883 "parser.ypp"
+#line 890 "parser.ypp"
     {
 //         cmd = add_command (cSTRUCTVAR, $2);
 //         cmd->args = cli->items;
@@ -2343,7 +2350,7 @@ namespace qb {
 
   case 335:
 /* Line 661 of lalr1.cc  */
-#line 891 "parser.ypp"
+#line 898 "parser.ypp"
     {
 //         cmd = add_command (cSTRUCTVAR, $2);
 //         cmd->args = cli->items;
@@ -2356,7 +2363,7 @@ namespace qb {
 
   case 336:
 /* Line 661 of lalr1.cc  */
-#line 899 "parser.ypp"
+#line 906 "parser.ypp"
     {
 //         cmd = add_command (cSTRUCTVAR, $2);
 //         cmd->args = cli->items;
@@ -2369,7 +2376,7 @@ namespace qb {
 
   case 337:
 /* Line 661 of lalr1.cc  */
-#line 907 "parser.ypp"
+#line 914 "parser.ypp"
     {
 //         cmd = add_command (cSTRUCTVAR, $2);
 //         cmd->args = cli->items;
@@ -2382,7 +2389,7 @@ namespace qb {
 
   case 338:
 /* Line 661 of lalr1.cc  */
-#line 917 "parser.ypp"
+#line 924 "parser.ypp"
     {
 //             old_cli = cli;
 //             cli = xmalloc (sizeof (struct cli));
@@ -2393,7 +2400,7 @@ namespace qb {
 
   case 339:
 /* Line 661 of lalr1.cc  */
-#line 925 "parser.ypp"
+#line 932 "parser.ypp"
     {
 		debug("变量引用\n");
 		(yyval.varable_ref) = new VariableRefExprAST( (yysemantic_stack_[(1) - (1)].symbol) );
@@ -2402,13 +2409,13 @@ namespace qb {
 
   case 340:
 /* Line 661 of lalr1.cc  */
-#line 929 "parser.ypp"
+#line 936 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1); */}
     break;
 
   case 341:
 /* Line 661 of lalr1.cc  */
-#line 932 "parser.ypp"
+#line 939 "parser.ypp"
     {
 		//该决定是否为函数还是数组了
 	}
@@ -2416,25 +2423,25 @@ namespace qb {
 
   case 342:
 /* Line 661 of lalr1.cc  */
-#line 935 "parser.ypp"
+#line 942 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 343:
 /* Line 661 of lalr1.cc  */
-#line 936 "parser.ypp"
+#line 943 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 344:
 /* Line 661 of lalr1.cc  */
-#line 937 "parser.ypp"
+#line 944 "parser.ypp"
     { /*add_command (cPUSHFREE, NULL); } call_list ')' { $$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 345:
 /* Line 661 of lalr1.cc  */
-#line 940 "parser.ypp"
+#line 947 "parser.ypp"
     {
 // 	$$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);
  	}
@@ -2442,91 +2449,91 @@ namespace qb {
 
   case 346:
 /* Line 661 of lalr1.cc  */
-#line 943 "parser.ypp"
+#line 950 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 347:
 /* Line 661 of lalr1.cc  */
-#line 944 "parser.ypp"
+#line 951 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1); */}
     break;
 
   case 348:
 /* Line 661 of lalr1.cc  */
-#line 945 "parser.ypp"
+#line 952 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 349:
 /* Line 661 of lalr1.cc  */
-#line 948 "parser.ypp"
+#line 955 "parser.ypp"
     { /*$$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);*/ }
     break;
 
   case 350:
 /* Line 661 of lalr1.cc  */
-#line 949 "parser.ypp"
+#line 956 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 351:
 /* Line 661 of lalr1.cc  */
-#line 952 "parser.ypp"
+#line 959 "parser.ypp"
     { /*add_command (cPUSHFREE, NULL); } call_list ')' { $$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);*/ }
     break;
 
   case 352:
 /* Line 661 of lalr1.cc  */
-#line 953 "parser.ypp"
+#line 960 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 353:
 /* Line 661 of lalr1.cc  */
-#line 954 "parser.ypp"
+#line 961 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 354:
 /* Line 661 of lalr1.cc  */
-#line 955 "parser.ypp"
+#line 962 "parser.ypp"
     {/* add_command (cPUSHFREE, NULL);*/ }
     break;
 
   case 355:
 /* Line 661 of lalr1.cc  */
-#line 955 "parser.ypp"
+#line 962 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1); */}
     break;
 
   case 356:
 /* Line 661 of lalr1.cc  */
-#line 958 "parser.ypp"
+#line 965 "parser.ypp"
     { /*$$ = xmalloc ((strlen ($1) + 1) * sizeof (char)); strcpy ($$, $1);*/ }
     break;
 
   case 357:
 /* Line 661 of lalr1.cc  */
-#line 959 "parser.ypp"
+#line 966 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 358:
 /* Line 661 of lalr1.cc  */
-#line 960 "parser.ypp"
+#line 967 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1);*/ }
     break;
 
   case 359:
 /* Line 661 of lalr1.cc  */
-#line 961 "parser.ypp"
+#line 968 "parser.ypp"
     { /*$$ = xmalloc (((strlen ($1) + 1 + strlen ($3)) + 1) * sizeof (char)); $$ [1 - 1] = '\0'; strcat ($$, $1); strcat ($$, "."); strcat ($$, $3); xfree ($1); */}
     break;
 
 
 /* Line 661 of lalr1.cc  */
-#line 2530 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 2537 "/home/cai/projects/basic/compiler/parser.cpp"
 	default:
           break;
       }
@@ -4072,14 +4079,14 @@ namespace qb {
      692,   693,   696,   697,   700,   701,   701,   709,   710,   710,
      710,   716,   716,   716,   721,   722,   722,   725,   725,   726,
      725,   732,   733,   733,   736,   736,   736,   741,   743,   742,
-     747,   748,   752,   746,   763,   764,   763,   765,   765,   769,
-     770,   773,   776,   777,   780,   782,   784,   781,   788,   789,
-     790,   791,   794,   795,   800,   802,   804,   806,   808,   812,
-     812,   813,   813,   814,   814,   815,   815,   818,   822,   827,
-     828,   829,   832,   835,   836,   839,   840,   844,   844,   860,
-     860,   878,   879,   882,   883,   891,   899,   907,   917,   925,
-     929,   932,   935,   936,   937,   940,   943,   944,   945,   948,
-     949,   952,   953,   954,   955,   955,   958,   959,   960,   961
+     747,   748,   752,   746,   770,   771,   770,   772,   772,   776,
+     777,   780,   783,   784,   787,   789,   791,   788,   795,   796,
+     797,   798,   801,   802,   807,   809,   811,   813,   815,   819,
+     819,   820,   820,   821,   821,   822,   822,   825,   829,   834,
+     835,   836,   839,   842,   843,   846,   847,   851,   851,   867,
+     867,   885,   886,   889,   890,   898,   906,   914,   924,   932,
+     936,   939,   942,   943,   944,   947,   950,   951,   952,   955,
+     956,   959,   960,   961,   962,   962,   965,   966,   967,   968
   };
 
   // Print the state stack on the debug stream.
@@ -4181,4 +4188,4 @@ namespace qb {
 #line 22 "parser.ypp"
 } // qb
 /* Line 1106 of lalr1.cc  */
-#line 4185 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 4192 "/home/cai/projects/basic/compiler/parser.cpp"

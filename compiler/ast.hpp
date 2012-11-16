@@ -73,37 +73,28 @@ private:
 
 
 //语句有, 声明语句和表达式语句和函数调用语句
-class StatementsAST;
+class StatementAST;
+typedef boost::shared_ptr<StatementAST>	StatementASTPtr;
 class StatementAST: public AST
 {
 public:
-    StatementsAST * parent; // 避免循环引用 :) , 用在查找变量声明的时候用到. 回溯法
+	std::list<StatementASTPtr>	substatements;
+
+	StatementAST * parent; // 避免循环引用 :) , 用在查找变量声明的时候用到. 回溯法
 	std::string	LABEL;	// label , if there is. then we can use goto
 						// must be uniq among function bodys
-	virtual llvm::Value* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto)=0;
+	void addchild(StatementASTPtr item);
+
+	virtual llvm::BasicBlock* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
 	virtual ~StatementAST(){}
 };
-typedef boost::shared_ptr<StatementAST>	StatementASTPtr;
 
 class EmptyStmtAST : public StatementAST
 {
 public:
 	EmptyStmtAST(){}
-    virtual llvm::Value* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+    virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };
-
-class StatementsAST : public StatementAST
-{
-public:
-	StatementsAST(StatementAST * st );
-	virtual ~StatementsAST(){}
-public:
-	std::list<StatementASTPtr>	statements;
-    void append( StatementASTPtr item);
-	llvm::Value* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
-};
-
-typedef boost::shared_ptr<StatementsAST> StatementsASTPtr;
 
 #include "typeast.h"
 
@@ -115,7 +106,7 @@ public:
 	//ExprType type; // the type of the expresion
 	ExprTypeASTPtr	type;
 	std::string		name; //定义的符号的名字
-	virtual llvm::Value* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
+	virtual llvm::BasicBlock* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
     virtual ~DimAST(){}
 };
 
@@ -123,7 +114,7 @@ class VariableDimAST : public DimAST
 {
 public:
 	VariableDimAST(const std::string _name , ExprTypeASTPtr _type);
-	virtual llvm::Value* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
+	virtual llvm::BasicBlock* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
 	llvm::AllocaInst * AllocaInstRef;
 };
 
@@ -228,7 +219,7 @@ public:
 	NumberAssigmentAST(VariableRefExprASTPtr _lvar, NumberExprASTPtr _rval);
 	VariableRefExprASTPtr lval;
 	NumberExprASTPtr	rval;
-    llvm::Value* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+    llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };
 //比较表达式 比较两个表达式的值
 class CompExprAST:public ExprAST // bool as result
@@ -253,11 +244,10 @@ class IFStmtAST : public StatementAST
 public:
 	IFStmtAST(NumberExprASTPtr expr):_expr(expr){}
 	NumberExprASTPtr _expr;
-	StatementsASTPtr _then;
-	StatementsASTPtr _else;
-    virtual llvm::Value* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+	StatementASTPtr _then;
+	StatementASTPtr _else;
+    virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };
-
 
 //函数 AST , 有 body 没 body 来区别是不是定义或者声明
 class FunctionDimAST: public DimAST
@@ -268,17 +258,17 @@ public:
 
 	std::list<VariableDimAST> args; //定义的参数
 
-	StatementsASTPtr	body; //函数体
+	StatementASTPtr	body; //函数体
 
     FunctionDimAST(const std::string _name, ExprTypeASTPtr _type);
 	//如果是声明, 为 dim 生成 llvm::Function * 声明供使用
-    virtual llvm::Value* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+    virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };
 
 class DefaultMainFunctionAST : public FunctionDimAST
 {
 public:
-	DefaultMainFunctionAST(StatementsAST * body);
+	DefaultMainFunctionAST(StatementAST * body);
 };
 
 typedef std::list<ExprASTPtr>	FunctionParameterListAST;
@@ -292,7 +282,7 @@ class PrintIntroAST : public NumberExprAST
 {
 public:
 	PrintIntroAST();
-    llvm::Value* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
+    llvm::BasicBlock* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
 };
 typedef boost::shared_ptr<PrintIntroAST> PrintIntroASTPtr;
 
@@ -316,7 +306,7 @@ public:
 	PrintIntroASTPtr	print_intro;
 	PrintListASTPtr		callargs;
 	PrintStmtAST(PrintIntroASTPtr,PrintListASTPtr);
-    virtual llvm::Value* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
+    virtual llvm::BasicBlock* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
 };
 
 #endif // __AST_H__

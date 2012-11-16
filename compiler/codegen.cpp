@@ -43,35 +43,6 @@
 
 #define debug	std::printf
 
-llvm::Value* DimAST::Codegen(llvm::Function*, llvm::BasicBlock*)
-{
-    debug("%s should not be called\n",__func__);
-    exit(1);
-}
-
-llvm::Value* EmptyStmtAST::Codegen(llvm::Function*, llvm::BasicBlock* insertto)
-{
-    debug("empty statement called !\n");
-    return insertto;
-}
-
-llvm::Value* StatementsAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
-{
-	if(!TheFunction ){
-		debug("statements called with TheFunction=null\n");
-	}else{
-		debug("statements called with good TheFunction\n");
-	}
-
-	BOOST_FOREACH( StatementASTPtr stmt , this->statements)
-	{
-		if(stmt)
-			stmt->Codegen(TheFunction,insertto);
-		else
-			debug("strange, stmt is null\n");
-	}
-	return insertto;
-}
 
 llvm::Value* ConstNumberExprAST::getval(
 	StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto)
@@ -79,14 +50,102 @@ llvm::Value* ConstNumberExprAST::getval(
     return qbc::getconstlong(this->val);
 }
 
-llvm::Value* PrintIntroAST::Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto)
+
+//TODO:
+llvm::Value* NumberExprAST::getval(StatementAST * parent,
+		llvm::Function *TheFunction,llvm::BasicBlock * insertto)
+{
+	BOOST_ASSERT(TheFunction);
+	VariableRefExprAST * var =  var_num.get();
+	debug("%p is the var_num\n",var);
+	if(!var){
+		debug("number expr for XXX \n");
+		var->define = 0;
+	}
+	debug("number expr for %s \n" ,var->var.c_str());
+	return (var->getval(parent,TheFunction,insertto));
+}
+
+llvm::Value* NumberCalcExprAST::getval(
+	StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto)
+{
+	BOOST_ASSERT(TheFunction);
+	//TODO, 生成计算表达式 !
+	llvm::Value * LHS =	this->lval->getval(parent,TheFunction,insertto);
+	llvm::Value * RHS =	this->rval->getval(parent,TheFunction,insertto);
+
+	llvm::IRBuilder<> builder(TheFunction->getContext());
+	builder.SetInsertPoint(insertto);
+
+	switch(this->op){
+		case OPERATOR_ADD:
+			return builder.CreateAdd(LHS,RHS);
+		case OPERATOR_SUB:
+			return builder.CreateSub(LHS,RHS);
+		case OPERATOR_MUL:
+			return builder.CreateMul(LHS,RHS);
+		case OPERATOR_DIV:
+			return builder.CreateSDiv(LHS,RHS);
+	}
+
+	return insertto;
+}
+
+
+llvm::Value* VariableRefExprAST::getptr(
+	StatementAST* parent, llvm::Function* TheFunction,llvm::BasicBlock* insertto)
+{
+	BOOST_ASSERT(TheFunction);
+	return this->nameresolve(parent,TheFunction,insertto);
+}
+
+llvm::Value* VariableRefExprAST::getval(StatementAST * parent,llvm::Function* TheFunction, llvm::BasicBlock* insertto)
+{
+	BOOST_ASSERT(TheFunction);
+	llvm::AllocaInst * ptr = this->nameresolve(parent,TheFunction,insertto);
+	llvm::IRBuilder<> builder(TheFunction->getContext());
+	builder.SetInsertPoint(insertto);
+	return builder.CreateLoad(ptr);
+}
+
+llvm::BasicBlock* DimAST::Codegen(llvm::Function*, llvm::BasicBlock* insertto)
+{
+    debug("%s should not be called\n",__func__);
+    exit(1);
+	return insertto;
+}
+
+llvm::BasicBlock* EmptyStmtAST::Codegen(llvm::Function*, llvm::BasicBlock* insertto)
+{
+    debug("empty statement called !\n");
+    return insertto;
+}
+
+llvm::BasicBlock* StatementAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
+{
+	if(!TheFunction ){
+		debug("statements called with TheFunction=null\n");
+	}else{
+		debug("statements called with good TheFunction\n");
+	}
+
+	BOOST_FOREACH( StatementASTPtr stmt , this->substatements)
+	{
+		if(stmt)
+			insertto = stmt->Codegen(TheFunction,insertto);
+		else
+			debug("strange, stmt is null\n");
+	}
+	return insertto;
+}
+llvm::BasicBlock* PrintIntroAST::Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto)
 {
 	BOOST_ASSERT(TheFunction);
 	debug("PrintIntroAST expr for \n");
 	return insertto;
 }
 //TODO 为 print 语句生成,
-llvm::Value* PrintStmtAST::Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto)
+llvm::BasicBlock* PrintStmtAST::Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto)
 {
 	bool need_brt = false;
     debug("generating llvm-IR for calling PRINT\n");
@@ -177,12 +236,12 @@ llvm::Value* PrintStmtAST::Codegen(llvm::Function *TheFunction,llvm::BasicBlock 
 }
 
 //为变量分配空间
-llvm::Value* VariableDimAST::Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto)
+llvm::BasicBlock* VariableDimAST::Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto)
 {
 	BOOST_ASSERT(TheFunction);
 	llvm::IRBuilder<> builder(&TheFunction->getEntryBlock(),
 							  TheFunction->getEntryBlock().begin());
-	//builder.SetInsertPoint(,insertto);
+	builder.SetInsertPoint(insertto);
 	
 	ExprTypeAST * exptype = this->type.get();
 
@@ -194,7 +253,7 @@ llvm::Value* VariableDimAST::Codegen(llvm::Function *TheFunction,llvm::BasicBloc
 	}
 	exptype = this->type.get();	
 	AllocaInstRef = builder.CreateAlloca(exptype->llvmtype(), 0 , this->name );
-	return AllocaInstRef;
+	return insertto;
 }
 
 llvm::AllocaInst* VariableRefExprAST::nameresolve(
@@ -217,24 +276,7 @@ llvm::AllocaInst* VariableRefExprAST::nameresolve(
 	}
 	return this->define->AllocaInstRef;
 }
-
-llvm::Value* VariableRefExprAST::getptr(
-	StatementAST* parent, llvm::Function* TheFunction,llvm::BasicBlock* insertto)
-{
-	BOOST_ASSERT(TheFunction);
-	return this->nameresolve(parent,TheFunction,insertto);
-}
-
-llvm::Value* VariableRefExprAST::getval(StatementAST * parent,llvm::Function* TheFunction, llvm::BasicBlock* insertto)
-{
-	BOOST_ASSERT(TheFunction);
-	llvm::AllocaInst * ptr = this->nameresolve(parent,TheFunction,insertto);
-	llvm::IRBuilder<> builder(TheFunction->getContext());
-	builder.SetInsertPoint(insertto);
-	return builder.CreateLoad(ptr);
-}
-
-llvm::Value* NumberAssigmentAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
+llvm::BasicBlock* NumberAssigmentAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
 {
 	BOOST_ASSERT(TheFunction);
 	debug("called for number assigment\n");
@@ -245,50 +287,11 @@ llvm::Value* NumberAssigmentAST::Codegen(llvm::Function* TheFunction, llvm::Basi
 	llvm::IRBuilder<> builder(TheFunction->getContext());
 	builder.SetInsertPoint(insertto);	
 	// 生成赋值语句,因为是简单的整型赋值,所以可以直接生成而不用调用 operator==()
-	return builder.CreateStore(RHS,LHS);
-}
-
-//TODO:
-llvm::Value* NumberExprAST::getval(StatementAST * parent,
-		llvm::Function *TheFunction,llvm::BasicBlock * insertto)
-{
-	BOOST_ASSERT(TheFunction);
-	VariableRefExprAST * var =  var_num.get();
-	debug("%p is the var_num\n",var);
-	if(!var){
-		debug("number expr for XXX \n");
-		var->define = 0;
-	}
-	debug("number expr for %s \n" ,var->var.c_str());
-	return (var->getval(parent,TheFunction,insertto));
-}
-
-llvm::Value* NumberCalcExprAST::getval(
-	StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto)
-{
-	BOOST_ASSERT(TheFunction);
-	//TODO, 生成计算表达式 !
-	llvm::Value * LHS =	this->lval->getval(parent,TheFunction,insertto);
-	llvm::Value * RHS =	this->rval->getval(parent,TheFunction,insertto);
-
-	llvm::IRBuilder<> builder(TheFunction->getContext());
-	builder.SetInsertPoint(insertto);
-
-	switch(this->op){
-		case OPERATOR_ADD:
-			return builder.CreateAdd(LHS,RHS);
-		case OPERATOR_SUB:
-			return builder.CreateSub(LHS,RHS);
-		case OPERATOR_MUL:
-			return builder.CreateMul(LHS,RHS);
-		case OPERATOR_DIV:
-			return builder.CreateSDiv(LHS,RHS);
-	}
-	
+	builder.CreateStore(RHS,LHS);
 	return insertto;
 }
 
-llvm::Value* FunctionDimAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
+llvm::BasicBlock* FunctionDimAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
 {
 	BOOST_ASSERT(!TheFunction);
 	BOOST_ASSERT(!insertto);
@@ -301,18 +304,37 @@ llvm::Value* FunctionDimAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlo
 	llvm::Function *mainFunc =
 		llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, this->name , AST::module);
 	llvm::BasicBlock *entry = llvm::BasicBlock::Create(builder.getContext(), "entrypoint", mainFunc);
-	builder.SetInsertPoint(entry);
+	builder.SetInsertPoint(entry);	
 	//开始生成代码
 	//now code up the function body
-	this->body->Codegen(mainFunc,entry);
+	void * p = this->body->Codegen(mainFunc,entry);
+	//llvm::BasicBlock *ret = llvm::BasicBlock::Create(builder.getContext(),"" , mainFunc);
 
+	builder.SetInsertPoint((llvm::BasicBlock*)p);
 	//返回值
-	builder.CreateRetVoid();	
+	builder.CreateRetVoid();
+	return insertto;
 }
 
-llvm::Value* IFStmtAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
+llvm::BasicBlock* IFStmtAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
 {
 	BOOST_ASSERT(TheFunction);
 	debug("if else statement\n");
-	exit(1);
+
+//	llvm::BasicBlock* entry = llvm::BasicBlock::Create(getGlobalContext(), "entry", TheFunction);
+//	llvm::BasicBlock* cond_false = llvm::BasicBlock::Create(getGlobalContext(), "cond_false", TheFunction);
+	llvm::BasicBlock* cond_true = llvm::BasicBlock::Create(TheFunction->getContext(), "cond_true", TheFunction);
+	llvm::BasicBlock* cond_continue = llvm::BasicBlock::Create(TheFunction->getContext(), "continue", TheFunction);
+//	llvm::BasicBlock* cond_false_2 = llvm::BasicBlock::Create(TheFunction->getContext(), "cond_false", TheFunction);
+	llvm::IRBuilder<> builder(insertto);
+
+	llvm::Value * expcond = this->_expr->getval(this,TheFunction,insertto);
+
+	expcond = builder.CreateICmpNE(expcond, qbc::getconstlong(0), "tmp");
+
+	builder.CreateCondBr(expcond, cond_true, cond_continue);
+	builder.SetInsertPoint(cond_true);
+	this->_then->Codegen(TheFunction,cond_true);
+	builder.CreateBr(cond_continue);
+	return cond_continue;
 }

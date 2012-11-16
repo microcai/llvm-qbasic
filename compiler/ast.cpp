@@ -48,15 +48,13 @@ AST::~AST()
 {
 }
 
-StatementsAST::StatementsAST(StatementAST* st)
-{
-	if(st)
-		statements.push_back( StatementASTPtr(st));
-	else{
-		debug("got null on statement list\n");
-		exit(1);
-	}
+void StatementAST::addchild(StatementASTPtr item) {
+    if(item) {
+        this->substatements.push_back(item);
+        item.get()->parent = this;
+    }
 }
+
 
 PrintStmtAST::PrintStmtAST(PrintIntroASTPtr intro,PrintListASTPtr args)
 	:callargs(args),print_intro(intro)
@@ -94,19 +92,6 @@ NumberAssigmentAST::NumberAssigmentAST(VariableRefExprASTPtr _lval, NumberExprAS
 	
 }
 
-void StatementsAST::append(StatementASTPtr item)
-{
-	if(item){
-		if( dynamic_cast<EmptyStmtAST*>( statements.back().get() ) ){
-			debug("empty list got removed first");
-			statements.pop_back();
-		}
-
-		this->statements.push_back(item);
-		item.get()->parent = this;
-	}
-}
-
 NumberExprAST::NumberExprAST(VariableExprASTPtr _var_num)
 	:var_num(_var_num),ExprAST(ExprTypeASTPtr(new NumberTypeAST()))
 {
@@ -127,8 +112,8 @@ FunctionDimAST::FunctionDimAST(const std::string _name, ExprTypeASTPtr _type)
 }
 
 
-DefaultMainFunctionAST::DefaultMainFunctionAST(StatementsAST * body)
+DefaultMainFunctionAST::DefaultMainFunctionAST(StatementAST * body)
 	:FunctionDimAST("main",ExprTypeASTPtr( new VoidTypeAST())  )
 {
-	this->body = StatementsASTPtr(body);
+	this->body = StatementASTPtr(body);
 }

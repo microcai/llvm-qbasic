@@ -100,8 +100,8 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 	NumberExprAST* number_expression;
     VariableRefExprAST*varable_ref;	
 	
-	StatementAST * statement;
-	StatementsAST* statement_list;
+	StatementAST* statement;
+	StatementAST* statement_list;
 	NumberAssigmentAST*number_assignment;
 	IFStmtAST *if_clause;
 	
@@ -219,13 +219,13 @@ program: list_of_statement_lists tEOPROG
 
 list_of_statement_lists: statement_list   ;
 
-statement_list: statement { $$ = new StatementsAST($1);
+statement_list: statement { $$ = new StatementAST(); $$->addchild(StatementASTPtr($1));
 			debug("statement_list %p app %p  now\n", $$ , $1);
 }
    | statement_list tSEPARATOR { yylineno += $2; } statement {
 			$$ = $1;
 			debug("statement_list %p app %p  now\n", $$ , $4);
-			$$->append( StatementASTPtr($4) );
+			$$->addchild( StatementASTPtr($4) );
 	}
    ;
 
@@ -599,7 +599,7 @@ function_definition:
 	statement_list
 	endsub {
 		$$ = new FunctionDimAST(current_function, ExprTypeASTPtr($8) );
-		$$->body = StatementsASTPtr($9);
+		$$->body = StatementASTPtr($9);
 		debug("====end function %s==== %p , body = %p\n",($<cppstring>4)->c_str(),$$ , $9);
 		delete $<cppstring>4;
 		current_function.clear();
@@ -755,8 +755,15 @@ if_clause: if_part number_expression tTHEN
             endif {
 				
 				$$ = new IFStmtAST( NumberExprASTPtr( $2));
-				$$->_then = StatementsASTPtr($4);
-				$$->_else = StatementsASTPtr($8);
+				$$->_then = StatementASTPtr($4);
+
+				if($4)
+					$4->parent = $$;
+				
+				$$->_else = StatementASTPtr($8);
+				if($8)
+					$8->parent = $$;
+
 			}
             ;
 

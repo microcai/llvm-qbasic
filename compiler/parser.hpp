@@ -78,8 +78,8 @@ namespace qb {
 	NumberExprAST* number_expression;
     VariableRefExprAST*varable_ref;	
 	
-	StatementAST * statement;
-	StatementsAST* statement_list;
+	StatementAST* statement;
+	StatementAST* statement_list;
 	NumberAssigmentAST*number_assignment;
 	IFStmtAST *if_clause;
 	
