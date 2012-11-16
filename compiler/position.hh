@@ -51,7 +51,7 @@
 # endif
 
 /* Line 38 of location.cc  */
-#line 22 "parser.ypp"
+#line 21 "parser.ypp"
 namespace qb {
 /* Line 38 of location.cc  */
 #line 58 "/home/cai/projects/basic/compiler/position.hh"
@@ -166,7 +166,7 @@ namespace qb {
   }
 
 /* Line 149 of location.cc  */
-#line 22 "parser.ypp"
+#line 21 "parser.ypp"
 } // qb
 /* Line 149 of location.cc  */
 #line 173 "/home/cai/projects/basic/compiler/position.hh"

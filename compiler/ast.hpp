@@ -82,11 +82,10 @@ public:
     ReferenceAST( std::string * tID );
 };
 
-// 引用结构体成员
+// 引用结构体成员 //TODO ? 怎么实现?
 class MemberReferenceAST : public ReferenceAST
 {
     MemberReferenceAST(std::string* members);
-	
 };
 
 //语句有, 声明语句和表达式语句和函数调用语句
@@ -174,7 +173,7 @@ public:
 	VariableDimAST	*	define; //在未来解析
     ReferenceASTPtr		var; //指向引用的变量名字.
 
-    virtual bool canllvm();;
+    virtual bool canllvm();
 
     VariableRefExprAST(ReferenceASTPtr varname ); //用构变量构筑
 

@@ -4,7 +4,7 @@
 
 sub main()
 
-print a
+print a.b.c
 
 end sub
 

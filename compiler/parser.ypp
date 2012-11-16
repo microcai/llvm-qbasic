@@ -1,7 +1,6 @@
 /*
     Parser of QBASIC to build Abstruct Syntax Tree
-    * Copyright (C) 2009-2010 Thomas Larsen and Pedro Sá.
-	* Copyright (C) 1995-2005 Marc-Oliver Ihm.
+
     * Copyright (C) 2012  microcai <microcai@fedoraproject.org>
 
     This library is free software; you can redistribute it and/or
@@ -290,7 +289,8 @@ expression_list : expression_list ',' expression
 			| expression
 			;
 
-varref:	varref '.' tID { debug("ref menber %s . %s , not supported yet\n", $1->ID.c_str()  , $3->c_str() ); exit(1); }// 成员变量
+varref:	varref '.' tID { debug("ref menber %s . %s , not supported yet\n", $1->ID.c_str()  , $3->c_str() ); 			exit(1); // 逐级传递
+	}// 成员变量
 	| varref tDREF  tID  // 指针解引用
 	| tID {
 		// 变量的引用? 反正是一个标识符的引用,

@@ -41,7 +41,7 @@
 # include <deque>
 
 /* Line 37 of stack.hh  */
-#line 22 "parser.ypp"
+#line 21 "parser.ypp"
 namespace qb {
 /* Line 37 of stack.hh  */
 #line 48 "/home/cai/projects/basic/compiler/stack.hh"
@@ -127,7 +127,7 @@ namespace qb {
     unsigned int range_;
   };
 /* Line 119 of stack.hh  */
-#line 22 "parser.ypp"
+#line 21 "parser.ypp"
 } // qb
 /* Line 119 of stack.hh  */
 #line 134 "/home/cai/projects/basic/compiler/stack.hh"

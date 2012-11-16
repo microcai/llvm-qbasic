@@ -33,7 +33,7 @@
 
 /* First part of user declarations.  */
 /* Line 278 of lalr1.cc  */
-#line 24 "parser.ypp"
+#line 23 "parser.ypp"
 
 
 /* Include main header file. */
@@ -177,7 +177,7 @@ do {					\
 #define YYRECOVERING()  (!!yyerrstatus_)
 
 /* Line 352 of lalr1.cc  */
-#line 22 "parser.ypp"
+#line 21 "parser.ypp"
 namespace qb {
 /* Line 352 of lalr1.cc  */
 #line 184 "/home/cai/projects/basic/compiler/parser.cpp"
@@ -443,7 +443,7 @@ namespace qb {
       {
 	  case 2:
 /* Line 661 of lalr1.cc  */
-#line 153 "parser.ypp"
+#line 152 "parser.ypp"
     {
 			if(useDefautSubMain){
 				debug("program ended\n");
@@ -458,7 +458,7 @@ namespace qb {
 
   case 3:
 /* Line 661 of lalr1.cc  */
-#line 163 "parser.ypp"
+#line 162 "parser.ypp"
     {
 
 			debug("!!!no new line at the end of file!!!\n"); exit(1);
@@ -476,13 +476,13 @@ namespace qb {
 
   case 4:
 /* Line 661 of lalr1.cc  */
-#line 178 "parser.ypp"
+#line 177 "parser.ypp"
     { (yyval.statement_list) = (yysemantic_stack_[(2) - (1)].statement_list); (yyval.statement_list)->addchild((yysemantic_stack_[(2) - (2)].statement_list)); }
     break;
 
   case 5:
 /* Line 661 of lalr1.cc  */
-#line 179 "parser.ypp"
+#line 178 "parser.ypp"
     {
 		(yyval.statement_list) = new StatementAST;
 		(yyval.statement_list)->addchild((yysemantic_stack_[(1) - (1)].statement_list));
@@ -491,31 +491,31 @@ namespace qb {
 
   case 6:
 /* Line 661 of lalr1.cc  */
-#line 184 "parser.ypp"
+#line 183 "parser.ypp"
     { (yyval.statement_list)=(yysemantic_stack_[(2) - (1)].statement_list) ;  debug("here=====2===\n");	}
     break;
 
   case 7:
 /* Line 661 of lalr1.cc  */
-#line 185 "parser.ypp"
+#line 184 "parser.ypp"
     { debug("here==3======\n");exit(1);	}
     break;
 
   case 8:
 /* Line 661 of lalr1.cc  */
-#line 186 "parser.ypp"
+#line 185 "parser.ypp"
     { /*TODO*/debug("here====5====\n"); exit(1);	}
     break;
 
   case 9:
 /* Line 661 of lalr1.cc  */
-#line 187 "parser.ypp"
+#line 186 "parser.ypp"
     { (yyval.statement_list)= new EmptyStmtAST(); debug("here=====1===\n");	}
     break;
 
   case 20:
 /* Line 661 of lalr1.cc  */
-#line 212 "parser.ypp"
+#line 211 "parser.ypp"
     {
 				(yyval.function_definition) = new FunctionDimAST( *(yysemantic_stack_[(6) - (2)].id) ); //delete $2;
 
@@ -527,7 +527,7 @@ namespace qb {
 
   case 21:
 /* Line 661 of lalr1.cc  */
-#line 221 "parser.ypp"
+#line 220 "parser.ypp"
     {
 				(yyval.function_definition) = new FunctionDimAST( *(yysemantic_stack_[(7) - (2)].id) ); //delete $2;
 
@@ -540,7 +540,7 @@ namespace qb {
 
   case 28:
 /* Line 661 of lalr1.cc  */
-#line 242 "parser.ypp"
+#line 241 "parser.ypp"
     {
 
 		(yysemantic_stack_[(3) - (3)].expression_list)->Append( new EmptyExprAST );
@@ -552,7 +552,7 @@ namespace qb {
 
   case 29:
 /* Line 661 of lalr1.cc  */
-#line 249 "parser.ypp"
+#line 248 "parser.ypp"
     {
 		(yyval.printstatement) = new PrintStmtAST( (yysemantic_stack_[(4) - (2)].printinto), (yysemantic_stack_[(4) - (3)].expression_list) );
 	}
@@ -560,7 +560,7 @@ namespace qb {
 
   case 30:
 /* Line 661 of lalr1.cc  */
-#line 252 "parser.ypp"
+#line 251 "parser.ypp"
     {
 		(yyval.printstatement) = new PrintStmtAST( (yysemantic_stack_[(4) - (2)].printinto), (yysemantic_stack_[(4) - (3)].expression_list) );
 	}
@@ -568,19 +568,19 @@ namespace qb {
 
   case 31:
 /* Line 661 of lalr1.cc  */
-#line 258 "parser.ypp"
+#line 257 "parser.ypp"
     { debug("print has got itger\n") ;}
     break;
 
   case 32:
 /* Line 661 of lalr1.cc  */
-#line 259 "parser.ypp"
+#line 258 "parser.ypp"
     {  debug("empty printinto\n");	}
     break;
 
   case 34:
 /* Line 661 of lalr1.cc  */
-#line 263 "parser.ypp"
+#line 262 "parser.ypp"
     {
 		(yyval.expression_list) =  new ExprListAST;
 		(yyval.expression_list)->Append((yysemantic_stack_[(1) - (1)].expression));
@@ -589,13 +589,13 @@ namespace qb {
 
   case 36:
 /* Line 661 of lalr1.cc  */
-#line 270 "parser.ypp"
+#line 269 "parser.ypp"
     { debug("functioncall with no arg\n");}
     break;
 
   case 42:
 /* Line 661 of lalr1.cc  */
-#line 277 "parser.ypp"
+#line 276 "parser.ypp"
     {
 			//TODO the VariableRefExprAST
 			(yyval.expression) = new VariableRefExprAST( ReferenceASTPtr((yysemantic_stack_[(1) - (1)].varref)) );
@@ -605,7 +605,7 @@ namespace qb {
 
   case 43:
 /* Line 661 of lalr1.cc  */
-#line 282 "parser.ypp"
+#line 281 "parser.ypp"
     {
 			//常量
 			(yyval.expression) = new ConstNumberExprAST( (yysemantic_stack_[(1) - (1)].integer) );
@@ -614,8 +614,9 @@ namespace qb {
 
   case 47:
 /* Line 661 of lalr1.cc  */
-#line 293 "parser.ypp"
-    { debug("ref menber %s . %s , not supported yet\n", (yysemantic_stack_[(3) - (1)].varref)->ID.c_str()  , (yysemantic_stack_[(3) - (3)].id)->c_str() ); exit(1); }
+#line 292 "parser.ypp"
+    { debug("ref menber %s . %s , not supported yet\n", (yysemantic_stack_[(3) - (1)].varref)->ID.c_str()  , (yysemantic_stack_[(3) - (3)].id)->c_str() ); 			exit(1); // 逐级传递
+	}
     break;
 
   case 49:
@@ -631,7 +632,7 @@ namespace qb {
 
 
 /* Line 661 of lalr1.cc  */
-#line 635 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 636 "/home/cai/projects/basic/compiler/parser.cpp"
 	default:
           break;
       }
@@ -1037,11 +1038,11 @@ namespace qb {
   const unsigned short int
   parser::yyrline_[] =
   {
-         0,   153,   153,   163,   178,   179,   184,   185,   186,   187,
-     190,   191,   192,   193,   194,   197,   198,   199,   202,   205,
-     210,   219,   231,   232,   235,   235,   237,   238,   242,   249,
-     252,   258,   259,   262,   263,   269,   270,   271,   273,   274,
-     275,   276,   277,   282,   286,   289,   290,   293,   294,   295
+         0,   152,   152,   162,   177,   178,   183,   184,   185,   186,
+     189,   190,   191,   192,   193,   196,   197,   198,   201,   204,
+     209,   218,   230,   231,   234,   234,   236,   237,   241,   248,
+     251,   257,   258,   261,   262,   268,   269,   270,   272,   273,
+     274,   275,   276,   281,   285,   288,   289,   292,   294,   295
   };
 
   // Print the state stack on the debug stream.
@@ -1130,7 +1131,7 @@ namespace qb {
   const parser::token_number_type parser::yyundef_token_ = 2;
 
 /* Line 1106 of lalr1.cc  */
-#line 22 "parser.ypp"
+#line 21 "parser.ypp"
 } // qb
 /* Line 1106 of lalr1.cc  */
-#line 1137 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 1138 "/home/cai/projects/basic/compiler/parser.cpp"

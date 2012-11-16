@@ -99,7 +99,7 @@ NumberExprAST::NumberExprAST(VariableExprASTPtr _var_num)
 	// the varable is a type of number, right ?	
 }
 
-// TODO FIXME 
+// TODO FIXME 调用的时候解析 Expr 类型
 bool VariableRefExprAST::canllvm()
 {
 	return true;

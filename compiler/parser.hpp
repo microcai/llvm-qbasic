@@ -53,7 +53,7 @@
 #endif
 
 /* Line 36 of lalr1.cc  */
-#line 22 "parser.ypp"
+#line 21 "parser.ypp"
 namespace qb {
 /* Line 36 of lalr1.cc  */
 #line 60 "/home/cai/projects/basic/compiler/parser.hpp"
@@ -67,7 +67,7 @@ namespace qb {
     union semantic_type
     {
 /* Line 36 of lalr1.cc  */
-#line 66 "parser.ypp"
+#line 65 "parser.ypp"
 
 	char *				string;         /* quoted string */
 	std::string *		id;         /* general symbol */
@@ -311,7 +311,7 @@ namespace qb {
 
   };
 /* Line 36 of lalr1.cc  */
-#line 22 "parser.ypp"
+#line 21 "parser.ypp"
 } // qb
 /* Line 36 of lalr1.cc  */
 #line 318 "/home/cai/projects/basic/compiler/parser.hpp"

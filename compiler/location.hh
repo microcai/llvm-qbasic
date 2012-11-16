@@ -41,7 +41,7 @@
 # include "position.hh"
 
 /* Line 164 of location.cc  */
-#line 22 "parser.ypp"
+#line 21 "parser.ypp"
 namespace qb {
 /* Line 164 of location.cc  */
 #line 48 "/home/cai/projects/basic/compiler/location.hh"
@@ -173,7 +173,7 @@ namespace qb {
   }
 
 /* Line 292 of location.cc  */
-#line 22 "parser.ypp"
+#line 21 "parser.ypp"
 } // qb
 /* Line 292 of location.cc  */
 #line 180 "/home/cai/projects/basic/compiler/location.hh"

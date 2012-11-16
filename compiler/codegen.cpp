@@ -91,6 +91,30 @@ llvm::Value* CalcExprAST::getval(
 	return insertto;
 }
 
+llvm::AllocaInst* VariableRefExprAST::nameresolve(
+	StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto)
+{
+	BOOST_ASSERT(TheFunction);
+	ExprTypeAST * exptype = this->type.get();
+
+	//TODO: 寻找变量代表的类型
+	if(!exptype->resolved()){
+		debug("var %s type not found\n", var->ID.c_str());
+		DimAST *dim;
+ 		this->type = dynamic_cast<UnknowTypeAST*>(exptype)->resolve(parent,&dim);
+		this->define = dynamic_cast<VariableDimAST*>(dim);
+		if(!this->define)
+		{
+			debug("%s is not variable\n",var->ID.c_str());
+			exit(1);
+		}
+	}
+	if(!this->define->AllocaInstRef){
+		debug("=========== varable\"%s\" ======== not defined\n",var->ID.c_str());
+		exit(1);
+	}
+	return this->define->AllocaInstRef;
+}
 
 llvm::Value* VariableRefExprAST::getptr(
 	StatementAST* parent, llvm::Function* TheFunction,llvm::BasicBlock* insertto)
@@ -102,7 +126,7 @@ llvm::Value* VariableRefExprAST::getptr(
 llvm::Value* VariableRefExprAST::getval(StatementAST * parent,llvm::Function* TheFunction, llvm::BasicBlock* insertto)
 {
 	BOOST_ASSERT(TheFunction);
-	llvm::AllocaInst * ptr = this->nameresolve(parent,TheFunction,insertto);
+	llvm::Value * ptr = this->getptr(parent,TheFunction,insertto);
 	llvm::IRBuilder<> builder(TheFunction->getContext());
 	builder.SetInsertPoint(insertto);
 	return builder.CreateLoad(ptr);
@@ -190,6 +214,8 @@ llvm::BasicBlock* PrintStmtAST::Codegen(llvm::Function *TheFunction,llvm::BasicB
 		//std::for_E
 		BOOST_FOREACH(ExprASTPtr argitem,callargs->expression_list)
 		{
+			//argitem->getval()
+			
 			switch(argitem->type->size()){ //按照大小来啊,果然
 				case sizeof(long): // 整数产量的类型
 
@@ -254,30 +280,6 @@ llvm::BasicBlock* VariableDimAST::Codegen(llvm::Function *TheFunction,llvm::Basi
 	return insertto;
 }
 
-llvm::AllocaInst* VariableRefExprAST::nameresolve(
-	StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto)
-{
-	BOOST_ASSERT(TheFunction);
-	ExprTypeAST * exptype = this->type.get();
-
-	//TODO: 寻找变量代表的类型
-	if(!exptype->resolved()){
-		debug("var %s type not found\n", var->ID.c_str());
-		DimAST *dim;
- 		this->type = dynamic_cast<UnknowTypeAST*>(exptype)->resolve(parent,&dim);
-		this->define = dynamic_cast<VariableDimAST*>(dim);
-		if(!this->define)
-		{
-			debug("%s is not variable\n",var->ID.c_str());
-			exit(1);
-		}
-	}
-	if(!this->define->AllocaInstRef){
-		debug("=========== varable\"%s\" ======== not defined\n",var->ID.c_str());
-		exit(1);
-	}
-	return this->define->AllocaInstRef;
-}
 llvm::BasicBlock* AssigmentAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
 {
 	BOOST_ASSERT(TheFunction);
