@@ -49,10 +49,10 @@ AST::~AST()
 {
 }
 
-void StatementAST::addchild(StatementASTPtr item) {
+void StatementAST::addchild(StatementAST* item) {
     if(item) {
-        this->substatements.push_back(item);
-        item.get()->parent = this;
+        this->substatements.push_back(StatementASTPtr(item));
+        item->parent = this;
     }
 }
 

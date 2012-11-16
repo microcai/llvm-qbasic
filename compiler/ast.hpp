@@ -99,7 +99,7 @@ public:
 	StatementAST * parent; // 避免循环引用 :) , 用在查找变量声明的时候用到. 回溯法
 	std::string	LABEL;	// label , if there is. then we can use goto
 						// must be uniq among function bodys
-	void addchild(StatementASTPtr item);
+	void addchild(StatementAST* item);
 
 	virtual llvm::BasicBlock* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
 	virtual ~StatementAST(){}
@@ -306,7 +306,7 @@ public:
 
 	StatementASTPtr	body; //函数体
 
-    FunctionDimAST(const std::string _name, ExprTypeASTPtr _type);
+    FunctionDimAST(const std::string _name, ExprTypeASTPtr _type = ExprTypeASTPtr(new VoidTypeAST) );
 	//如果是声明, 为 dim 生成 llvm::Function * 声明供使用
     virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };

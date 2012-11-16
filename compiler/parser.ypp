@@ -38,6 +38,7 @@ extern int yylex(qb::parser::semantic_type * yylval_param );
 extern int yylineno;
 
 #define debug printf
+extern StatementAST * program;
 
 /* Global variables. */
 std::string current_function;  /* name of currently parsed function */
@@ -141,6 +142,10 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %type <expression_list>				expression_list
 %type <printinto>					printinto
 %type <printstatement>				printstatement
+%type <statement_list>				lines
+%type <statement_list>				line
+
+%type <function_definition>			subdefine
 
 %%
 
@@ -149,14 +154,14 @@ program: lines tEOPROG {
 				debug("program ended\n");
 				//program = new DefaultMainFunctionAST( $1 );
 			}else{
-				//program = $1;
+				program = $1;
 				debug("module ended\n");
 			}
 			YYACCEPT;
 		}
 		| lines statements tEOPROG {
 
-			debug("!!!no new line at the end of file!!!\n");
+			debug("!!!no new line at the end of file!!!\n"); exit(1);
 			if(useDefautSubMain){
 				debug("program ended\n");
 				//program = new DefaultMainFunctionAST( $1 );
@@ -169,38 +174,56 @@ program: lines tEOPROG {
 		}
 		;
 
-lines : lines line
-	| line ;
+lines: lines line { $$ = $1; $$->addchild($2); }
+	| line {
+		$$ = new StatementAST;
+		$$->addchild($1);
+	} ;
 
-line : statements tNEWLINE
-	| statements expression tNEWLINE
-	| expression tNEWLINE
-	| tNEWLINE
+line: statements tNEWLINE { debug("here=====2===\n");	}
+	| statements expression tNEWLINE { debug("here==3======\n");	}
+	| expression tNEWLINE { debug("here====5====\n");	}
+	| tNEWLINE { $$= new EmptyStmtAST(); debug("here=====1===\n");	}
 	;
 
 statements : statements ':' statement
 		| statement
 		| subdefine
+		| function_definition
 		| expression ':'
 		;
 
 statement : printstatement
 		| tDIM dimlist
-		| tFUNCTION tID '(' dimlist ')' tAS type
-		| tFUNCTION tID '(' dimlist ')'
-		| tFUNCTIONEND
 		| assigment
 		;
+		
+function_definition: tFUNCTION tID '(' dimlist ')' tAS type
+				lines
+				tFUNCTIONEND
+			|tFUNCTION tID '(' dimlist ')' // default type , int
+				lines
+				tFUNCTIONEND
+			;
 
 subdefine: tSUB  tID '(' ')'
 				lines
 			tSUBEND {
-				debug("got a sub define\n");
+				$$ = new FunctionDimAST( *$2 ); //delete $2;
+
+				$$->body = StatementASTPtr($5);
+				
+				debug("!!SUB %s defined!!\n",$2->c_str());
 			}
 		| tSUB  tID '(' dimlist ')'
 				lines
 			tSUBEND {
-				debug("got a sub define 2\n");
+				$$ = new FunctionDimAST( *$2 ); //delete $2;
+
+				$$->body = StatementASTPtr($6);
+
+				debug("!!SUB %s defined with args !!, but not supported yet\n",$2->c_str());
+				exit(0);
 			}
 		  ;
 
