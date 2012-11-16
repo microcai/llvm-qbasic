@@ -95,16 +95,22 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 	char *symbol;         /* general symbol */
 	double number;        /* double number */
 	int separator;        /* separator */
-	PrintIntroAST *print_intro;
-	PrintListAST * print_list;
+	ExprTypeAST *  exprtype;
+
 	NumberExprAST* number_expression;
+    VariableRefExprAST*varable_ref;	
+	
 	StatementAST * statement;
 	StatementsAST* statement_list;
-	ExprTypeAST *  exprtype;
-	VariableDimAST*dim_list;
-    VariableRefExprAST*varable_ref;
 	NumberAssigmentAST*number_assignment;
+	IFStmtAST *if_clause;
+	
+	VariableDimAST*dim_list;
 	FunctionDimAST	 *function_definition;
+
+	PrintIntroAST *print_intro;
+	PrintListAST * print_list;
+	std::string 	*cppstring;
 }
 
 /*
@@ -122,10 +128,11 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %type <statement_list>		list_of_statement_lists
 %type <varable_ref>			numsym_s
 %type <number_assignment>	number_assignment
-
+%type <if_clause>			if_clause
+%type <statement_list>		else_part
+%type <function_definition> function_definition
 // %type <function_declar>		function_declar
 
-%type <symbol> function_name
 %type <symbol> number_function_or_array_any_params
 %type <symbol> number_function_or_array_with_params
 %type <symbol> numsym_a
@@ -197,33 +204,35 @@ program: list_of_statement_lists tEOPROG
          * disastrous. */
         {
 			if(useDefautSubMain){
+				debug("program ended\n");
 				program = new DefaultMainFunctionAST( $1 );
 			}else{
 				program = $1;
+				debug("module ended\n");
 			}
-			debug("program ended\n");
+			
 			/*add_command (cEOPROG, NULL);*/
 			// yylex_destroy ();
 			YYACCEPT;
 		}
    ;
 
-list_of_statement_lists: statement_list { $$ = $1; debug("list_of_statement_lists\n"); }
-   | list_of_statement_lists tNEWFILE statement_list
-   ;
+list_of_statement_lists: statement_list   ;
 
-statement_list: statement { $$ = new StatementsAST(); $$->append(StatementASTPtr($1));}
+statement_list: statement { $$ = new StatementsAST($1);
+			debug("statement_list %p app %p  now\n", $$ , $1);
+}
    | statement_list tSEPARATOR { yylineno += $2; } statement {
-		if($4){
-			debug("got statement_list now %p\n",$4);
 			$$ = $1;
-			$1->append(StatementASTPtr($4));
-		}
+			debug("statement_list %p app %p  now\n", $$ , $4);
+			$$->append( StatementASTPtr($4) );
 	}
    ;
 
-statement: /* empty */{ $$ = 0 ;}
-   | non_empty_statement { $$ = $1; }
+statement: /* empty */ { $$ = new EmptyStmtAST(); debug("got empty statement %p\n" , $$); }
+   | non_empty_statement { $$ = $1;
+	   debug( "got non_empty_statement %p\n", $$ );
+}
    ;
 
 non_empty_statement: number_assignment
@@ -247,19 +256,17 @@ non_empty_statement: number_assignment
 		   debug ("cannot \"continue\" outside of loop");
 	   }
 	} 
-   | function_definition
+   | function_definition { $$ = $1 ; debug ("got function %p as statement\n", $$) ;  }
    | structure_definition
    | number_function_or_array_any_params { }
    | string_function_or_array_any_params { }
-   | tLOCAL { } local_list
-   | tSTATIC { } static_list
    | tPRINT print_intro print_list {
 	   // 构造打印语句
 	   debug("got PRINT now\n");
 	   //TODO 最后一个是 \new line
 		$3->additem(boost::make_shared<EmptyExprAST>());
 	   
-	   $$ = new PrintStmtAST(PrintIntroASTPtr($2),PrintListASTPtr($3));
+		$$ = new PrintStmtAST(PrintIntroASTPtr($2),PrintListASTPtr($3));
 
 		if(current_function.empty())
 			useDefautSubMain = true;
@@ -295,9 +302,7 @@ non_empty_statement: number_assignment
 
 	   $$ = $2;	   
 	}
-   | tSYSTEM '(' string_expression ')' {
-	   
-}
+   | tSYSTEM '(' string_expression ')' { }
    | tEXIT {}
    | tEXIT number_expression {}
    | tOPEN hashed_number ',' string_expression {}
@@ -586,19 +591,18 @@ begin_sub:	tSUB { unclosed_subs++; }
 
 function_definition:
 	begin_sub { not_inside_loop_or_conditional ("define a function");
-	}  function_name { current_function = $3; }
-			'(' param_list ')' {	}
-					dim_as_type {
-						debug("function dim as ... %p\n", $9 );
-						//$<exprtype>$ = $9;
-						$<function_definition>$ = new FunctionDimAST( $3, ExprTypeASTPtr($9) );
-			// 到这里可以算是函数定义成功了.
-	} statement_list {
-		$<statement_list>$ = $11;
-	}	
+	}  tNUMSYM {
+		$<cppstring>$ = new std::string($3);
+		debug("====begin function %s====\n",$3);
+		current_function = $3;
+	}  '(' param_list ')' dim_as_type
+	statement_list
 	endsub {
+		$$ = new FunctionDimAST(current_function, ExprTypeASTPtr($8) );
+		$$->body = StatementsASTPtr($9);
+		debug("====end function %s==== %p , body = %p\n",($<cppstring>4)->c_str(),$$ , $9);
+		delete $<cppstring>4;
 		current_function.clear();
-		/** TODO support for functions*/
 	}
 	;
 
@@ -610,10 +614,6 @@ endsub: tEOPROG {
 	}
    | tENDSUB {unclosed_subs--;}
    | tENDFUNCTION {unclosed_subs--;}
-   ;
-
-function_name: numsym_s
-   | strsym_s 
    ;
 
 local_list: local_item
@@ -743,14 +743,21 @@ until: tEOPROG {if (unclosed_repeats) { debug ("%d \"repeat\" loop%s not closed"
           {unclosed_repeats--;} {/*add_command(cDECIDE,NULL);popgoto();create_break_mark(0,-1);add_command(cBREAK_HERE,NULL);*/}
    ;
 
-if_clause: if_part number_expression {
-				/*构造 IF 语句, 填充 条件表达式*/
-				NumberExprASTPtr ne = NumberExprASTPtr($2);				
-								
-			} tTHEN statement_list {  /*填充真语句*/ }
-			elseif_part 
-            else_part { /*填充假语句*/}
-            endif
+if_clause: if_part number_expression tTHEN 
+				statement_list { debug("then part %p\n" , $4);}
+			elseif_part {
+				//TODO 
+				debug("syntax not supported yet\n");
+			}
+            else_part {
+				debug("else part %p\n" , $8);
+			}
+            endif {
+				
+				$$ = new IFStmtAST( NumberExprASTPtr( $2));
+				$$->_then = StatementsASTPtr($4);
+				$$->_else = StatementsASTPtr($8);
+			}
             ;
 
 short_if: if_part number_expression { /*add_command (cDECIDE, NULL); storelabel (); pushlabel ();*/ }
@@ -766,8 +773,8 @@ endif: tEOPROG {if (unclosed_ifs) { debug ("%d \"if\" statement%s not closed", u
 if_part: tIF { unclosed_ifs ++; }
    ;
 
-else_part: /* can be omitted */
-   | tELSE statement_list
+else_part: /* can be omitted */ { $$ = 0; }
+   | tELSE statement_list {	$$ = $2;}
    ;
 
 elseif_part: /* can be omitted */

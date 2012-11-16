@@ -48,6 +48,16 @@ AST::~AST()
 {
 }
 
+StatementsAST::StatementsAST(StatementAST* st)
+{
+	if(st)
+		statements.push_back( StatementASTPtr(st));
+	else{
+		debug("got null on statement list\n");
+		exit(1);
+	}
+}
+
 PrintStmtAST::PrintStmtAST(PrintIntroASTPtr intro,PrintListASTPtr args)
 	:callargs(args),print_intro(intro)
 {
@@ -87,8 +97,13 @@ NumberAssigmentAST::NumberAssigmentAST(VariableRefExprASTPtr _lval, NumberExprAS
 void StatementsAST::append(StatementASTPtr item)
 {
 	if(item){
-		item.get()->parent = this;
+		if( dynamic_cast<EmptyStmtAST*>( statements.back().get() ) ){
+			debug("empty list got removed first");
+			statements.pop_back();
+		}
+
 		this->statements.push_back(item);
+		item.get()->parent = this;
 	}
 }
 
@@ -117,4 +132,3 @@ DefaultMainFunctionAST::DefaultMainFunctionAST(StatementsAST * body)
 {
 	this->body = StatementsASTPtr(body);
 }
-

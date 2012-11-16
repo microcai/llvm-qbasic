@@ -81,11 +81,22 @@ public:
 	std::string	LABEL;	// label , if there is. then we can use goto
 						// must be uniq among function bodys
 	virtual llvm::Value* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto)=0;
+	virtual ~StatementAST(){}
 };
 typedef boost::shared_ptr<StatementAST>	StatementASTPtr;
 
+class EmptyStmtAST : public StatementAST
+{
+public:
+	EmptyStmtAST(){}
+    virtual llvm::Value* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+};
+
 class StatementsAST : public StatementAST
 {
+public:
+	StatementsAST(StatementAST * st );
+	virtual ~StatementsAST(){}
 public:
 	std::list<StatementASTPtr>	statements;
     void append( StatementASTPtr item);
@@ -104,7 +115,8 @@ public:
 	//ExprType type; // the type of the expresion
 	ExprTypeASTPtr	type;
 	std::string		name; //定义的符号的名字
-	virtual llvm::Value* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto)=0;
+	virtual llvm::Value* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
+    virtual ~DimAST(){}
 };
 
 class VariableDimAST : public DimAST
@@ -236,6 +248,16 @@ public:
     virtual llvm::Value* getval(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };
 
+class IFStmtAST : public StatementAST
+{
+public:
+	IFStmtAST(NumberExprASTPtr expr):_expr(expr){}
+	NumberExprASTPtr _expr;
+	StatementsASTPtr _then;
+	StatementsASTPtr _else;
+    virtual llvm::Value* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+};
+
 
 //函数 AST , 有 body 没 body 来区别是不是定义或者声明
 class FunctionDimAST: public DimAST
@@ -244,11 +266,11 @@ public:
 	Linkage		linkage; //链接类型。static? extern ?
 	std::list<VariableDimASTPtr> args_type; //checked by CallExpr
 
-    FunctionDimAST(const std::string _name, ExprTypeASTPtr _type);;
 	std::list<VariableDimAST> args; //定义的参数
 
 	StatementsASTPtr	body; //函数体
 
+    FunctionDimAST(const std::string _name, ExprTypeASTPtr _type);
 	//如果是声明, 为 dim 生成 llvm::Function * 声明供使用
     virtual llvm::Value* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };

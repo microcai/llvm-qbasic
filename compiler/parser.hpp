@@ -73,20 +73,26 @@ namespace qb {
 	char *symbol;         /* general symbol */
 	double number;        /* double number */
 	int separator;        /* separator */
-	PrintIntroAST *print_intro;
-	PrintListAST * print_list;
+	ExprTypeAST *  exprtype;
+
 	NumberExprAST* number_expression;
+    VariableRefExprAST*varable_ref;	
+	
 	StatementAST * statement;
 	StatementsAST* statement_list;
-	ExprTypeAST *  exprtype;
-	VariableDimAST*dim_list;
-    VariableRefExprAST*varable_ref;
 	NumberAssigmentAST*number_assignment;
+	IFStmtAST *if_clause;
+	
+	VariableDimAST*dim_list;
 	FunctionDimAST	 *function_definition;
+
+	PrintIntroAST *print_intro;
+	PrintListAST * print_list;
+	std::string 	*cppstring;
 
 
 /* Line 36 of lalr1.cc  */
-#line 90 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 96 "/home/cai/projects/basic/compiler/parser.hpp"
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -399,7 +405,7 @@ namespace qb {
 #line 22 "parser.ypp"
 } // qb
 /* Line 36 of lalr1.cc  */
-#line 403 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 409 "/home/cai/projects/basic/compiler/parser.hpp"
 
 
 

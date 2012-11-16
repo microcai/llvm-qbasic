@@ -36,9 +36,8 @@ static std::list<std::string> argv_getinputfiles(int argc, char **argv)
 
 // generate llvm IR
 static void generateIR(StatementAST * ast)
-{
-	//开始生成代码
-	ast->Codegen(0,0);
+{	//开始生成代码
+	((StatementAST*)(ast))->Codegen(0,0);
 }
 
 static int generateobj(boost::shared_ptr<llvm::tool_output_file> Out)

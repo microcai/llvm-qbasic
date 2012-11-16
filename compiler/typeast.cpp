@@ -1,7 +1,11 @@
+#undef NDEBUG
+#include <assert.h>
+
 #include <iostream>
 #include <boost/lexical_cast.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/foreach.hpp>
+#include <boost/assert.hpp>
 
 #include <llvm/DerivedTypes.h>
 #include <llvm/Constants.h>
@@ -44,6 +48,8 @@ NumberTypeAST::NumberTypeAST()
 
 ExprTypeASTPtr UnknowTypeAST::resolve(StatementAST* theblock,DimAST ** vardim)
 {
+	BOOST_ASSERT(theblock);
+	
 	debug("finding type for %s\n",varname.c_str());
 	
 	StatementsAST * functionblock = theblock->parent;
@@ -59,6 +65,7 @@ ExprTypeASTPtr UnknowTypeAST::resolve(StatementAST* theblock,DimAST ** vardim)
 			if(!dim)
 				continue;
 			//	查看变量声明
+			debug("god dim block %p\n",dim);
 			if(dim->name == this->varname){
 				if(vardim)
 					*vardim = dim;
@@ -71,9 +78,11 @@ ExprTypeASTPtr UnknowTypeAST::resolve(StatementAST* theblock,DimAST ** vardim)
 			}
 		}
 		//到父类型去
-		return UnknowTypeAST::resolve(functionblock->parent,vardim);
+		if(functionblock->parent)
+			return UnknowTypeAST::resolve(functionblock->parent,vardim);
 	}
 	//TODO: 打印行号信息
 	printf("variable %s not defined!", this->name.c_str());
+	exit(1);
 }
 
