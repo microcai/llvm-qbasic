@@ -214,7 +214,7 @@ llvm::BasicBlock* PrintStmtAST::Codegen(llvm::Function *TheFunction,llvm::BasicB
 		//std::for_E
 		BOOST_FOREACH(ExprASTPtr argitem,callargs->expression_list)
 		{
-			//argitem->getval()
+			argitem->nameresolve(this,TheFunction,insertto);
 			
 			switch(argitem->type->size()){ //按照大小来啊,果然
 				case sizeof(long): // 整数产量的类型
@@ -280,6 +280,7 @@ llvm::BasicBlock* VariableDimAST::Codegen(llvm::Function *TheFunction,llvm::Basi
 	return insertto;
 }
 
+// 赋值语句
 llvm::BasicBlock* AssigmentAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
 {
 	BOOST_ASSERT(TheFunction);
@@ -295,6 +296,7 @@ llvm::BasicBlock* AssigmentAST::Codegen(llvm::Function* TheFunction, llvm::Basic
 	return insertto;
 }
 
+// 生成函数 , TODO 参数和反正值支持
 llvm::BasicBlock* FunctionDimAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
 {
 	BOOST_ASSERT(!TheFunction);
@@ -320,6 +322,7 @@ llvm::BasicBlock* FunctionDimAST::Codegen(llvm::Function* TheFunction, llvm::Bas
 	return insertto;
 }
 
+// IF ELSE 语句
 llvm::BasicBlock* IFStmtAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
 {
 	BOOST_ASSERT(TheFunction);

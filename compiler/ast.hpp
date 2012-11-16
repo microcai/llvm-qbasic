@@ -140,7 +140,7 @@ typedef boost::shared_ptr<VariableDimAST> VariableDimASTPtr;
 class ExprAST: public AST //
 {
 public:
-	virtual bool	canllvm() = 0; // is this type built-in by llvm-IR ?
+	virtual llvm::AllocaInst*nameresolve(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto) = 0;
 	ExprTypeASTPtr type;
     ExprAST(ExprTypeASTPtr ExprType):type(ExprType){};
 	virtual llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto) = 0;
@@ -163,7 +163,8 @@ public:
     EmptyExprAST():ExprAST(ExprTypeASTPtr(new VoidTypeAST())){}
 	llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto){return insertto;}
 
-    virtual bool canllvm() {return false;}
+    virtual llvm::AllocaInst* nameresolve(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto){ return NULL; }
+
 };
 
 // 引用一个ID标识符标识的变量. 
@@ -204,10 +205,9 @@ class ConstNumberExprAST :public NumberExprAST
 {
 	const int64_t val;
 public:
-	bool canllvm() {return true;}
-	
     ConstNumberExprAST(const int64_t);
 	llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto); // final , 不允许继承了.
+    virtual llvm::AllocaInst* nameresolve(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto){ return NULL;}
 };
 
 class AssigmentAST : public StatementAST
