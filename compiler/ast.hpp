@@ -72,10 +72,20 @@ private:
 };
 
 // 引用语句, 只要是包含了一个"标识符" 并在随后的语句中提供标识符的"解析操作"
+class ReferenceAST;
+typedef boost::shared_ptr<ReferenceAST> ReferenceASTPtr;
+
 class ReferenceAST : public AST {
-	std::string ID; //标识符
 public:
-    ReferenceAST( std::string * tID):ID(*tID){};	
+	std::string ID; //标识符
+    ReferenceAST( std::string * tID );
+};
+
+// 引用结构体成员
+class MemberReferenceAST : public ReferenceAST
+{
+    MemberReferenceAST(std::string* members);
+	
 };
 
 //语句有, 声明语句和表达式语句和函数调用语句
@@ -229,11 +239,11 @@ public:
 };
 
 // 数值计算表达式
-class NumberCalcExprAST : public NumberExprAST
+class CalcExprAST : public ExprAST
 {
 public:
-    NumberCalcExprAST(NumberExprASTPtr , MathOperator  ,NumberExprASTPtr );
-	NumberExprASTPtr  rval,lval;
+    CalcExprAST(ExprASTPtr , MathOperator  ,ExprASTPtr );
+	ExprASTPtr  rval,lval;
 	enum MathOperator op;
 
     virtual llvm::Value* getval(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto);
@@ -270,9 +280,9 @@ public:
 class WhileLoopAST : public LoopAST
 {
 	//循环条件
-	NumberExprASTPtr	condition;
+	ExprASTPtr	condition;
 public:
-	WhileLoopAST(NumberExprASTPtr _condition , StatementASTPtr body);
+	WhileLoopAST(ExprASTPtr _condition , StatementASTPtr body);
 
     virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };

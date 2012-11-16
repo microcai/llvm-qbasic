@@ -534,6 +534,12 @@ namespace qb {
 		}
     break;
 
+  case 47:
+/* Line 661 of lalr1.cc  */
+#line 243 "parser.ypp"
+    { debug("ref menber %s . %s \n", (yysemantic_stack_[(3) - (1)].varref)->ID.c_str()  , (yysemantic_stack_[(3) - (3)].id) );  }
+    break;
+
   case 49:
 /* Line 661 of lalr1.cc  */
 #line 245 "parser.ypp"
@@ -547,7 +553,7 @@ namespace qb {
 
 
 /* Line 661 of lalr1.cc  */
-#line 551 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 557 "/home/cai/projects/basic/compiler/parser.cpp"
 	default:
           break;
       }
@@ -1037,4 +1043,4 @@ namespace qb {
 #line 22 "parser.ypp"
 } // qb
 /* Line 1106 of lalr1.cc  */
-#line 1041 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 1047 "/home/cai/projects/basic/compiler/parser.cpp"

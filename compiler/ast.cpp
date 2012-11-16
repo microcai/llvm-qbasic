@@ -20,6 +20,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/foreach.hpp>
+#include <boost/make_shared.hpp>
 
 #include <llvm/DerivedTypes.h>
 #include <llvm/Constants.h>
@@ -99,8 +100,8 @@ NumberExprAST::NumberExprAST(VariableExprASTPtr _var_num)
 	// the varable is a type of number, right ?	
 }
 
-NumberCalcExprAST::NumberCalcExprAST(NumberExprASTPtr lhs, MathOperator OP, NumberExprASTPtr rhs)
-	:rval(rhs),lval(lhs),op(OP)
+CalcExprAST::CalcExprAST(ExprASTPtr lhs, MathOperator OP, ExprASTPtr rhs)
+	:rval(rhs),lval(lhs),op(OP),ExprAST(ExprTypeASTPtr(new UnknowTypeAST("@@expresion@@")))
 {
 	
 }
@@ -119,7 +120,8 @@ DefaultMainFunctionAST::DefaultMainFunctionAST(StatementAST * body)
 }
 
 
-WhileLoopAST::WhileLoopAST(NumberExprASTPtr _condition , StatementASTPtr body)
+WhileLoopAST::WhileLoopAST(ExprASTPtr _condition , StatementASTPtr body)
 	:condition(_condition),LoopAST(body)
 {
 }
+ReferenceAST::ReferenceAST(std::string* tID) :ID(*tID) {}

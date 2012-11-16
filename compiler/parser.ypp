@@ -240,7 +240,7 @@ expression_list : expression_list ',' expression
 			| expression
 			;
 
-varref:	varref '.' tID // 成员变量
+varref:	varref '.' tID { debug("ref menber %s . %s \n", $1->ID.c_str()  , $3 );  }// 成员变量
 	| varref tDREF  tID  // 指针解引用
 	| tID {
 		// 变量的引用? 反正是一个标识符的引用,

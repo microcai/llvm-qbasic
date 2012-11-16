@@ -19,7 +19,6 @@
 
 #include "llvmwrapper.hpp"
 #include "ast.hpp"
-#include "typeast.h"
 
 #define debug printf
 

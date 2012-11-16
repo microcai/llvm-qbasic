@@ -66,7 +66,7 @@ llvm::Value* NumberExprAST::getval(StatementAST * parent,
 	return (var->getval(parent,TheFunction,insertto));
 }
 
-llvm::Value* NumberCalcExprAST::getval(
+llvm::Value* CalcExprAST::getval(
 	StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto)
 {
 	BOOST_ASSERT(TheFunction);
