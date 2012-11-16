@@ -27,6 +27,7 @@
 #include "qbc.h"
 #include "parser.hpp"
 #include <boost/make_shared.hpp>
+#include <boost/concept_check.hpp>
 
 extern	StatementAST * program;
 
@@ -114,66 +115,9 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 	std::string 	*cppstring;
 }
 
-/*
- * Defination union needed for Generating AST
- */
-%type <print_intro>			print_intro
-%type <print_list>			print_list
-%type <number_expression>	number_expression
-%type <exprtype>			exprtype
-%type <exprtype>			dim_as_type
-%type <dim_list>			dim_list
-%type <statement>			non_empty_statement
-%type <statement>			statement
-%type <statement_list>		statement_list
-%type <statement_list>		list_of_statement_lists
-%type <varable_ref>			numsym_s
-%type <variable_assignment>	variable_assignment
-%type <if_clause>			if_clause
-%type <statement_list>		else_part
+%token  tEOPROG
 
-%type <while_loop>			while_loop
-
-%type <function_definition> function_definition
-// %type <function_declar>		function_declar
-
-%type <separator> separator_list
-
-%token <number> tNUMBER
-%token <string> tSTRING
-%token <symbol> tNUMSYM tSTRSYM
-%token <separator> tSEPARATOR
-
-%token tCALL tBREAK tCONTINUE tSUB tENDSUB tRETURN tFUNCTION tENDFUNCTION
-
-%token tAND tOR tNOT tEOR
-%token tCSUB tFROM
-%token tGOTO tGOSUB tLABEL
-%token tENABLE tDISABLE
-%token tEOPROG tNEWFILE tEXIT
-%token tEXPLICIT
-%token tFOR tTO tNEXT tSTEP tWHILE tWEND tREPEAT tUNTIL tDO tLOOP
-%token tIF tTHEN tELSE tELSEIF tENDIF
-%token tAS
-%token tLET tDIM tLOCAL tSTATIC tARDIM tARSIZE tINC tDEC
-%token tNEQ tLEQ tGEQ tLTN tGTN tEQU tPOW
-%token tPRINT tINPUT tLINE tUSING
-%token tSTRUCT tENDSTRUCT
-%token tSWITCH tSEND tCASE tDEFAULT
-%token tDATA tENDDATA tREAD tRESTORE
-%token tLONG
-
-%token tABS tSIG tRAN tSQR tSQRT
-%token tINT tFRAC tMIN tMAX
-%token tLEFT tRIGHT tMID tUPPER tLOWER
-%token tOPEN tCLOSE tEOF tSEEK tTELL tPEEK tPOKE
-%token tSIN tASIN tCOS tACOS tTAN tATAN tEXP tLOG
-%token tSTR tCHR tVAL tASC tLEN
-%token tSYSTEM tARG tENV
-%token tTIME tDATE
-%token tTOKEN tTOKENALT tSPLIT tSPLITALT tGLOB
-%token tTRIM tLTRIM tRTRIM tINSTR tRINSTR
-
+// 操作符
 %left tOR
 %left tAND
 %right tNOT
@@ -187,406 +131,96 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %left '*' '/' tMOD
 %right UMINUS UPLUS
 %left tPOW
+
+%nonassoc tDREF
 %nonassoc '.'
+
+//关键字
+
+%token tAS
+%token tSUB
+%token tSUBEND
+
+%token tFUNCTION
+%token tFUNCTIONEND
+%token tDIM tLET tPRINT
+
+%token tNEWLINE
+
+
+// 内置数据类型
+%token tLONG 
+
+// 数据 , 标识符, 变量名, 函数名, 等等
+%token tID tInteger
 
 %%
 
-program: list_of_statement_lists tEOPROG
-        /* Note that it is absolutely essential that the "exit"
-         * command be added here, because extra commands might be
-         * added later and sequential execution of them could prove
-         * disastrous. */
-        {
+program: lines tEOPROG {
 			if(useDefautSubMain){
 				debug("program ended\n");
-				program = new DefaultMainFunctionAST( $1 );
+				//program = new DefaultMainFunctionAST( $1 );
 			}else{
-				program = $1;
+				//program = $1;
 				debug("module ended\n");
 			}
-			
-			/*add_command (cEOPROG, NULL);*/
-			// yylex_destroy ();
 			YYACCEPT;
-		}
-   ;
-
-list_of_statement_lists: statement_list   ;
-
-statement_list: statement { $$ = new StatementAST(); $$->addchild(StatementASTPtr($1));
-			debug("statement_list %p app %p  now\n", $$ , $1);
-}
-   | statement_list tSEPARATOR { yylineno += $2; } statement {
-			$$ = $1;
-			debug("statement_list %p app %p  now\n", $$ , $4);
-			$$->addchild( StatementASTPtr($4) );
-	}
-   ;
-
-statement: /* empty */ { $$ = new EmptyStmtAST(); debug("got empty statement %p\n" , $$); }
-   | non_empty_statement { $$ = $1; debug( "got non_empty_statement %p\n", $$ ); }
-   ;
-
-non_empty_statement: variable_assignment
-   | tLET variable_assignment
-   | if_clause
-   | short_if
-   | while_loop
-   | tBREAK {
-	   /*add_command (cBREAK, NULL); */
-	   if (! (in_loop)) { debug ("cannot \"break\" outside of loop"); }
-   }
-   | tCONTINUE {
-	   /*add_command (cCONTINUE, NULL)->tag = continue_corrections;*/
-	   if (! (in_loop)) {
-		   debug ("cannot \"continue\" outside of loop");
-	   }
-	} 
-   | function_definition { $$ = $1 ; debug ("got function %p as statement\n", $$) ;  }
-   | tPRINT print_intro print_list {
-	   // 构造打印语句
-	   debug("got PRINT now\n");
-	   //TODO 最后一个是 \new line
-		$3->additem(boost::make_shared<EmptyExprAST>());
-	   
-		$$ = new PrintStmtAST(PrintIntroASTPtr($2),PrintListASTPtr($3));
-
-		if(current_function.empty())
-			useDefautSubMain = true;
-
-   }
-   | tPRINT print_intro print_list ';' {
-	   // 构造打印语句
-	   debug("got PRINT now with ; \n");	   
-	   $$ = new PrintStmtAST(PrintIntroASTPtr($2),PrintListASTPtr($3));
-	   if(current_function.empty())
-			useDefautSubMain = true;
-   }   
-   | tPRINT print_intro print_list ',' {
-	   // 构造打印语句
-	   debug("got PRINT now with ; \n");
-	   $$ = new PrintStmtAST(PrintIntroASTPtr($2),PrintListASTPtr($3));
-	   if(current_function.empty())
-			useDefautSubMain = true;
-   }
-   | tRETURN {}
-   | tRETURN number_expression {	   
-   }
-
-   | tRETURN string_expression { }
-   | tSYSTEM '(' string_expression ')' { }
-   | tEXIT {}
-   | tEXIT number_expression {}
-   | tOPEN hashed_number ',' string_expression {}
-   | tOPEN hashed_number ',' string_expression ',' string_expression {}
-   | tCLOSE hashed_number {}
-   | tSEEK hashed_number ',' number_expression {}
-   | tSEEK hashed_number ',' number_expression ',' string_expression {}
-   | tGOTO numsym_s {
-   }
-   | tGOSUB numsym_s {  }
-   | tLABEL numsym_s {
-		debug("got label!\n");
-   }
-   | tPOKE hashed_number ',' number_expression {  }
-   | tDIM dim_list {  $$ = $2; 	}
-   ;
-
-variable_assignment: numsym_s tEQU number_expression {
-		// 变量赋值
-		debug("变量赋值\n");
-		$$ = new AssigmentAST(VariableRefExprASTPtr($1), NumberExprASTPtr($3));
-		if(current_function.empty())
-			useDefautSubMain = true;
-	}
-   ;
-
-string_expression:  string_function
-   | tSTRING {/*create_pushstr($1);*/}
-   | string_expression '+' string_expression {/*add_command(cCONCAT,NULL);*/}
-   | '(' string_expression ')'
-   ;
-
-string_function: tLEFT '(' string_expression ',' number_expression ')' {/*create_function(fLEFT);*/}
-   | tRIGHT '(' string_expression ',' number_expression ')' {/*create_function(fRIGHT);*/}
-   | tMID '(' string_expression ',' number_expression ',' number_expression ')' {/*create_function(fMID);*/}
-   | tMID '(' string_expression ',' number_expression ')' {/*create_function(fMID2);*/}
-   | tSTR '(' number_expression ')' {/*create_function(fSTR);*/}
-   | tSTR '(' number_expression ',' string_expression ')' {/*create_function(fSTR2);*/}
-   | tSTR '(' number_expression ',' string_expression ',' string_expression ')' {/*create_function(fSTR3);*/}
-   | tCHR '(' number_expression ')' {/*create_function(fCHR);*/}
-   | tUPPER '(' string_expression ')' {/*create_function(fUPPER);*/}
-   | tLOWER '(' string_expression ')' {/*create_function(fLOWER);*/}
-   | tLTRIM '(' string_expression ')' {/*create_function(fLTRIM);*/}
-   | tRTRIM '(' string_expression ')' {/*create_function(fRTRIM);*/}
-   | tTRIM '(' string_expression ')' {/*create_function(fTRIM);*/}
-   | tDATE {/*create_function(fDATE);*/}
-   | tTIME {/*create_function(fTIME);*/}
-   | tARG '(' number_expression ')' { /*create_function (fARG); */}
-   | tENV '(' string_expression ')' { /*create_function (fENV); */}
-   ;
-
-number_expression: number_expression tOR {/*add_command(cORSHORT,NULL);pushlabel();*/} number_expression {/*poplabel();create_boole('|');*/}
-   | number_expression tAND {/*add_command(cANDSHORT,NULL);pushlabel();*/} number_expression {/*poplabel();create_boole('&');*/}
-   | tNOT number_expression {/*create_boole('!');*/}
-   | number_expression tEQU number_expression {/*create_numrelop('=');*/}
-   | number_expression tNEQ number_expression {/*create_numrelop('!');*/}
-   | number_expression tLTN number_expression {/*create_numrelop('<');*/}
-   | number_expression tLEQ number_expression {/*create_numrelop('{');*/}
-   | number_expression tGTN number_expression {/*create_numrelop('>');*/}
-   | number_expression tGEQ number_expression {/*create_numrelop('}');*/}
-   | tEOF '(' hashed_number ')' {/*add_command(cTESTEOF,NULL);*/}
-   | tGLOB '(' string_expression ',' string_expression ')' {/*add_command(cGLOB,NULL);*/}
-   | string_expression tEQU string_expression {/*create_strrelop('=');*/}
-   | string_expression tNEQ string_expression {/*create_strrelop('!');*/}
-   | string_expression tLTN string_expression {/*create_strrelop('<');*/}
-   | string_expression tLEQ string_expression {/*create_strrelop('{');*/}
-   | string_expression tGTN string_expression {/*create_strrelop('>');*/}
-   | string_expression tGEQ string_expression {/*create_strrelop('}');*/}
-   | number_function
-   | number_expression tMOD number_expression {/*create_numbin('%');*/}
-   | number_expression tPOW number_expression {/*create_numbin('^');*/}
-   | '+' number_expression %prec UPLUS {
-	   $$ = $2 ;
-   }
-   | '-' number_expression %prec UMINUS {
-	   /*add_command(cNEGATE,NULL);*/
-	   ConstNumberExprAST * zero = new ConstNumberExprAST(0);
-	   $$ = new NumberCalcExprAST( NumberExprASTPtr(zero) ,OPERATOR_SUB,NumberExprASTPtr($2));
-   }
-   | number_expression '*' number_expression {
-	   $$ = new NumberCalcExprAST( NumberExprASTPtr($1),OPERATOR_MUL,NumberExprASTPtr($3));
-   }
-   | number_expression '/' number_expression {
-	   $$ = new NumberCalcExprAST( NumberExprASTPtr($1),OPERATOR_DIV,NumberExprASTPtr($3));
-   }
-   | number_expression '-' number_expression {
-	   // 减法计算
-	   $$ = new NumberCalcExprAST( NumberExprASTPtr($1),OPERATOR_SUB,NumberExprASTPtr($3));
-   }
-   | number_expression '+' number_expression {
-	   // 加法计算.
-	   $$ = new NumberCalcExprAST( NumberExprASTPtr($1),OPERATOR_ADD,NumberExprASTPtr($3));
-   }
-   | '(' number_expression ')' { $$ = $2 ;}
-   | numsym_s {
-	   debug("got numsym_s\n");	   
-	   $$ =new NumberExprAST( VariableExprASTPtr($1) );
-	}
-   | tNUMBER {
-	   $$ = new ConstNumberExprAST($1);
-   }
-   ;
-
-number_function: tSIN '(' number_expression ')' {/*create_function(fSIN);*/}
-   | tASIN '(' number_expression ')' {/*create_function(fASIN);*/}
-   | tCOS '(' number_expression ')' {/*create_function(fCOS);*/}
-   | tACOS '(' number_expression ')' {/*create_function(fACOS)*/;}
-   | tTAN '(' number_expression ')' {/*create_function(fTAN);*/}
-   | tATAN '(' number_expression ')' {/*create_function(fATAN);*/}
-   | tATAN '(' number_expression ',' number_expression  ')' {/*create_function(fATAN2);*/}
-   | tEXP '(' number_expression ')' {/*create_function(fEXP);*/}
-   | tLOG '(' number_expression ')' {/*create_function(fLOG);*/}
-   | tLOG '(' number_expression ',' number_expression ')' {/*create_function(fLOG2);*/}
-   | tINT '(' number_expression ')' {/*create_function(fINT);*/}
-   | tSQR '(' number_expression ')' {/*create_function(fSQR);*/}
-   | tSQRT '(' number_expression ')' {/*create_function(fSQRT);*/}
-   | tFRAC '(' number_expression ')' {/*create_function(fFRAC);*/}
-   | tABS '(' number_expression ')' {/*create_function(fABS);*/}
-   | tSIG '(' number_expression ')' {/*create_function(fSIG);*/}
-   | tRAN '(' number_expression ')' {/*create_function(fRAN);*/}
-   | tRAN '(' ')' {/*create_function(fRAN2);*/}
-   | tMIN '(' number_expression ',' number_expression ')' {/*create_function(fMIN);*/}
-   | tMAX '(' number_expression ',' number_expression ')' {/*create_function(fMAX);*/}
-   | tLEN '(' string_expression ')' {/*create_function(fLEN);*/}
-   | tVAL '(' string_expression ')' {/*create_function(fVAL);*/}
-   | tASC '(' string_expression ')' {/*create_function(fASC);*/}
-   | tINSTR '(' string_expression ',' string_expression ')' {/*create_function(fINSTR);*/}
-   | tINSTR '(' string_expression ',' string_expression ',' number_expression ')' {/*create_function(fINSTR2);*/}
-   | tRINSTR '(' string_expression ',' string_expression ')' {/*create_function(fRINSTR);*/}
-   | tRINSTR '(' string_expression ',' string_expression  ',' number_expression ')' {/*create_function(fRINSTR2);*/}
-   | tSYSTEM '(' string_expression ')' {/*create_function(fSYSTEM);*/}
-   | tAND '(' number_expression ',' number_expression ')' {/*create_function(fAND);*/}
-   | tOR '(' number_expression ',' number_expression ')' {/*create_function(fOR);*/}
-   | tEOR '(' number_expression ',' number_expression ')' {/*create_function(fEOR);*/}
-   | tOPEN '(' string_expression ')' {/*create_myopen (OPEN_FUNCTION);*/}
-   | tOPEN '(' string_expression ',' string_expression ')' {/*create_myopen (OPEN_FUNCTION + OPEN_HAS_MODE);*/}
-   | tOPEN '(' hashed_number ',' string_expression ')' {/*create_myopen (OPEN_FUNCTION + OPEN_HAS_STREAM);*/}
-   | tOPEN '(' hashed_number ',' string_expression ',' string_expression ')' {/*create_myopen (OPEN_FUNCTION + OPEN_HAS_STREAM + OPEN_HAS_MODE);*/}
-   | tTELL '(' hashed_number ')' { /*create_function (fTELL); */}
-   | tPEEK '(' hashed_number ')' { /*create_function (fPEEKFILE);*/ }
-   ;
-
-hashed_number: '#' number_expression
-  | number_expression
-  ;
-
-exprtype: tLONG {
-		$$ = new NumberTypeAST();
-	}
-	| tINT {
-		//TODO int should be 32bit not 64bit
-		$$ = new NumberTypeAST();
-	}
-	;
-  
-dim_as_type:	/* empty , default to INTGER*/
-		| tAS exprtype {
-			debug("as  %s\n",$2->name.c_str());
-			// long varable
-			// 构造类型
-			$$ = $2;
 		}
 		;
 
-dim_list: tNUMSYM dim_as_type {
-		/*变量定义*/
-		// 在 AST 中分配一个变量名称列表.
-		std::string name;
-		name = $1;
-		$$ = new VariableDimAST( name , ExprTypeASTPtr($2));		
-	}
-   | dim_list ',' tNUMSYM dim_as_type {
-	  // 	std::string name;
-	//	name = $3;
-	//	$$ = new VariableDimAST( name , ExprTypeASTPtr($2));
-   }
-   ;
+lines : lines line
+	| line ;
 
-if_clause: if_part number_expression tTHEN
-				statement_list { debug("then part %p\n" , $4);}
-			elseif_part {
-				//TODO
-				debug("syntax not supported yet\n");
-			}
-            else_part {
-				debug("else part %p\n" , $8);
-			}
-            endif {
+line :   statements tNEWLINE
+	| tID ':' statements tNEWLINE ;
+	| tInteger ':' statements tNEWLINE ;
 
-				$$ = new IFStmtAST( NumberExprASTPtr( $2));
-				$$->_then = StatementASTPtr($4);
+statements : statements ':' statement
+		| statement
+		;
 
-				if($4)
-					$4->parent = $$;
+statement : printstatement
+		| tDIM dimlist
+		| tSUB tID '(' dimlist ')'
+		| tSUBEND
+		| tFUNCTION tID '(' dimlist ')' tAS type
+		| tFUNCTION tID '(' dimlist ')'
+		| tFUNCTIONEND
+		| assigment
+		;
 
-				$$->_else = StatementASTPtr($8);
-				if($8)
-					$8->parent = $$;
 
-			}
-            ;
+assigment: varref tEQU expression
+		| tLET varref tEQU expression
+		;
 
-short_if: if_part number_expression { /*add_command (cDECIDE, NULL); storelabel (); pushlabel ();*/ }
-            non_empty_statement { unclosed_ifs--; } {/* swap (); matchgoto (); swap (); poplabel (); poplabel (); */}
-   | if_part number_expression { /*add_command (cDECIDE, NULL); storelabel (); pushlabel ();*/ } separator_list
-            non_empty_statement {/* unclosed_ifs--; } { swap (); matchgoto (); swap (); poplabel (); poplabel ();*/ }
-   ;
+type: tLONG | tID ;
 
-endif: tEOPROG {if (unclosed_ifs) { debug ("%d \"if\" statement%s not closed", unclosed_ifs, (unclosed_ifs > 1) ? "s" : ""); } }
-   | tENDIF {unclosed_ifs--;}
-   ;
-
-if_part: tIF { unclosed_ifs ++; }
-   ;
-
-else_part: /* can be omitted */ { $$ = 0; }
-   | tELSE statement_list {	$$ = $2;}
-   ;
-
-elseif_part: /* can be omitted */
-   | tELSEIF number_expression tTHEN
-      {/*add_command(cDECIDE,NULL);pushlabel();*/}
-     statement_list
-   {/*swap();matchgoto();swap();poplabel();*/}
-     elseif_part
-   ;
-
-while_loop: tWHILE { unclosed_whiles++; debug("while ...\n"); } number_expression
-		statement_list
-	wend {
-		//TODO 添加 while 循环
-		$$ = new WhileLoopAST( NumberExprASTPtr($3) , StatementASTPtr($4) );
-		$4->parent = $$;
-	};
-
-wend: tEOPROG {if (unclosed_whiles) { debug ("%d \"while\" loop%s not closed", unclosed_whiles, (unclosed_whiles > 1) ? "s" : ""); } }
-   | tWEND {unclosed_whiles--;} { }
-   ;
-
-begin_sub:	tSUB { unclosed_subs++; }
-	| tFUNCTION { unclosed_subs++; }
+dimlist: dimlist ',' tID tAS type
+	| tID tAS type
 	;
 
-function_definition:
-	begin_sub { not_inside_loop_or_conditional ("define a function");
-	}  tNUMSYM {
-		$<cppstring>$ = new std::string($3);
-		debug("====begin function %s====\n",$3);
-		current_function = $3;
-	}  '(' param_list ')' dim_as_type
-	statement_list
-	endsub {
-		$$ = new FunctionDimAST(current_function, ExprTypeASTPtr($8) );
-		$$->body = StatementASTPtr($9);
-		debug("====end function %s==== %p , body = %p\n",($<cppstring>4)->c_str(),$$ , $9);
-		delete $<cppstring>4;
-		current_function.clear();
-	}
+printstatement : tPRINT printllist
+	|tPRINT '#' tInteger printllist
+	|tPRINT '#' tInteger printllist ';'
+	|tPRINT '#' tInteger printllist ','
 	;
 
-endsub: tEOPROG {
-		if (unclosed_subs)
-		{
-			debug ("%d subroutine%s not closed", unclosed_subs, (unclosed_subs > 1) ? "s" : "");
-		}
-	}
-   | tENDSUB {unclosed_subs--;}
-   | tENDFUNCTION {unclosed_subs--;}
-   ;
+printllist : printllist ',' expression
+	| expression
+	;
 
-print_list:  /* empty */ {
-		$$ = new PrintListAST();
-	}
-   | number_expression {
-		debug("got first print argument as number\n");
-		$$ = new PrintListAST();
-		$$->additem(ExprASTPtr($1));
-   }
-   | number_expression tUSING string_expression
-        { debug("ERROR: print syntax not supprted yet\n"); exit(1);}
-   | string_expression
-        { debug("ERROR: print syntax not supprted yet\n"); exit(1); }
-   | print_list ',' number_expression
-        { $$ = $1 ; $$->additem(ExprASTPtr($3)) ; }
-   | print_list ',' number_expression tUSING string_expression
-        {/* create_print ('b'); create_print ('u'); */}
-   | print_list ',' string_expression
-        { /*create_print ('b'); create_print ('s');*/ }
-   ;
+expression : expression '+' expression
+		| expression '-' expression
+		| expression '*' expression
+		| expression '/' expression
+		| '(' expression ')'
+		| varref '(' expression ')' // 这个也是函数调用
+		| varref
+		| tInteger //常量
+;
 
-print_intro: /* empty */ {
-		debug("empty print_intro\n");
-		/*构造一个默认的 打印目标*/
-		$$ = new PrintIntroAST(); 
-	}
-   | '#' numsym_s {  /* 构造一个使用常数表的打印目标*/ }
-   | '#' tNUMBER {/*create_pushnum ($2); create_pps(cPUSHSTREAM,0);*/}
-   | '#' '(' number_expression ')' {/*create_pps(cPUSHSTREAM,0);*/}
-   ;
-
-param_list: /* empty */
-   | param_item
-   | param_list ',' param_item
-   ;
-   
-param_item: numsym_s ;
-
-numsym_s: tNUMSYM {
-               debug("变量引用\n");
-               $$ = new VariableRefExprAST( $1 );
-       }
-
-separator_list: tSEPARATOR { yylineno += $1; }
-   | separator_list tSEPARATOR { yylineno += $2; }
-   ;
+varref:	varref '.' tID // 成员变量
+	| varref tDREF  tID  // 指针解引用
+	| tID
+	;

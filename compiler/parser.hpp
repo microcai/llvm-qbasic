@@ -67,7 +67,7 @@ namespace qb {
     union semantic_type
     {
 /* Line 36 of lalr1.cc  */
-#line 92 "parser.ypp"
+#line 93 "parser.ypp"
 
 	char *string;         /* quoted string */
 	char *symbol;         /* general symbol */
@@ -106,132 +106,33 @@ namespace qb {
     {
       /* Tokens.  */
    enum yytokentype {
-     tNUMBER = 258,
-     tSTRING = 259,
-     tNUMSYM = 260,
-     tSTRSYM = 261,
-     tSEPARATOR = 262,
-     tCALL = 263,
-     tBREAK = 264,
-     tCONTINUE = 265,
-     tSUB = 266,
-     tENDSUB = 267,
-     tRETURN = 268,
-     tFUNCTION = 269,
-     tENDFUNCTION = 270,
-     tAND = 271,
-     tOR = 272,
-     tNOT = 273,
-     tEOR = 274,
-     tCSUB = 275,
-     tFROM = 276,
-     tGOTO = 277,
-     tGOSUB = 278,
-     tLABEL = 279,
-     tENABLE = 280,
-     tDISABLE = 281,
-     tEOPROG = 282,
-     tNEWFILE = 283,
-     tEXIT = 284,
-     tEXPLICIT = 285,
-     tFOR = 286,
-     tTO = 287,
-     tNEXT = 288,
-     tSTEP = 289,
-     tWHILE = 290,
-     tWEND = 291,
-     tREPEAT = 292,
-     tUNTIL = 293,
-     tDO = 294,
-     tLOOP = 295,
-     tIF = 296,
-     tTHEN = 297,
-     tELSE = 298,
-     tELSEIF = 299,
-     tENDIF = 300,
-     tAS = 301,
-     tLET = 302,
-     tDIM = 303,
-     tLOCAL = 304,
-     tSTATIC = 305,
-     tARDIM = 306,
-     tARSIZE = 307,
-     tINC = 308,
-     tDEC = 309,
-     tNEQ = 310,
-     tLEQ = 311,
-     tGEQ = 312,
-     tLTN = 313,
-     tGTN = 314,
-     tEQU = 315,
-     tPOW = 316,
-     tPRINT = 317,
-     tINPUT = 318,
-     tLINE = 319,
-     tUSING = 320,
-     tSTRUCT = 321,
-     tENDSTRUCT = 322,
-     tSWITCH = 323,
-     tSEND = 324,
-     tCASE = 325,
-     tDEFAULT = 326,
-     tDATA = 327,
-     tENDDATA = 328,
-     tREAD = 329,
-     tRESTORE = 330,
-     tLONG = 331,
-     tABS = 332,
-     tSIG = 333,
-     tRAN = 334,
-     tSQR = 335,
-     tSQRT = 336,
-     tINT = 337,
-     tFRAC = 338,
-     tMIN = 339,
-     tMAX = 340,
-     tLEFT = 341,
-     tRIGHT = 342,
-     tMID = 343,
-     tUPPER = 344,
-     tLOWER = 345,
-     tOPEN = 346,
-     tCLOSE = 347,
-     tEOF = 348,
-     tSEEK = 349,
-     tTELL = 350,
-     tPEEK = 351,
-     tPOKE = 352,
-     tSIN = 353,
-     tASIN = 354,
-     tCOS = 355,
-     tACOS = 356,
-     tTAN = 357,
-     tATAN = 358,
-     tEXP = 359,
-     tLOG = 360,
-     tSTR = 361,
-     tCHR = 362,
-     tVAL = 363,
-     tASC = 364,
-     tLEN = 365,
-     tSYSTEM = 366,
-     tARG = 367,
-     tENV = 368,
-     tTIME = 369,
-     tDATE = 370,
-     tTOKEN = 371,
-     tTOKENALT = 372,
-     tSPLIT = 373,
-     tSPLITALT = 374,
-     tGLOB = 375,
-     tTRIM = 376,
-     tLTRIM = 377,
-     tRTRIM = 378,
-     tINSTR = 379,
-     tRINSTR = 380,
-     tMOD = 381,
-     UPLUS = 382,
-     UMINUS = 383
+     tEOPROG = 258,
+     tOR = 259,
+     tAND = 260,
+     tNOT = 261,
+     tNEQ = 262,
+     tGEQ = 263,
+     tLEQ = 264,
+     tLTN = 265,
+     tGTN = 266,
+     tEQU = 267,
+     tMOD = 268,
+     UPLUS = 269,
+     UMINUS = 270,
+     tPOW = 271,
+     tDREF = 272,
+     tAS = 273,
+     tSUB = 274,
+     tSUBEND = 275,
+     tFUNCTION = 276,
+     tFUNCTIONEND = 277,
+     tDIM = 278,
+     tLET = 279,
+     tPRINT = 280,
+     tNEWLINE = 281,
+     tLONG = 282,
+     tID = 283,
+     tInteger = 284
    };
 
     };
@@ -317,26 +218,26 @@ namespace qb {
     typedef unsigned char token_number_type;
     /* Tables.  */
     /// For a state, the index in \a yytable_ of its portion.
-    static const short int yypact_[];
-    static const short int yypact_ninf_;
+    static const signed char yypact_[];
+    static const signed char yypact_ninf_;
 
     /// For a state, default reduction number.
     /// Unless\a  yytable_ specifies something else to do.
     /// Zero means the default is an error.
     static const unsigned char yydefact_[];
 
-    static const short int yypgoto_[];
-    static const short int yydefgoto_[];
+    static const signed char yypgoto_[];
+    static const signed char yydefgoto_[];
 
     /// What to do in a state.
     /// \a yytable_[yypact_[s]]: what to do in state \a s.
     /// - if positive, shift that token.
     /// - if negative, reduce the rule which number is the opposite.
     /// - if zero, do what YYDEFACT says.
-    static const short int yytable_[];
-    static const short int yytable_ninf_;
+    static const unsigned char yytable_[];
+    static const signed char yytable_ninf_;
 
-    static const short int yycheck_[];
+    static const signed char yycheck_[];
 
     /// For a state, its accessing symbol.
     static const unsigned char yystos_[];
@@ -351,13 +252,13 @@ namespace qb {
     static const char* const yytname_[];
 
     /// A type to store symbol numbers and -1.
-    typedef short int rhs_number_type;
+    typedef signed char rhs_number_type;
     /// A `-1'-separated list of the rules' RHS.
     static const rhs_number_type yyrhs_[];
     /// For each rule, the index of the first RHS symbol in \a yyrhs_.
-    static const unsigned short int yyprhs_[];
+    static const unsigned char yyprhs_[];
     /// For each rule, its source line number.
-    static const unsigned short int yyrline_[];
+    static const unsigned char yyrline_[];
     /// For each scanner token number, its symbol number.
     static const unsigned short int yytoken_number_[];
     /// Report on the debug stream that the rule \a r is going to be reduced.
@@ -404,7 +305,7 @@ namespace qb {
 #line 22 "parser.ypp"
 } // qb
 /* Line 36 of lalr1.cc  */
-#line 408 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 309 "/home/cai/projects/basic/compiler/parser.hpp"
 
 
 
