@@ -221,12 +221,6 @@ public:
 	NumberExprASTPtr	rval;
     llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };
-//比较表达式 比较两个表达式的值
-class CompExprAST:public ExprAST // bool as result
-{
-	ExprASTPtr  RHS,LHS;
-	enum CompOperator op;	
-};
 
 // 数值计算表达式
 class NumberCalcExprAST : public NumberExprAST
