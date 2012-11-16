@@ -2,7 +2,7 @@
 	asdfasdfasdfas flasjdhfkjsdf
 */
 
-sub main()
+sub main2()
 dim a as long
 dim b as long
 dim c as long
@@ -28,3 +28,10 @@ end while
 
 end sub
 
+sub main()
+
+print 1000000
+
+main2()
+
+end sub

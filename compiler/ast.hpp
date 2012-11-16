@@ -138,9 +138,12 @@ typedef boost::shared_ptr<VariableDimAST> VariableDimASTPtr;
 class ExprAST: public AST //
 {
 public:
-	virtual llvm::AllocaInst*nameresolve(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto) = 0;
 	ExprTypeASTPtr type;
+
+public:
     ExprAST(ExprTypeASTPtr ExprType):type(ExprType){};
+
+	virtual llvm::AllocaInst*nameresolve(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto) = 0;
 	virtual llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto) = 0;
 };
 typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
@@ -231,10 +234,30 @@ public:
     virtual llvm::AllocaInst* nameresolve(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto){ return NULL; };
 };
 
-// 函数调用, 也是个数字表达式
-class NumberCallExpr : public NumberExprAST {
+// 函数调用, 也是个数字表达式 , 更是一个名称引用表达式!
+class CallExprAST : public VariableRefExprAST {
+public:
+	// the type of the return function , also is the type of itself. default return type is number
+    CallExprAST(ReferenceAST * target ,  ExprListAST * args = NULL);
 	
+	ExprListASTPtr		callargs; // args for call
+
+	// call this to the the return value of the function. this will insert neceserry calls
+    virtual llvm::Value* getval(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+    virtual llvm::AllocaInst* nameresolve(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };
+typedef boost::shared_ptr<CallExprAST>	CallExprASTPtr;
+
+// 对函数的调用, 实质是函数调用表达式的包装
+class CallStmtAST : public StatementAST
+{
+	CallExprASTPtr			callable;
+public:
+	CallStmtAST(CallExprAST * callexp);
+
+    virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+};
+
 
 // IF 语句
 class IFStmtAST : public StatementAST

@@ -140,6 +140,19 @@ llvm::Value* VariableRefExprAST::getval(StatementAST * parent,llvm::Function* Th
 	return builder.CreateLoad(ptr);
 }
 
+// resolve the function name to type and arge list, check for consistence
+llvm::AllocaInst* CallExprAST::nameresolve(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto)
+{
+	
+	return NULL;
+}
+
+//TODO call function and use the result
+llvm::Value* CallExprAST::getval(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto)
+{
+	
+}
+
 llvm::BasicBlock* DimAST::Codegen(llvm::Function*, llvm::BasicBlock* insertto)
 {
     debug("%s should not be called\n",__func__);
@@ -176,6 +189,23 @@ llvm::BasicBlock* PrintIntroAST::Codegen(llvm::Function *TheFunction,llvm::Basic
 	debug("PrintIntroAST expr for \n");
 	return insertto;
 }
+
+//* 调用函数
+llvm::BasicBlock* CallStmtAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
+{
+	debug("call function? generating the call here!\n");
+
+	// 首先, name solve
+	callable->nameresolve(this,TheFunction,insertto);
+
+	// 然后调用吧
+
+	callable->getval(this,TheFunction,insertto);
+
+	// 忽略返回数值
+	return insertto;
+}
+
 //TODO 为 print 语句生成,
 llvm::BasicBlock* PrintStmtAST::Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto)
 {
@@ -375,7 +405,6 @@ llvm::BasicBlock* LoopAST::bodygen(llvm::Function* TheFunction, llvm::BasicBlock
     return loopbody->Codegen(TheFunction,insertto);
 }
 
-//TODO 为while循环生成
 llvm::BasicBlock* WhileLoopAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
 {
 	BOOST_ASSERT(TheFunction);

@@ -67,7 +67,7 @@ namespace qb {
     union semantic_type
     {
 /* Line 36 of lalr1.cc  */
-#line 65 "parser.ypp"
+#line 62 "parser.ypp"
 
 	char *				string;         /* quoted string */
 	std::string *		id;         /* general symbol */
@@ -82,13 +82,14 @@ namespace qb {
 	
 	
 	ExprTypeAST *  		exprtype;
-	NumberExprAST* number_expression;
-    VariableRefExprAST*varable_ref;	
+	NumberExprAST* 		number_expression;
+    VariableRefExprAST*	varable_ref;
+	CallExprAST*		call_function;
 
     PrintStmtAST*		printstatement;
-	StatementAST* statement;
-	StatementAST* statement_list;
-	AssigmentAST*variable_assignment;
+	StatementAST*		statement;
+	StatementAST*		statement_list;
+	AssigmentAST*		variable_assignment;
 	IFStmtAST * if_clause;
 	
 	WhileLoopAST* while_loop;
@@ -101,7 +102,7 @@ namespace qb {
 
 
 /* Line 36 of lalr1.cc  */
-#line 105 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 106 "/home/cai/projects/basic/compiler/parser.hpp"
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -250,7 +251,7 @@ namespace qb {
     /// - if positive, shift that token.
     /// - if negative, reduce the rule which number is the opposite.
     /// - if zero, do what YYDEFACT says.
-    static const signed char yytable_[];
+    static const unsigned char yytable_[];
     static const signed char yytable_ninf_;
 
     static const signed char yycheck_[];
@@ -321,7 +322,7 @@ namespace qb {
 #line 21 "parser.ypp"
 } // qb
 /* Line 36 of lalr1.cc  */
-#line 325 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 326 "/home/cai/projects/basic/compiler/parser.hpp"
 
 
 

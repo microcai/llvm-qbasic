@@ -140,3 +140,16 @@ void ExprListAST::Append(ExprAST* exp)
     expression_list.push_back( ExprASTPtr(exp));
 }
 
+CallExprAST::CallExprAST(ReferenceAST * target,ExprListAST* args)
+	:VariableRefExprAST( ReferenceASTPtr(target)),callargs(args)
+{
+	
+}
+
+CallStmtAST::CallStmtAST(CallExprAST* callexp)
+	:callable(callexp)
+{
+	
+}
+
+

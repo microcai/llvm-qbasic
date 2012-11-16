@@ -32,15 +32,13 @@ extern	StatementAST * program;
 
 extern int yylex(qb::parser::semantic_type * yylval_param );
 
-//extern int yylex_destroy(void);
-//extern void yyerror (char *msg);
 extern int yylineno;
 
 #define debug printf
-extern StatementAST * program;
 
 /* Global variables. */
-std::string current_function;  /* name of currently parsed function */
+bool useDefautSubMain = true;	/* shall we treat the while file as an sub main ? */
+
 int in_loop = 0;                /* in loop? */
 
 /* Local variables. */
@@ -52,7 +50,6 @@ int unclosed_repeats = 0;       /* unclosed "repeat" count */
 int unclosed_subs = 0;          /* unclosed subroutine count */
 int unclosed_switches = 0;      /* unclosed "switch" count */
 int unclosed_whiles = 0;        /* unclosed "while" count */
-bool useDefautSubMain = false;	/* shall we treat the while file as an sub main ? */
 
 void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 {
@@ -76,13 +73,14 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 	
 	
 	ExprTypeAST *  		exprtype;
-	NumberExprAST* number_expression;
-    VariableRefExprAST*varable_ref;	
+	NumberExprAST* 		number_expression;
+    VariableRefExprAST*	varable_ref;
+	CallExprAST*		call_function;
 
     PrintStmtAST*		printstatement;
-	StatementAST* statement;
-	StatementAST* statement_list;
-	AssigmentAST*variable_assignment;
+	StatementAST*		statement;
+	StatementAST*		statement_list;
+	AssigmentAST*		variable_assignment;
 	IFStmtAST * if_clause;
 	
 	WhileLoopAST* while_loop;
@@ -155,12 +153,15 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 
 %type <if_clause>					if_clause
 %type <while_loop>					while_loop
+
+%type <call_function>				call_function_or_array
+
 %%
 
 program: lines tEOPROG {
 			if(useDefautSubMain){
 				debug("program ended\n");
-				//program = new DefaultMainFunctionAST( $1 );
+				program = new DefaultMainFunctionAST( $1 );
 			}else{
 				program = $1;
 				debug("module ended\n");
@@ -172,13 +173,12 @@ program: lines tEOPROG {
 			debug("!!!no new line at the end of file!!!\n"); exit(1);
 			if(useDefautSubMain){
 				debug("program ended\n");
-				//program = new DefaultMainFunctionAST( $1 );
+				program = new DefaultMainFunctionAST( $1 );
 			}else{
-				//program = $1;
+				program = $1;
 				debug("module ended\n");
 			}
-			YYACCEPT;
-			
+			YYACCEPT;			
 		}
 		;
 
@@ -188,15 +188,16 @@ lines: lines line { $$ = $1; $$->addchild($2); }
 		$$->addchild($1);
 	} ;
 
-line: statements tNEWLINE { $$=$1 ;}
-	| expression tNEWLINE { /*TODO*/debug("here====5====\n"); exit(1);	}
+line: statements tNEWLINE { $$=$1;  }
+	| call_function_or_array seperator
+			{ $$ = new CallStmtAST($1); } // debug("====here====we call functions now====\n");
 	| tNEWLINE { $$= new EmptyStmtAST();}
 	;
 
 statements : statements ':' statement { /*TODO*/debug("here====2====\n"); exit(1);	}
 		| statement {$$= $1;}
-		| if_clause
-		| while_loop
+		| if_clause {$$= $1;} 
+		| while_loop {$$= $1;} 
 		| subdefine {$$= $1;}
 		| function_definition { /*TODO*/debug("here====2====\n"); exit(1);	}
 		| expression ':' { /*TODO*/debug("here====2====\n"); exit(1);	}
@@ -216,18 +217,20 @@ function_definition: tFUNCTION tID '(' dimlist ')' tAS exprtype
 				tFUNCTIONEND
 			;
 
-subdefine: tSUB  tID '(' ')'
+subdefine: tSUB  tID  '(' ')'
 				lines
 			tSUBEND {
+				useDefautSubMain = false;
 				$$ = new FunctionDimAST( *$2 ); //delete $2;
 
 				$$->body = StatementASTPtr($5);
 				
 				debug("!!SUB %s defined!!\n",$2->c_str());
 			}
-		| tSUB  tID '(' dimlist ')'
+		| tSUB  tID  '(' dimlist ')'
 				lines
 			tSUBEND {
+				useDefautSubMain = false;
 				$$ = new FunctionDimAST( *$2 ); //delete $2;
 
 				$$->body = StatementASTPtr($6);
@@ -285,10 +288,14 @@ expression_list: expression_list ',' expression { $$ = $1 ; $$->Append($3); }
 	}
 	;
 
-expression:
-		| varref '('  ')' { debug("functioncall with no arg\n");} // 这个也是函数调用
+call_function_or_array:
+		varref '('  ')' { $$ = new CallExprAST($1); debug("functioncall with no arg\n"); } // 这个也是函数调用
 		| varref  '(' expression_list ')' // 这个可能是函数调用, 也许是数组哦 :)
-		 '(' expression ')'
+
+
+	
+expression: call_function_or_array
+		| '(' expression ')'
 		| expression '+' expression {   $$ = new CalcExprAST( $1, OPERATOR_ADD , $3 );  }
 		| expression '-' expression {   $$ = new CalcExprAST( $1, OPERATOR_SUB , $3 );  }
 		| expression '*' expression {   $$ = new CalcExprAST( $1, OPERATOR_MUL , $3 );  }
