@@ -223,11 +223,14 @@ public:
 class CalcExprAST : public ExprAST
 {
 public:
-    CalcExprAST(ExprASTPtr , MathOperator  ,ExprASTPtr );
+    CalcExprAST(ExprAST * , MathOperator  ,ExprAST * );
 	ExprASTPtr  rval,lval;
 	enum MathOperator op;
 
     virtual llvm::Value* getval(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+
+	//TODO , 为复杂的表达式类型执行混成
+    virtual llvm::AllocaInst* nameresolve(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto){ return NULL; };
 };
 
 // 函数调用, 也是个数字表达式
@@ -239,8 +242,8 @@ class NumberCallExpr : public NumberExprAST {
 class IFStmtAST : public StatementAST
 {
 public:
-	IFStmtAST(NumberExprASTPtr expr):_expr(expr){}
-	NumberExprASTPtr _expr;
+	IFStmtAST(ExprASTPtr expr):_expr(expr){}
+	ExprASTPtr _expr;
 	StatementASTPtr _then;
 	StatementASTPtr _else;
     virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);

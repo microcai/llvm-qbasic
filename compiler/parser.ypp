@@ -126,6 +126,8 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 
 %token tNEWLINE
 
+%token tIF tTHEN tENDIF tELSE tELSEIF
+%token tWHILE tENDWHILE
 
 // 内置数据类型
 %token tLONG 
@@ -151,6 +153,8 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %type <varref>						varref
 %type <variable_assignment>			assigment
 
+%type <if_clause>					if_clause
+%type <while_loop>					while_loop
 %%
 
 program: lines tEOPROG {
@@ -192,12 +196,14 @@ line: statements tNEWLINE { $$=$1 ;}
 
 statements : statements ':' statement { /*TODO*/debug("here====2====\n"); exit(1);	}
 		| statement {$$= $1;}
+		| if_clause
+		| while_loop
 		| subdefine {$$= $1;}
 		| function_definition { /*TODO*/debug("here====2====\n"); exit(1);	}
 		| expression ':' { /*TODO*/debug("here====2====\n"); exit(1);	}
 		;
 
-statement : printstatement { $$ = $1; }
+statement: printstatement { $$ = $1; }
 		| tDIM dimlist { $$ = $2; }
 		| assigment {$$= $1;}
 		| tLET assigment { $$ = $2;}
@@ -284,10 +290,10 @@ expression:
 		| varref '('  ')' { debug("functioncall with no arg\n");} // 这个也是函数调用
 		| varref  '(' expression_list ')' // 这个可能是函数调用, 也许是数组哦 :)
 		 '(' expression ')'
-		| expression '+' expression
-		| expression '-' expression
-		| expression '*' expression
-		| expression '/' expression
+		| expression '+' expression {   $$ = new CalcExprAST( $1, OPERATOR_ADD , $3 );  }
+		| expression '-' expression {   $$ = new CalcExprAST( $1, OPERATOR_SUB , $3 );  }
+		| expression '*' expression {   $$ = new CalcExprAST( $1, OPERATOR_MUL , $3 );  }
+		| expression '/' expression {   $$ = new CalcExprAST( $1, OPERATOR_DIV , $3 );  }
  		| varref	{
 			//TODO the VariableRefExprAST
 			$$ = new VariableRefExprAST( ReferenceASTPtr($1) );
@@ -314,3 +320,49 @@ varref:	varref '.' tID { debug("ref menber %s . %s , not supported yet\n", $1->I
 		debug("idref %s\n", $1->c_str());
 	}
 	;
+	
+seperator : tNEWLINE | ':' ;
+
+//*****************************************/
+//* 这里开始是循环和控制语句支持
+//*****************************************/
+
+		//*****************************************/
+		//* 条件控制语句
+		//*****************************************/
+if_clause: tIF expression tTHEN statement {
+			// 单行 if then 语句
+			$$ = new IFStmtAST( ExprASTPtr($2));
+			$$->_then = StatementASTPtr($4);
+			$4->parent = $$;
+	}
+	|	tIF expression tTHEN seperator
+ 			lines
+		tENDIF {
+			$$ = new IFStmtAST( ExprASTPtr($2));
+			$$->_then = StatementASTPtr($5);
+			$5->parent = $$;
+		}
+	|	tIF expression tTHEN seperator
+ 			lines
+ 		tELSE
+			lines
+		tENDIF  {
+			$$ = new IFStmtAST( ExprASTPtr($2));
+			$$->_then = StatementASTPtr($5);
+			$5->parent = $$;
+			$$->_else = StatementASTPtr($7);
+			$7->parent = $$;
+		}
+;
+
+		//*****************************************/
+		//* While 循环语句
+		//*****************************************/
+
+while_loop: tWHILE expression seperator
+			lines
+		tENDWHILE {
+			$$ = new WhileLoopAST( ExprASTPtr($2) , StatementASTPtr($4));
+			$4->parent = $$;
+		};

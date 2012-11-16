@@ -105,7 +105,7 @@ bool VariableRefExprAST::canllvm()
 	return true;
 }
 
-CalcExprAST::CalcExprAST(ExprASTPtr lhs, MathOperator OP, ExprASTPtr rhs)
+CalcExprAST::CalcExprAST(ExprAST * lhs, MathOperator OP, ExprAST* rhs)
 	:rval(rhs),lval(lhs),op(OP),ExprAST(ExprTypeASTPtr(new UnknowTypeAST()))
 {
 	

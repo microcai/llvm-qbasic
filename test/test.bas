@@ -13,5 +13,15 @@ print a , b
 
 print b
 
+if 0 then
+print a
+end if
+
+while b
+	a = a + b
+	print a
+
+end while
+
 end sub
 

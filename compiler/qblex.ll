@@ -78,9 +78,18 @@ lcchar [\\_]
 
 end{whitespace}*sub|end{whitespace}*subroutine return token::tSUBEND;
 end{whitespace}*function return token::tFUNCTIONEND;
+fi|end{whitespace}*if	{ printf("end if\n"); return token::tENDIF; }
+end{whitespace}*while return token::tENDWHILE;
+wend				{ printf("while end ! ======\n");return token::tENDWHILE; }
+while 				{ printf("while begin ! ======\n");return token::tWHILE; }
 
 function         return token::tFUNCTION;
 sub|subroutine return token::tSUB;
+if			return token::tIF;
+then		return token::tTHEN;
+else		return token::tELSE;
+elif|elseif	return token::tELSEIF;
+	
 
 long return token::tLONG;/* variables type*/
 
