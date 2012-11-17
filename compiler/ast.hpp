@@ -305,7 +305,6 @@ public:
 
 	StatementASTPtr	body; //函数体
 	
-    FunctionDimAST(const std::string _name, VariableDimAST * argsdef,ExprTypeASTPtr _type = ExprTypeASTPtr(new VoidTypeAST) );
     FunctionDimAST(const std::string _name, ExprTypeASTPtr _type = ExprTypeASTPtr(new VoidTypeAST) );
 	//如果是声明, 为 dim 生成 llvm::Function * 声明供使用
     virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);

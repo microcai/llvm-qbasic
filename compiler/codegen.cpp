@@ -181,11 +181,14 @@ llvm::AllocaInst* CallExprAST::nameresolve(StatementAST* parent, llvm::Function*
 		std::vector<llvm::Type *> targetArgs;
 
 		llvm::Constant * f = module->getOrInsertFunction(
-			var->ID,llvm::FunctionType::get(builder.getInt32Ty(),targetArgs,true));
+			var->ID,llvm::FunctionType::get(builder.getInt64Ty(),targetArgs,true));
 
 		debug("target is %p\n",target);
 		
-		this->target = llvm::cast<llvm::Function>(f);		
+		this->target = llvm::cast<llvm::Function>(f);
+
+		debug("target now resolved to %p\n",target);
+
 	}
 	return NULL;
 }
@@ -193,7 +196,9 @@ llvm::AllocaInst* CallExprAST::nameresolve(StatementAST* parent, llvm::Function*
 //TODO use the result !
 llvm::Value* CallExprAST::getval(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto)
 {
-	debug("===I will call to %s ====\n",var->ID.c_str() );
+	llvm::Value * ret = NULL;
+	
+	nameresolve(parent,TheFunction,insertto);
 
 	llvm::IRBuilder<>	builder(insertto);
 
@@ -201,11 +206,24 @@ llvm::Value* CallExprAST::getval(StatementAST* parent, llvm::Function* TheFuncti
 
 	std::vector<llvm::Value*> args;
 
-	BOOST_FOREACH( ExprASTPtr expr , callargs->expression_list)
+	if(callargs && callargs->expression_list.size() )
 	{
-		args.push_back( expr->getval(parent,TheFunction,insertto) );
-	} 
-	builder.CreateCall(target, args);
+		BOOST_FOREACH( ExprASTPtr expr , callargs->expression_list)
+		{
+			debug("pusing args \n");
+			args.push_back( expr->getval(parent,TheFunction,insertto) );
+		}
+	}
+	
+	if(args.empty()){
+		debug("===I will call to %s ==== with no argument\n",var->ID.c_str());
+		ret = builder.CreateCall(target);
+	}else{
+		debug("===I will call to %s ==== with argument number %d\n",var->ID.c_str() , args.size() );
+		ret = builder.CreateCall(target, args);
+	}
+	// use the result
+	return ret;
 }
 
 llvm::BasicBlock* DimAST::Codegen(llvm::Function*, llvm::BasicBlock* insertto)
@@ -249,12 +267,7 @@ llvm::BasicBlock* PrintIntroAST::Codegen(llvm::Function *TheFunction,llvm::Basic
 llvm::BasicBlock* CallStmtAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
 {
 	debug("call function? generating the call here!\n");
-
-	// 首先, name solve
-	callable->nameresolve(this,TheFunction,insertto);
-
 	// 然后调用吧
-
 	callable->getval(this,TheFunction,insertto);
 
 	// 忽略返回数值

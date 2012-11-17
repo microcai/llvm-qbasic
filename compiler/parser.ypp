@@ -146,6 +146,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %type <statement>					statement
 %type <dim_list>					dimlist
 %type <function_definition>			subdefine
+%type <function_definition>			function_definition
 %type <exprtype>					exprtype
 
 %type <varref>						varref
@@ -208,38 +209,6 @@ statement: printstatement { $$ = $1; }
 		| assigment {$$= $1;}
 		| tLET assigment { $$ = $2;}
 		;
-		
-function_definition: tFUNCTION tID '(' dimlist ')' tAS exprtype
-				lines
-				tFUNCTIONEND
-			|tFUNCTION tID '(' dimlist ')' // default type , int
-				lines
-				tFUNCTIONEND
-			;
-
-subdefine: tSUB  tID  '(' ')'
-				lines
-			tSUBEND {
-				useDefautSubMain = false;
-				$$ = new FunctionDimAST( *$2 ); //delete $2;
-
-				$$->body = StatementASTPtr($5);				
-				debug("!!SUB %s defined!!\n",$2->c_str());
-			}
-		| tSUB  tID  '(' dimlist ')'
-				lines
-			tSUBEND {
-				useDefautSubMain = false;
-
-				debug("sub function got dim as %p\n",$4);
-				$$ = new FunctionDimAST( *$2); //delete $2;
-				$$->addchild($4);				
-				$6->parent = $$;
-				$$->body = StatementASTPtr($6);
-				
-				debug("!!SUB %s defined with args !!, but not supported yet\n",$2->c_str());
-			}
-		  ;
 
 assigment: varref tEQU expression {
 		VariableRefExprAST * varrefast = new VariableRefExprAST( ReferenceASTPtr($1) );
@@ -290,14 +259,13 @@ expression_list: expression_list ',' expression { $$ = $1 ; $$->Append($3); }
 	;
 
 call_function_or_array:
-		varref '('  ')' { $$ = new CallExprAST($1); debug("functioncall with no arg\n"); } // 这个也是函数调用
-		| varref  '(' expression_list ')' {
-			 // 这个可能是函数调用, 也许是数组哦 :)
-
+		// 这个也是函数调用
+		varref '('  ')' { $$ = new CallExprAST($1); debug("functioncall %s with no arg\n", $1->ID.c_str()); } 
+		| varref  '(' expression_list ')' { 	 // 这个可能是函数调用, 也许是数组哦 :)
 			 // 现在就当是函数调用了, 在后面的阶段再生成数组访问
+			 debug("functioncall %s with  args!!!!\n" , $1->ID.c_str() );
 
-			 $$ = new CallExprAST($1 , $3 );
-			
+			 $$ = new CallExprAST($1 , $3 );			
 		}
 
 
@@ -337,6 +305,71 @@ varref:	varref '.' tID { debug("ref menber %s . %s , not supported yet\n", $1->I
 	;
 	
 seperator : tNEWLINE | ':' ;
+
+//*****************************************/
+//* 这里开始是函数和过程定义
+//*****************************************/
+
+function_definition: tFUNCTION tID '(' dimlist ')' tAS exprtype
+					lines
+				tFUNCTIONEND {
+					useDefautSubMain = false;
+					$$ = new FunctionDimAST( *$2 , ExprTypeASTPtr($7) );
+
+					$$->addchild($4);
+					$8->parent = $$;
+
+					$$->body = StatementASTPtr($8);
+				}
+				|tFUNCTION tID '(' dimlist ')' 
+					lines
+				tFUNCTIONEND {
+					useDefautSubMain = false;
+					$$ = new FunctionDimAST( *$2 , ExprTypeASTPtr( new NumberTypeAST()) );
+
+					$$->addchild($4);
+					$6->parent = $$;
+
+					$$->body = StatementASTPtr($6);
+				}
+				|tFUNCTION tID '(' ')' tAS exprtype
+				lines
+				tFUNCTIONEND {
+					useDefautSubMain = false;
+					$$ = new FunctionDimAST( *$2 , ExprTypeASTPtr($6) );
+					$$->body = StatementASTPtr($7);
+				}
+				|tFUNCTION tID '(' ')'
+				lines
+				tFUNCTIONEND {
+					useDefautSubMain = false;
+					$$ = new FunctionDimAST( *$2 , ExprTypeASTPtr( new NumberTypeAST()) );
+					$$->body = StatementASTPtr($5);
+				}
+				;
+
+subdefine: tSUB  tID  '(' ')'
+				lines
+			tSUBEND {
+				useDefautSubMain = false;
+				$$ = new FunctionDimAST( *$2 ); //delete $2;
+
+				$$->body = StatementASTPtr($5);
+				debug("!!SUB %s defined!!\n",$2->c_str());
+			}
+		| tSUB  tID  '(' dimlist ')'
+				lines
+			tSUBEND {
+				useDefautSubMain = false;
+
+				debug("sub function got dim as %p\n",$4);
+				$$ = new FunctionDimAST( *$2); //delete $2;
+				$$->addchild($4);
+				$6->parent = $$;
+				$$->body = StatementASTPtr($6);
+			}
+		  ;
+
 
 //*****************************************/
 //* 这里开始是循环和控制语句支持

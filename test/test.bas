@@ -4,7 +4,13 @@
 	the function call and while and if .  3 cases test	
 */
 
-sub testfunc( i as long )
+sub testfunc1()
+
+print 100
+
+end sub
+
+sub testfunc2( i as long )
 
 print i
 
@@ -20,6 +26,14 @@ sub main()
 
 print 1000000
 
-testfunc( 100 )
+dim a as long
+
+testfunc1()
+
+testfunc2( 100 )
+
+a = abs( 100 )
+
+print a , abs(100)
 
 end sub
