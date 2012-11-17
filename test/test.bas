@@ -8,6 +8,11 @@ sub testfunc( i as long )
 
 print i
 
+i=54321
+
+print i
+
+
 end sub
 
 
