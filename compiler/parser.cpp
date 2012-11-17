@@ -572,7 +572,7 @@ namespace qb {
   case 20:
 /* Line 661 of lalr1.cc  */
 #line 213 "parser.ypp"
-    {	debug("return not implemented yet\n");exit(1);}
+    { (yyval.statement) = new ReturnAST((yysemantic_stack_[(2) - (2)].expression));	debug("return not implemented yet\n");}
     break;
 
   case 21:
@@ -588,7 +588,7 @@ namespace qb {
 /* Line 661 of lalr1.cc  */
 #line 221 "parser.ypp"
     {
-	(yyval.exprtype) = new NumberTypeAST;
+		(yyval.exprtype) = new NumberTypeAST;
 	}
     break;
 

@@ -33,7 +33,7 @@ public:
     ExprTypeAST(size_t __size,const std::string _name = std::string(""));
 	std::string		name; // name of the type. // for debug only
 	virtual	size_t	size(){return _size;} // memory size of this type , can be overided
-	virtual llvm::Type *	llvmtype() = 0; // llvm type of this type, NULL if not reperentable directly
+	virtual llvm::Type *	llvmtype() = 0; // llvm type of this type, NULL if not representable directly
 	virtual	bool	resolved(){return true;};
 };
 

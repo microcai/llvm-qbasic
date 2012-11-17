@@ -14,8 +14,6 @@ s = a + b
 
 return s
 
-print s
-
 end function
 
 sub main()

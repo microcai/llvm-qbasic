@@ -266,6 +266,14 @@ public:
     virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };
 
+// 有调用就有返回, 这个是返回语句
+class ReturnAST : public StatementAST
+{
+	ExprASTPtr			expr;
+public:
+    ReturnAST(ExprAST * expr);
+    virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+};
 
 // IF 语句
 class IFStmtAST : public StatementAST

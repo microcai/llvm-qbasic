@@ -210,7 +210,7 @@ statement: printstatement { $$ = $1; }
 		| tDIM dim_item { $$ = $2; }
 		| assigment {$$= $1;}
 		| tLET assigment { $$ = $2;}
-		| tRETURN expression {	debug("return not implemented yet\n");exit(1);}
+		| tRETURN expression { $$ = new ReturnAST($2);	debug("return not implemented yet\n");}
 		;
 
 assigment: varref tEQU expression {
@@ -219,7 +219,7 @@ assigment: varref tEQU expression {
 	};
 
 exprtype: tLONG	{
-	$$ = new NumberTypeAST;
+		$$ = new NumberTypeAST;
 	}
 	| tID {
 		debug("define as user type not supported\n");

@@ -152,4 +152,10 @@ CallStmtAST::CallStmtAST(CallExprAST* callexp)
 	
 }
 
+ReturnAST::ReturnAST(ExprAST* _expr)
+	:expr(_expr)
+{
+	
+}
+
 

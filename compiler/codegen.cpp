@@ -425,8 +425,14 @@ llvm::BasicBlock* FunctionDimAST::Codegen(llvm::Function* TheFunction, llvm::Bas
 			args.push_back(dim->type->llvmtype());
 		}		
 	}
-	
-	llvm::FunctionType *funcType = llvm::FunctionType::get(builder.getVoidTy(), args, true);
+
+	//函数返回类型
+	llvm::FunctionType *funcType =
+		llvm::FunctionType::get(
+			this->type->llvmtype()  ? this->type->llvmtype() : builder.getVoidTy(),
+							args, true
+	);
+
 	llvm::Function *mainFunc =
 		llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, this->name , AST::module);
 	llvm::BasicBlock *entry = llvm::BasicBlock::Create(builder.getContext(), "entrypoint", mainFunc);
@@ -447,7 +453,24 @@ llvm::BasicBlock* FunctionDimAST::Codegen(llvm::Function* TheFunction, llvm::Bas
 	//now code up the function body
 	builder.SetInsertPoint(body->Codegen(mainFunc,entry));
 	//返回值 , should not be used !
+	llvm::BasicBlock *ret = llvm::BasicBlock::Create(builder.getContext(), "ret",mainFunc);
+	builder.CreateBr(ret);
+	builder.SetInsertPoint(ret);
+	
 	builder.CreateRetVoid();
+	return insertto;
+}
+
+llvm::BasicBlock* ReturnAST::Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto)
+{
+
+	llvm::IRBuilder<> builder(TheFunction->getContext());
+	builder.SetInsertPoint(insertto);
+
+	llvm::Value * ret = this->expr->getval(this,TheFunction,insertto);
+	
+	builder.CreateRet(ret);
+	debug("生成返回值\n");
 	return insertto;
 }
 
