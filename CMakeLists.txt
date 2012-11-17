@@ -15,6 +15,8 @@ if(Boost_FOUND)
 	add_definitions(-DBOOST_SYSTEM_NO_DEPRECATED)
     include_directories(${Boost_INCLUDE_DIRS})
     link_libraries(${Boost_LIBRARIES})
+else()
+	message(FATAL_ERROR "boost not found! please set BOOST_ROOT if you install boost into non-standard location")
 endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/include)

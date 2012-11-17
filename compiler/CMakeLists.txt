@@ -13,7 +13,10 @@ if(NOT Boost_FOUND)
 		add_definitions(-DBOOST_SYSTEM_NO_DEPRECATED)
 		include_directories(${Boost_INCLUDE_DIRS})
 		link_libraries(${Boost_LIBRARIES})
-	endif()
+	else()
+		message(FATAL_ERROR
+			"boost not found! please set BOOST_ROOT if you install boost into non-standard location")
+	endif()	
 endif()
 
 if( USE_BISON )
@@ -25,6 +28,7 @@ if( USE_BISON )
 else()
 	SET(BISON_QBParse_OUTPUTS parser.cpp)
 	SET(FLEX_QBLex_OUTPUTS qblex.cpp)
+	message(AUTHOR_WARNING "set -DUSE_BISON=1 on cmake command line if you want to build parser from bison rules")
 endif()
 
 
