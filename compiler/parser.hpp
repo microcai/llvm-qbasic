@@ -81,21 +81,21 @@ namespace qb {
 	PrintIntroAST*		printinto;
 	
 	
-	ExprTypeAST *  		exprtype;
+	std::string *  		exprtype; // name of the type
 	NumberExprAST* 		number_expression;
-    VariableRefExprAST*	varable_ref;
 	CallExprAST*		call_function;
 
     PrintStmtAST*		printstatement;
 	StatementAST*		statement;
-	StatementAST*		statement_list;
+	StatementsAST*		statement_list;
 	AssigmentAST*		variable_assignment;
+	CodeBlockAST*		codeblocks;
 	IFStmtAST * if_clause;
 	
 	WhileLoopAST* while_loop;
 	
 	VariableDimAST*		dim_item;
-	VariableDimsAST*	dim_list;
+	ArgumentDimsAST*	arg_list;
 	FunctionDimAST	 *function_definition;
 
 	PrintIntroAST *print_intro;

@@ -37,7 +37,7 @@ link_libraries("${LLVM_LIBRARIES}")
 
 SET(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} ${LLVM_CPPFLAGS} ")
 
-add_executable(llvm-qbc ast.cpp llvmwrapper.cpp typeast.cpp codegen.cpp
+add_executable(llvm-qbc type.cpp ast.cpp operator.cpp codegen.cpp llvmwrapper.cpp
 	${BISON_QBParse_OUTPUTS} ${FLEX_QBLex_OUTPUTS}
 	main.cpp 
 )

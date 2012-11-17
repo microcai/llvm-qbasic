@@ -72,21 +72,21 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 	PrintIntroAST*		printinto;
 	
 	
-	ExprTypeAST *  		exprtype;
+	std::string *  		exprtype; // name of the type
 	NumberExprAST* 		number_expression;
-    VariableRefExprAST*	varable_ref;
 	CallExprAST*		call_function;
 
     PrintStmtAST*		printstatement;
 	StatementAST*		statement;
-	StatementAST*		statement_list;
+	StatementsAST*		statement_list;
 	AssigmentAST*		variable_assignment;
+	CodeBlockAST*		codeblocks;
 	IFStmtAST * if_clause;
 	
 	WhileLoopAST* while_loop;
 	
 	VariableDimAST*		dim_item;
-	VariableDimsAST*	dim_list;
+	ArgumentDimsAST*	arg_list;
 	FunctionDimAST	 *function_definition;
 
 	PrintIntroAST *print_intro;
@@ -141,12 +141,12 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %type <expression_list>				expression_list
 %type <printinto>					printinto
 %type <printstatement>				printstatement
-%type <statement_list>				lines
+%type <codeblocks>					lines
 %type <statement_list>				line
 %type <statement_list>				statements
 %type <statement>					statement
 %type <dim_item>					dim_item
-%type <dim_list>					dim_list
+%type <arg_list>					arg_list
 %type <function_definition>   sub_definition
 %type <function_definition>			function_definition
 %type <exprtype>					exprtype
@@ -185,41 +185,66 @@ program: lines tEOPROG {
 		}
 		;
 
-lines: lines line { $$ = $1; $$->addchild($2); }
+lines: lines line {
+					$$ = $1;
+					if(!$1){
+						$1 = $$ = new CodeBlockAST;
+					}
+					if($2){
+						debug("addchine1 , %p %p %p\n",$$,$1,$2);
+						$$->addchild($2);
+					}else{
+						debug("addchine1 voided , %p %p %p\n",$$,$1,$2);
+					}
+	}
 	| line {
-		$$ = new StatementAST;
-		$$->addchild($1);
+		$$ = 0;debug("addchine2\n");
+		if($1){
+			debug("addchine2 real\n");
+			$$ = new CodeBlockAST; 	$$->addchild($1); 	}
 	} ;
 
 line: statements tNEWLINE { $$=$1;  }
-	| call_function_or_array seperator
-			{ $$ = new CallStmtAST($1); } // debug("====here====we call functions now====\n");
-	| tNEWLINE { $$= new EmptyStmtAST();}
+	| statement tNEWLINE {
+		if(!$1){debug("statement nil\n");}
+		$$ = new StatementsAST ; $$->push_back(StatementASTPtr($1));
+	}
+	| tNEWLINE { debug("空行"); $$ = 0;}
+	| call_function_or_array tNEWLINE {
+		$$ = new StatementsAST ; $$->push_back(StatementASTPtr($1));		
+	}
 	;
 
-statements : statements ':' statement {  $$ = $1; $$->addchild($1); }
-		| statement {$$= $1;}
-		| if_clause {$$= $1;} 
-		| while_loop {$$= $1;} 
-		| sub_definition {$$= $1;}
-		| function_definition {$$= $1;}
-		| expression ':' { /*TODO*/debug("here====3====\n"); exit(1);	}
+statements : statements ':' statement {  $$ = $1; $$->push_back(StatementASTPtr($3)); }
+		| statement ':' statement {
+				$$ = new StatementsAST ;
+				$$->push_back(StatementASTPtr($1));
+				$$->push_back(StatementASTPtr($3));
+		}
 		;
 
 statement: printstatement { $$ = $1; }
 		| tDIM dim_item { $$ = $2; }
 		| assigment {$$= $1;}
 		| tLET assigment { $$ = $2;}
-		| tRETURN expression { $$ = new ReturnAST($2);	debug("return not implemented yet\n");}
+		| tRETURN expression { $$ = new ReturnAST($2);}
+		| if_clause {$$= $1;}
+		| while_loop {$$= $1;}
+		| sub_definition  {$$= $1;}
+		| function_definition  {$$= $1;}
+	//	| call_function_or_array ':'{ $$ = new CallStmtAST($1); }
+	//	| tNEWLINE { $$= new EmptyStmtAST();}
+		| expression ':' { /*TODO*/debug("here====3====\n"); exit(1);	}
 		;
 
+
 assigment: varref tEQU expression {
-		VariableRefExprAST * varrefast = new VariableRefExprAST( ReferenceASTPtr($1) );
-		$$ = new AssigmentAST(VariableRefExprASTPtr(varrefast), ExprASTPtr($3));
+		VariableExprAST * varref = new VariableExprAST($1);
+		$$ = new AssigmentAST(varref, $3);
 	};
 
 exprtype: tLONG	{
-		$$ = new NumberTypeAST;
+		$$ = new std::string("long");
 	}
 	| tID {
 		debug("define as user type not supported\n");
@@ -283,12 +308,12 @@ expression: call_function_or_array
 
  		| varref	{
 			//TODO the VariableRefExprAST
-			$$ = new VariableRefExprAST( ReferenceASTPtr($1) );
+			$$ = new VariableExprAST( $1 );
 			debug("do we got this?\n");			
 		}
 		| tInteger  {
 			//常量
-			$$ = new ConstNumberExprAST( $1 );
+			$$ = new NumberExprAST( $1 );
 		}
 		| tNUMBER //浮点数
 		;
@@ -312,27 +337,25 @@ seperator : tNEWLINE | ':' ;
 //* 这里开始是函数和过程定义
 //*****************************************/
 
-function_definition: tFUNCTION tID '(' dim_list ')' tAS exprtype
-					lines
+function_definition: tFUNCTION tID '(' arg_list ')' tAS exprtype tNEWLINE
+						lines
 				tFUNCTIONEND {
 					useDefautSubMain = false;
-					$$ = new FunctionDimAST( *$2 , $4, ExprTypeASTPtr($7) );
+					$$ = new FunctionDimAST( *$2 , $4, *$7 );
 
-					$8->parent = $4;
-					$$->body = StatementASTPtr($8);
+					$$->body = CodeBlockASTPtr($9);
 				}
-				|tFUNCTION tID '(' dim_list ')' 
+				|tFUNCTION tID '(' arg_list ')' tNEWLINE
 					lines
 				tFUNCTIONEND {
 					useDefautSubMain = false;
-					$$ = new FunctionDimAST( *$2 , $4 , ExprTypeASTPtr( new NumberTypeAST()) );
+					$$ = new FunctionDimAST( *$2 , $4 , "long" ) ;
 
-					$6->parent = $4;
-					$$->body = StatementASTPtr($6);
+					$$->body = CodeBlockASTPtr($7);
 				}
 				;
 
-sub_definition: tSUB  tID  '(' dim_list ')'
+sub_definition: tSUB  tID  '(' arg_list ')'
 				lines
 			tSUBEND {
 				useDefautSubMain = false;
@@ -340,11 +363,12 @@ sub_definition: tSUB  tID  '(' dim_list ')'
 
 				$$ = new FunctionDimAST( *$2,$4); //delete $2;				
 				$6->parent = $4;
-				$$->body = StatementASTPtr($6);
+				$$->body = CodeBlockASTPtr($6);
 			}
 		  ;
 
-dim_list: dim_list ',' dim_item {
+arg_list:{ $$ = 0; }
+	|arg_list ',' dim_item {
 		$$ = $1;
 		$$->addchild($3);
 
@@ -352,15 +376,14 @@ dim_list: dim_list ',' dim_item {
 		//exit(1);
 	}
 	| dim_item {
-		$$ = new VariableDimsAST ;
+		$$ = new ArgumentDimsAST ;
 		$$->addchild($1);
 	}
-	| {$$ = 0;}
 	;
 
 dim_item: tID tAS exprtype {
 		debug("definning %s is type %p\n",$1->c_str(), $3);
-		$$ = new VariableDimAST( *$1  , ExprTypeASTPtr ( $3 ));
+		$$ = new VariableDimAST( *$1  , * $3 );
 	};
 
 
@@ -374,15 +397,13 @@ dim_item: tID tAS exprtype {
 if_clause: tIF expression tTHEN statement {
 			// 单行 if then 语句
 			$$ = new IFStmtAST( ExprASTPtr($2));
-			$$->_then = StatementASTPtr($4);
-			$4->parent = $$;
+			$$->_then = CodeBlockASTPtr(new CodeBlockAST($4));
 	}
 	|	tIF expression tTHEN seperator
  			lines
 		tENDIF {
 			$$ = new IFStmtAST( ExprASTPtr($2));
-			$$->_then = StatementASTPtr($5);
-			$5->parent = $$;
+			$$->_then = CodeBlockASTPtr($5);
 		}
 	|	tIF expression tTHEN seperator
  			lines
@@ -390,10 +411,8 @@ if_clause: tIF expression tTHEN statement {
 			lines
 		tENDIF  {
 			$$ = new IFStmtAST( ExprASTPtr($2));
-			$$->_then = StatementASTPtr($5);
-			$5->parent = $$;
-			$$->_else = StatementASTPtr($7);
-			$7->parent = $$;
+			$$->_then = CodeBlockASTPtr($5);
+			$$->_else = CodeBlockASTPtr($7);
 		}
 ;
 
@@ -404,6 +423,5 @@ if_clause: tIF expression tTHEN statement {
 while_loop: tWHILE expression seperator
 			lines
 		tENDWHILE {
-			$$ = new WhileLoopAST( ExprASTPtr($2) , StatementASTPtr($4));
-			$4->parent = $$;
+			$$ = new WhileLoopAST( ExprASTPtr($2) , $4);
 		};

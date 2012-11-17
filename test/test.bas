@@ -8,6 +8,7 @@
 
 REM  sun define here
 
+
 function  sum ( a as long , b as long) as long
 
 dim s as long

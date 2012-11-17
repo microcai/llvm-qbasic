@@ -23,7 +23,10 @@
 
 #include <string>
 #include <list>
+#include <map>
+
 #include <boost/shared_ptr.hpp>
+#include <boost/concept_check.hpp>
 #include <llvm/Value.h>
 #include <llvm/Module.h>
 #include <llvm/Type.h>
@@ -56,6 +59,18 @@ enum ReferenceType{
 	BYVALUE,	//传值
 	BYREF,	//引用，实质就是指针了. 函数的默认参数是传引用
 };
+
+class CodeBlockAST;
+
+// 逐层传递 给各个 virtual 操作, 虽然很大, 但是不传指针, 直接传值
+class ASTContext{
+public:
+	ASTContext():llvmfunc(0),codeblock(0),block(0){}
+	llvm::Function* llvmfunc; //当前的函数位置
+	CodeBlockAST*	codeblock; //当前的代码块位置, 用于符号表
+	llvm::BasicBlock* block; //当前的插入位置,
+};
+
 // allow us to use shared ptr to manage the memory
 class AST // :public boost::enable_shared_from_this<AST>
 {
@@ -69,133 +84,44 @@ private:
 	AST & operator =( const AST &  );
 };
 
-// 引用语句, 只要是包含了一个"标识符" 并在随后的语句中提供标识符的"解析操作"
-class ReferenceAST;
-typedef boost::shared_ptr<ReferenceAST> ReferenceASTPtr;
-
-class ReferenceAST : public AST
-{
-public:
-	std::string ID; //标识符
-    ReferenceAST( std::string * tID );
-};
-
-// 引用结构体成员 //TODO ? 怎么实现?
-class MemberReferenceAST : public ReferenceAST
-{
-    MemberReferenceAST(std::string* members);
-};
-
 //语句有, 声明语句和表达式语句和函数调用语句
-class StatementAST;
-typedef boost::shared_ptr<StatementAST>	StatementASTPtr;
 class StatementAST: public AST
 {
 public:
-	std::list<StatementASTPtr>	substatements;
-
-    StatementAST(){parent=NULL;}
-	StatementAST * parent; // 避免循环引用 :) , 用在查找变量声明的时候用到. 回溯法
+    StatementAST():parent(0){}
+	CodeBlockAST * parent; // 避免循环引用 :) , 用在查找变量声明的时候用到. 回溯法
 	std::string	LABEL;	// label , if there is. then we can use goto
 						// must be uniq among function bodys
-	void addchild(StatementAST* item);
-
-	virtual llvm::BasicBlock* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
+	virtual llvm::BasicBlock* Codegen(ASTContext) = 0;
 	virtual ~StatementAST(){}
 };
+typedef StatementAST* StatementASTPtr;
+
+typedef std::list<StatementASTPtr> StatementsAST;
 
 class EmptyStmtAST : public StatementAST
 {
 public:
 	EmptyStmtAST(){}
-    llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+    llvm::BasicBlock* Codegen(ASTContext);
 };
 
-#include "typeast.h"
+#include "type.hpp"
 
 //dim 就是定义一个名字,变量或者函数/过程
 class DimAST: public StatementAST
 {
 public:
-	DimAST(const std::string _name , ExprTypeASTPtr _type);
+	DimAST(const std::string _name , const std::string _typename);
 	//ExprType type; // the type of the expresion
-	ExprTypeASTPtr	type;
-	std::string		name; //定义的符号的名字
-	virtual llvm::BasicBlock* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
+	std::string		name; //定义的符号的名字.
+	std::string		type; // 定义的符号的名字. 将在 typetable 获得type的定义
+	virtual llvm::BasicBlock* Codegen(ASTContext);
     virtual ~DimAST(){}
 };
+typedef boost::shared_ptr<DimAST>	DimASTPtr;
 
-class VariableDimAST : public DimAST
-{
-public:
-	VariableDimAST(const std::string _name , ExprTypeASTPtr _type);
-	virtual llvm::BasicBlock* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
-	llvm::AllocaInst*	AllocaInstRef; //
-};
-typedef boost::shared_ptr<VariableDimAST> VariableDimASTPtr;
-
-class VariableDimsAST : public StatementAST
-{
-};
-
-typedef boost::shared_ptr<VariableDimsAST> VariableDimsASTPtr;
-
-// 表达式
-class ExprAST: public AST //
-{
-public:
-	ExprTypeASTPtr type;
-
-public:
-    ExprAST(ExprTypeASTPtr ExprType):type(ExprType){};
-
-	virtual llvm::AllocaInst*nameresolve(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto) = 0;
-	virtual llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto) = 0;
-};
-typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
-
-class ExprListAST : public AST //
-{
-public:
-	std::vector<ExprASTPtr>	expression_list;
-	
-    ExprListAST(){}
-	void Append(ExprAST* exp);
-};
-typedef boost::shared_ptr<ExprListAST> ExprListASTPtr;
-
-class EmptyExprAST : public ExprAST
-{
-public:	
-    EmptyExprAST():ExprAST(ExprTypeASTPtr(new VoidTypeAST())){}
-	llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto){return insertto;}
-
-    virtual llvm::AllocaInst* nameresolve(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto){ return NULL; }
-
-};
-
-// 引用一个ID标识符标识的变量. 
-class VariableRefExprAST:public ExprAST
-{
-public:
-	VariableDimAST	*	define; //在未来解析
-    ReferenceASTPtr		var; //指向引用的变量名字.
-
-    virtual bool canllvm();
-
-    VariableRefExprAST(ReferenceASTPtr varname ); //用构变量构筑
-
-	// helper function , resolve the name to llvm::AllocaInst
-	virtual llvm::AllocaInst*nameresolve(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto);
-
-	// get Val for this type. Not that , you simple can't use this for non simple type
-	virtual llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto);
-
-	// get pointer to the val, then the llvm::Value can be used to CreateStore
-	virtual	llvm::Value *getptr(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto);
-};
-typedef 	boost::shared_ptr<VariableRefExprAST> VariableRefExprASTPtr;
-
+/*
 //整数类型. 最简单的类型.可以直接生成  llvm-IR 代码
 class NumberExprAST : public ExprAST
 {
@@ -204,7 +130,7 @@ public:
     NumberExprAST():ExprAST(ExprTypeASTPtr(new NumberTypeAST())){};
 	NumberExprAST(VariableRefExprASTPtr);
 
-	virtual llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto);
+	virtual llvm::Value *getval(ASTContext);
 };
 typedef boost::shared_ptr<NumberExprAST> NumberExprASTPtr;
 
@@ -213,33 +139,32 @@ class ConstNumberExprAST :public NumberExprAST
 	const int64_t val;
 public:
     ConstNumberExprAST(const int64_t);
-	llvm::Value *getval(StatementAST * parent,llvm::Function *TheFunction,llvm::BasicBlock * insertto); // final , 不允许继承了.
-    virtual llvm::AllocaInst* nameresolve(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto){ return NULL;}
-};
+	llvm::Value *getval(ASTContext ctx); // final , 不允许继承了.
+    virtual llvm::AllocaInst* nameresolve(ASTContext){ return NULL;}
+};*/
 
 class AssigmentAST : public StatementAST
 {
+	AssignmentExprASTPtr	assignexpr;
 public:
-	AssigmentAST(VariableRefExprASTPtr _lvar, ExprASTPtr _rval);
-	VariableRefExprASTPtr lval;
-	ExprASTPtr	rval;
-    llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+    AssigmentAST( NamedExprAST * lval, ExprAST * rval);	
+    llvm::BasicBlock* Codegen(ASTContext);
 };
 
-// 数值计算表达式
-class CalcExprAST : public ExprAST
-{
-public:
-    CalcExprAST(ExprAST * , MathOperator  ,ExprAST * );
-	ExprASTPtr  rval,lval;
-	enum MathOperator op;
-
-    virtual llvm::Value* getval(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto);
-
-	//TODO , 为复杂的表达式类型执行混成
-    virtual llvm::AllocaInst* nameresolve(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto){ return NULL; };
-};
-
+// // 数值计算表达式
+// class CalcExprAST : public ExprAST
+// {
+// public:
+//     CalcExprAST(ExprAST * , MathOperator  ,ExprAST * );
+// 	ExprASTPtr  rval,lval;
+// 	enum MathOperator op;
+// 
+//     virtual llvm::Value* getval(ASTContext);
+// 
+// 	//TODO , 为复杂的表达式类型执行混成
+//     virtual llvm::AllocaInst* nameresolve(ASTContext){ return NULL; };
+// };
+/*
 // 函数调用, 也是个数字表达式 , 更是一个名称引用表达式!
 class CallExprAST : public VariableRefExprAST {
 
@@ -251,19 +176,19 @@ public:
 	ExprListASTPtr		callargs; // args for call
 
 	// call this to the the return value of the function. this will insert neceserry calls
-    virtual llvm::Value* getval(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto);
-    virtual llvm::AllocaInst* nameresolve(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+    virtual llvm::Value* getval(ASTContext);
+    virtual llvm::AllocaInst* nameresolve(ASTContext ctx);
 };
-typedef boost::shared_ptr<CallExprAST>	CallExprASTPtr;
+typedef boost::shared_ptr<CallExprAST>	CallExprASTPtr;*/
 
 // 对函数的调用, 实质是函数调用表达式的包装
 class CallStmtAST : public StatementAST
 {
-	CallExprASTPtr			callable;
+	CallExprASTPtr		callable;
 public:
 	CallStmtAST(CallExprAST * callexp);
 
-    virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+    virtual llvm::BasicBlock* Codegen(ASTContext);
 };
 
 // 有调用就有返回, 这个是返回语句
@@ -272,8 +197,30 @@ class ReturnAST : public StatementAST
 	ExprASTPtr			expr;
 public:
     ReturnAST(ExprAST * expr);
-    virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+    virtual llvm::BasicBlock* Codegen(ASTContext);
 };
+
+// 代码块, 主要用来隔离变量的作用域. 在 BASIC 中, 代码只有2个作用域 : 全局和本地变量
+// 代码块包含有符号表, 符号表由变量声明或者定义语句填充.
+// 执行符号查找的时候就是到这里查找符号表
+class CodeBlockAST : public StatementAST
+{
+	std::vector<StatementASTPtr>		statements;
+public:
+	CodeBlockAST*						parent; // 父作用域
+	std::map<std::string, DimASTPtr>	symbols; // 符号表, 映射到定义语句,获得定义语句
+
+    virtual llvm::BasicBlock* Codegen(ASTContext ctx);
+
+	void addchild(StatementAST* item);
+
+	void addchild(StatementsAST* items);
+	CodeBlockAST():parent(0){}
+    CodeBlockAST(StatementsAST * items);
+	CodeBlockAST(StatementAST * item);
+
+};
+typedef boost::shared_ptr<CodeBlockAST>	CodeBlockASTPtr;
 
 // IF 语句
 class IFStmtAST : public StatementAST
@@ -281,20 +228,20 @@ class IFStmtAST : public StatementAST
 public:
 	IFStmtAST(ExprASTPtr expr):_expr(expr){}
 	ExprASTPtr _expr;
-	StatementASTPtr _then;
-	StatementASTPtr _else;
-    virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+	CodeBlockASTPtr _then;
+	CodeBlockASTPtr _else;
+    virtual llvm::BasicBlock* Codegen(ASTContext);
 };
 
 // 所有循环语句的基类, while until for 三种循环
 class LoopAST : public StatementAST
 {
-	StatementASTPtr		loopbody; // 循环体
+	CodeBlockASTPtr	loopbody; // 循环体
 public:
-	LoopAST(StatementASTPtr body):loopbody(body){}
+	LoopAST(CodeBlockAST* body):loopbody(body){}
 	// 生成循环体
-    llvm::BasicBlock*	bodygen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
-    virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto) = 0;
+    llvm::BasicBlock*	bodygen(ASTContext);
+    virtual llvm::BasicBlock* Codegen(ASTContext) = 0;
 };
 
 // while 语句
@@ -303,31 +250,52 @@ class WhileLoopAST : public LoopAST
 	//循环条件
 	ExprASTPtr	condition;
 public:
-	WhileLoopAST(ExprASTPtr _condition , StatementASTPtr body);
+	WhileLoopAST(ExprASTPtr _condition , CodeBlockAST* body);
 
-    virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+    virtual llvm::BasicBlock* Codegen(ASTContext);
 };
 
-//函数 AST , 有 body 没 body 来区别是不是定义或者声明
+class VariableDimAST : public DimAST
+{
+public:
+	VariableDimAST(const std::string _name ,  const std::string	_type);
+	virtual llvm::BasicBlock* Codegen(ASTContext);
+};
+typedef boost::shared_ptr<VariableDimAST> VariableDimASTPtr;
+
+//变量定义也是一个父 codeblock , 这个 codeblock 将成为函数体 codeblock 的父节点.
+//但是和函数体积本身不处在同一个节点,故而在函数内部定义的同名变量将导致参数无法访问,吼吼
+class ArgumentDimsAST : public CodeBlockAST
+{
+public:
+	std::vector<VariableDimAST>	dims;
+    ArgumentDimsAST(){
+	}
+};
+typedef boost::shared_ptr<ArgumentDimsAST> ArgumentDimsASTPtr;
+
+//函数 AST , 有 body 没 body 来区别是不是定义或者声明 .
+//函数即是声明又是代码块, 故而这里使用了双重继承
+// NOTE : 小心使用双重继承
 class FunctionDimAST: public DimAST
 {
 public:
 	Linkage		linkage; //链接类型。static? extern ?
 	std::list<VariableDimASTPtr> args_type; //checked by CallExpr
 
-	VariableDimsASTPtr	callargs;
+	ArgumentDimsASTPtr	callargs; // 加到 body 这个 codeblock 符号表,这样 body 能访问到
 
-	StatementASTPtr	body; //函数体
+	CodeBlockASTPtr	body; //函数体
 	
-    FunctionDimAST(const std::string _name, VariableDimsAST * callargs = NULL, ExprTypeASTPtr _type = ExprTypeASTPtr(new VoidTypeAST) );
+    FunctionDimAST(const std::string _name, ArgumentDimsAST * callargs = NULL, const std::string _type = "");
 	//如果是声明, 为 dim 生成 llvm::Function * 声明供使用
-    virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+    virtual llvm::BasicBlock* Codegen(ASTContext);
 };
 
 class DefaultMainFunctionAST : public FunctionDimAST
 {
 public:
-	DefaultMainFunctionAST(StatementAST * body);
+	DefaultMainFunctionAST(CodeBlockAST * body);
 };
 
 typedef std::list<ExprASTPtr>	FunctionParameterListAST;
@@ -341,7 +309,7 @@ class PrintIntroAST : public NumberExprAST
 {
 public:
 	PrintIntroAST();
-    llvm::BasicBlock* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
+    llvm::BasicBlock* Codegen(ASTContext);
 };
 typedef boost::shared_ptr<PrintIntroAST> PrintIntroASTPtr;
 
@@ -351,7 +319,7 @@ public:
 	PrintIntroASTPtr	print_intro;
 	ExprListASTPtr		callargs;
 	PrintStmtAST(PrintIntroAST *,ExprListAST * );
-    virtual llvm::BasicBlock* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
+    virtual llvm::BasicBlock* Codegen(ASTContext);
 };
 
 #endif // __AST_H__

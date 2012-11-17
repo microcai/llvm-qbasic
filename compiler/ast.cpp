@@ -35,6 +35,7 @@
 
 #include "llvmwrapper.hpp"
 #include "ast.hpp"
+#include "type.hpp"
 
 #define debug	std::printf
 
@@ -49,83 +50,45 @@ AST::~AST()
 {
 }
 
-void StatementAST::addchild(StatementAST* item) {
-    if(item) {
-        this->substatements.push_back(StatementASTPtr(item));
-        item->parent = this;
-    }
-}
-
-
 PrintStmtAST::PrintStmtAST(PrintIntroAST * intro,ExprListAST* args)
 	:callargs(args),print_intro(intro)
 {
 }
 
-PrintIntroAST::PrintIntroAST() {}
-
-ConstNumberExprAST::ConstNumberExprAST(const int64_t v)
-	:val(v)
+PrintIntroAST::PrintIntroAST()
+	:NumberExprAST(0)
 {
+
+	
 }
 
-DimAST::DimAST(const std::string _name, ExprTypeASTPtr _type)
+
+DimAST::DimAST(const std::string _name, const std::string _type)
 	:name(_name),type(_type)
 {
 
 }
 
-VariableDimAST::VariableDimAST(const std::string _name, ExprTypeASTPtr _type)
+VariableDimAST::VariableDimAST(const std::string _name, const std::string _type)
 	:DimAST(_name,_type)
 {
 }
 
-VariableRefExprAST::VariableRefExprAST(ReferenceASTPtr varname)
-	:ExprAST(ExprTypeASTPtr(new UnknowTypeAST(varname))),var(varname)
-{
-
-}
-
-AssigmentAST::AssigmentAST(VariableRefExprASTPtr _lval, ExprASTPtr _rval)
-	:lval(_lval),rval(_rval)
-{
-	
-}
-
-NumberExprAST::NumberExprAST(VariableRefExprASTPtr _var_num)
-	:var_num(_var_num),ExprAST(ExprTypeASTPtr(new NumberTypeAST()))
-{
-	debug("numver expresion is a local var reference code %p\n",var_num.get());
-	// the varable is a type of number, right ?	
-}
-
-// TODO FIXME 调用的时候解析 Expr 类型
-bool VariableRefExprAST::canllvm()
-{
-	return true;
-}
-
-CalcExprAST::CalcExprAST(ExprAST * lhs, MathOperator OP, ExprAST* rhs)
-	:rval(rhs),lval(lhs),op(OP),ExprAST(ExprTypeASTPtr(new UnknowTypeAST()))
-{
-	
-}
-
-FunctionDimAST::FunctionDimAST(const std::string _name,VariableDimsAST*	_callargs,ExprTypeASTPtr _type)
+FunctionDimAST::FunctionDimAST(const std::string _name,ArgumentDimsAST*	_callargs, const std::string _type)
 	:DimAST(_name,_type),callargs(_callargs)
 {
 	
 }
 
 
-DefaultMainFunctionAST::DefaultMainFunctionAST(StatementAST * body)
-	:FunctionDimAST("main",0,ExprTypeASTPtr( new VoidTypeAST())  )
+DefaultMainFunctionAST::DefaultMainFunctionAST(CodeBlockAST * body)
+	:FunctionDimAST("main",0,"" )
 {
-	this->body = StatementASTPtr(body);
+	this->body = CodeBlockASTPtr(body);
 }
 
 
-WhileLoopAST::WhileLoopAST(ExprASTPtr _condition , StatementASTPtr body)
+WhileLoopAST::WhileLoopAST(ExprASTPtr _condition , CodeBlockAST* body)
 	:condition(_condition),LoopAST(body)
 {
 }
@@ -140,12 +103,6 @@ void ExprListAST::Append(ExprAST* exp)
     expression_list.push_back( ExprASTPtr(exp));
 }
 
-CallExprAST::CallExprAST(ReferenceAST * target,ExprListAST* args)
-	:VariableRefExprAST( ReferenceASTPtr(target)),callargs(args)
-{
-	
-}
-
 CallStmtAST::CallStmtAST(CallExprAST* callexp)
 	:callable(callexp)
 {
@@ -156,6 +113,43 @@ ReturnAST::ReturnAST(ExprAST* _expr)
 	:expr(_expr)
 {
 	
+}
+
+void CodeBlockAST::addchild(StatementAST* item)
+{
+    if(item) {
+		debug("here === addchild1\n");
+        this->statements.push_back(StatementASTPtr(item));
+        item->parent = this;
+    }
+}
+void CodeBlockAST::addchild(StatementsAST* items)
+{
+	std::list< StatementASTPtr >::iterator it = items->begin();
+	for(;it != items->end() ; it ++)
+	{
+		debug("here === addchild2 -- beg\n");
+		(*it)->parent = this;
+//		item->parent = this;
+		debug("here === addchild2\n");
+        this->statements.push_back(*it);
+	}
+}
+
+CodeBlockAST::CodeBlockAST(StatementsAST* items)
+	:parent(0)
+{
+    addchild(items);
+}
+CodeBlockAST::CodeBlockAST(StatementAST* item)
+	:parent(0)
+{
+    addchild(item);
+}
+
+AssigmentAST::AssigmentAST(NamedExprAST* lval, ExprAST* rval)
+	:assignexpr(new AssignmentExprAST(lval,rval))
+{
 }
 
 
