@@ -39,8 +39,6 @@
 
 #define debug	std::printf
 
-llvm::Module * AST::module ;
-
 
 AST::AST()
 {

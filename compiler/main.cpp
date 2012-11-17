@@ -35,14 +35,15 @@ static std::list<std::string> argv_getinputfiles(int argc, char **argv)
 }
 
 // generate llvm IR
-static void generateIR(StatementAST * ast)
+static void generateIR(StatementAST * ast , llvm::Module * module )
 {	//开始生成代码
 	ASTContext ctx;
+	ctx.module = module;
 	//ctx.astfunc = ;
 	((StatementAST*)(ast))->Codegen(ctx);
 }
 
-static int generateobj(boost::shared_ptr<llvm::tool_output_file> Out)
+static int generateobj(boost::shared_ptr<llvm::tool_output_file> Out , llvm::Module * module)
 {
 	llvm::PassManager PM;
 
@@ -50,7 +51,7 @@ static int generateobj(boost::shared_ptr<llvm::tool_output_file> Out)
   
 	std::string Err;
 
-	llvm::Triple TheTriple(AST::module->getTargetTriple());
+	llvm::Triple TheTriple(module->getTargetTriple());
 	if (TheTriple.getTriple().empty())
 		TheTriple.setTriple(llvm::sys::getDefaultTargetTriple());
 	
@@ -70,7 +71,7 @@ static int generateobj(boost::shared_ptr<llvm::tool_output_file> Out)
       std::cerr << " target does not support generation of this"     << " file type!\n";
       return 1;
     }
-	PM.run(*AST::module);
+	PM.run(*module);
 	return 0;
 }
 
@@ -131,16 +132,13 @@ int main(int argc, char **argv)
 		outfilename = (fs::path(input).parent_path() / fs::basename(fs::path(input))).string();
 	}
 
-	AST::module = new llvm::Module( outfilename.c_str(), llvm::getGlobalContext());
+	llvm::Module *module = new llvm::Module( outfilename.c_str(), llvm::getGlobalContext());
 
-	generateIR(program);
+	generateIR(program,module);
 
 	// ir 参数表示生成 llvm IR
 	if(vm.count("ir")){
-	//	printf("openning %s\n", outfilename.c_str());
-	//	int irfd = open((outfilename + ".llvm").c_str(),O_WRONLY,0666);
-	//	dup2(irfd,2);
-		AST::module->dump();
+		module->dump();
 		return 0;
 	}
 	
@@ -154,7 +152,7 @@ int main(int argc, char **argv)
 	boost::shared_ptr<llvm::tool_output_file> Out( new
 		llvm::tool_output_file(outname.c_str(), Err, llvm::raw_fd_ostream::F_Binary) );
 
-	if(generateobj(Out)==0){
+	if(generateobj(Out,module)==0){
 		printf("======== object file writed to %s ===========\n", outname.c_str());
 	}	
 	

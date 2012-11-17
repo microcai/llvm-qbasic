@@ -78,8 +78,6 @@ class AST // :public boost::enable_shared_from_this<AST>
 public:
 	AST();
 	virtual ~AST();
-	static llvm::Module * module;
-	//static llvm: * module;
 private:
 	AST( const AST &  );
 	AST & operator =( const AST &  );
@@ -117,7 +115,10 @@ public:
 	//ExprType type; // the type of the expresion
 	std::string		name; //定义的符号的名字.
 	std::string		type; // 定义的符号的名字. 将在 typetable 获得type的定义
-	virtual llvm::BasicBlock* Codegen(ASTContext);
+	virtual llvm::BasicBlock* Codegen(ASTContext) = 0; // generate alloca
+
+	virtual	llvm::Value*	getptr() = 0 ; // the location for the allocated value
+	
     virtual ~DimAST(){}
 };
 typedef boost::shared_ptr<DimAST>	DimASTPtr;
@@ -209,7 +210,7 @@ class CodeBlockAST : public StatementAST
 	std::vector<StatementASTPtr>		statements;
 public:
 	CodeBlockAST*						parent; // 父作用域
-	std::map<std::string, DimASTPtr>	symbols; // 符号表, 映射到定义语句,获得定义语句
+	std::map<std::string, DimAST*>		symbols; // 符号表, 映射到定义语句,获得定义语句
 
     virtual llvm::BasicBlock* Codegen(ASTContext ctx);
 
@@ -258,9 +259,11 @@ public:
 
 class VariableDimAST : public DimAST
 {
+	llvm::Value * alloca_var;
 public:
 	VariableDimAST(const std::string _name ,  const std::string	_type);
 	virtual llvm::BasicBlock* Codegen(ASTContext);
+    virtual llvm::Value* getptr();
 };
 typedef boost::shared_ptr<VariableDimAST> VariableDimASTPtr;
 
@@ -280,6 +283,8 @@ typedef boost::shared_ptr<ArgumentDimsAST> ArgumentDimsASTPtr;
 // NOTE : 小心使用双重继承
 class FunctionDimAST: public DimAST
 {
+private:
+	llvm::Function	*		target;
 public:
 	Linkage		linkage; //链接类型。static? extern ?
 	std::list<VariableDimASTPtr> args_type; //checked by CallExpr
@@ -291,6 +296,7 @@ public:
     FunctionDimAST(const std::string _name, ArgumentDimsAST * callargs = NULL, const std::string _type = "");
 	//如果是声明, 为 dim 生成 llvm::Function * 声明供使用
     virtual llvm::BasicBlock* Codegen(ASTContext);
+    llvm::Value* getptr();
 };
 
 class DefaultMainFunctionAST : public FunctionDimAST

@@ -60,27 +60,139 @@ ExprTypeAST* NumberExprAST::type(ASTContext)
     return &numbertype;
 }
 
-llvm::Value* NumberExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
+
+llvm::Type* NumberExprTypeAST::llvm_type(ASTContext ctx)
 {
-	//TODO , 在堆栈上分配个变量
+	switch(sizeof(long)){
+		case 8:
+			return llvm::Type::getInt64Ty(llvm::getGlobalContext());
+		case 4:
+			return llvm::Type::getInt32Ty(llvm::getGlobalContext());
+	}
+	return llvm::Type::getInt32Ty(llvm::getGlobalContext());
 }
 
+llvm::Value* NumberExprAST::getval(ASTContext ctx)
+{
+	return qbc::getconstlong(	this->v);
+}
+
+llvm::Value* VariableExprAST::getval(ASTContext ctx)
+{
+ 	llvm::IRBuilder<> builder(ctx.block);
+
+	return builder.CreateLoad(getptr(ctx),std::string("load local var ")+this->ID->ID);
+}
+// 获得变量的分配
+llvm::Value* VariableExprAST::getptr(ASTContext ctx)
+{
+	// 首先查找变量的分配 FIXME 将来要支持结构体成员
+	
+	std::string varname =  this->ID->ID;
+	
+	debug("searching for var %s\n",varname.c_str());
+
+	if(! ctx.codeblock ){
+		debug("var %s not defined\n",varname.c_str());
+		exit(1);
+		return NULL;
+	}
+	
+	std::map< std::string, DimAST* >::iterator dimast_iter = ctx.codeblock->symbols.find(varname);
+
+	// 定义找到
+	if(dimast_iter != ctx.codeblock->symbols.end()){
+
+		debug("searching for var %s have result %p\n",varname.c_str(),dimast_iter->second);
+		
+		return dimast_iter->second->getptr();
+	}
+	ctx.codeblock = ctx.codeblock->parent;
+	return getptr(ctx);	
+}
+
+ExprTypeAST* AssignmentExprAST::type(ASTContext ctx)
+{
+	//TODO, result the type
+	return lval->type(ctx);
+}
+
+llvm::Value* AssignmentExprAST::getval(ASTContext ctx)
+{
+
+	llvm::Value * LHS =	this->lval->getptr(ctx);	
+	llvm::Value * RHS =	this->rval->getval(ctx);
+
+// 	//FIXME 为复杂类型执行高层调用
+ 	llvm::IRBuilder<> builder(ctx.block);
+ 	// 生成赋值语句,因为是简单的整型赋值,所以可以直接生成而不用调用 operator==()
+  	builder.CreateStore(RHS,LHS);
+		debug("get ptr of this\n");
+	return RHS;
+}
+
+llvm::Value* NumberExprTypeAST::Alloca(ASTContext ctx, const std::string _name,const std::string _typename)
+{
+	debug("allocation for value %s type %s\n",_name.c_str(),_typename.c_str());
+	//TODO , 在堆栈上分配个变量
+
+	llvm::IRBuilder<> builder(&ctx.llvmfunc->getEntryBlock(),
+							  ctx.llvmfunc->getEntryBlock().begin());
+	builder.SetInsertPoint(ctx.block);
+
+	return builder.CreateAlloca(this->llvm_type(ctx),0,_name);
+}
+
+llvm::Value* CalcExprAST::getval(ASTContext ctx)
+{
+	BOOST_ASSERT(ctx.llvmfunc);
+	//TODO, 生成计算表达式 !
+	llvm::Value * LHS =	this->lval->getval(ctx);
+	llvm::Value * RHS =	this->rval->getval(ctx);
+
+	llvm::IRBuilder<> builder(ctx.llvmfunc->getContext());
+	builder.SetInsertPoint(ctx.block);
+
+	switch(this->op){
+		case OPERATOR_ADD:
+			return builder.CreateAdd(LHS,RHS);
+		case OPERATOR_SUB:
+			return builder.CreateSub(LHS,RHS);
+		case OPERATOR_MUL:
+			return builder.CreateMul(LHS,RHS);
+		case OPERATOR_DIV:
+			return builder.CreateSDiv(LHS,RHS);
+		case OPERATOR_LESS:
+			return builder.CreateICmpSLT(LHS,RHS);
+		case OPERATOR_LESSEQU:
+			return builder.CreateICmpSLE(LHS,RHS);
+		case OPERATOR_GREATER:
+			return builder.CreateICmpSGT(LHS,RHS);
+		case OPERATOR_GREATEREQUL:
+			return builder.CreateICmpSGE(LHS,RHS);
+		default:
+			debug("operator not supported yet\n");
+			exit(1);
+	}
+	return ctx.block;
+}
+
+///////////////////////////////////////////////////////////////////
+//////////////////// 构造函数们 ////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 NamedExprAST::NamedExprAST(ReferenceAST* _ID)
 	:ID(_ID)
 {
-
 }
 
 VariableExprAST::VariableExprAST(ReferenceAST* ID)
 	:NamedExprAST(ID)
 {
-
 }
 
 AssignmentExprAST::AssignmentExprAST(NamedExprAST* l, ExprAST*r)
 	:lval(l),rval(r)
 {
-
 }
 
 CallOrArrayExprAST::CallOrArrayExprAST(ReferenceAST* _ID)
@@ -91,11 +203,16 @@ CallOrArrayExprAST::CallOrArrayExprAST(ReferenceAST* _ID)
 CallExprAST::CallExprAST(ReferenceAST* ID, ExprListAST* exp_list)
 	:CallOrArrayExprAST(ID)
 {
-
 }
 
-llvm::Type* NumberExprTypeAST::llvm_type(ASTContext ctx)
+llvm::Value* CallExprAST::getval(ASTContext)
 {
-	return llvm::Type::getInt64Ty(ctx.module->getContext());
+    debug("sigfault herekkk?\n");
+    exit(1);
 }
 
+CalcExprAST::CalcExprAST(ExprAST* l, MathOperator _op, ExprAST* r)
+	:lval(l),rval(r),op(_op)
+{
+	
+}

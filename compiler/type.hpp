@@ -135,15 +135,14 @@ public:
 public:
     virtual ExprTypeAST* type(ASTContext );
 
-    virtual llvm::Value* getval(ASTContext ){};
-
-	
+    virtual llvm::Value* getval(ASTContext );	
 };
 // 命名表达式. 命名的表达式是 Function Call , 数组, 变量 的基类
-class NamedExprAST : public ExprAST {
+class NamedExprAST : public ExprAST
+{
+public:
 	ReferenceASTPtr			ID;	// 符号. 指向的是符号哦~ 通过符号表进行正确的类型判定
 
-public:
 	//以 ReferenceName 构造
 	NamedExprAST(ReferenceAST * _ID);
 	// 调用获得 ID 的类型系统. 通过查找当前 block 和父 block 进行 name -> type 的转换
@@ -161,9 +160,9 @@ class VariableExprAST : public NamedExprAST
 public:
     VariableExprAST(ReferenceAST* ID);
 	
-	virtual llvm::Value* getval(ASTContext ){};
+	virtual llvm::Value* getval(ASTContext );;
 	
-    virtual llvm::Value* getptr(ASTContext ){};
+    virtual llvm::Value* getptr(ASTContext );
 	
 	// 调用获得 ID 的类型系统
 	virtual ExprTypeAST* type(ASTContext ){
@@ -173,11 +172,12 @@ public:
 
 // 数学运算表达式.
 class CalcExprAST : public ExprAST{
-
+	MathOperator	op;
+	ExprASTPtr		lval,rval;
 public: // 以两个子表达式构建
-	CalcExprAST(ExprAST * , MathOperator op , ExprAST * ){}
+	CalcExprAST(ExprAST * , MathOperator op , ExprAST * );
 	virtual ExprTypeAST* type(ASTContext){};
-    virtual llvm::Value* getval(ASTContext){};
+    virtual llvm::Value* getval(ASTContext);;
 };
 
 // 赋值表达式. 注意, 在 QB 中没有赋值表达式
@@ -190,8 +190,8 @@ public:
 	// 赋值表达式必须使用一个命名的类型为左值
 	AssignmentExprAST(NamedExprAST* , ExprAST *);
 	
-    virtual ExprTypeAST* type(ASTContext){};
-    virtual llvm::Value* getval(ASTContext){};
+    virtual ExprTypeAST* type(ASTContext);
+    virtual llvm::Value* getval(ASTContext);
 };
 
 typedef boost::shared_ptr<AssignmentExprAST> AssignmentExprASTPtr;
@@ -222,7 +222,7 @@ public:
 	virtual ExprTypeAST*	type(ASTContext){};
 
     virtual llvm::Value* getptr(ASTContext) { return 0;}; // cann't get the address
-    virtual llvm::Value* getval(ASTContext){};
+    virtual llvm::Value* getval(ASTContext);
 };
 
 typedef boost::shared_ptr<CallExprAST>	CallExprASTPtr;
@@ -238,7 +238,7 @@ public:
 	virtual llvm::Type	* llvm_type(ASTContext ctx) = 0;
 
 	// 为该类型在栈上分配一块内存, 返回分配的指针 , 有可能的话,起个名字
-	virtual llvm::Value * Alloca(ASTContext ctx, const std::string _name) = 0;
+	virtual llvm::Value * Alloca(ASTContext ctx, const std::string _name,const std::string _typename) = 0;
 	
 	virtual	size_t size(){return _size;};
 		
@@ -253,7 +253,7 @@ class NumberExprTypeAST :public ExprTypeAST {
 
     virtual llvm::Type* llvm_type(ASTContext ctx);
 	
-	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
+	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name,const std::string _typename);
 
 	// 数学运算
 	virtual	llvm::Value* operator_math(ASTContext ctx,MathOperator op,ExprAST * LHS, ExprAST * RHS){}

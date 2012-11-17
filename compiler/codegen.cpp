@@ -39,41 +39,8 @@
 #include "type.hpp"
 
 #define debug	std::printf
-/*
-llvm::Value* CalcExprAST::getval(ASTContext ctx)
-{
-	BOOST_ASSERT(ctx.llvmfunc);
-	//TODO, 生成计算表达式 !
-	llvm::Value * LHS =	this->lval->getval(ctx);
-	llvm::Value * RHS =	this->rval->getval(ctx);
 
-	llvm::IRBuilder<> builder(ctx.llvmfunc->getContext());
-	builder.SetInsertPoint(ctx.block);
 
-	switch(this->op){
-		case OPERATOR_ADD:
-			return builder.CreateAdd(LHS,RHS);
-		case OPERATOR_SUB:
-			return builder.CreateSub(LHS,RHS);
-		case OPERATOR_MUL:
-			return builder.CreateMul(LHS,RHS);
-		case OPERATOR_DIV:
-			return builder.CreateSDiv(LHS,RHS);
-		case OPERATOR_LESS:
-			return builder.CreateICmpSLT(LHS,RHS);
-		case OPERATOR_LESSEQU:
-			return builder.CreateICmpSLE(LHS,RHS);
-		case OPERATOR_GREATER:
-			return builder.CreateICmpSGT(LHS,RHS);
-		case OPERATOR_GREATEREQUL:
-			return builder.CreateICmpSGE(LHS,RHS);
-		default:
-			debug("operator not supported yet\n");
-			exit(1);
-	}
-
-	return ctx.block;
-}*/
 #if 0
 llvm::AllocaInst* VariableRefExprAST::nameresolve(ASTContext ctx)
 {
@@ -203,13 +170,6 @@ llvm::Value* CallExprAST::getval(ASTContext ctx)
 }
 #endif
 
-llvm::BasicBlock* DimAST::Codegen(ASTContext ctx)
-{
-    debug("%s should not be called\n",__func__);
-    exit(1);
-	return ctx.block;
-}
-
 llvm::BasicBlock* EmptyStmtAST::Codegen(ASTContext ctx)
 {
     debug("empty statement called !\n");
@@ -267,11 +227,11 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 	}
 
 	llvm::Constant *brt_print =
-			module->getOrInsertFunction("brt_print",
+			ctx.module->getOrInsertFunction("brt_print",
 										llvm::FunctionType::get(builder.getInt32Ty(), brt_printArgs,
 		/*必须为true, 这样才能接受可变参数*/true));
 
-	llvm::Constant *printf_func = module->getOrInsertFunction("printf",
+	llvm::Constant *printf_func = ctx.module->getOrInsertFunction("printf",
 										llvm::FunctionType::get(builder.getInt32Ty(), printfArgs,
 		/*必须为true, 这样才能接受可变参数*/true));
 
@@ -331,17 +291,30 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 llvm::BasicBlock* VariableDimAST::Codegen(ASTContext ctx)
 {
 	BOOST_ASSERT(ctx.llvmfunc);
-	llvm::IRBuilder<> builder(&ctx.llvmfunc->getEntryBlock(),
-							  ctx.llvmfunc->getEntryBlock().begin());
-	builder.SetInsertPoint(ctx.block);
 
 	//map type name to type
 	ExprTypeAST * exptype = TypeNameResolve(ctx,this->type);
 	
 	debug("allocate stack for var %s , type %s\n", name.c_str(), type.c_str());
 
-	exptype->Alloca(ctx,this->name);
+	alloca_var = exptype->Alloca(ctx,this->name,this->type);
+
+	// register with symbolic table
+	ctx.codeblock->symbols.insert(std::make_pair(this->name,this));
+	
 	return ctx.block;
+}
+
+// 获得分配的类型
+llvm::Value* VariableDimAST::getptr()
+{
+	debug("get ptr of this %p\n", alloca_var);
+	return alloca_var;
+}
+
+llvm::Value* FunctionDimAST::getptr()
+{
+	return this->target;
 }
 
 // 赋值语句, NOTE 直接调用赋值表达式
@@ -351,17 +324,8 @@ llvm::BasicBlock* AssigmentAST::Codegen(ASTContext ctx)
  	debug("called for number assigment\n");
 
 	assignexpr->getval(ctx);
-	
-// 	llvm::Value * LHS =	this->lval->getptr(ctx);
-// 	llvm::Value * RHS =	this->rval->getval(ctx);
-// 
-// 	llvm::IRBuilder<> builder(ctx.block);
-// 	// 生成赋值语句,因为是简单的整型赋值,所以可以直接生成而不用调用 operator==()
-//  	builder.CreateStore(RHS,LHS);
  	return ctx.block;
 }
-
-
 
 llvm::BasicBlock* ReturnAST::Codegen(ASTContext ctx)
 {
@@ -512,14 +476,13 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 	llvm::FunctionType *funcType =
 		llvm::FunctionType::get(exprtype ? exprtype->llvm_type(ctx) : builder.getVoidTy(),args,true);
 
-	llvm::Function *mainFunc =
-		llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, this->name , AST::module);
-	llvm::BasicBlock *entry = llvm::BasicBlock::Create(builder.getContext(), "entrypoint", mainFunc);
+	target = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, this->name , ctx.module);
+	llvm::BasicBlock *entry = llvm::BasicBlock::Create(builder.getContext(), "entrypoint", target);
 	builder.SetInsertPoint(entry);
 	//开始生成代码
 
 	// 为参数设定 name
-	llvm::Function::arg_iterator llvmarg_it = mainFunc->arg_begin();
+	llvm::Function::arg_iterator llvmarg_it = target->arg_begin();
 
 	if( callargs){
 		std::vector< VariableDimASTPtr >::iterator argit = callargs->dims.begin();
@@ -536,7 +499,7 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 	else
 		newctx.codeblock = this->callargs.get();
 
-	newctx.llvmfunc = mainFunc;
+	newctx.llvmfunc = target;
 	newctx.block = entry;
 	//now code up the function body
 	builder.SetInsertPoint(body->Codegen(newctx));
