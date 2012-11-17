@@ -68,7 +68,8 @@ public:
 	ASTContext():llvmfunc(0),codeblock(0),block(0){}
 	llvm::Function* llvmfunc; //当前的函数位置
 	CodeBlockAST*	codeblock; //当前的代码块位置, 用于符号表
-	llvm::BasicBlock* block; //当前的插入位置,
+	llvm::BasicBlock* block; //当前的插入位置
+	llvm::Module	* module;
 };
 
 // allow us to use shared ptr to manage the memory
@@ -268,7 +269,7 @@ typedef boost::shared_ptr<VariableDimAST> VariableDimASTPtr;
 class ArgumentDimsAST : public CodeBlockAST
 {
 public:
-	std::vector<VariableDimAST>	dims;
+	std::vector<VariableDimASTPtr>	dims;
     ArgumentDimsAST(){
 	}
 };

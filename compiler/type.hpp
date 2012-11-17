@@ -235,6 +235,8 @@ class ExprTypeAST : public AST
 	// 对大部分的表达式来说, 如果无法获得地址, 在屏幕上打印无法对某类型取地址. 然后退出或者返回 NULL
 public:
 
+	virtual llvm::Type	* llvm_type(ASTContext ctx) = 0;
+
 	// 为该类型在栈上分配一块内存, 返回分配的指针 , 有可能的话,起个名字
 	virtual llvm::Value * Alloca(ASTContext ctx, const std::string _name) = 0;
 	
@@ -249,6 +251,8 @@ public:
 //	整型,支持数学运算
 class NumberExprTypeAST :public ExprTypeAST {
 
+    virtual llvm::Type* llvm_type(ASTContext ctx);
+	
 	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
 
 	// 数学运算

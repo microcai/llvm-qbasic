@@ -359,68 +359,7 @@ llvm::BasicBlock* AssigmentAST::Codegen(ASTContext ctx)
 // 	return ctx.block;
 }
 
-// 生成函数 , TODO 参数和反正值支持
-llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
-{
-	BOOST_ASSERT(!ctx.llvmfunc);
-	BOOST_ASSERT(!ctx.block);
 
-	debug("generating function %s and its body now\n", this->name.c_str());
-
-	//首先生成全局可用的外部辅助函数
-	llvm::IRBuilder<> builder(llvm::getGlobalContext());
-
-	// 参数生成 args
-	//为 ARG 生成代码!
-	std::vector<llvm::Type*>	args;
-
-#if 0
-	//TODO need re-work
-
-	if(callargs){
-		BOOST_FOREACH( StatementASTPtr stmt , callargs->substatements)
-		{
-			VariableDimAST * dim = dynamic_cast<VariableDimAST*>(stmt.get());
-			args.push_back(dim->type->llvmtype());
-		}		
-	}
-
-	//函数返回类型
-	llvm::FunctionType *funcType =
-		llvm::FunctionType::get(
-			this->type->llvmtype()  ? this->type->llvmtype() : builder.getVoidTy(),
-							args, true
-	);
-
-	llvm::Function *mainFunc =
-		llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, this->name , AST::module);
-	llvm::BasicBlock *entry = llvm::BasicBlock::Create(builder.getContext(), "entrypoint", mainFunc);
-	builder.SetInsertPoint(entry);
-	//开始生成代码
-
-	// 为参数设定 name
-	llvm::Function::arg_iterator llvmarg_it = mainFunc->arg_begin();
-#if 0
-	if( callargs){
-		std::list< StatementASTPtr >::iterator argit = callargs->substatements.begin();
-
-		for(; argit != callargs->substatements.end() ; argit++ , llvmarg_it++	){
-			VariableDimAST * argdim = dynamic_cast<VariableDimAST*>(argit->get());
-			llvmarg_it->setName(argdim->name);
-		}		
-	}
-#endif
-
-	ASTContext newctx;
-	newctx.codeblock = this->body.get();
-	newctx.llvmfunc = mainFunc;
-	newctx.block = entry;
-	//now code up the function body
-	builder.SetInsertPoint(body->Codegen(newctx));
-	builder.CreateRetVoid();
-#endif
-	return ctx.block;
-}
 
 llvm::BasicBlock* ReturnAST::Codegen(ASTContext ctx)
 {
@@ -483,7 +422,8 @@ llvm::BasicBlock* IFStmtAST::Codegen(ASTContext ctx)
 
 llvm::BasicBlock* LoopAST::bodygen(ASTContext ctx)
 {
-	loopbody->parent = this->parent;
+	loopbody->parent = ctx.codeblock;
+	ctx.codeblock = loopbody.get();	
     return loopbody->Codegen(ctx);
 }
 
@@ -492,11 +432,14 @@ llvm::BasicBlock* WhileLoopAST::Codegen(ASTContext ctx)
 	BOOST_ASSERT(ctx.llvmfunc);
 	debug("generation code for while statement\n");
 
-	llvm::BasicBlock* cond_while = llvm::BasicBlock::Create(ctx.llvmfunc->getContext(), "", ctx.llvmfunc);
+	llvm::BasicBlock* cond_while =
+		llvm::BasicBlock::Create(ctx.llvmfunc->getContext(), "while", ctx.llvmfunc);
 
-	llvm::BasicBlock* while_body = llvm::BasicBlock::Create(ctx.llvmfunc->getContext(), "", ctx.llvmfunc);
+	llvm::BasicBlock* while_body =
+		llvm::BasicBlock::Create(ctx.llvmfunc->getContext(), "whileloop", ctx.llvmfunc);
 
-	llvm::BasicBlock* cond_continue = llvm::BasicBlock::Create(ctx.llvmfunc->getContext(), "", ctx.llvmfunc);
+	llvm::BasicBlock* cond_continue =
+		llvm::BasicBlock::Create(ctx.llvmfunc->getContext(), "whileend", ctx.llvmfunc);
 
 	llvm::IRBuilder<> builder(ctx.llvmfunc->getContext());
 	builder.SetInsertPoint(ctx.block);
@@ -507,8 +450,7 @@ llvm::BasicBlock* WhileLoopAST::Codegen(ASTContext ctx)
 	expcond = builder.CreateICmpEQ(expcond, qbc::getconstlong(0), "tmp");
 	builder.CreateCondBr(expcond, cond_continue, while_body);
 
-	ASTContext newtex = ctx;
-	newtex.block = while_body;
+	ctx.block = while_body;
 	this->bodygen(ctx);
 	builder.SetInsertPoint(while_body);
 	builder.CreateBr(cond_while);
@@ -524,6 +466,8 @@ llvm::BasicBlock* CodeBlockAST::Codegen(ASTContext ctx)
 		debug("statements called with good ctx.llvmfunc\n");
 	}
 
+	ctx.codeblock = this;
+
 	BOOST_FOREACH( StatementASTPtr stmt , this->statements)
 	{
 		if(stmt)
@@ -531,5 +475,70 @@ llvm::BasicBlock* CodeBlockAST::Codegen(ASTContext ctx)
 		else
 			debug("strange, stmt is null\n");
 	}
+	return ctx.block;
+}
+
+// 生成函数 参数和反回值支持
+llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
+{
+	BOOST_ASSERT(!ctx.llvmfunc);
+	BOOST_ASSERT(!ctx.block);
+
+	debug("generating function %s and its body now\n", this->name.c_str());
+
+	//首先生成全局可用的外部辅助函数
+	llvm::IRBuilder<> builder(llvm::getGlobalContext());
+
+	// 参数生成 args
+	//为 ARG 生成代码!
+	std::vector<llvm::Type*>	args;
+
+	//TODO need re-work
+
+	if(callargs){
+		BOOST_FOREACH( VariableDimASTPtr stmt , callargs->dims)
+		{
+			VariableDimAST * dim = stmt.get();
+			ExprTypeAST * exprtype = TypeNameResolve(ctx,dim->type);
+
+			args.push_back(exprtype->llvm_type(ctx));
+		}
+	}
+
+	ExprTypeAST * exprtype = TypeNameResolve(ctx,this->type);
+	//函数返回类型
+	llvm::FunctionType *funcType =
+		llvm::FunctionType::get(exprtype ? exprtype->llvm_type(ctx) : builder.getVoidTy(),args,true);
+
+	llvm::Function *mainFunc =
+		llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, this->name , AST::module);
+	llvm::BasicBlock *entry = llvm::BasicBlock::Create(builder.getContext(), "entrypoint", mainFunc);
+	builder.SetInsertPoint(entry);
+	//开始生成代码
+
+	// 为参数设定 name
+	llvm::Function::arg_iterator llvmarg_it = mainFunc->arg_begin();
+
+	if( callargs){
+		std::vector< VariableDimASTPtr >::iterator argit = callargs->dims.begin();
+
+		for(; argit != callargs->dims.end() ; argit++ , llvmarg_it++	){
+			VariableDimAST * argdim = argit->get();
+			llvmarg_it->setName(argdim->name);
+		}
+	}
+
+	ASTContext newctx;
+	if(callargs)
+		newctx.codeblock = this->parent;
+	else
+		newctx.codeblock = this->callargs.get();
+
+	newctx.llvmfunc = mainFunc;
+	newctx.block = entry;
+	//now code up the function body
+	builder.SetInsertPoint(body->Codegen(newctx));
+	builder.CreateRetVoid();
+
 	return ctx.block;
 }

@@ -94,3 +94,8 @@ CallExprAST::CallExprAST(ReferenceAST* ID, ExprListAST* exp_list)
 
 }
 
+llvm::Type* NumberExprTypeAST::llvm_type(ASTContext ctx)
+{
+	return llvm::Type::getInt64Ty(ctx.module->getContext());
+}
+
