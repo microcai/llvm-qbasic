@@ -147,7 +147,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %type <statement>					statement
 %type <dim_item>					dim_item
 %type <arg_list>					arg_list
-%type <function_definition>   sub_definition
+%type <function_definition>			sub_definition
 %type <function_definition>			function_definition
 %type <exprtype>					exprtype
 
@@ -368,16 +368,20 @@ sub_definition: tSUB  tID  '(' arg_list ')'
 		  ;
 
 arg_list:{ $$ = 0; }
-	|arg_list ',' dim_item {
+	|arg_list ',' tID tAS exprtype {
 		$$ = $1;
-		$$->addchild($3);
+		$$->addchild( new ArgumentDimAST( *$3  , * $5 ) );
+
+		debug("definning %s is type %p as arg\n",$3->c_str(), $5);
 
 		debug("define multiple line is not supported yet\n");
 		//exit(1);
 	}
-	| dim_item {
+	| tID tAS exprtype {
+		debug("definning %s is type %p as arg\n",$1->c_str(), $3);
+		
 		$$ = new ArgumentDimsAST ;
-		$$->addchild($1);
+		$$->addchild(new ArgumentDimAST( *$1  , * $3 ));
 	}
 	;
 
