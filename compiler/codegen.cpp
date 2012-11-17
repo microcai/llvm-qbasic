@@ -396,23 +396,23 @@ llvm::BasicBlock* IFStmtAST::Codegen(ASTContext ctx)
 	llvm::IRBuilder<> builder(ctx.block);
 
 	llvm::Value * expcond = this->_expr->getval(ctx);
+	
 	expcond = builder.CreateICmpNE(expcond, qbc::getconstlong(0), "tmp");
 	builder.CreateCondBr(expcond, cond_true, cond_false);
 
 	// generating true
-	ASTContext newctx = ctx;
-	
-	newctx.block = cond_true;
-	this->_then->parent = this->parent;// NOTE important
-	this->_then->Codegen(newctx);
+	ctx.block = cond_true;
+
+	this->_then->parent = ctx.codeblock;// NOTE important
+	this->_then->Codegen(ctx);
 	builder.SetInsertPoint(cond_true);
 	builder.CreateBr(cond_continue);
 
 	// generating false , if there is any
 	if( this->_else){
-		this->_else->parent = this->parent;// NOTE important
-		newctx.block = cond_false;
-		this->_else->Codegen(newctx);
+		this->_else->parent = ctx.codeblock;// NOTE important
+		ctx.block = cond_false;
+		this->_else->Codegen(ctx);
 		builder.SetInsertPoint(cond_false);
 		builder.CreateBr(cond_continue);
 	}
