@@ -6,9 +6,6 @@
 
 sub testfunc( i as long )
 
-dim b as long
-
-print b
 print i
 
 end sub
@@ -18,6 +15,6 @@ sub main()
 
 print 1000000
 
-testfunc(  )
+testfunc( 100 )
 
 end sub

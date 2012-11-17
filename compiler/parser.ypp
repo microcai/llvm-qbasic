@@ -291,7 +291,14 @@ expression_list: expression_list ',' expression { $$ = $1 ; $$->Append($3); }
 
 call_function_or_array:
 		varref '('  ')' { $$ = new CallExprAST($1); debug("functioncall with no arg\n"); } // 这个也是函数调用
-		| varref  '(' expression_list ')' // 这个可能是函数调用, 也许是数组哦 :)
+		| varref  '(' expression_list ')' {
+			 // 这个可能是函数调用, 也许是数组哦 :)
+
+			 // 现在就当是函数调用了, 在后面的阶段再生成数组访问
+
+			 $$ = new CallExprAST($1 , $3 );
+			
+		}
 
 
 	
