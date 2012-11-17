@@ -314,21 +314,21 @@ llvm::BasicBlock* VariableDimAST::Codegen(ASTContext ctx)
 
 llvm::Value* ArgumentDimAST::getptr()
 {
-
+		debug("not a ??????????\n");
+	exit(1);
 }
 
 llvm::BasicBlock* ArgumentDimAST::Codegen(ASTContext ctx)
 {
 	debug("generating function parameter of %s\n", this->name.c_str());
-	
-// 	std::vector< ArgumentDimASTPtr >::iterator argit = callargs->dims.begin();
-// 
-// 	for(; argit != callargs->dims.end() ; argit++ , llvmarg_it++	){
-// 		ArgumentDimAST * argdim = argit->get();
-// 		llvmarg_it->setName(argdim->name);
-// 	}
 
+	llvm::Function::arg_iterator arg_it  = ctx.llvmfunc->arg_begin();
 
+	int index = this->parent->find(this);
+	for( int i = 0 ; i < index ; i++)
+		arg_it ++;
+	arg_it->setName(this->name);
+	return ctx.block;
 }
 
 

@@ -110,7 +110,21 @@ CallStmtAST::CallStmtAST(CallExprAST* callexp)
 ReturnAST::ReturnAST(ExprAST* _expr)
 	:expr(_expr)
 {
-	
+
+}
+
+int CodeBlockAST::find(StatementAST* child)
+{
+	int index = 0;
+	BOOST_FOREACH( StatementASTPtr item , statements)
+	{
+		if( item == child ){
+			return index;
+		}
+		index ++;
+	}
+	debug("not a child??????????\n");
+	exit(1);
 }
 
 void CodeBlockAST::addchild(StatementAST* item)

@@ -163,8 +163,8 @@ public:
 
     virtual llvm::BasicBlock* Codegen(ASTContext ctx);
 
+	int  find(StatementAST* child);
 	void addchild(StatementAST* item);
-
 	void addchild(StatementsAST* items);
 	CodeBlockAST():parent(0){}
     CodeBlockAST(StatementsAST * items);
