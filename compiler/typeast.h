@@ -48,8 +48,8 @@ public:
 	UnknowTypeAST();
     UnknowTypeAST(ReferenceASTPtr refname);
     size_t size(){return -1;}
-    ExprTypeASTPtr resolve(StatementAST* theblock, DimAST ** ); // resolve and return
-    llvm::Type* llvmtype(){return NULL;}
+    ExprTypeASTPtr	resolve(StatementAST* theblock, DimAST ** ); // resolve and return
+    llvm::Type*		llvmtype(){return NULL;}
    	virtual	bool	resolved(){return false;}// always false, then you call resolve
 };
 

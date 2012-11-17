@@ -94,6 +94,7 @@ class StatementAST: public AST
 public:
 	std::list<StatementASTPtr>	substatements;
 
+    StatementAST(){parent=NULL;}
 	StatementAST * parent; // 避免循环引用 :) , 用在查找变量声明的时候用到. 回溯法
 	std::string	LABEL;	// label , if there is. then we can use goto
 						// must be uniq among function bodys
@@ -295,16 +296,16 @@ public:
 };
 
 //函数 AST , 有 body 没 body 来区别是不是定义或者声明
+//定义的参数为 substatements, 目的是为了 nameresolve 的时候找到
 class FunctionDimAST: public DimAST
 {
 public:
 	Linkage		linkage; //链接类型。static? extern ?
 	std::list<VariableDimASTPtr> args_type; //checked by CallExpr
 
-	std::list<VariableDimAST> args; //定义的参数
-
 	StatementASTPtr	body; //函数体
-
+	
+    FunctionDimAST(const std::string _name, VariableDimAST * argsdef,ExprTypeASTPtr _type = ExprTypeASTPtr(new VoidTypeAST) );
     FunctionDimAST(const std::string _name, ExprTypeASTPtr _type = ExprTypeASTPtr(new VoidTypeAST) );
 	//如果是声明, 为 dim 生成 llvm::Function * 声明供使用
     virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);

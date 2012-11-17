@@ -78,7 +78,7 @@ ExprTypeASTPtr UnknowTypeAST::resolve(StatementAST* theblock,DimAST ** vardim)
 			}
 		}
 		//到父类型去
-		return UnknowTypeAST::resolve(theblock->parent,vardim);
+		return resolve(theblock->parent,vardim);
 	}
 	//TODO: 打印行号信息
 	printf("variable %s not defined!", this->name.c_str());

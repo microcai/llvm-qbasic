@@ -223,20 +223,21 @@ subdefine: tSUB  tID  '(' ')'
 				useDefautSubMain = false;
 				$$ = new FunctionDimAST( *$2 ); //delete $2;
 
-				$$->body = StatementASTPtr($5);
-				
+				$$->body = StatementASTPtr($5);				
 				debug("!!SUB %s defined!!\n",$2->c_str());
 			}
 		| tSUB  tID  '(' dimlist ')'
 				lines
 			tSUBEND {
 				useDefautSubMain = false;
-				$$ = new FunctionDimAST( *$2 ); //delete $2;
 
+				debug("sub function got dim as %p\n",$4);
+				$$ = new FunctionDimAST( *$2); //delete $2;
+				$$->addchild($4);				
+				$6->parent = $$;
 				$$->body = StatementASTPtr($6);
-
+				
 				debug("!!SUB %s defined with args !!, but not supported yet\n",$2->c_str());
-				exit(0);
 			}
 		  ;
 
