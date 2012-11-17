@@ -452,11 +452,6 @@ llvm::BasicBlock* FunctionDimAST::Codegen(llvm::Function* TheFunction, llvm::Bas
 	}	
 	//now code up the function body
 	builder.SetInsertPoint(body->Codegen(mainFunc,entry));
-	//返回值 , should not be used !
-	llvm::BasicBlock *ret = llvm::BasicBlock::Create(builder.getContext(), "ret",mainFunc);
-	builder.CreateBr(ret);
-	builder.SetInsertPoint(ret);
-	
 	builder.CreateRetVoid();
 	return insertto;
 }
