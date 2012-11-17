@@ -1,39 +1,34 @@
 /*
 	llvm-QBASIC Compiler test
 
-	the function call and while and if .  3 cases test	
+	in development test cases
+
+	for historcal test cases, see test[0-9]*.bas
 */
 
-sub testfunc1()
+function  sum ( a as long , b as long) as long
 
-print 100
+dim s as long
 
-end sub
+s = a + b
 
-sub testfunc2( i as long )
+// return s
 
-print i
+print s
 
-i=54321
-
-print i
-
-
-end sub
-
+end function
 
 sub main()
 
-print 1000000
-
+dim s as long
 dim a as long
+dim b as long
 
-testfunc1()
+a = 100
+b = 50
 
-testfunc2( 100 )
+s = sum(a,b)
 
-a = abs( 100 )
-
-print a , abs(100)
+print s
 
 end sub

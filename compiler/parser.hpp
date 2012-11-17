@@ -94,7 +94,8 @@ namespace qb {
 	
 	WhileLoopAST* while_loop;
 	
-	VariableDimAST*		dim_list;
+	VariableDimAST*		dim_item;
+	VariableDimsAST*	dim_list;
 	FunctionDimAST	 *function_definition;
 
 	PrintIntroAST *print_intro;
@@ -102,7 +103,7 @@ namespace qb {
 
 
 /* Line 36 of lalr1.cc  */
-#line 106 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 107 "/home/cai/projects/basic/compiler/parser.hpp"
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -243,7 +244,7 @@ namespace qb {
     /// Zero means the default is an error.
     static const unsigned char yydefact_[];
 
-    static const short int yypgoto_[];
+    static const signed char yypgoto_[];
     static const signed char yydefgoto_[];
 
     /// What to do in a state.
@@ -322,7 +323,7 @@ namespace qb {
 #line 21 "parser.ypp"
 } // qb
 /* Line 36 of lalr1.cc  */
-#line 326 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 327 "/home/cai/projects/basic/compiler/parser.hpp"
 
 
 

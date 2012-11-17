@@ -108,7 +108,7 @@ class EmptyStmtAST : public StatementAST
 {
 public:
 	EmptyStmtAST(){}
-    virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
+    llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };
 
 #include "typeast.h"
@@ -132,8 +132,13 @@ public:
 	virtual llvm::BasicBlock* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
 	llvm::AllocaInst*	AllocaInstRef; //
 };
-
 typedef boost::shared_ptr<VariableDimAST> VariableDimASTPtr;
+
+class VariableDimsAST : public StatementAST
+{
+};
+
+typedef boost::shared_ptr<VariableDimsAST> VariableDimsASTPtr;
 
 // 表达式
 class ExprAST: public AST //
@@ -296,16 +301,17 @@ public:
 };
 
 //函数 AST , 有 body 没 body 来区别是不是定义或者声明
-//定义的参数为 substatements, 目的是为了 nameresolve 的时候找到
 class FunctionDimAST: public DimAST
 {
 public:
 	Linkage		linkage; //链接类型。static? extern ?
 	std::list<VariableDimASTPtr> args_type; //checked by CallExpr
 
+	VariableDimsASTPtr	callargs;
+
 	StatementASTPtr	body; //函数体
 	
-    FunctionDimAST(const std::string _name, ExprTypeASTPtr _type = ExprTypeASTPtr(new VoidTypeAST) );
+    FunctionDimAST(const std::string _name, VariableDimsAST * callargs = NULL, ExprTypeASTPtr _type = ExprTypeASTPtr(new VoidTypeAST) );
 	//如果是声明, 为 dim 生成 llvm::Function * 声明供使用
     virtual llvm::BasicBlock* Codegen(llvm::Function* TheFunction, llvm::BasicBlock* insertto);
 };

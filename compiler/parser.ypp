@@ -85,7 +85,8 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 	
 	WhileLoopAST* while_loop;
 	
-	VariableDimAST*		dim_list;
+	VariableDimAST*		dim_item;
+	VariableDimsAST*	dim_list;
 	FunctionDimAST	 *function_definition;
 
 	PrintIntroAST *print_intro;
@@ -144,8 +145,9 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %type <statement_list>				line
 %type <statement_list>				statements
 %type <statement>					statement
-%type <dim_list>					dimlist
-%type <function_definition>			subdefine
+%type <dim_item>					dim_item
+%type <dim_list>					dim_list
+%type <function_definition>   sub_definition
 %type <function_definition>			function_definition
 %type <exprtype>					exprtype
 
@@ -195,17 +197,17 @@ line: statements tNEWLINE { $$=$1;  }
 	| tNEWLINE { $$= new EmptyStmtAST();}
 	;
 
-statements : statements ':' statement { /*TODO*/debug("here====2====\n"); exit(1);	}
+statements : statements ':' statement { /*TODO*/debug("here====1====\n"); exit(1);	}
 		| statement {$$= $1;}
 		| if_clause {$$= $1;} 
 		| while_loop {$$= $1;} 
-		| subdefine {$$= $1;}
-		| function_definition { /*TODO*/debug("here====2====\n"); exit(1);	}
-		| expression ':' { /*TODO*/debug("here====2====\n"); exit(1);	}
+		| sub_definition {$$= $1;}
+		| function_definition {$$= $1;}
+		| expression ':' { /*TODO*/debug("here====3====\n"); exit(1);	}
 		;
 
 statement: printstatement { $$ = $1; }
-		| tDIM dimlist { $$ = $2; }
+		| tDIM dim_item { $$ = $2; }
 		| assigment {$$= $1;}
 		| tLET assigment { $$ = $2;}
 		;
@@ -222,13 +224,6 @@ exprtype: tLONG	{
 		debug("define as user type not supported\n");
 		exit(1);
 	};
-
-dimlist: dimlist ',' tID tAS exprtype { debug("define multiple line is not supported yet\n");exit(1);}
-	| tID tAS exprtype {
-		debug("definning %s is type %p\n",$1->c_str(), $3);
-		$$ = new VariableDimAST( *$1  , ExprTypeASTPtr ( $3 ));
-	}
-	;
 
 printstatement :
 	tPRINT  printinto  expression_list  {
@@ -293,7 +288,9 @@ expression: call_function_or_array
 		| tNUMBER //浮点数
 		;
 
-varref:	varref '.' tID { debug("ref menber %s . %s , not supported yet\n", $1->ID.c_str()  , $3->c_str() ); 			exit(1); // 逐级传递
+varref:	varref '.' tID {
+		debug("ref menber %s . %s , not supported yet\n", $1->ID.c_str()  , $3->c_str() );
+		exit(1); // 逐级传递
 	}// 成员变量
 	| varref tDREF  tID  // 指针解引用
 	| tID {
@@ -310,65 +307,56 @@ seperator : tNEWLINE | ':' ;
 //* 这里开始是函数和过程定义
 //*****************************************/
 
-function_definition: tFUNCTION tID '(' dimlist ')' tAS exprtype
+function_definition: tFUNCTION tID '(' dim_list ')' tAS exprtype
 					lines
 				tFUNCTIONEND {
 					useDefautSubMain = false;
-					$$ = new FunctionDimAST( *$2 , ExprTypeASTPtr($7) );
+					$$ = new FunctionDimAST( *$2 , $4, ExprTypeASTPtr($7) );
 
-					$$->addchild($4);
-					$8->parent = $$;
-
+					$8->parent = $4;
 					$$->body = StatementASTPtr($8);
 				}
-				|tFUNCTION tID '(' dimlist ')' 
+				|tFUNCTION tID '(' dim_list ')' 
 					lines
 				tFUNCTIONEND {
 					useDefautSubMain = false;
-					$$ = new FunctionDimAST( *$2 , ExprTypeASTPtr( new NumberTypeAST()) );
+					$$ = new FunctionDimAST( *$2 , $4 , ExprTypeASTPtr( new NumberTypeAST()) );
 
-					$$->addchild($4);
-					$6->parent = $$;
-
+					$6->parent = $4;
 					$$->body = StatementASTPtr($6);
-				}
-				|tFUNCTION tID '(' ')' tAS exprtype
-				lines
-				tFUNCTIONEND {
-					useDefautSubMain = false;
-					$$ = new FunctionDimAST( *$2 , ExprTypeASTPtr($6) );
-					$$->body = StatementASTPtr($7);
-				}
-				|tFUNCTION tID '(' ')'
-				lines
-				tFUNCTIONEND {
-					useDefautSubMain = false;
-					$$ = new FunctionDimAST( *$2 , ExprTypeASTPtr( new NumberTypeAST()) );
-					$$->body = StatementASTPtr($5);
 				}
 				;
 
-subdefine: tSUB  tID  '(' ')'
+sub_definition: tSUB  tID  '(' dim_list ')'
 				lines
 			tSUBEND {
 				useDefautSubMain = false;
-				$$ = new FunctionDimAST( *$2 ); //delete $2;
+				debug("!!SUB %s defined with arg !!\n",$2->c_str());
 
-				$$->body = StatementASTPtr($5);
-				debug("!!SUB %s defined!!\n",$2->c_str());
-			}
-		| tSUB  tID  '(' dimlist ')'
-				lines
-			tSUBEND {
-				useDefautSubMain = false;
-
-				debug("sub function got dim as %p\n",$4);
-				$$ = new FunctionDimAST( *$2); //delete $2;
-				$$->addchild($4);
-				$6->parent = $$;
+				$$ = new FunctionDimAST( *$2,$4); //delete $2;				
+				$6->parent = $4;
 				$$->body = StatementASTPtr($6);
 			}
 		  ;
+
+dim_list: dim_list ',' dim_item {
+		$$ = $1;
+		$$->addchild($3);
+
+		debug("define multiple line is not supported yet\n");
+		//exit(1);
+	}
+	| dim_item {
+		$$ = new VariableDimsAST ;
+		$$->addchild($1);
+	}
+	| {$$ = 0;}
+	;
+
+dim_item: tID tAS exprtype {
+		debug("definning %s is type %p\n",$1->c_str(), $3);
+		$$ = new VariableDimAST( *$1  , ExprTypeASTPtr ( $3 ));
+	};
 
 
 //*****************************************/

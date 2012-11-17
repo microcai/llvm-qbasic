@@ -418,12 +418,12 @@ llvm::BasicBlock* FunctionDimAST::Codegen(llvm::Function* TheFunction, llvm::Bas
 
 	std::vector<llvm::Type*>	args;
 
-	std::list< StatementASTPtr >::iterator dimit = substatements.begin();
-
-	BOOST_FOREACH( StatementASTPtr stmt , substatements)
-	{
-		VariableDimAST * dim = dynamic_cast<VariableDimAST*>(stmt.get());
-		args.push_back(dim->type->llvmtype());
+	if(callargs){
+		BOOST_FOREACH( StatementASTPtr stmt , callargs->substatements)
+		{
+			VariableDimAST * dim = dynamic_cast<VariableDimAST*>(stmt.get());
+			args.push_back(dim->type->llvmtype());
+		}		
 	}
 	
 	llvm::FunctionType *funcType = llvm::FunctionType::get(builder.getVoidTy(), args, true);
@@ -435,16 +435,18 @@ llvm::BasicBlock* FunctionDimAST::Codegen(llvm::Function* TheFunction, llvm::Bas
 
 	// 为参数设定 name
 	llvm::Function::arg_iterator llvmarg_it = mainFunc->arg_begin();
-	std::list< StatementASTPtr >::iterator argit = substatements.begin();
 
-	for(; argit != substatements.end() ; argit++ , llvmarg_it++	){
-		VariableDimAST * argdim = dynamic_cast<VariableDimAST*>(argit->get());
-		llvmarg_it->setName(argdim->name);
-	}
-	
+	if( callargs){
+		std::list< StatementASTPtr >::iterator argit = callargs->substatements.begin();
+
+		for(; argit != callargs->substatements.end() ; argit++ , llvmarg_it++	){
+			VariableDimAST * argdim = dynamic_cast<VariableDimAST*>(argit->get());
+			llvmarg_it->setName(argdim->name);
+		}		
+	}	
 	//now code up the function body
 	builder.SetInsertPoint(body->Codegen(mainFunc,entry));
-	//返回值
+	//返回值 , should not be used !
 	builder.CreateRetVoid();
 	return insertto;
 }

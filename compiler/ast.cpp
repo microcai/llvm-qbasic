@@ -111,15 +111,15 @@ CalcExprAST::CalcExprAST(ExprAST * lhs, MathOperator OP, ExprAST* rhs)
 	
 }
 
-FunctionDimAST::FunctionDimAST(const std::string _name, ExprTypeASTPtr _type)
-	:DimAST(_name,_type)
+FunctionDimAST::FunctionDimAST(const std::string _name,VariableDimsAST*	_callargs,ExprTypeASTPtr _type)
+	:DimAST(_name,_type),callargs(_callargs)
 {
 	
 }
 
 
 DefaultMainFunctionAST::DefaultMainFunctionAST(StatementAST * body)
-	:FunctionDimAST("main",ExprTypeASTPtr( new VoidTypeAST())  )
+	:FunctionDimAST("main",0,ExprTypeASTPtr( new VoidTypeAST())  )
 {
 	this->body = StatementASTPtr(body);
 }
