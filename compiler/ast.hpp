@@ -123,27 +123,6 @@ public:
 };
 typedef boost::shared_ptr<DimAST>	DimASTPtr;
 
-/*
-//整数类型. 最简单的类型.可以直接生成  llvm-IR 代码
-class NumberExprAST : public ExprAST
-{
-	VariableRefExprASTPtr var_num;
-public:
-    NumberExprAST():ExprAST(ExprTypeASTPtr(new NumberTypeAST())){};
-	NumberExprAST(VariableRefExprASTPtr);
-
-	virtual llvm::Value *getval(ASTContext);
-};
-typedef boost::shared_ptr<NumberExprAST> NumberExprASTPtr;
-
-class ConstNumberExprAST :public NumberExprAST
-{
-	const int64_t val;
-public:
-    ConstNumberExprAST(const int64_t);
-	llvm::Value *getval(ASTContext ctx); // final , 不允许继承了.
-    virtual llvm::AllocaInst* nameresolve(ASTContext){ return NULL;}
-};*/
 
 class AssigmentAST : public StatementAST
 {
@@ -152,36 +131,6 @@ public:
     AssigmentAST( NamedExprAST * lval, ExprAST * rval);	
     llvm::BasicBlock* Codegen(ASTContext);
 };
-
-// // 数值计算表达式
-// class CalcExprAST : public ExprAST
-// {
-// public:
-//     CalcExprAST(ExprAST * , MathOperator  ,ExprAST * );
-// 	ExprASTPtr  rval,lval;
-// 	enum MathOperator op;
-// 
-//     virtual llvm::Value* getval(ASTContext);
-// 
-// 	//TODO , 为复杂的表达式类型执行混成
-//     virtual llvm::AllocaInst* nameresolve(ASTContext){ return NULL; };
-// };
-/*
-// 函数调用, 也是个数字表达式 , 更是一个名称引用表达式!
-class CallExprAST : public VariableRefExprAST {
-
-	llvm::Function * target; // resolved target
-public:
-	// the type of the return function , also is the type of itself. default return type is number
-    CallExprAST(ReferenceAST * target ,  ExprListAST * args = NULL);
-	
-	ExprListASTPtr		callargs; // args for call
-
-	// call this to the the return value of the function. this will insert neceserry calls
-    virtual llvm::Value* getval(ASTContext);
-    virtual llvm::AllocaInst* nameresolve(ASTContext ctx);
-};
-typedef boost::shared_ptr<CallExprAST>	CallExprASTPtr;*/
 
 // 对函数的调用, 实质是函数调用表达式的包装
 class CallStmtAST : public StatementAST
@@ -267,14 +216,23 @@ public:
 };
 typedef boost::shared_ptr<VariableDimAST> VariableDimASTPtr;
 
+class ArgumentDimAST : public VariableDimAST
+{
+	llvm::Value * stackvar;
+public:
+	ArgumentDimAST(const std::string _name ,  const std::string	_type);
+	virtual llvm::BasicBlock* Codegen(ASTContext);
+    virtual llvm::Value* getptr();
+};
+typedef boost::shared_ptr<ArgumentDimAST> ArgumentDimASTPtr;
+
 //变量定义也是一个父 codeblock , 这个 codeblock 将成为函数体 codeblock 的父节点.
 //但是和函数体积本身不处在同一个节点,故而在函数内部定义的同名变量将导致参数无法访问,吼吼
 class ArgumentDimsAST : public CodeBlockAST
 {
 public:
-	std::vector<VariableDimASTPtr>	dims;
-    ArgumentDimsAST(){
-	}
+	std::vector<ArgumentDimASTPtr>	dims;
+    ArgumentDimsAST(){}
 };
 typedef boost::shared_ptr<ArgumentDimsAST> ArgumentDimsASTPtr;
 

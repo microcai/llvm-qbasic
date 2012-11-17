@@ -287,6 +287,13 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 	return ctx.block;
 }
 
+// 获得分配的空间
+llvm::Value* VariableDimAST::getptr()
+{
+	debug("get ptr of this %p\n", alloca_var);
+	return alloca_var;
+}
+
 //为变量分配空间
 llvm::BasicBlock* VariableDimAST::Codegen(ASTContext ctx)
 {
@@ -305,12 +312,25 @@ llvm::BasicBlock* VariableDimAST::Codegen(ASTContext ctx)
 	return ctx.block;
 }
 
-// 获得分配的类型
-llvm::Value* VariableDimAST::getptr()
+llvm::Value* ArgumentDimAST::getptr()
 {
-	debug("get ptr of this %p\n", alloca_var);
-	return alloca_var;
+
 }
+
+llvm::BasicBlock* ArgumentDimAST::Codegen(ASTContext ctx)
+{
+	debug("generating function parameter of %s\n", this->name.c_str());
+	
+// 	std::vector< ArgumentDimASTPtr >::iterator argit = callargs->dims.begin();
+// 
+// 	for(; argit != callargs->dims.end() ; argit++ , llvmarg_it++	){
+// 		ArgumentDimAST * argdim = argit->get();
+// 		llvmarg_it->setName(argdim->name);
+// 	}
+
+
+}
+
 
 llvm::Value* FunctionDimAST::getptr()
 {
@@ -485,19 +505,16 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 	llvm::Function::arg_iterator llvmarg_it = target->arg_begin();
 
 	if( callargs){
-		std::vector< VariableDimASTPtr >::iterator argit = callargs->dims.begin();
-
-		for(; argit != callargs->dims.end() ; argit++ , llvmarg_it++	){
-			VariableDimAST * argdim = argit->get();
-			llvmarg_it->setName(argdim->name);
-		}
+		ctx.llvmfunc = target;
+		ctx.block = entry;
+		callargs->Codegen(ctx);
 	}
 
-	ASTContext newctx;
+	ASTContext newctx = ctx;
 	if(callargs)
-		newctx.codeblock = this->parent;
-	else
 		newctx.codeblock = this->callargs.get();
+	else
+		newctx.codeblock = this->parent;
 
 	newctx.llvmfunc = target;
 	newctx.block = entry;
