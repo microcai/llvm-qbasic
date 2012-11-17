@@ -60,6 +60,10 @@ lcchar [\\_]
    return token::tEOPROG;
 }
 
+rem {
+	BEGIN(remark);
+}
+
 "/*" {
    BEGIN (block_comment);
 }
@@ -225,6 +229,11 @@ false {
 
 }
 
+<remark>{
+.
+
+\n	BEGIN(INITIAL);
+}
 
 %%
 

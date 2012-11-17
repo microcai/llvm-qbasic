@@ -6,6 +6,8 @@
 	for historcal test cases, see test[0-9]*.bas
 */
 
+REM  sun define here
+
 function  sum ( a as long , b as long) as long
 
 dim s as long
