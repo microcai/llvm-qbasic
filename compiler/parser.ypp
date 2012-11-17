@@ -197,7 +197,7 @@ line: statements tNEWLINE { $$=$1;  }
 	| tNEWLINE { $$= new EmptyStmtAST();}
 	;
 
-statements : statements ':' statement { /*TODO*/debug("here====1====\n"); exit(1);	}
+statements : statements ':' statement {  $$ = $1; $$->addchild($1); }
 		| statement {$$= $1;}
 		| if_clause {$$= $1;} 
 		| while_loop {$$= $1;} 
@@ -226,7 +226,7 @@ exprtype: tLONG	{
 		exit(1);
 	};
 
-printstatement :
+printstatement:
 	tPRINT  printinto  expression_list  {
 
 		$3->Append( new EmptyExprAST );
@@ -240,7 +240,11 @@ printstatement :
 	|tPRINT  printinto  expression_list ';' {
 		$$ = new PrintStmtAST( $2, $3 );
 	}
-
+	|tPRINT  printinto {
+		ExprListAST * exprList = new ExprListAST;
+		exprList->Append( new EmptyExprAST );
+		$$ = new PrintStmtAST( $2, exprList );
+	}
 	;
 
 printinto: '#' tInteger ','  { debug("print has got itger\n") ;}

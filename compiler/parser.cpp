@@ -506,7 +506,7 @@ namespace qb {
   case 9:
 /* Line 661 of lalr1.cc  */
 #line 200 "parser.ypp"
-    { /*TODO*/debug("here====1====\n"); exit(1);	}
+    {  (yyval.statement_list) = (yysemantic_stack_[(3) - (1)].statement_list); (yyval.statement_list)->addchild((yysemantic_stack_[(3) - (1)].statement_list)); }
     break;
 
   case 10:
@@ -631,40 +631,50 @@ namespace qb {
 
   case 27:
 /* Line 661 of lalr1.cc  */
-#line 246 "parser.ypp"
-    { debug("print has got itger\n") ;}
+#line 243 "parser.ypp"
+    {
+		ExprListAST * exprList = new ExprListAST;
+		exprList->Append( new EmptyExprAST );
+		(yyval.printstatement) = new PrintStmtAST( (yysemantic_stack_[(2) - (2)].printinto), exprList );
+	}
     break;
 
   case 28:
 /* Line 661 of lalr1.cc  */
-#line 247 "parser.ypp"
-    {  debug("empty printinto\n");	}
+#line 250 "parser.ypp"
+    { debug("print has got itger\n") ;}
     break;
 
   case 29:
 /* Line 661 of lalr1.cc  */
-#line 250 "parser.ypp"
-    { (yyval.expression_list) = (yysemantic_stack_[(3) - (1)].expression_list) ; (yyval.expression_list)->Append((yysemantic_stack_[(3) - (3)].expression)); }
+#line 251 "parser.ypp"
+    {  debug("empty printinto\n");	}
     break;
 
   case 30:
 /* Line 661 of lalr1.cc  */
-#line 251 "parser.ypp"
+#line 254 "parser.ypp"
+    { (yyval.expression_list) = (yysemantic_stack_[(3) - (1)].expression_list) ; (yyval.expression_list)->Append((yysemantic_stack_[(3) - (3)].expression)); }
+    break;
+
+  case 31:
+/* Line 661 of lalr1.cc  */
+#line 255 "parser.ypp"
     {
 		(yyval.expression_list) =  new ExprListAST;
 		(yyval.expression_list)->Append((yysemantic_stack_[(1) - (1)].expression));
 	}
     break;
 
-  case 31:
+  case 32:
 /* Line 661 of lalr1.cc  */
-#line 259 "parser.ypp"
+#line 263 "parser.ypp"
     { (yyval.call_function) = new CallExprAST((yysemantic_stack_[(3) - (1)].varref)); debug("functioncall %s with no arg\n", (yysemantic_stack_[(3) - (1)].varref)->ID.c_str()); }
     break;
 
-  case 32:
+  case 33:
 /* Line 661 of lalr1.cc  */
-#line 260 "parser.ypp"
+#line 264 "parser.ypp"
     { 	 // 这个可能是函数调用, 也许是数组哦 :)
 			 // 现在就当是函数调用了, 在后面的阶段再生成数组访问
 			 debug("functioncall %s with  args!!!!\n" , (yysemantic_stack_[(4) - (1)].varref)->ID.c_str() );
@@ -673,57 +683,57 @@ namespace qb {
 		}
     break;
 
-  case 35:
-/* Line 661 of lalr1.cc  */
-#line 271 "parser.ypp"
-    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_ADD , (yysemantic_stack_[(3) - (3)].expression) );  }
-    break;
-
   case 36:
 /* Line 661 of lalr1.cc  */
-#line 272 "parser.ypp"
-    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_SUB , (yysemantic_stack_[(3) - (3)].expression) );  }
+#line 275 "parser.ypp"
+    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_ADD , (yysemantic_stack_[(3) - (3)].expression) );  }
     break;
 
   case 37:
 /* Line 661 of lalr1.cc  */
-#line 273 "parser.ypp"
-    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_MUL , (yysemantic_stack_[(3) - (3)].expression) );  }
+#line 276 "parser.ypp"
+    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_SUB , (yysemantic_stack_[(3) - (3)].expression) );  }
     break;
 
   case 38:
 /* Line 661 of lalr1.cc  */
-#line 274 "parser.ypp"
-    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_DIV , (yysemantic_stack_[(3) - (3)].expression) );  }
+#line 277 "parser.ypp"
+    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_MUL , (yysemantic_stack_[(3) - (3)].expression) );  }
     break;
 
   case 39:
 /* Line 661 of lalr1.cc  */
-#line 275 "parser.ypp"
-    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_LESS , (yysemantic_stack_[(3) - (3)].expression) );  }
+#line 278 "parser.ypp"
+    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_DIV , (yysemantic_stack_[(3) - (3)].expression) );  }
     break;
 
   case 40:
 /* Line 661 of lalr1.cc  */
-#line 276 "parser.ypp"
-    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_LESSEQU , (yysemantic_stack_[(3) - (3)].expression) );  }
+#line 279 "parser.ypp"
+    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_LESS , (yysemantic_stack_[(3) - (3)].expression) );  }
     break;
 
   case 41:
 /* Line 661 of lalr1.cc  */
-#line 277 "parser.ypp"
-    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_GREATER , (yysemantic_stack_[(3) - (3)].expression) );  }
+#line 280 "parser.ypp"
+    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_LESSEQU , (yysemantic_stack_[(3) - (3)].expression) );  }
     break;
 
   case 42:
 /* Line 661 of lalr1.cc  */
-#line 278 "parser.ypp"
-    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_GREATEREQUL , (yysemantic_stack_[(3) - (3)].expression) );  }
+#line 281 "parser.ypp"
+    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_GREATER , (yysemantic_stack_[(3) - (3)].expression) );  }
     break;
 
   case 43:
 /* Line 661 of lalr1.cc  */
-#line 280 "parser.ypp"
+#line 282 "parser.ypp"
+    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_GREATEREQUL , (yysemantic_stack_[(3) - (3)].expression) );  }
+    break;
+
+  case 44:
+/* Line 661 of lalr1.cc  */
+#line 284 "parser.ypp"
     {
 			//TODO the VariableRefExprAST
 			(yyval.expression) = new VariableRefExprAST( ReferenceASTPtr((yysemantic_stack_[(1) - (1)].varref)) );
@@ -731,27 +741,27 @@ namespace qb {
 		}
     break;
 
-  case 44:
+  case 45:
 /* Line 661 of lalr1.cc  */
-#line 285 "parser.ypp"
+#line 289 "parser.ypp"
     {
 			//常量
 			(yyval.expression) = new ConstNumberExprAST( (yysemantic_stack_[(1) - (1)].integer) );
 		}
     break;
 
-  case 46:
+  case 47:
 /* Line 661 of lalr1.cc  */
-#line 292 "parser.ypp"
+#line 296 "parser.ypp"
     {
 		debug("ref menber %s . %s , not supported yet\n", (yysemantic_stack_[(3) - (1)].varref)->ID.c_str()  , (yysemantic_stack_[(3) - (3)].id)->c_str() );
 		exit(1); // 逐级传递
 	}
     break;
 
-  case 48:
+  case 49:
 /* Line 661 of lalr1.cc  */
-#line 297 "parser.ypp"
+#line 301 "parser.ypp"
     {
 		// 变量的引用? 反正是一个标识符的引用,
 		// 所以我构建一个标识符引用语句. 这个会被用来构建函数调用和数组语句以及变量.
@@ -760,9 +770,9 @@ namespace qb {
 	}
     break;
 
-  case 51:
+  case 52:
 /* Line 661 of lalr1.cc  */
-#line 313 "parser.ypp"
+#line 317 "parser.ypp"
     {
 					useDefautSubMain = false;
 					(yyval.function_definition) = new FunctionDimAST( *(yysemantic_stack_[(9) - (2)].id) , (yysemantic_stack_[(9) - (4)].dim_list), ExprTypeASTPtr((yysemantic_stack_[(9) - (7)].exprtype)) );
@@ -772,9 +782,9 @@ namespace qb {
 				}
     break;
 
-  case 52:
+  case 53:
 /* Line 661 of lalr1.cc  */
-#line 322 "parser.ypp"
+#line 326 "parser.ypp"
     {
 					useDefautSubMain = false;
 					(yyval.function_definition) = new FunctionDimAST( *(yysemantic_stack_[(7) - (2)].id) , (yysemantic_stack_[(7) - (4)].dim_list) , ExprTypeASTPtr( new NumberTypeAST()) );
@@ -784,9 +794,9 @@ namespace qb {
 				}
     break;
 
-  case 53:
+  case 54:
 /* Line 661 of lalr1.cc  */
-#line 333 "parser.ypp"
+#line 337 "parser.ypp"
     {
 				useDefautSubMain = false;
 				debug("!!SUB %s defined with arg !!\n",(yysemantic_stack_[(7) - (2)].id)->c_str());
@@ -797,9 +807,9 @@ namespace qb {
 			}
     break;
 
-  case 54:
+  case 55:
 /* Line 661 of lalr1.cc  */
-#line 343 "parser.ypp"
+#line 347 "parser.ypp"
     {
 		(yyval.dim_list) = (yysemantic_stack_[(3) - (1)].dim_list);
 		(yyval.dim_list)->addchild((yysemantic_stack_[(3) - (3)].dim_item));
@@ -809,33 +819,33 @@ namespace qb {
 	}
     break;
 
-  case 55:
+  case 56:
 /* Line 661 of lalr1.cc  */
-#line 350 "parser.ypp"
+#line 354 "parser.ypp"
     {
 		(yyval.dim_list) = new VariableDimsAST ;
 		(yyval.dim_list)->addchild((yysemantic_stack_[(1) - (1)].dim_item));
 	}
     break;
 
-  case 56:
+  case 57:
 /* Line 661 of lalr1.cc  */
-#line 354 "parser.ypp"
+#line 358 "parser.ypp"
     {(yyval.dim_list) = 0;}
     break;
 
-  case 57:
+  case 58:
 /* Line 661 of lalr1.cc  */
-#line 357 "parser.ypp"
+#line 361 "parser.ypp"
     {
 		debug("definning %s is type %p\n",(yysemantic_stack_[(3) - (1)].id)->c_str(), (yysemantic_stack_[(3) - (3)].exprtype));
 		(yyval.dim_item) = new VariableDimAST( *(yysemantic_stack_[(3) - (1)].id)  , ExprTypeASTPtr ( (yysemantic_stack_[(3) - (3)].exprtype) ));
 	}
     break;
 
-  case 58:
+  case 59:
 /* Line 661 of lalr1.cc  */
-#line 370 "parser.ypp"
+#line 374 "parser.ypp"
     {
 			// 单行 if then 语句
 			(yyval.if_clause) = new IFStmtAST( ExprASTPtr((yysemantic_stack_[(4) - (2)].expression)));
@@ -844,9 +854,9 @@ namespace qb {
 	}
     break;
 
-  case 59:
+  case 60:
 /* Line 661 of lalr1.cc  */
-#line 378 "parser.ypp"
+#line 382 "parser.ypp"
     {
 			(yyval.if_clause) = new IFStmtAST( ExprASTPtr((yysemantic_stack_[(6) - (2)].expression)));
 			(yyval.if_clause)->_then = StatementASTPtr((yysemantic_stack_[(6) - (5)].statement_list));
@@ -854,9 +864,9 @@ namespace qb {
 		}
     break;
 
-  case 60:
+  case 61:
 /* Line 661 of lalr1.cc  */
-#line 387 "parser.ypp"
+#line 391 "parser.ypp"
     {
 			(yyval.if_clause) = new IFStmtAST( ExprASTPtr((yysemantic_stack_[(8) - (2)].expression)));
 			(yyval.if_clause)->_then = StatementASTPtr((yysemantic_stack_[(8) - (5)].statement_list));
@@ -866,9 +876,9 @@ namespace qb {
 		}
     break;
 
-  case 61:
+  case 62:
 /* Line 661 of lalr1.cc  */
-#line 402 "parser.ypp"
+#line 406 "parser.ypp"
     {
 			(yyval.while_loop) = new WhileLoopAST( ExprASTPtr((yysemantic_stack_[(5) - (2)].expression)) , StatementASTPtr((yysemantic_stack_[(5) - (4)].statement_list)));
 			(yysemantic_stack_[(5) - (4)].statement_list)->parent = (yyval.while_loop);
@@ -877,7 +887,7 @@ namespace qb {
 
 
 /* Line 661 of lalr1.cc  */
-#line 881 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 891 "/home/cai/projects/basic/compiler/parser.cpp"
 	default:
           break;
       }
@@ -1088,19 +1098,19 @@ namespace qb {
   const unsigned char
   parser::yydefact_[] =
   {
-         0,     8,     0,     0,     0,     0,     0,    28,     0,     0,
-      48,    44,    45,     0,     0,     0,     5,     0,    10,    18,
-      16,    33,     0,    43,    14,    13,    11,    12,     0,     0,
-      33,    20,    43,     0,    17,    19,     0,     0,     0,     0,
-       0,     0,     1,     2,     4,     0,     6,     0,    49,    50,
+         0,     8,     0,     0,     0,     0,     0,    29,     0,     0,
+      49,    45,    46,     0,     0,     0,     5,     0,    10,    18,
+      16,    34,     0,    44,    14,    13,    11,    12,     0,     0,
+      34,    20,    44,     0,    17,    19,     0,     0,    27,     0,
+       0,     0,     1,     2,     4,     0,     6,     0,    50,    51,
        7,     0,     0,     0,     0,     0,     0,     0,     0,    15,
-       0,     0,     0,     0,    56,    56,     0,     0,    24,    30,
-       0,     0,    34,     3,     9,    42,    40,    39,    41,    36,
-      35,    37,    38,    21,    47,    46,    31,     0,     0,    55,
-       0,    22,    23,    57,    27,    25,    26,    58,     0,     0,
-       0,    32,     0,     0,     0,    29,     0,    61,    54,     0,
-       0,     0,    59,     0,    53,     0,    52,     0,     0,    60,
-      51
+       0,     0,     0,     0,    57,    57,     0,     0,    24,    31,
+       0,     0,    35,     3,     9,    43,    41,    40,    42,    37,
+      36,    38,    39,    21,    48,    47,    32,     0,     0,    56,
+       0,    22,    23,    58,    28,    25,    26,    59,     0,     0,
+       0,    33,     0,     0,     0,    30,     0,    62,    55,     0,
+       0,     0,    60,     0,    54,     0,    53,     0,     0,    61,
+      52
   };
 
   /* YYPGOTO[NTERM-NUM].  */
@@ -1261,11 +1271,11 @@ namespace qb {
   {
          0,    51,    52,    52,    53,    53,    54,    54,    54,    55,
       55,    55,    55,    55,    55,    55,    56,    56,    56,    56,
-      56,    57,    58,    58,    59,    59,    59,    60,    60,    61,
-      61,    62,    62,    63,    63,    63,    63,    63,    63,    63,
-      63,    63,    63,    63,    63,    63,    64,    64,    64,    65,
-      65,    66,    66,    67,    68,    68,    68,    69,    70,    70,
-      70,    71
+      56,    57,    58,    58,    59,    59,    59,    59,    60,    60,
+      61,    61,    62,    62,    63,    63,    63,    63,    63,    63,
+      63,    63,    63,    63,    63,    63,    63,    64,    64,    64,
+      65,    65,    66,    66,    67,    68,    68,    68,    69,    70,
+      70,    70,    71
   };
 
   /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
@@ -1274,11 +1284,11 @@ namespace qb {
   {
          0,     2,     2,     3,     2,     1,     2,     2,     1,     3,
        1,     1,     1,     1,     1,     2,     1,     2,     1,     2,
-       2,     3,     1,     1,     3,     4,     4,     3,     0,     3,
-       1,     3,     4,     1,     3,     3,     3,     3,     3,     3,
-       3,     3,     3,     1,     1,     1,     3,     3,     1,     1,
-       1,     9,     7,     7,     3,     1,     0,     3,     4,     6,
-       8,     5
+       2,     3,     1,     1,     3,     4,     4,     2,     3,     0,
+       3,     1,     3,     4,     1,     3,     3,     3,     3,     3,
+       3,     3,     3,     3,     1,     1,     1,     3,     3,     1,
+       1,     1,     9,     7,     7,     3,     1,     0,     3,     4,
+       6,     8,     5
   };
 
 #if YYDEBUG
@@ -1312,21 +1322,21 @@ namespace qb {
       59,    -1,    30,    69,    -1,    57,    -1,    31,    57,    -1,
       29,    63,    -1,    64,    12,    63,    -1,    40,    -1,    41,
       -1,    32,    60,    61,    -1,    32,    60,    61,    46,    -1,
-      32,    60,    61,    47,    -1,    48,    42,    46,    -1,    -1,
-      61,    46,    63,    -1,    63,    -1,    64,    49,    50,    -1,
-      64,    49,    61,    50,    -1,    62,    -1,    49,    63,    50,
-      -1,    63,    14,    63,    -1,    63,    13,    63,    -1,    63,
-      15,    63,    -1,    63,    16,    63,    -1,    63,    10,    63,
-      -1,    63,     9,    63,    -1,    63,    11,    63,    -1,    63,
-       8,    63,    -1,    64,    -1,    42,    -1,    44,    -1,    64,
-      22,    41,    -1,    64,    21,    41,    -1,    41,    -1,    23,
-      -1,    45,    -1,    27,    41,    49,    68,    50,    24,    58,
-      53,    28,    -1,    27,    41,    49,    68,    50,    53,    28,
-      -1,    25,    41,    49,    68,    50,    53,    26,    -1,    68,
-      46,    69,    -1,    69,    -1,    -1,    41,    24,    58,    -1,
-      33,    63,    34,    56,    -1,    33,    63,    34,    65,    53,
-      35,    -1,    33,    63,    34,    65,    53,    36,    53,    35,
-      -1,    38,    63,    65,    53,    39,    -1
+      32,    60,    61,    47,    -1,    32,    60,    -1,    48,    42,
+      46,    -1,    -1,    61,    46,    63,    -1,    63,    -1,    64,
+      49,    50,    -1,    64,    49,    61,    50,    -1,    62,    -1,
+      49,    63,    50,    -1,    63,    14,    63,    -1,    63,    13,
+      63,    -1,    63,    15,    63,    -1,    63,    16,    63,    -1,
+      63,    10,    63,    -1,    63,     9,    63,    -1,    63,    11,
+      63,    -1,    63,     8,    63,    -1,    64,    -1,    42,    -1,
+      44,    -1,    64,    22,    41,    -1,    64,    21,    41,    -1,
+      41,    -1,    23,    -1,    45,    -1,    27,    41,    49,    68,
+      50,    24,    58,    53,    28,    -1,    27,    41,    49,    68,
+      50,    53,    28,    -1,    25,    41,    49,    68,    50,    53,
+      26,    -1,    68,    46,    69,    -1,    69,    -1,    -1,    41,
+      24,    58,    -1,    33,    63,    34,    56,    -1,    33,    63,
+      34,    65,    53,    35,    -1,    33,    63,    34,    65,    53,
+      36,    53,    35,    -1,    38,    63,    65,    53,    39,    -1
   };
 
   /* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
@@ -1336,11 +1346,11 @@ namespace qb {
   {
          0,     0,     3,     6,    10,    13,    15,    18,    21,    23,
       27,    29,    31,    33,    35,    37,    40,    42,    45,    47,
-      50,    53,    57,    59,    61,    65,    70,    75,    79,    80,
-      84,    86,    90,    95,    97,   101,   105,   109,   113,   117,
-     121,   125,   129,   133,   135,   137,   139,   143,   147,   149,
-     151,   153,   163,   171,   179,   183,   185,   186,   190,   195,
-     202,   211
+      50,    53,    57,    59,    61,    65,    70,    75,    78,    82,
+      83,    87,    89,    93,    98,   100,   104,   108,   112,   116,
+     120,   124,   128,   132,   136,   138,   140,   142,   146,   150,
+     152,   154,   156,   166,   174,   182,   186,   188,   189,   193,
+     198,   205,   214
   };
 
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
@@ -1349,11 +1359,11 @@ namespace qb {
   {
          0,   164,   164,   174,   188,   189,   194,   195,   197,   200,
      201,   202,   203,   204,   205,   206,   209,   210,   211,   212,
-     213,   216,   221,   224,   230,   237,   240,   246,   247,   250,
-     251,   259,   260,   269,   270,   271,   272,   273,   274,   275,
-     276,   277,   278,   280,   285,   289,   292,   296,   297,   305,
-     305,   311,   320,   331,   343,   350,   354,   357,   370,   376,
-     383,   400
+     213,   216,   221,   224,   230,   237,   240,   243,   250,   251,
+     254,   255,   263,   264,   273,   274,   275,   276,   277,   278,
+     279,   280,   281,   282,   284,   289,   293,   296,   300,   301,
+     309,   309,   315,   324,   335,   347,   354,   358,   361,   374,
+     380,   387,   404
   };
 
   // Print the state stack on the debug stream.
@@ -1446,4 +1456,4 @@ namespace qb {
 #line 21 "parser.ypp"
 } // qb
 /* Line 1106 of lalr1.cc  */
-#line 1450 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 1460 "/home/cai/projects/basic/compiler/parser.cpp"

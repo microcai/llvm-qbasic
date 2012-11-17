@@ -1,16 +1,16 @@
-REM 循环测试
+//  循环测试
 
 sub main ( )
 
-DIM A as int
+DIM A as long
 
 A = 100
 
-WHILE A
+while A
 	print A ,
-	A = A-1
+	A = A - 1
 end while
 
-print
+print 
 
 end sub
