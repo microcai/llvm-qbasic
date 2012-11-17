@@ -130,27 +130,28 @@ namespace qb {
      UMINUS = 270,
      tPOW = 271,
      tDREF = 272,
-     tAS = 273,
-     tSUB = 274,
-     tSUBEND = 275,
-     tFUNCTION = 276,
-     tFUNCTIONEND = 277,
-     tDIM = 278,
-     tLET = 279,
-     tPRINT = 280,
-     tNEWLINE = 281,
-     tIF = 282,
-     tTHEN = 283,
-     tENDIF = 284,
-     tELSE = 285,
-     tELSEIF = 286,
-     tWHILE = 287,
-     tENDWHILE = 288,
-     tLONG = 289,
-     tID = 290,
-     tInteger = 291,
-     tSTRING = 292,
-     tNUMBER = 293
+     tNEWLINE = 273,
+     tAS = 274,
+     tSUB = 275,
+     tSUBEND = 276,
+     tFUNCTION = 277,
+     tFUNCTIONEND = 278,
+     tRETURN = 279,
+     tDIM = 280,
+     tLET = 281,
+     tPRINT = 282,
+     tIF = 283,
+     tTHEN = 284,
+     tENDIF = 285,
+     tELSE = 286,
+     tELSEIF = 287,
+     tWHILE = 288,
+     tENDWHILE = 289,
+     tLONG = 290,
+     tID = 291,
+     tInteger = 292,
+     tSTRING = 293,
+     tNUMBER = 294
    };
 
     };
@@ -323,7 +324,7 @@ namespace qb {
 #line 21 "parser.ypp"
 } // qb
 /* Line 36 of lalr1.cc  */
-#line 327 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 328 "/home/cai/projects/basic/compiler/parser.hpp"
 
 
 

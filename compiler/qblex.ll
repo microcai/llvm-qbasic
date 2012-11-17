@@ -89,7 +89,7 @@ if			return token::tIF;
 then		return token::tTHEN;
 else		return token::tELSE;
 elif|elseif	return token::tELSEIF;
-	
+return		return token::tRETURN;	
 
 long return token::tLONG;/* variables type*/
 
@@ -176,14 +176,14 @@ false {
 
 (([0-9]+|([0-9]*\.[0-9]+))([eE][-+]?[0-9]+)?) {
    yylval->number = strtod (yytext, NULL);
-      printf("got %f\n",yylval->number);
+    printf("got %f\n",yylval->number);
 
    return token::tNUMBER;
 }
 
 {name} {
    yylval->id = new std::string (yytext);
-   printf("got %s\n", yytext);
+//   printf("got %s\n", yytext);
    return token::tID;
 }
 

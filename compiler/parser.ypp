@@ -114,6 +114,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %nonassoc '.'
 
 //关键字
+%token tNEWLINE
 
 %token tAS
 %token tSUB
@@ -121,9 +122,8 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 
 %token tFUNCTION
 %token tFUNCTIONEND
+%token tRETURN
 %token tDIM tLET tPRINT
-
-%token tNEWLINE
 
 %token tIF tTHEN tENDIF tELSE tELSEIF
 %token tWHILE tENDWHILE
@@ -210,6 +210,7 @@ statement: printstatement { $$ = $1; }
 		| tDIM dim_item { $$ = $2; }
 		| assigment {$$= $1;}
 		| tLET assigment { $$ = $2;}
+		| tRETURN expression {	debug("return not implemented yet\n");exit(1);}
 		;
 
 assigment: varref tEQU expression {

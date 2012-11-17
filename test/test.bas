@@ -12,7 +12,7 @@ dim s as long
 
 s = a + b
 
-// return s
+return s
 
 print s
 
