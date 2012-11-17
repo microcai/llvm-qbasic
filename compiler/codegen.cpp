@@ -344,19 +344,21 @@ llvm::BasicBlock* VariableDimAST::Codegen(ASTContext ctx)
 	return ctx.block;
 }
 
-// 赋值语句, TODO 直接调用赋值表达式
+// 赋值语句, NOTE 直接调用赋值表达式
 llvm::BasicBlock* AssigmentAST::Codegen(ASTContext ctx)
 {
-// 	BOOST_ASSERT(ctx.llvmfunc);
-// 	debug("called for number assigment\n");
-// 	//return NULL;
+ 	BOOST_ASSERT(ctx.llvmfunc);
+ 	debug("called for number assigment\n");
+
+	assignexpr->getval(ctx);
+	
 // 	llvm::Value * LHS =	this->lval->getptr(ctx);
 // 	llvm::Value * RHS =	this->rval->getval(ctx);
 // 
-// 	llvm::IRBuilder<> builder(ctx.block);	
+// 	llvm::IRBuilder<> builder(ctx.block);
 // 	// 生成赋值语句,因为是简单的整型赋值,所以可以直接生成而不用调用 operator==()
-// 	builder.CreateStore(RHS,LHS);
-// 	return ctx.block;
+//  	builder.CreateStore(RHS,LHS);
+ 	return ctx.block;
 }
 
 
