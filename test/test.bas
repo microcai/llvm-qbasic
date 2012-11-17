@@ -18,6 +18,6 @@ sub main()
 
 print 1000000
 
-testfunc( )
+testfunc(  )
 
 end sub

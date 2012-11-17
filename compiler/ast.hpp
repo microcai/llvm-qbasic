@@ -130,7 +130,7 @@ class VariableDimAST : public DimAST
 public:
 	VariableDimAST(const std::string _name , ExprTypeASTPtr _type);
 	virtual llvm::BasicBlock* Codegen(llvm::Function *TheFunction,llvm::BasicBlock * insertto);
-	llvm::AllocaInst * AllocaInstRef;
+	llvm::AllocaInst*	AllocaInstRef; //
 };
 
 typedef boost::shared_ptr<VariableDimAST> VariableDimASTPtr;

@@ -118,8 +118,9 @@ llvm::AllocaInst* VariableRefExprAST::nameresolve(
 		}
 	}
 	if(!this->define->AllocaInstRef){
-		debug("=========== varable\"%s\" ======== not defined\n",var->ID.c_str());
-		exit(1);
+		debug("=========== varable\"%s\" ======== not defined in block , maybe in argument?\n",
+			  var->ID.c_str());
+		//exit(1);
 	}
 	return this->define->AllocaInstRef;
 }
@@ -128,15 +129,37 @@ llvm::Value* VariableRefExprAST::getptr(
 	StatementAST* parent, llvm::Function* TheFunction,llvm::BasicBlock* insertto)
 {
 	BOOST_ASSERT(TheFunction);
-	return this->nameresolve(parent,TheFunction,insertto);
+	llvm::Value * ptr = this->nameresolve(parent,TheFunction,insertto);
+	if(!ptr){
+		this->define->Codegen(TheFunction,TheFunction->getBasicBlockList().begin());
+	}
+	return this->define->AllocaInstRef;
 }
 
 llvm::Value* VariableRefExprAST::getval(StatementAST * parent,llvm::Function* TheFunction, llvm::BasicBlock* insertto)
 {
 	BOOST_ASSERT(TheFunction);
-	llvm::Value * ptr = this->getptr(parent,TheFunction,insertto);
 	llvm::IRBuilder<> builder(TheFunction->getContext());
 	builder.SetInsertPoint(insertto);
+	
+	llvm::Value * ptr = this->nameresolve(parent,TheFunction,insertto);
+	if(ptr){
+		return builder.CreateLoad(ptr);
+	}else{
+		// try to look up in argument
+		// not found
+		llvm::Function::arg_iterator llvmarg_it = TheFunction->arg_begin();
+
+		for(; llvmarg_it != TheFunction->arg_end() ;  llvmarg_it++	){
+			
+			if(llvmarg_it->getName() == this->var->ID)
+			{
+				debug("got name \"%s\" as argument!\n",this->var->ID.c_str());
+				return llvmarg_it;
+			}
+		}
+		debug(":(\n");exit(1);
+	}
 	return builder.CreateLoad(ptr);
 }
 
@@ -368,17 +391,38 @@ llvm::BasicBlock* FunctionDimAST::Codegen(llvm::Function* TheFunction, llvm::Bas
 
 	//首先生成全局可用的外部辅助函数
 	llvm::IRBuilder<> builder(llvm::getGlobalContext());
-	llvm::FunctionType *funcType = llvm::FunctionType::get(builder.getVoidTy(), false);
+
+	// 参数生成 args
+	//为 ARG 生成代码!
+
+	std::vector<llvm::Type*>	args;
+
+	std::list< StatementASTPtr >::iterator dimit = substatements.begin();
+
+	BOOST_FOREACH( StatementASTPtr stmt , substatements)
+	{
+		VariableDimAST * dim = dynamic_cast<VariableDimAST*>(stmt.get());
+		args.push_back(dim->type->llvmtype());
+	}
+	
+	llvm::FunctionType *funcType = llvm::FunctionType::get(builder.getVoidTy(), args, true);
 	llvm::Function *mainFunc =
 		llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, this->name , AST::module);
 	llvm::BasicBlock *entry = llvm::BasicBlock::Create(builder.getContext(), "entrypoint", mainFunc);
-	builder.SetInsertPoint(entry);	
+	builder.SetInsertPoint(entry);
 	//开始生成代码
-	//now code up the function body
-	void * p = this->body->Codegen(mainFunc,entry);
-	//llvm::BasicBlock *ret = llvm::BasicBlock::Create(builder.getContext(),"" , mainFunc);
 
-	builder.SetInsertPoint((llvm::BasicBlock*)p);
+	// 为参数设定 name
+	llvm::Function::arg_iterator llvmarg_it = mainFunc->arg_begin();
+	std::list< StatementASTPtr >::iterator argit = substatements.begin();
+
+	for(; argit != substatements.end() ; argit++ , llvmarg_it++	){
+		VariableDimAST * argdim = dynamic_cast<VariableDimAST*>(argit->get());
+		llvmarg_it->setName(argdim->name);
+	}
+	
+	//now code up the function body
+	builder.SetInsertPoint(body->Codegen(mainFunc,entry));
 	//返回值
 	builder.CreateRetVoid();
 	return insertto;
