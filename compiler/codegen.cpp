@@ -190,14 +190,22 @@ llvm::AllocaInst* CallExprAST::nameresolve(StatementAST* parent, llvm::Function*
 	return NULL;
 }
 
-//TODO call function and use the result
+//TODO use the result !
 llvm::Value* CallExprAST::getval(StatementAST* parent, llvm::Function* TheFunction, llvm::BasicBlock* insertto)
 {
 	debug("===I will call to %s ====\n",var->ID.c_str() );
 
 	llvm::IRBuilder<>	builder(insertto);
 
-	builder.CreateCall(target);
+	// build call argument
+
+	std::vector<llvm::Value*> args;
+
+	BOOST_FOREACH( ExprASTPtr expr , callargs->expression_list)
+	{
+		args.push_back( expr->getval(parent,TheFunction,insertto) );
+	} 
+	builder.CreateCall(target, args);
 }
 
 llvm::BasicBlock* DimAST::Codegen(llvm::Function*, llvm::BasicBlock* insertto)
