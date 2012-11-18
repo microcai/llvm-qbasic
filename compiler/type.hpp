@@ -311,6 +311,7 @@ public:
 
 	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name,const std::string _typename);
     virtual ExprOperation* getop();
+    virtual void destory(ASTContext , llvm::Value* Ptr);
 };
 
 

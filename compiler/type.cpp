@@ -131,6 +131,18 @@ llvm::Value* StringExprTypeAST::Alloca(ASTContext ctx, const std::string _name, 
 	return newval;
 }
 
+void StringExprTypeAST::destory(ASTContext ctx, llvm::Value* Ptr)
+{
+	debug("generate dealloca for string\n");
+
+	llvm::IRBuilder<>	builder(ctx.block);
+
+	llvm::Constant * func_free = qbc::getbuiltinprotype(ctx,"free");
+
+	builder.CreateCall(func_free,builder.CreateLoad(Ptr));
+}
+
+
 llvm::Value* NumberExprAST::getval(ASTContext ctx)
 {
 	return qbc::getconstlong(	this->v);

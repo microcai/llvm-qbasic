@@ -165,7 +165,17 @@ llvm::BasicBlock* VariableDimAST::Codegen(ASTContext ctx)
 
 	// register with symbolic table
 	ctx.codeblock->symbols.insert(std::make_pair(this->name,this));
-	
+	return ctx.block;
+}
+
+// de register with the symblic table
+llvm::BasicBlock* VariableDimAST::valuedegen(ASTContext ctx)
+{
+	BOOST_ASSERT(ctx.llvmfunc);
+	//map type name to type
+	ExprTypeAST * exptype = TypeNameResolve(ctx,this->type);
+	debug("dellocate stack for var %s , type %s\n", name.c_str(), type.c_str());
+	exptype->destory(ctx,alloca_var);
 	return ctx.block;
 }
 
@@ -183,6 +193,7 @@ llvm::Value* ArgumentDimAST::getval(ASTContext ctx)
 		if(arg_it->getName() == this->name)
 			return arg_it;
 	}
+	debug("bug here %s \n",__func__);
 	exit(1);
 }
 
@@ -374,6 +385,18 @@ llvm::BasicBlock* CodeBlockAST::Codegen(ASTContext ctx)
 	return ctx.block;
 }
 
+llvm::BasicBlock* CodeBlockAST::GenLeave(ASTContext ctx)
+{
+	//查找 block 里定义的变量, 撤销他们!
+	// register deallocate functions!
+	std::map< std::string, DimAST* >::iterator it = this->symbols.begin() , end = this->symbols.end();
+	for(;it != end ; it ++){
+		ctx.block = it->second->valuedegen(ctx);
+	}
+	//TODO , generate jump to the endblock
+	return ctx.block;
+}
+
 // 生成函数 参数和反回值支持
 llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 {
@@ -437,15 +460,18 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 	if(bodyblock != ctx.block){
 		debug("body block changed!!!!\n");
 	}
-	ctx.block = bodyblock;	
-	builder.SetInsertPoint(ctx.block);
-
+	ctx.block = bodyblock;
 
 	if(returnblock){
 		builder.CreateBr(returnblock);
 		returnblock->moveAfter(bodyblock);
 		builder.SetInsertPoint(returnblock);
+		ctx.block = returnblock;
 	}
+
+	//生成变量撤销操作
+	ctx.block = body->GenLeave(ctx);
+	builder.SetInsertPoint(ctx.block);
 
 	if(retval)
 		builder.CreateRet(builder.CreateLoad(retval));

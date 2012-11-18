@@ -117,6 +117,8 @@ public:
 	std::string		name; //定义的符号的名字.
 	std::string		type; // 定义的符号的名字. 将在 typetable 获得type的定义
 	virtual llvm::BasicBlock* Codegen(ASTContext) = 0; // generate alloca
+	// gengerate deconstructions , default is don't do that, override on subclass
+	virtual llvm::BasicBlock* valuedegen(ASTContext){};	
 
 	virtual	llvm::Value*	getptr(ASTContext ctx) = 0 ; // the location for the allocated value
 	virtual	llvm::Value*	getval(ASTContext ctx) = 0;
@@ -167,6 +169,7 @@ public:
 	std::map<std::string, FunctionDimAST*>	functions; // 函数符号表
 
     virtual llvm::BasicBlock* Codegen(ASTContext ctx);
+	virtual llvm::BasicBlock* GenLeave(ASTContext);
 
 	int  find(StatementAST* child);
 	void addchild(StatementAST* item);
@@ -217,6 +220,7 @@ class VariableDimAST : public DimAST
 public:
 	VariableDimAST(const std::string _name ,  const std::string	_type);
 	virtual llvm::BasicBlock* Codegen(ASTContext);
+    virtual llvm::BasicBlock* valuedegen(ASTContext ctx);
     virtual llvm::Value* getptr(ASTContext ctx);
 	virtual	llvm::Value* getval(ASTContext ctx);
 };
