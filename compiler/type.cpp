@@ -124,6 +124,43 @@ DimAST* NamedExprAST::nameresolve(ASTContext ctx)
 	return nameresolve(ctx);
 }
 
+DimAST* CallExprAST::nameresolve(ASTContext ctx)
+{
+	std::string functionname = this->ID->ID;
+
+	debug("searching for function %s\n",functionname.c_str());
+
+	if(! ctx.codeblock ){
+
+		fprintf(stderr,"function %s not defined, try to call any way, you will get ld undefined reference if function %s is not included in the linking command line\n",functionname.c_str(),functionname.c_str());
+
+		return NULL;
+	}
+
+	std::map< std::string, FunctionDimAST* >::iterator dimast_iter = ctx.codeblock->functions.find(functionname);
+
+	// 定义找到
+	if(dimast_iter != ctx.codeblock->functions.end()){
+
+		debug("searching for function %s have result %p\n",functionname.c_str(),dimast_iter->second);
+
+		return dimast_iter->second;
+	}
+	ctx.codeblock = ctx.codeblock->parent;
+	return nameresolve(ctx);
+}
+
+
+llvm::Value* CallExprAST::defaultprototype(ASTContext ctx, std::string functionname)
+{
+	//build default function type
+	llvm::IRBuilder<>	builder(ctx.block);
+
+	std::vector<llvm::Type*> no_args;
+
+	return ctx.module->getOrInsertFunction(functionname,llvm::FunctionType::get(numbertype.llvm_type(ctx), no_args,true));
+}
+
 llvm::Value* VariableExprAST::getval(ASTContext ctx)
 {
  	llvm::IRBuilder<> builder(ctx.block);
@@ -177,55 +214,29 @@ llvm::Value* CallExprAST::getval(ASTContext ctx)
 	llvm::Value * ret = NULL;
 
 	//获得函数定义
+	llvm::Value * llvmfunc = NULL;
 	DimAST * dim = nameresolve(ctx);
 	FunctionDimAST* fundim = dynamic_cast<FunctionDimAST*>(dim);
 	
 	if(fundim){ //有定义, 则直接调用, 无定义就 ... 呵呵
-
-		// 获得符号类型
-		ExprTypeAST * symboltype = TypeNameResolve(ctx,dim->type);
-
-		//获得函数类型信息
-		llvm::Value * llvmfunc =	fundim->getval(ctx);
-
-		//构建参数列表
-		std::vector<llvm::Value*> args;
-		if(callargs && callargs->expression_list.size() )
-		{
-			BOOST_FOREACH( ExprASTPtr expr , callargs->expression_list)
-			{
-				debug("pusing args \n");
-				args.push_back( expr->getval(ctx) );
-			}
-		}
-		
-		ret = builder.CreateCall(llvmfunc,args,this->ID->ID);
-
-	}else {
-		debug("function %s not defined", this->ID->ID.c_str());
-	    exit(1);
-	}
-	return ret;
-#if 0
-	llvm::IRBuilder<>	builder(ctx.block);
-
-	// build call argument
-
-	std::vector<llvm::Value*> args;
-
-
-	if(args.empty()){
-		debug("===I will call to %s ==== with no argument\n",var->ID.c_str());
-		ret = builder.CreateCall(target);
+//		ExprTypeAST * symboltype = TypeNameResolve(ctx,dim->type);
+		llvmfunc = fundim->getptr(ctx);
 	}else{
-		debug("===I will call to %s ==== with argument number %d\n",var->ID.c_str() , args.size() );
-		ret = builder.CreateCall(target, args);
+		llvmfunc = defaultprototype(ctx,this->ID->ID);
 	}
-	// use the result
-	
-#endif
-}
 
+	//构建参数列表
+	std::vector<llvm::Value*> args;
+	if(callargs && callargs->expression_list.size() )
+	{
+		BOOST_FOREACH( ExprASTPtr expr , callargs->expression_list)
+		{
+			debug("pusing args \n");
+			args.push_back( expr->getval(ctx) );
+		}
+	}
+	return builder.CreateCall(llvmfunc,args,this->ID->ID);
+}
 
 llvm::Value* CalcExprAST::getval(ASTContext ctx)
 {

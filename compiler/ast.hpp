@@ -155,13 +155,15 @@ public:
 // 代码块, 主要用来隔离变量的作用域. 在 BASIC 中, 代码只有2个作用域 : 全局和本地变量
 // 代码块包含有符号表, 符号表由变量声明或者定义语句填充.
 // 执行符号查找的时候就是到这里查找符号表
+class FunctionDimAST;
 class CodeBlockAST : public StatementAST
 {
 public:
-	std::vector<StatementASTPtr>		statements;
+	std::vector<StatementASTPtr>			statements;	
 
-	CodeBlockAST*						parent; // 父作用域
-	std::map<std::string, DimAST*>		symbols; // 符号表, 映射到定义语句,获得定义语句
+	CodeBlockAST*							parent; // 父作用域
+	std::map<std::string, DimAST*>			symbols; // 符号表, 映射到定义语句,获得定义语句
+	std::map<std::string, FunctionDimAST*>	functions; // 函数符号表
 
     virtual llvm::BasicBlock* Codegen(ASTContext ctx);
 
@@ -260,9 +262,9 @@ public:
 	//如果是声明, 为 dim 生成 llvm::Function * 声明供使用
     virtual llvm::BasicBlock* Codegen(ASTContext);
 	
+	//get a pointer to function
     virtual	llvm::Value* getptr(ASTContext ctx);
 
-	//get a pointer to function
 	virtual	llvm::Value* getval(ASTContext ctx){
 		return this->target;
 	}

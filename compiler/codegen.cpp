@@ -424,7 +424,7 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 
 	//挂到全局名称表中
 
-	ctx.codeblock->symbols.insert(std::make_pair(this->name,this));
+	ctx.codeblock->functions.insert(std::make_pair(this->name,this));
 	
 	
 	//开始生成代码

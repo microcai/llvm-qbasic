@@ -226,6 +226,9 @@ public:
 
     virtual llvm::Value* getptr(ASTContext) { return 0;}; // cann't get the address
     virtual llvm::Value* getval(ASTContext);
+		// 函数有自己的nameresolve 过程
+    virtual DimAST* nameresolve(ASTContext ctx);
+	static	llvm::Value * defaultprototype(ASTContext ctx,std::string functionname);
 };
 
 typedef boost::shared_ptr<CallExprAST>	CallExprASTPtr;
@@ -253,7 +256,7 @@ public:
 
 //	整型,支持数学运算
 class NumberExprTypeAST :public ExprTypeAST {
-
+public:
     virtual llvm::Type* llvm_type(ASTContext ctx);
 
     virtual size_t size(){return sizeof(long);};
