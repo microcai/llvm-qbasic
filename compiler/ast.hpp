@@ -221,7 +221,8 @@ typedef boost::shared_ptr<VariableDimAST> VariableDimASTPtr;
 
 class ArgumentDimAST : public VariableDimAST
 {
-	llvm::Value * stackvar;
+	// 如果没有本地修改, 就可以直接使用传入的变量,如果本地进行修改了, 就重新分配一个.
+	llvm::Value * modified_stackvar;
 public:
 	ArgumentDimAST(const std::string _name ,  const std::string	_type);
 	virtual llvm::BasicBlock* Codegen(ASTContext);

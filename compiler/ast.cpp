@@ -165,7 +165,7 @@ AssigmentAST::AssigmentAST(NamedExprAST* lval, ExprAST* rval)
 }
 
 ArgumentDimAST::ArgumentDimAST(const std::string _name, const std::string _type)
-	:VariableDimAST(_name,_type)
+	:VariableDimAST(_name,_type),modified_stackvar(0)
 {	
 }
 

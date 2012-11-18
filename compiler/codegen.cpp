@@ -196,6 +196,10 @@ llvm::Value* ArgumentDimAST::getval(ASTContext ctx)
 {
 	debug("ArgumentDimAST:: geting val %s of argument\n", this->name.c_str());
 
+	if(modified_stackvar){ // have local copy now
+		llvm::IRBuilder<>	builder(ctx.block);
+		return builder.CreateLoad(getptr(ctx));
+	}
 	// geting value from argument
 	llvm::Function::arg_iterator arg_it =ctx.llvmfunc->arg_begin();
 	for(;arg_it != ctx.llvmfunc->arg_end(); arg_it++){
@@ -206,9 +210,14 @@ llvm::Value* ArgumentDimAST::getval(ASTContext ctx)
 }
 
 llvm::Value* ArgumentDimAST::getptr(ASTContext ctx)
-{
+{	
 	debug("set val for argument\n");
-	exit(1);
+
+	if(this->modified_stackvar){
+		return modified_stackvar;
+	}
+	// REALLOCATE and update the pointer
+	return this->modified_stackvar = TypeNameResolve(ctx,this->type)->Alloca(ctx,this->name,this->type);
 }
 
 llvm::BasicBlock* ArgumentDimAST::Codegen(ASTContext ctx)
