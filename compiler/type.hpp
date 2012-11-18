@@ -138,6 +138,16 @@ public:
     virtual llvm::Value* getval(ASTContext );	
 };
 
+// 用户字符串, 终于实现了有木有!
+class StringExprAST :public ExprAST
+{
+	std::string			str;
+public:
+	StringExprAST(const std::string _str);
+	virtual ExprTypeAST* type(ASTContext );
+    virtual llvm::Value* getval(ASTContext );
+};
+
 // 命名表达式. 命名的表达式是 Function Call , 数组, 变量 的基类
 class DimAST;
 class NamedExprAST : public ExprAST

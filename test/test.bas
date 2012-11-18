@@ -6,28 +6,12 @@
 	for historcal test cases, see test[0-9]*.bas
 */
 
-function main2( d as long) as long
-
-dim a as long
-dim b as long
-dim c as long
-
-a=1
-b=800
-
-c = 6000
-
-print a , b
-
-print b
-
-
-end function
+/*
+	print string test!
+*/
 
 sub main()
 
-print 1000000
-
-main2(1)
+print "hello world"
 
 end sub

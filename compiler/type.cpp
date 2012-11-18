@@ -43,12 +43,15 @@
 //static map of the internal type system
 
 static	NumberExprTypeAST numbertype;
+static	StringExprTypeAST stringtype;
 
 // todo 检查当前 block 并回朔到根节点, 查找定义
 ExprTypeAST*	TypeNameResolve(ASTContext ctx,const std::string _typename)
 {
 	if(_typename == "long")
 		return &numbertype;
+	if(_typename == "string")
+		return &stringtype;
 	return NULL;
 }
 
@@ -90,6 +93,35 @@ llvm::Type* NumberExprTypeAST::llvm_type(ASTContext ctx)
 			return llvm::Type::getInt32Ty(llvm::getGlobalContext());
 	}
 	return llvm::Type::getInt32Ty(llvm::getGlobalContext());
+}
+
+llvm::Type* StringExprTypeAST::llvm_type(ASTContext ctx)
+{
+	return llvm::Type::getInt8PtrTy(llvm::getGlobalContext());
+}
+
+llvm::Value* NumberExprTypeAST::Alloca(ASTContext ctx, const std::string _name,const std::string _typename)
+{
+	debug("allocation for value %s type %s\n",_name.c_str(),_typename.c_str());
+	//TODO , 在堆栈上分配个变量
+	llvm::IRBuilder<> builder(&ctx.llvmfunc->getEntryBlock(),
+							  ctx.llvmfunc->getEntryBlock().begin());
+
+	builder.SetInsertPoint(ctx.block);
+
+	return builder.CreateAlloca(this->llvm_type(ctx),0,_name);
+}
+
+llvm::Value* StringExprTypeAST::Alloca(ASTContext ctx, const std::string _name, const std::string _typename)
+{
+	debug("allocation for value %s type string\n",_name.c_str(),_typename.c_str());
+	//TODO , 在堆栈上分配个变量
+	llvm::IRBuilder<> builder(&ctx.llvmfunc->getEntryBlock(),
+							  ctx.llvmfunc->getEntryBlock().begin());
+
+	builder.SetInsertPoint(ctx.block);
+
+	return builder.CreateAlloca(this->llvm_type(ctx),0,_name);
 }
 
 llvm::Value* NumberExprAST::getval(ASTContext ctx)
@@ -192,18 +224,6 @@ llvm::Value* AssignmentExprAST::getval(ASTContext ctx)
 	return RHS;
 }
 
-llvm::Value* NumberExprTypeAST::Alloca(ASTContext ctx, const std::string _name,const std::string _typename)
-{
-	debug("allocation for value %s type %s\n",_name.c_str(),_typename.c_str());
-	//TODO , 在堆栈上分配个变量
-	llvm::IRBuilder<> builder(&ctx.llvmfunc->getEntryBlock(),
-							  ctx.llvmfunc->getEntryBlock().begin());
-	
-	builder.SetInsertPoint(ctx.block);
-
-	return builder.CreateAlloca(this->llvm_type(ctx),0,_name);
-}
-
 llvm::Value* CallExprAST::getval(ASTContext ctx)
 {
 	llvm::IRBuilder<> builder(ctx.llvmfunc->getContext());
@@ -275,6 +295,11 @@ llvm::Value* CalcExprAST::getval(ASTContext ctx)
 ///////////////////////////////////////////////////////////////////
 //////////////////// 构造函数们 ////////////////////////////////////
 //////////////////////////////////////////////////////////////////
+StringExprAST::StringExprAST(const std::string _str)
+{
+	
+}
+
 NamedExprAST::NamedExprAST(ReferenceAST* _ID)
 	:ID(_ID)
 {
@@ -305,3 +330,5 @@ CalcExprAST::CalcExprAST(ExprAST* l, MathOperator _op, ExprAST* r)
 {
 	
 }
+
+

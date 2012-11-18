@@ -318,6 +318,9 @@ expression: call_function_or_array
 			$$ = new NumberExprAST( $1 );
 		}
 		| tNUMBER //浮点数
+		| tSTRING { //字符串
+			$$ = new StringExprAST($1);
+		}
 		;
 
 varref:	varref '.' tID {
