@@ -142,6 +142,7 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 	//第二个参数是打印列表.
 	args.insert(args.begin(), builder.CreateGlobalStringPtr(printfmt));
 
+	//builder.CreateCondBr();
 	//调用 print
 	if(need_brt){
 		args.insert(args.begin(), qbc::getconstint(0) );
@@ -342,11 +343,13 @@ llvm::BasicBlock* WhileLoopAST::Codegen(ASTContext ctx)
 	llvm::BasicBlock* cond_continue =
 		llvm::BasicBlock::Create(ctx.llvmfunc->getContext(), "whileend", ctx.llvmfunc);
 
-	llvm::IRBuilder<> builder(ctx.llvmfunc->getContext());
-	builder.SetInsertPoint(ctx.block);
+	llvm::IRBuilder<> builder(ctx.block);
+	//builder.SetInsertPoint(ctx.block);
 	builder.CreateBr(cond_while);
 
+	
 	builder.SetInsertPoint(cond_while);
+	ctx.block = cond_while;
 	llvm::Value * expcond = this->condition->getval(ctx);
 	expcond = builder.CreateICmpEQ(expcond, qbc::getconstlong(0), "tmp");
 	builder.CreateCondBr(expcond, cond_continue, while_body);
