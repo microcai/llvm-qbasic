@@ -245,13 +245,17 @@ public:
 
 	// 为该类型在栈上分配一块内存, 返回分配的指针 , 有可能的话,起个名字
 	virtual llvm::Value * Alloca(ASTContext ctx, const std::string _name,const std::string _typename) = 0;
+
+	// 为该类型生成初始化操作指令 , 默认为空操作, 也就是只要分配个内存就可以了
+	virtual void initalize(ASTContext, llvm::Value * Ptr) {};
+
+	// 为该类型生成初始化指令,带参数的.
+// 	virtual initalize(ASTContext, llvm::Value * Ptr , llvm::Value* initalizedata) = 0;
+
+	// 为该类型生成删除操作, 默认为空操作, 也就是只要移动栈指针就可以了
+	virtual void destory(ASTContext, llvm::Value * Ptr) {};
 	
 	virtual	size_t size(){return _size;};
-		
-	virtual	llvm::Value* operatoraddress(NamedExprAST * expr , ASTContext) = 0;
-
-	// 数学运算
-	virtual	llvm::Value* operatormath(ASTContext ctx,MathOperator op,ExprAST * LHS, ExprAST * RHS) = 0;
 };
 
 //	整型,支持数学运算
@@ -262,14 +266,18 @@ public:
     virtual size_t size(){return sizeof(long);};
 	
 	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name,const std::string _typename);
-
-	// 数学运算
-	virtual	llvm::Value* operator_math(ASTContext ctx,MathOperator op,ExprAST * LHS, ExprAST * RHS){}
-
-
-    virtual llvm::Value* operatormath(ASTContext ctx, MathOperator op, ExprAST* LHS, ExprAST* RHS){};
-    virtual llvm::Value* operatoraddress(NamedExprAST* expr, ASTContext ){};
 };
+
+//  字符串 支持!
+class StringExprTypeAST : public ExprTypeAST
+{
+    virtual llvm::Type* llvm_type(ASTContext ctx);
+
+    virtual size_t size(){return sizeof(long);}; //yes没错, 字符串类型只占用8个字节,也就是一个指针哦!
+
+	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name,const std::string _typename);
+};
+
 
 //  函数对象类型. 这是基类
 //  而一个函数声明本身也是一个 callable 类型
