@@ -164,8 +164,6 @@ class VariableExprAST : public NamedExprAST
 {
 public:
     VariableExprAST(ReferenceAST* ID);
-
-	
 	virtual llvm::Value* getval(ASTContext );
 	
     virtual llvm::Value* getptr(ASTContext );
@@ -224,7 +222,7 @@ class CallExprAST : public CallOrArrayExprAST
 	ExprListASTPtr				callargs;
 public:
 	CallExprAST(ReferenceAST * , ExprListAST * exp_list = NULL);
-	virtual ExprTypeAST*	type(ASTContext){};
+	virtual ExprTypeAST*	type(ASTContext);
 
     virtual llvm::Value* getptr(ASTContext) { return 0;}; // cann't get the address
     virtual llvm::Value* getval(ASTContext);

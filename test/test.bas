@@ -28,6 +28,6 @@ sub main()
 
 print 1000000
 
-main(1)
+main2(1)
 
 end sub

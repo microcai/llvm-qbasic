@@ -75,6 +75,12 @@ ExprTypeAST* CalcExprAST::type(ASTContext ctx)
 	return lval->type(ctx);
 }
 
+ExprTypeAST* CallExprAST::type(ASTContext ctx)
+{	
+	return TypeNameResolve(ctx,nameresolve(ctx)->type);
+}
+
+
 llvm::Type* NumberExprTypeAST::llvm_type(ASTContext ctx)
 {
 	switch(sizeof(long)){
@@ -163,7 +169,8 @@ llvm::Value* NumberExprTypeAST::Alloca(ASTContext ctx, const std::string _name,c
 
 llvm::Value* CallExprAST::getval(ASTContext ctx)
 {
-	llvm::IRBuilder<> builder(ctx.block);
+	llvm::IRBuilder<> builder(ctx.llvmfunc->getContext());
+	builder.SetInsertPoint(ctx.block);
 
 	// call functions TODO
     debug("sigfault herekkk?\n");

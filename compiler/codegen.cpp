@@ -40,104 +40,6 @@
 
 #define debug	std::printf
 
-
-#if 0
-llvm::AllocaInst* VariableRefExprAST::nameresolve(ASTContext ctx)
-{
-
-	BOOST_ASSERT(ctx.astfunc);
-	ExprTypeAST * exptype = this->type.get();
-
-	//TODO: 寻找变量代表的类型
-	if(!exptype->resolved()){
-		debug("var %s type not found\n", var->ID.c_str());
-		DimAST *dim;
- 		this->type = dynamic_cast<UnknowTypeAST*>(exptype)->resolve(ctx.astfunc,&dim);
-		this->define = dynamic_cast<VariableDimAST*>(dim);
-		if(!this->define)
-		{
-			debug("%s is not variable\n",var->ID.c_str());
-			exit(1);
-		}
-	}
-	if(!this->define->AllocaInstRef){
-		debug("=========== varable\"%s\" ======== not defined in block , maybe in argument?\n",
-			  var->ID.c_str());
-		//exit(1);
-	}
-
-	return this->define->AllocaInstRef;
-}
-
-llvm::Value* VariableRefExprAST::getptr(ASTContext ctx)
-{
-	BOOST_ASSERT(TheFunction);
-	llvm::Value * ptr = this->nameresolve(ctx);
-	if(!ptr){
-		this->define->Codegen(ctx);
-	}
-	return this->define->AllocaInstRef;
-}
-
-llvm::Value* VariableRefExprAST::getval(ASTContext ctx)
-{
-	BOOST_ASSERT(ctx.llvmfunc);
-	llvm::IRBuilder<> builder(ctx.llvmfunc->getContext());
-	builder.SetInsertPoint(ctx.block);
-	
-	llvm::Value * ptr = this->nameresolve(ctx);
-	if(ptr){
-		return builder.CreateLoad(ptr);
-	}else{
-		// try to look up in argument
-		// not found
-		llvm::Function::arg_iterator llvmarg_it = ctx.llvmfunc->arg_begin();
-
-		for(; llvmarg_it != ctx.llvmfunc->arg_end() ;  llvmarg_it++	){
-			
-			if(llvmarg_it->getName() == this->var->ID)
-			{
-				debug("got name \"%s\" as argument!\n",this->var->ID.c_str());
-				return llvmarg_it;
-			}
-		}
-		debug(":(\n");exit(1);
-	}
-	return builder.CreateLoad(ptr);
-}
-
-// resolve the function name to type and arge list, check for consistence
-llvm::AllocaInst* CallExprAST::nameresolve(ASTContext ctx)
-{
-	//TODO 搜索函数类型信息, 做各种参数比较
-	llvm::IRBuilder<>	builder(ctx.block);
-
-	debug("===searching for function %s ====\n",var->ID.c_str() );
-
-	if( ! (this->target = module->getFunction(this->var->ID)) ){
-		// 生成函数定义
-
-		//TODO 安装正确的类型生成
-
-		//FIXME 现在就当是无参数无返回值的好了
-		
-		std::vector<llvm::Type *> targetArgs;
-
-		llvm::Constant * f = module->getOrInsertFunction(
-			var->ID,llvm::FunctionType::get(builder.getInt64Ty(),targetArgs,true));
-
-		debug("target is %p\n",target);
-		
-		this->target = llvm::cast<llvm::Function>(f);
-
-		debug("target now resolved to %p\n",target);
-
-	}
-	return NULL;
-}
-
-#endif
-
 llvm::BasicBlock* EmptyStmtAST::Codegen(ASTContext ctx)
 {
     debug("empty statement called !\n");
@@ -450,8 +352,19 @@ llvm::BasicBlock* CodeBlockAST::Codegen(ASTContext ctx)
 
 	BOOST_FOREACH( StatementASTPtr stmt , this->statements)
 	{
-		if(stmt)
-			ctx.block = stmt->Codegen(ctx);
+		if(stmt){
+			llvm::BasicBlock * newblock =  stmt->Codegen(ctx);
+
+			if(newblock != ctx.block ){
+
+				static int t = 0;
+				
+				debug("block changed!\n");
+
+			//	*((char*)0) =0;				
+			}		
+			ctx.block = newblock;
+		}			
 		else
 			debug("strange, stmt is null\n");
 	}
@@ -464,6 +377,8 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 	BOOST_ASSERT(!ctx.llvmfunc);
 	BOOST_ASSERT(!ctx.block);
 
+	llvm::BasicBlock * blockforret = ctx.block;
+	
 	debug("generating function %s and its body now\n", this->name.c_str());
 
 	//首先生成全局可用的外部辅助函数
@@ -509,16 +424,19 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 	// 为参数设定 name
 	if( callargs){
 		this->callargs->parent = ctx.codeblock;
-		callargs->Codegen(ctx);
+		ctx.block = callargs->Codegen(ctx);
 		ctx.codeblock = this->callargs.get();
 	}
 
-
 	//now code up the function body
 	body->parent = ctx.codeblock;
-	ctx.block = body->Codegen(ctx);
+	llvm::BasicBlock * bodyblock = body->Codegen(ctx);
+	
+	if(bodyblock != ctx.block){
+		debug("body block changed!!!!\n");
+	}
+	ctx.block = bodyblock;	
 	builder.SetInsertPoint(ctx.block);
 	builder.CreateRetVoid();
-
-	return ctx.block;
+	return blockforret;
 }

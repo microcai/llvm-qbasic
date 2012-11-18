@@ -211,7 +211,9 @@ line: statements tNEWLINE { $$=$1;  }
 	}
 	| tNEWLINE { debug("空行"); $$ = 0;}
 	| call_function_or_array tNEWLINE {
-		$$ = new StatementsAST ; $$->push_back(StatementASTPtr($1));		
+		CallStmtAST * callstmt =  new CallStmtAST( $1 );
+		$$ = new StatementsAST ;
+		$$->push_back( StatementASTPtr(callstmt)  );
 	}
 	;
 
