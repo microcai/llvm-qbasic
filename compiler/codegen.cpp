@@ -217,7 +217,7 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 
 				//	if( dynamic_cast<PointerTypeAST*>(argitem->type(ctx)) ){
 						//类型
-						printfmt += "%p\t"; //TODO: 字符串
+			//			printfmt += "%p\t"; //TODO: 字符串
 				//	debug("add code for print list args type %%p\n");
 
 			//		}else{

@@ -166,14 +166,12 @@ public:
     VariableExprAST(ReferenceAST* ID);
 
 	
-	virtual llvm::Value* getval(ASTContext );;
+	virtual llvm::Value* getval(ASTContext );
 	
     virtual llvm::Value* getptr(ASTContext );
 	
 	// 调用获得 ID 的类型系统
-	virtual ExprTypeAST* type(ASTContext ){
-		//TODO . 通过递归查找当前 block 和父 block 进行 name -> type 的转换
-	}
+	virtual ExprTypeAST* type(ASTContext ctx);
 };
 
 // 数学运算表达式.
@@ -183,7 +181,7 @@ class CalcExprAST : public ExprAST{
 public: // 以两个子表达式构建
 	CalcExprAST(ExprAST * , MathOperator op , ExprAST * );
 	virtual ExprTypeAST* type(ASTContext){};
-    virtual llvm::Value* getval(ASTContext);;
+    virtual llvm::Value* getval(ASTContext);
 };
 
 // 赋值表达式. 注意, 在 QB 中没有赋值表达式

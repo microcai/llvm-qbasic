@@ -60,6 +60,18 @@ ExprTypeAST* NumberExprAST::type(ASTContext)
     return &numbertype;
 }
 
+ExprTypeAST* VariableExprAST::type(ASTContext ctx)
+{
+    //TODO . 通过递归查找当前 block 和父 block 进行 name -> type 的转换
+    return TypeNameResolve(ctx,nameresolve(ctx)->type);
+}
+
+ExprTypeAST* AssignmentExprAST::type(ASTContext ctx)
+{
+	//TODO, result the type
+	return lval->type(ctx);
+}
+
 
 llvm::Type* NumberExprTypeAST::llvm_type(ASTContext ctx)
 {
@@ -118,12 +130,6 @@ llvm::Value* VariableExprAST::getval(ASTContext ctx)
 llvm::Value* VariableExprAST::getptr(ASTContext ctx)
 {
 	return nameresolve(ctx)->getptr(ctx);
-}
-
-ExprTypeAST* AssignmentExprAST::type(ASTContext ctx)
-{
-	//TODO, result the type
-	return lval->type(ctx);
 }
 
 llvm::Value* AssignmentExprAST::getval(ASTContext ctx)
