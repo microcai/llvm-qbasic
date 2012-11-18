@@ -394,6 +394,8 @@ llvm::BasicBlock* CodeBlockAST::GenLeave(ASTContext ctx)
 	for(;it != end ; it ++){
 		ctx.block = it->second->valuedegen(ctx);
 	}
+	// clear the symblic table
+	this->symbols.clear();
 	//TODO , generate jump to the endblock
 	return ctx.block;
 }
