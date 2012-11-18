@@ -116,16 +116,13 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 			}
 			switch(argitem->type(ctx)->size()){ //按照大小来啊,果然
 				case sizeof(long): // 整数产量的类型
-
-				//	if( dynamic_cast<PointerTypeAST*>(argitem->type(ctx)) ){
-						//类型
-			//			printfmt += "%p\t"; //TODO: 字符串
-				//	debug("add code for print list args type %%p\n");
-
-			//		}else{
+					if(argitem->type(ctx)->name(ctx) == "string"){
+						printfmt += "%s\t";
+						debug("add code for print list args type %%p\n");					
+					}else{
 						debug("add code for print list args type %%ld\n");
 						printfmt += "%ld\t";
-				//	}
+					}
 					args.push_back(	argitem->getval(ctx) );
 					break;
 				case sizeof(int):
@@ -143,7 +140,7 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 
 	// 现在 brt 忽略第一个参数 , 其实质是 一个 map 到 FILE* 的转化, 由 btr_print 实现
 	//第二个参数是打印列表.
-	args.insert(args.begin(), builder.CreateGlobalStringPtr(printfmt.c_str()));
+	args.insert(args.begin(), builder.CreateGlobalStringPtr(printfmt));
 
 	//调用 print
 	if(need_brt){

@@ -12,6 +12,6 @@
 
 sub main()
 
-print "hello world"
+print "hello world" , 123 , " is 123"
 
 end sub

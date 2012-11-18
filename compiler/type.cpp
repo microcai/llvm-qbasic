@@ -60,6 +60,11 @@ ExprTypeAST* NumberExprAST::type(ASTContext)
     return &numbertype;
 }
 
+ExprTypeAST* StringExprAST::type(ASTContext)
+{
+	return &stringtype;
+}
+
 ExprTypeAST* VariableExprAST::type(ASTContext ctx)
 {
     //TODO . 通过递归查找当前 block 和父 block 进行 name -> type 的转换
@@ -127,6 +132,13 @@ llvm::Value* StringExprTypeAST::Alloca(ASTContext ctx, const std::string _name, 
 llvm::Value* NumberExprAST::getval(ASTContext ctx)
 {
 	return qbc::getconstlong(	this->v);
+}
+
+llvm::Value* StringExprAST::getval(ASTContext ctx)
+{
+	llvm::IRBuilder<>	builder(ctx.block);
+	
+	return builder.CreateGlobalStringPtr( this->str );
 }
 
 DimAST* NamedExprAST::nameresolve(ASTContext ctx)
@@ -295,9 +307,23 @@ llvm::Value* CalcExprAST::getval(ASTContext ctx)
 ///////////////////////////////////////////////////////////////////
 //////////////////// 构造函数们 ////////////////////////////////////
 //////////////////////////////////////////////////////////////////
-StringExprAST::StringExprAST(const std::string _str)
+ExprTypeAST::ExprTypeAST(size_t size, const std::string __typename)
+	:_size(size),_typename(__typename)
 {
-	
+}
+
+NumberExprTypeAST::NumberExprTypeAST() : ExprTypeAST(sizeof(long),"long")
+{
+
+}
+
+StringExprTypeAST::StringExprTypeAST() :ExprTypeAST(sizeof(void*),"string")
+{	
+}
+
+StringExprAST::StringExprAST(const std::string _str)
+	:str(_str)
+{
 }
 
 NamedExprAST::NamedExprAST(ReferenceAST* _ID)
@@ -330,5 +356,3 @@ CalcExprAST::CalcExprAST(ExprAST* l, MathOperator _op, ExprAST* r)
 {
 	
 }
-
-

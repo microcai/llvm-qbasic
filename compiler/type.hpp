@@ -19,6 +19,7 @@
 
 #pragma once
 #ifndef __AST_H__
+	#include <string.h>
 	#include <llvm/Type.h> // for KDevelop Only
 	#include "ast.hpp" // for KDevelop Only
 	#error "Don't include it diretly, use #include<ast.hpp>"
@@ -145,7 +146,7 @@ class StringExprAST :public ExprAST
 public:
 	StringExprAST(const std::string _str);
 	virtual ExprTypeAST* type(ASTContext );
-    virtual llvm::Value* getval(ASTContext );
+    virtual llvm::Value* getval(ASTContext );;
 };
 
 // 命名表达式. 命名的表达式是 Function Call , 数组, 变量 的基类
@@ -246,11 +247,15 @@ typedef boost::shared_ptr<CallExprAST>	CallExprASTPtr;
 // 变量类型定义.
 class ExprTypeAST : public AST
 {
+	std::string		_typename;
 	size_t			_size; // 类型大小.
 	// 取地址操作 , 上层的 ExprAST 的 getptr 即调用此操作.
 	// 对大部分的表达式来说, 如果无法获得地址, 在屏幕上打印无法对某类型取地址. 然后退出或者返回 NULL
 public:
 
+	// name of type
+	virtual std::string name(ASTContext){return _typename;};
+	
 	virtual llvm::Type	* llvm_type(ASTContext ctx) = 0;
 
 	// 为该类型在栈上分配一块内存, 返回分配的指针 , 有可能的话,起个名字
@@ -266,11 +271,17 @@ public:
 	virtual void destory(ASTContext, llvm::Value * Ptr) {};
 	
 	virtual	size_t size(){return _size;};
+
+public:
+    ExprTypeAST(){}
+    ExprTypeAST( size_t size , const std::string __typename );
 };
 
 //	整型,支持数学运算
 class NumberExprTypeAST :public ExprTypeAST {
 public:
+    NumberExprTypeAST();
+	
     virtual llvm::Type* llvm_type(ASTContext ctx);
 
     virtual size_t size(){return sizeof(long);};
@@ -281,6 +292,8 @@ public:
 //  字符串 支持!
 class StringExprTypeAST : public ExprTypeAST
 {
+public:
+    StringExprTypeAST();
     virtual llvm::Type* llvm_type(ASTContext ctx);
 
     virtual size_t size(){return sizeof(long);}; //yes没错, 字符串类型只占用8个字节,也就是一个指针哦!
