@@ -243,6 +243,25 @@ llvm::Value* FunctionDimAST::getptr(ASTContext ctx)
 	return this->target;
 }
 
+//	设置返回值
+llvm::Value* FunctionDimAST::setret(ASTContext ctx,ExprASTPtr expr)
+{
+	llvm::IRBuilder<> builder(ctx.block);
+
+	if(!retval)
+		retval = TypeNameResolve(ctx,type)->Alloca(ctx,"return value",type);
+
+	llvm::Value* ret = expr->getval(ctx);
+	
+	builder.CreateStore(ret,ctx.func->retval);
+
+	if(!returnblock){
+		returnblock = llvm::BasicBlock::Create(ctx.module->getContext(), "ret",this->target);
+	}
+	// jump to ret now !
+	return builder.CreateBr(returnblock);
+}
+
 // 赋值语句, NOTE 直接调用赋值表达式
 llvm::BasicBlock* AssigmentAST::Codegen(ASTContext ctx)
 {
@@ -255,13 +274,7 @@ llvm::BasicBlock* AssigmentAST::Codegen(ASTContext ctx)
 
 llvm::BasicBlock* ReturnAST::Codegen(ASTContext ctx)
 {
-
-	llvm::IRBuilder<> builder(ctx.block);
-
-	llvm::Value * ret = this->expr->getval(ctx);
-	
-	builder.CreateRet(ret);
-	debug("生成返回值\n");
+	ctx.func->setret(ctx,expr);
 	return ctx.block;
 }
 
@@ -386,6 +399,7 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 	BOOST_ASSERT(!ctx.llvmfunc);
 	BOOST_ASSERT(!ctx.block);
 
+	ctx.func = this; // 设定当前函数
 	llvm::BasicBlock * blockforret = ctx.block;
 	
 	debug("generating function %s and its body now\n", this->name.c_str());
@@ -423,9 +437,7 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 	llvm::BasicBlock *entry = llvm::BasicBlock::Create(builder.getContext(), "entrypoint", ctx.llvmfunc);
 
 	//挂到全局名称表中
-
 	ctx.codeblock->functions.insert(std::make_pair(this->name,this));
-	
 	
 	//开始生成代码
 	ctx.block = entry;
@@ -446,8 +458,13 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 	}
 	ctx.block = bodyblock;	
 	builder.SetInsertPoint(ctx.block);
+
+	if(returnblock){
+		builder.CreateBr(returnblock);
+		builder.SetInsertPoint(returnblock);
+	}	
 	if(retval)
-		builder.CreateRet(retval);
+		builder.CreateRet(builder.CreateLoad(retval));
 	else if(exprtype)
 		builder.CreateRet(qbc::getconstlong(0)); // 返回 0 
 	else

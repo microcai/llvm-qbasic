@@ -61,15 +61,16 @@ enum ReferenceType{
 };
 
 class CodeBlockAST;
-
+class FunctionDimAST;
 // 逐层传递 给各个 virtual 操作, 虽然很大, 但是不传指针, 直接传值
 class ASTContext{
 public:
-	ASTContext():llvmfunc(0),codeblock(0),block(0){}
+	ASTContext():llvmfunc(0),codeblock(0),block(0),func(0){}
 	llvm::Function* llvmfunc; //当前的函数位置
 	CodeBlockAST*	codeblock; //当前的代码块位置, 用于符号表
 	llvm::BasicBlock* block; //当前的插入位置
-	llvm::Module	* module;
+	llvm::Module	* module; //模块
+	FunctionDimAST*   func;
 };
 
 // allow us to use shared ptr to manage the memory
@@ -248,9 +249,12 @@ typedef boost::shared_ptr<ArgumentDimsAST> ArgumentDimsASTPtr;
 // NOTE : 小心使用双重继承
 class FunctionDimAST: public DimAST
 {
+	friend ReturnAST;
 private:
 	llvm::Function	*		target;
 	llvm::Value		*		retval; // allocated for return value, should use that for return.
+	llvm::BasicBlock *		returnblock;
+	llvm::Value*			setret(ASTContext,ExprASTPtr);
 public:
 	Linkage		linkage; //链接类型。static? extern ?
 	std::list<VariableDimASTPtr> args_type; //checked by CallExpr
@@ -269,9 +273,6 @@ public:
 	virtual	llvm::Value* getval(ASTContext ctx){
 		return this->target;
 	}
-
-	// get defines for llvm
-	llvm::Function*	getllvm();
 };
 
 class DefaultMainFunctionAST : public FunctionDimAST
