@@ -135,7 +135,7 @@ int main(int argc, char **argv)
 		outfilename = (fs::path(input).parent_path() / fs::basename(fs::path(input))).string();
 	}
 
-	llvm::Module *module = new llvm::Module( outfilename.c_str(), llvm::getGlobalContext());
+	llvm::Module *module = new llvm::Module( fs::basename(fs::path(input)).c_str(), llvm::getGlobalContext());
 
 	generateIR(program,module);
 
