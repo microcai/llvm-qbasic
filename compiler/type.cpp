@@ -65,7 +65,7 @@ llvm::Type* NumberExprTypeAST::llvm_type(ASTContext ctx)
 {
 	switch(sizeof(long)){
 		case 8:
-			return llvm::Type::getInt64Ty(llvm::getGlobalContext());
+			return llvm::Type::getInt64Ty(ctx.module->getContext());
 		case 4:
 			return llvm::Type::getInt32Ty(llvm::getGlobalContext());
 	}
@@ -77,19 +77,12 @@ llvm::Value* NumberExprAST::getval(ASTContext ctx)
 	return qbc::getconstlong(	this->v);
 }
 
-llvm::Value* VariableExprAST::getval(ASTContext ctx)
-{
- 	llvm::IRBuilder<> builder(ctx.block);
-
-	return builder.CreateLoad(getptr(ctx),std::string("load local var ")+this->ID->ID);
-}
-// 获得变量的分配
-llvm::Value* VariableExprAST::getptr(ASTContext ctx)
+DimAST* NamedExprAST::nameresolve(ASTContext ctx)
 {
 	// 首先查找变量的分配 FIXME 将来要支持结构体成员
-	
+
 	std::string varname =  this->ID->ID;
-	
+
 	debug("searching for var %s\n",varname.c_str());
 
 	if(! ctx.codeblock ){
@@ -97,18 +90,34 @@ llvm::Value* VariableExprAST::getptr(ASTContext ctx)
 		exit(1);
 		return NULL;
 	}
-	
+
 	std::map< std::string, DimAST* >::iterator dimast_iter = ctx.codeblock->symbols.find(varname);
 
 	// 定义找到
 	if(dimast_iter != ctx.codeblock->symbols.end()){
 
 		debug("searching for var %s have result %p\n",varname.c_str(),dimast_iter->second);
-		
-		return dimast_iter->second->getptr();
+
+		return dimast_iter->second;
 	}
 	ctx.codeblock = ctx.codeblock->parent;
-	return getptr(ctx);	
+	return nameresolve(ctx);
+}
+
+llvm::Value* VariableExprAST::getval(ASTContext ctx)
+{
+ 	llvm::IRBuilder<> builder(ctx.block);
+
+	std::string desc = std::string("load local var ")+this->ID->ID;
+	
+	debug("%s\n",desc.c_str());
+	
+	return nameresolve(ctx)->getval(ctx);
+}
+// 获得变量的分配
+llvm::Value* VariableExprAST::getptr(ASTContext ctx)
+{
+	return nameresolve(ctx)->getptr(ctx);
 }
 
 ExprTypeAST* AssignmentExprAST::type(ASTContext ctx)
@@ -136,12 +145,21 @@ llvm::Value* NumberExprTypeAST::Alloca(ASTContext ctx, const std::string _name,c
 	debug("allocation for value %s type %s\n",_name.c_str(),_typename.c_str());
 	//TODO , 在堆栈上分配个变量
 
-	llvm::IRBuilder<> builder(&ctx.llvmfunc->getEntryBlock(),
-							  ctx.llvmfunc->getEntryBlock().begin());
+	llvm::IRBuilder<> builder(ctx.llvmfunc->getContext());
+							  //ctx.llvmfunc->getEntryBlock().begin());
 	builder.SetInsertPoint(ctx.block);
 
 	return builder.CreateAlloca(this->llvm_type(ctx),0,_name);
 }
+
+llvm::Value* CallExprAST::getval(ASTContext)
+{
+	// call functions TODO
+    debug("sigfault herekkk?\n");
+
+    exit(1);
+}
+
 
 llvm::Value* CalcExprAST::getval(ASTContext ctx)
 {
@@ -203,12 +221,6 @@ CallOrArrayExprAST::CallOrArrayExprAST(ReferenceAST* _ID)
 CallExprAST::CallExprAST(ReferenceAST* ID, ExprListAST* exp_list)
 	:CallOrArrayExprAST(ID)
 {
-}
-
-llvm::Value* CallExprAST::getval(ASTContext)
-{
-    debug("sigfault herekkk?\n");
-    exit(1);
 }
 
 CalcExprAST::CalcExprAST(ExprAST* l, MathOperator _op, ExprAST* r)

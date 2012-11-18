@@ -288,11 +288,23 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 }
 
 // 获得分配的空间
-llvm::Value* VariableDimAST::getptr()
+llvm::Value* VariableDimAST::getptr(ASTContext ctx)
 {
 	debug("get ptr of this %p\n", alloca_var);
 	return alloca_var;
 }
+
+// 获得变量的值
+llvm::Value* VariableDimAST::getval(ASTContext ctx)
+{
+	llvm::IRBuilder<> builder(ctx.block);
+
+	return builder.CreateLoad(getptr(ctx));
+    printf("%s\n",__func__);
+    exit(1);
+}
+
+
 
 //为变量分配空间
 llvm::BasicBlock* VariableDimAST::Codegen(ASTContext ctx)
@@ -312,9 +324,22 @@ llvm::BasicBlock* VariableDimAST::Codegen(ASTContext ctx)
 	return ctx.block;
 }
 
-llvm::Value* ArgumentDimAST::getptr()
+llvm::Value* ArgumentDimAST::getval(ASTContext ctx)
 {
-		debug("not a ??????????\n");
+	debug("ArgumentDimAST:: geting val %s of argument\n", this->name.c_str());
+
+	// geting value from argument
+	llvm::Function::arg_iterator arg_it =ctx.llvmfunc->arg_begin();
+	for(;arg_it != ctx.llvmfunc->arg_end(); arg_it++){
+		if(arg_it->getName() == this->name)
+			return arg_it;
+	}
+	exit(1);
+}
+
+llvm::Value* ArgumentDimAST::getptr(ASTContext ctx)
+{
+	debug("set val for argument\n");
 	exit(1);
 }
 
@@ -328,11 +353,16 @@ llvm::BasicBlock* ArgumentDimAST::Codegen(ASTContext ctx)
 	for( int i = 0 ; i < index ; i++)
 		arg_it ++;
 	arg_it->setName(this->name);
+
+	// register on symbols table
+
+	ctx.codeblock->symbols.insert(std::make_pair(name,this));
+	
 	return ctx.block;
 }
 
 
-llvm::Value* FunctionDimAST::getptr()
+llvm::Value* FunctionDimAST::getptr(ASTContext ctx)
 {
 	return this->target;
 }
@@ -482,9 +512,12 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 	//TODO need re-work
 
 	if(callargs){
-		BOOST_FOREACH( VariableDimASTPtr stmt , callargs->dims)
+		std::vector< StatementASTPtr >::iterator it = callargs->statements.begin();
+		
+		for(; it != callargs->statements.end() ; it++)
 		{
-			VariableDimAST * dim = stmt.get();
+			StatementASTPtr stp = *it;
+			ArgumentDimAST * dim = dynamic_cast<ArgumentDimAST*>( stp );
 			ExprTypeAST * exprtype = TypeNameResolve(ctx,dim->type);
 
 			args.push_back(exprtype->llvm_type(ctx));
@@ -498,28 +531,22 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 
 	target = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, this->name , ctx.module);
 	llvm::BasicBlock *entry = llvm::BasicBlock::Create(builder.getContext(), "entrypoint", target);
-	builder.SetInsertPoint(entry);
 	//开始生成代码
 
-	// 为参数设定 name
-	llvm::Function::arg_iterator llvmarg_it = target->arg_begin();
+	ctx.block = entry;
+	ctx.llvmfunc = target;
 
+	// 为参数设定 name
 	if( callargs){
-		ctx.llvmfunc = target;
-		ctx.block = entry;
+		this->callargs->parent = ctx.codeblock;
 		callargs->Codegen(ctx);
+		ctx.codeblock = this->callargs.get();
 	}
 
-	ASTContext newctx = ctx;
-	if(callargs)
-		newctx.codeblock = this->callargs.get();
-	else
-		newctx.codeblock = this->parent;
-
-	newctx.llvmfunc = target;
-	newctx.block = entry;
 	//now code up the function body
-	builder.SetInsertPoint(body->Codegen(newctx));
+	body->parent = ctx.codeblock;
+	ctx.block = body->Codegen(ctx);
+	builder.SetInsertPoint(ctx.block);
 	builder.CreateRetVoid();
 
 	return ctx.block;

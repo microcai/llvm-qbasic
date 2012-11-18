@@ -137,7 +137,9 @@ public:
 
     virtual llvm::Value* getval(ASTContext );	
 };
+
 // 命名表达式. 命名的表达式是 Function Call , 数组, 变量 的基类
+class DimAST;
 class NamedExprAST : public ExprAST
 {
 public:
@@ -150,6 +152,9 @@ public:
 
 	//生成获得变量指针的操作. 用于赋值操作,
 	virtual llvm::Value*	getptr(ASTContext) = 0;
+
+	//获得定义地
+	virtual DimAST* nameresolve(ASTContext ctx);
 };
 typedef boost::shared_ptr<NamedExprAST> NamedExprASTPtr;
 
@@ -159,6 +164,7 @@ class VariableExprAST : public NamedExprAST
 {
 public:
     VariableExprAST(ReferenceAST* ID);
+
 	
 	virtual llvm::Value* getval(ASTContext );;
 	

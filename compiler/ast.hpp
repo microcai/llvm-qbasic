@@ -117,7 +117,8 @@ public:
 	std::string		type; // 定义的符号的名字. 将在 typetable 获得type的定义
 	virtual llvm::BasicBlock* Codegen(ASTContext) = 0; // generate alloca
 
-	virtual	llvm::Value*	getptr() = 0 ; // the location for the allocated value
+	virtual	llvm::Value*	getptr(ASTContext ctx) = 0 ; // the location for the allocated value
+	virtual	llvm::Value*	getval(ASTContext ctx) = 0;
 	
     virtual ~DimAST(){}
 };
@@ -156,8 +157,9 @@ public:
 // 执行符号查找的时候就是到这里查找符号表
 class CodeBlockAST : public StatementAST
 {
-	std::vector<StatementASTPtr>		statements;
 public:
+	std::vector<StatementASTPtr>		statements;
+
 	CodeBlockAST*						parent; // 父作用域
 	std::map<std::string, DimAST*>		symbols; // 符号表, 映射到定义语句,获得定义语句
 
@@ -212,7 +214,8 @@ class VariableDimAST : public DimAST
 public:
 	VariableDimAST(const std::string _name ,  const std::string	_type);
 	virtual llvm::BasicBlock* Codegen(ASTContext);
-    virtual llvm::Value* getptr();
+    virtual llvm::Value* getptr(ASTContext ctx);
+	virtual	llvm::Value* getval(ASTContext ctx);
 };
 typedef boost::shared_ptr<VariableDimAST> VariableDimASTPtr;
 
@@ -222,7 +225,8 @@ class ArgumentDimAST : public VariableDimAST
 public:
 	ArgumentDimAST(const std::string _name ,  const std::string	_type);
 	virtual llvm::BasicBlock* Codegen(ASTContext);
-    virtual llvm::Value* getptr();
+    virtual llvm::Value* getptr(ASTContext ctx);
+	virtual	llvm::Value* getval(ASTContext ctx);
 };
 typedef boost::shared_ptr<ArgumentDimAST> ArgumentDimASTPtr;
 
@@ -254,7 +258,11 @@ public:
     FunctionDimAST(const std::string _name, ArgumentDimsAST * callargs = NULL, const std::string _type = "");
 	//如果是声明, 为 dim 生成 llvm::Function * 声明供使用
     virtual llvm::BasicBlock* Codegen(ASTContext);
-    llvm::Value* getptr();
+    llvm::Value* getptr(ASTContext ctx);
+	virtual	llvm::Value* getval(ASTContext ctx){
+		printf("%s\n",__func__);
+		exit(1);
+	}
 };
 
 class DefaultMainFunctionAST : public FunctionDimAST
