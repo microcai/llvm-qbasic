@@ -126,6 +126,7 @@ llvm::Value* VariableExprAST::getval(ASTContext ctx)
 	
 	return nameresolve(ctx)->getval(ctx);
 }
+
 // 获得变量的分配
 llvm::Value* VariableExprAST::getptr(ASTContext ctx)
 {
@@ -180,6 +181,15 @@ llvm::Value* CallExprAST::getval(ASTContext ctx)
 
 		//构建参数列表
 		std::vector<llvm::Value*> args;
+		if(callargs && callargs->expression_list.size() )
+		{
+			BOOST_FOREACH( ExprASTPtr expr , callargs->expression_list)
+			{
+				debug("pusing args \n");
+				args.push_back( expr->getval(ctx) );
+			}
+		}
+		
 		ret = builder.CreateCall(llvmfunc,args,this->ID->ID);
 
 	}else {
@@ -197,14 +207,6 @@ llvm::Value* CallExprAST::getval(ASTContext ctx)
 
 	std::vector<llvm::Value*> args;
 
-	if(callargs && callargs->expression_list.size() )
-	{
-		BOOST_FOREACH( ExprASTPtr expr , callargs->expression_list)
-		{
-			debug("pusing args \n");
-			args.push_back( expr->getval(ctx) );
-		}
-	}
 
 	if(args.empty()){
 		debug("===I will call to %s ==== with no argument\n",var->ID.c_str());
@@ -277,7 +279,7 @@ CallOrArrayExprAST::CallOrArrayExprAST(ReferenceAST* _ID)
 }
 
 CallExprAST::CallExprAST(ReferenceAST* ID, ExprListAST* exp_list)
-	:CallOrArrayExprAST(ID)
+	:CallOrArrayExprAST(ID),callargs(exp_list)
 {
 }
 

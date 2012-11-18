@@ -31,10 +31,10 @@ a =  10
 b = 44
 
 print a
-/*
+
 s = sum(a,b)
 
 print s
-*/
+
 
 end sub
