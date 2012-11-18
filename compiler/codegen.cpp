@@ -389,7 +389,8 @@ llvm::BasicBlock* CodeBlockAST::GenLeave(ASTContext ctx)
 {
 	//查找 block 里定义的变量, 撤销他们!
 	// register deallocate functions!
-	std::map< std::string, DimAST* >::iterator it = this->symbols.begin() , end = this->symbols.end();
+	// NOTE: in reverse order
+	std::map< std::string, DimAST* >::reverse_iterator it = this->symbols.rbegin() , end = this->symbols.rend();
 	for(;it != end ; it ++){
 		ctx.block = it->second->valuedegen(ctx);
 	}
