@@ -19,15 +19,6 @@ print a , b
 
 print b
 
-if 1 then
-print a
-end if
-
-while b > 400
-	a = a + b
-	print  b  , 1
-	b = b - 1
-end while
 
 end sub
 
@@ -35,6 +26,6 @@ sub main()
 
 print 1000000
 
-main2( )
+//main()
 
 end sub

@@ -327,7 +327,6 @@ llvm::BasicBlock* ArgumentDimAST::Codegen(ASTContext ctx)
 	return ctx.block;
 }
 
-
 llvm::Value* FunctionDimAST::getptr(ASTContext ctx)
 {
 	return this->target;
@@ -346,8 +345,7 @@ llvm::BasicBlock* AssigmentAST::Codegen(ASTContext ctx)
 llvm::BasicBlock* ReturnAST::Codegen(ASTContext ctx)
 {
 
-	llvm::IRBuilder<> builder(ctx.llvmfunc->getContext());
-	builder.SetInsertPoint(ctx.block);
+	llvm::IRBuilder<> builder(ctx.block);
 
 	llvm::Value * ret = this->expr->getval(ctx);
 	
@@ -495,8 +493,10 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 	llvm::FunctionType *funcType =
 		llvm::FunctionType::get(exprtype ? exprtype->llvm_type(ctx) : builder.getVoidTy(),args,true);
 
-	target = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, this->name , ctx.module);
-	llvm::BasicBlock *entry = llvm::BasicBlock::Create(builder.getContext(), "entrypoint", target);
+	target = ctx.llvmfunc =
+		llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, this->name , ctx.module);
+
+	llvm::BasicBlock *entry = llvm::BasicBlock::Create(builder.getContext(), "entrypoint", ctx.llvmfunc);
 
 	//挂到全局名称表中
 
@@ -504,9 +504,7 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 	
 	
 	//开始生成代码
-
 	ctx.block = entry;
-	ctx.llvmfunc = target;
 
 	// 为参数设定 name
 	if( callargs){

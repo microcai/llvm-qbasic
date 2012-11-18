@@ -18,9 +18,6 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#undef NDEBUG
-#include <assert.h>
-
 #include <iostream>
 #include <boost/lexical_cast.hpp>
 #include <boost/weak_ptr.hpp>
@@ -202,9 +199,6 @@ llvm::Value* CallExprAST::getval(ASTContext ctx)
 	    exit(1);
 	}
 	return ret;
-
-	   exit(1);
-
 #if 0
 	llvm::IRBuilder<>	builder(ctx.block);
 

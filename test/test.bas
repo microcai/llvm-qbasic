@@ -6,16 +6,28 @@
 	for historcal test cases, see test[0-9]*.bas
 */
 
-DIM A as long
-dim B as long
+function main2( d as long) as long
+
+dim a as long
+dim b as long
+dim c as long
+
+a=1
+b=800
+
+c = 6000
+
+print a , b
+
+print b
 
 
+end function
 
-A=12345 : B=15
+sub main()
 
-PRINT 2
+print 1000000
 
-DIM C as long
-C=A + B
+main(1)
 
-print C , A , 1 + 1 , A + C , A + C , C - A , B * 2 , A / 10 , B
+end sub

@@ -10,6 +10,8 @@ dim s as long
 
 s = a + b
 
+print s
+
 return s
 
 end function
