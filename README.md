@@ -10,42 +10,28 @@ llvm-qbc is a QBASIC compiler as well as an runtime library ( statically linked 
 	[4] highly optimized
 
 # Status update
-	[2012-11-18]
-		[1] basic mathmatical operation
-		[2] sub define and invoke
-		[3] function define and invoke
-		[4] if statement
-		[5] while statement
-		[6]	being able to print numbers and string literal to screen ,  string variable supported
-		[7]	string literal and string variable can assign to string variable
+	[2012-11-19]
+		[1]	string literal and string variable can assign to string variable
+		[2] deallocating function local string when the function returns
 
 	[2012-11-18]
-		[1] basic mathmatical operation
-		[2] sub define and invoke
-		[3] function define and invoke
-		[4] if statement
-		[5] while statement
-		[6]	being able to print numbers and string literal to screen, no string variable support yet
+		[1] string support, but string not deallocated when function returns
+		[2]	being able to print numbers and string literal to screen
 
 	[2012-11-17]
-		[1] basic mathmatical operation
+		[1] compare operation
 		[2] sub define and invoke
 		[3] function define and invoke
-		[4] if statement
-		[5] while statement
-		[6]	being able to print numbers to screen, no string support yet
 
 	[2012-11-16]
-		[1] basic mathmatical operation
-		[2] sub define and invoke
-		[3] if statement
-		[4] while statement
-		[5]	being able to print numbers to screen, no string support yet
+		[1] sub define and invoke
+		[2] if statement
+		[3] while statement
 
 	[2012-11-15]
 		[1] basic mathmatical operation
 		[2] if statement
-		[5]	being able to print numbers to screen, no string support yet
+		[3]	being able to print numbers to screen, no string support yet
 
 
 # Implementation Detail
