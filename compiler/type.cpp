@@ -72,6 +72,11 @@ ExprTypeAST* AssignmentExprAST::type(ASTContext ctx)
 	return lval->type(ctx);
 }
 
+ExprTypeAST* CalcExprAST::type(ASTContext ctx)
+{
+	//类型是左边的操作符的类型
+	return lval->type(ctx);
+}
 
 llvm::Type* NumberExprTypeAST::llvm_type(ASTContext ctx)
 {

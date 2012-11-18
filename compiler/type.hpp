@@ -180,7 +180,7 @@ class CalcExprAST : public ExprAST{
 	ExprASTPtr		lval,rval;
 public: // 以两个子表达式构建
 	CalcExprAST(ExprAST * , MathOperator op , ExprAST * );
-	virtual ExprTypeAST* type(ASTContext){};
+	virtual ExprTypeAST* type(ASTContext);
     virtual llvm::Value* getval(ASTContext);
 };
 

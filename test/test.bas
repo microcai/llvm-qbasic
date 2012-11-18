@@ -6,35 +6,16 @@
 	for historcal test cases, see test[0-9]*.bas
 */
 
-REM  sun define here
+DIM A as long
+dim B as long
 
 
-function  sum ( a as long , b as long) as long
 
-dim s as long
+A=12345 : B=15
 
-s = a + b
+PRINT 2
 
-return s
+DIM C as long
+C=A + B
 
-end function
-
-sub main()
-
-dim s as long
-dim a as long
-dim b as long
-
-print 123
-
-a =  10
-b = 44
-
-print a
-
-s = sum(a,b)
-
-print s
-
-
-end sub
+print C , A , 1 + 1 , A + C , A + C , C - A , B * 2 , A / 10 , B

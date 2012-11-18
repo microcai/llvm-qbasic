@@ -39,6 +39,9 @@ static void generateIR(StatementAST * ast , llvm::Module * module )
 {	//开始生成代码
 	ASTContext ctx;
 	ctx.module = module;
+
+	CodeBlockAST	gloablblock;
+	ctx.codeblock = &gloablblock;
 	//ctx.astfunc = ;
 	((StatementAST*)(ast))->Codegen(ctx);
 }
