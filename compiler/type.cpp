@@ -45,6 +45,7 @@
 static	NumberExprTypeAST numbertype;
 static	StringExprTypeAST stringtype;
 
+
 // todo 检查当前 block 并回朔到根节点, 查找定义
 ExprTypeAST*	TypeNameResolve(ASTContext ctx,const std::string _typename)
 {
@@ -126,7 +127,8 @@ llvm::Value* StringExprTypeAST::Alloca(ASTContext ctx, const std::string _name, 
 
 	builder.SetInsertPoint(ctx.block);
 
-	return builder.CreateAlloca(this->llvm_type(ctx),0,_name);
+	llvm::Value * newval = builder.CreateAlloca(this->llvm_type(ctx),0,_name);
+	return newval;
 }
 
 llvm::Value* NumberExprAST::getval(ASTContext ctx)
@@ -222,18 +224,10 @@ llvm::Value* VariableExprAST::getptr(ASTContext ctx)
 	return nameresolve(ctx)->getptr(ctx);
 }
 
+// so simple , right ?
 llvm::Value* AssignmentExprAST::getval(ASTContext ctx)
 {
-
-	llvm::Value * LHS =	this->lval->getptr(ctx);	
-	llvm::Value * RHS =	this->rval->getval(ctx);
-
-// 	//FIXME 为复杂类型执行高层调用
- 	llvm::IRBuilder<> builder(ctx.block);
- 	// 生成赋值语句,因为是简单的整型赋值,所以可以直接生成而不用调用 operator==()
-  	builder.CreateStore(RHS,LHS);
-		debug("get ptr of this\n");
-	return RHS;
+	return this->type(ctx)->getop()->operator_assign(ctx,this->lval,this->rval)->getval(ctx);
 }
 
 llvm::Value* CallExprAST::getval(ASTContext ctx)
@@ -251,7 +245,6 @@ llvm::Value* CallExprAST::getval(ASTContext ctx)
 	FunctionDimAST* fundim = dynamic_cast<FunctionDimAST*>(dim);
 	
 	if(fundim){ //有定义, 则直接调用, 无定义就 ... 呵呵
-//		ExprTypeAST * symboltype = TypeNameResolve(ctx,dim->type);
 		llvmfunc = fundim->getptr(ctx);
 	}else{
 		llvmfunc = defaultprototype(ctx,this->ID->ID);

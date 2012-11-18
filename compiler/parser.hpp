@@ -148,10 +148,11 @@ namespace qb {
      tWHILE = 288,
      tENDWHILE = 289,
      tLONG = 290,
-     tID = 291,
-     tInteger = 292,
-     tSTRING = 293,
-     tNUMBER = 294
+     tSTR = 291,
+     tID = 292,
+     tInteger = 293,
+     tSTRING = 294,
+     tNUMBER = 295
    };
 
     };
@@ -245,7 +246,7 @@ namespace qb {
     /// Zero means the default is an error.
     static const unsigned char yydefact_[];
 
-    static const signed char yypgoto_[];
+    static const short int yypgoto_[];
     static const signed char yydefgoto_[];
 
     /// What to do in a state.
@@ -324,7 +325,7 @@ namespace qb {
 #line 21 "parser.ypp"
 } // qb
 /* Line 36 of lalr1.cc  */
-#line 328 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 329 "/home/cai/projects/basic/compiler/parser.hpp"
 
 
 

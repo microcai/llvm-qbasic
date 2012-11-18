@@ -112,6 +112,8 @@ public:
 	// 最终在程序生成的时候转化为正确的汇编语句.
 	// 对于计算表达式来说, 这是不能执行的操作, 故而不在基类里
 	virtual llvm::Value *getval(ASTContext) = 0;
+
+    virtual ~ExprAST(){}
 };
 
 typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
@@ -166,6 +168,7 @@ public:
 
 	//获得定义地
 	virtual DimAST* nameresolve(ASTContext ctx);
+    virtual ~NamedExprAST(){}
 };
 typedef boost::shared_ptr<NamedExprAST> NamedExprASTPtr;
 
@@ -181,6 +184,7 @@ public:
 	
 	// 调用获得 ID 的类型系统
 	virtual ExprTypeAST* type(ASTContext ctx);
+    virtual ~VariableExprAST(){}	
 };
 
 // 数学运算表达式.
@@ -226,6 +230,7 @@ class CallOrArrayExprAST : public NamedExprAST
 {
 public:
     CallOrArrayExprAST(ReferenceAST* _ID);
+    virtual ~CallOrArrayExprAST(){}
 };
 
 class CallExprAST : public CallOrArrayExprAST
@@ -244,6 +249,7 @@ public:
 
 typedef boost::shared_ptr<CallExprAST>	CallExprASTPtr;
 
+class ExprOperation;
 // 变量类型定义.
 class ExprTypeAST : public AST
 {
@@ -253,6 +259,7 @@ class ExprTypeAST : public AST
 	// 对大部分的表达式来说, 如果无法获得地址, 在屏幕上打印无法对某类型取地址. 然后退出或者返回 NULL
 public:
 
+	
 	// name of type
 	virtual std::string name(ASTContext){return _typename;};
 	
@@ -272,6 +279,8 @@ public:
 	
 	virtual	size_t size(){return _size;};
 
+	virtual ExprOperation * getop() = 0;
+
 public:
     ExprTypeAST(){}
     ExprTypeAST( size_t size , const std::string __typename );
@@ -287,6 +296,8 @@ public:
     virtual size_t size(){return sizeof(long);};
 	
 	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name,const std::string _typename);
+
+    virtual ExprOperation* getop();
 };
 
 //  字符串 支持!
@@ -299,6 +310,7 @@ public:
     virtual size_t size(){return sizeof(long);}; //yes没错, 字符串类型只占用8个字节,也就是一个指针哦!
 
 	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name,const std::string _typename);
+    virtual ExprOperation* getop();
 };
 
 
@@ -335,7 +347,25 @@ class ReferenceTypeAST : public ExprTypeAST
 
 };
 
+///////////////////////// 运算符支持
+class ExprOperation{
+public:
+	// 赋值运算符, 对于字符串来说, 这个运算符的意义就是调用 strdup
+	// 每个类型都会有自己的 Operator 实现.
+	// 对于其他类型来说, 呵呵, 那就是 Load / Store 啦
+	// 运算结果是一个 ExprASTPtr , 事实上可以忽略,呵呵. C++编译器将自动释放它
+	virtual	ExprASTPtr operator_assign(ASTContext , NamedExprASTPtr lval, ExprASTPtr rval) = 0;
+};
 
+// 整数
+class NumberExprOperation : public ExprOperation {
+    virtual ExprASTPtr operator_assign(ASTContext , NamedExprASTPtr lval, ExprASTPtr rval);
+};
+
+// 字符串
+class StringExprOperation : public ExprOperation {
+    virtual ExprASTPtr operator_assign(ASTContext , NamedExprASTPtr lval, ExprASTPtr rval);
+};
 ///////////////////////// 辅助函数
 
 ExprTypeAST*	TypeNameResolve(ASTContext ctx,const std::string _typename);

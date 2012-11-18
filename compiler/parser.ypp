@@ -129,7 +129,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %token tWHILE tENDWHILE
 
 // 内置数据类型
-%token tLONG 
+%token tLONG tSTR 
 
 // 数据 , 标识符, 变量名, 函数名, 等等
 %token <id>		tID
@@ -247,6 +247,9 @@ assigment: varref tEQU expression {
 
 exprtype: tLONG	{
 		$$ = new std::string("long");
+	}
+	| tSTR {
+		$$ = new std::string("string");
 	}
 	| tID {
 		debug("define as user type not supported\n");

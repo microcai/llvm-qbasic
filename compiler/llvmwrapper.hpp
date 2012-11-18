@@ -17,12 +17,14 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #pragma once
+#include "ast.hpp"
 
-#include <llvm/Value.h>
 namespace qbc{
 
 llvm::Value * getconstint(int v);
 
 llvm::Value * getconstlong(long v);
+
+llvm::Constant * getbuiltinprotype(ASTContext ctx, const std::string name);
 
 }

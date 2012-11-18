@@ -17,9 +17,53 @@
     License along with this library; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
+#include <cstdio>
+#include <llvm/Support/IRBuilder.h>
+
 #include "ast.hpp"
+#include "type.hpp"
+#include "llvmwrapper.hpp"
 
+#define debug std::printf
 
-class Operator{
+static	NumberExprOperation	numberop;
+static	StringExprOperation stringop;
+
+ExprOperation* NumberExprTypeAST::getop()
+{
+	return & numberop;
+}
+
+ExprOperation* StringExprTypeAST::getop()
+{
+	return & stringop;
+}
+
+//	call get on lval and rval, then wrapper an value to NumberExprAST;
+ExprASTPtr NumberExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr lval, ExprASTPtr rval)
+{
+	llvm::Value * LHS =	lval->getptr(ctx);
+	llvm::Value * RHS =	rval->getval(ctx);
+
+ 	llvm::IRBuilder<> builder(ctx.block);
+ 	// 生成赋值语句,因为是简单的整型赋值,所以可以直接生成而不用调用 operator==()
+  	builder.CreateStore(RHS,LHS);
+		debug("get ptr of this\n");
+	return lval; // FIXME 可以吧, 呵呵
+}
+
+//TODO 添加 free + strdup  指令
+ExprASTPtr StringExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr lval, ExprASTPtr rval)
+{
+	llvm::IRBuilder<> builder(ctx.block);
 	
-};
+	llvm::Constant * llvmfunc_free =  qbc::getbuiltinprotype(ctx,"free");
+	llvm::Constant * llvmfunc_strdup = qbc::getbuiltinprotype(ctx,"strdup");
+
+	builder.CreateCall(llvmfunc_free,lval->getval(ctx));
+
+	llvm::Value * dupedstr = builder.CreateCall(llvmfunc_strdup,rval->getval(ctx),"dumpstring");
+
+	builder.CreateStore(dupedstr,lval->getptr(ctx));
+	return lval;
+}

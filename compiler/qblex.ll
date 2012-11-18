@@ -93,7 +93,8 @@ if			return token::tIF;
 then		return token::tTHEN;
 else		return token::tELSE;
 elif|elseif	return token::tELSEIF;
-return		return token::tRETURN;	
+return		return token::tRETURN;
+str|string		return token::tSTR;
 
 long return token::tLONG;/* variables type*/
 

@@ -626,28 +626,28 @@ namespace qb {
 /* Line 661 of lalr1.cc  */
 #line 251 "parser.ypp"
     {
-		debug("define as user type not supported\n");
-		exit(1);
+		(yyval.exprtype) = new std::string("string");
 	}
     break;
 
   case 25:
 /* Line 661 of lalr1.cc  */
-#line 257 "parser.ypp"
+#line 254 "parser.ypp"
+    {
+		debug("define as user type not supported\n");
+		exit(1);
+	}
+    break;
+
+  case 26:
+/* Line 661 of lalr1.cc  */
+#line 260 "parser.ypp"
     {
 
 		(yysemantic_stack_[(3) - (3)].expression_list)->Append( new EmptyExprAST );
 		(yyval.printstatement) = new PrintStmtAST( (yysemantic_stack_[(3) - (2)].printinto), (yysemantic_stack_[(3) - (3)].expression_list) );
 		
 		debug("got print1 done\n");
-	}
-    break;
-
-  case 26:
-/* Line 661 of lalr1.cc  */
-#line 264 "parser.ypp"
-    {
-		(yyval.printstatement) = new PrintStmtAST( (yysemantic_stack_[(4) - (2)].printinto), (yysemantic_stack_[(4) - (3)].expression_list) );
 	}
     break;
 
@@ -663,48 +663,56 @@ namespace qb {
 /* Line 661 of lalr1.cc  */
 #line 270 "parser.ypp"
     {
+		(yyval.printstatement) = new PrintStmtAST( (yysemantic_stack_[(4) - (2)].printinto), (yysemantic_stack_[(4) - (3)].expression_list) );
+	}
+    break;
+
+  case 29:
+/* Line 661 of lalr1.cc  */
+#line 273 "parser.ypp"
+    {
 		ExprListAST * exprList = new ExprListAST;
 		exprList->Append( new EmptyExprAST );
 		(yyval.printstatement) = new PrintStmtAST( (yysemantic_stack_[(2) - (2)].printinto), exprList );
 	}
     break;
 
-  case 29:
-/* Line 661 of lalr1.cc  */
-#line 277 "parser.ypp"
-    { debug("print has got itger\n") ;}
-    break;
-
   case 30:
 /* Line 661 of lalr1.cc  */
-#line 278 "parser.ypp"
-    {  debug("empty printinto\n");	}
+#line 280 "parser.ypp"
+    { debug("print has got itger\n") ;}
     break;
 
   case 31:
 /* Line 661 of lalr1.cc  */
 #line 281 "parser.ypp"
-    { (yyval.expression_list) = (yysemantic_stack_[(3) - (1)].expression_list) ; (yyval.expression_list)->Append((yysemantic_stack_[(3) - (3)].expression)); }
+    {  debug("empty printinto\n");	}
     break;
 
   case 32:
 /* Line 661 of lalr1.cc  */
-#line 282 "parser.ypp"
+#line 284 "parser.ypp"
+    { (yyval.expression_list) = (yysemantic_stack_[(3) - (1)].expression_list) ; (yyval.expression_list)->Append((yysemantic_stack_[(3) - (3)].expression)); }
+    break;
+
+  case 33:
+/* Line 661 of lalr1.cc  */
+#line 285 "parser.ypp"
     {
 		(yyval.expression_list) =  new ExprListAST;
 		(yyval.expression_list)->Append((yysemantic_stack_[(1) - (1)].expression));
 	}
     break;
 
-  case 33:
+  case 34:
 /* Line 661 of lalr1.cc  */
-#line 290 "parser.ypp"
+#line 293 "parser.ypp"
     { (yyval.call_function) = new CallExprAST((yysemantic_stack_[(3) - (1)].varref)); debug("functioncall %s with no arg\n", (yysemantic_stack_[(3) - (1)].varref)->ID.c_str()); }
     break;
 
-  case 34:
+  case 35:
 /* Line 661 of lalr1.cc  */
-#line 291 "parser.ypp"
+#line 294 "parser.ypp"
     { 	 // 这个可能是函数调用, 也许是数组哦 :)
 			 // 现在就当是函数调用了, 在后面的阶段再生成数组访问
 			 debug("functioncall %s with  args!!!!\n" , (yysemantic_stack_[(4) - (1)].varref)->ID.c_str() );
@@ -713,57 +721,57 @@ namespace qb {
 		}
     break;
 
-  case 37:
-/* Line 661 of lalr1.cc  */
-#line 302 "parser.ypp"
-    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_ADD , (yysemantic_stack_[(3) - (3)].expression) );  }
-    break;
-
   case 38:
 /* Line 661 of lalr1.cc  */
-#line 303 "parser.ypp"
-    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_SUB , (yysemantic_stack_[(3) - (3)].expression) );  }
+#line 305 "parser.ypp"
+    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_ADD , (yysemantic_stack_[(3) - (3)].expression) );  }
     break;
 
   case 39:
 /* Line 661 of lalr1.cc  */
-#line 304 "parser.ypp"
-    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_MUL , (yysemantic_stack_[(3) - (3)].expression) );  }
+#line 306 "parser.ypp"
+    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_SUB , (yysemantic_stack_[(3) - (3)].expression) );  }
     break;
 
   case 40:
 /* Line 661 of lalr1.cc  */
-#line 305 "parser.ypp"
-    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_DIV , (yysemantic_stack_[(3) - (3)].expression) );  }
+#line 307 "parser.ypp"
+    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_MUL , (yysemantic_stack_[(3) - (3)].expression) );  }
     break;
 
   case 41:
 /* Line 661 of lalr1.cc  */
-#line 306 "parser.ypp"
-    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_LESS , (yysemantic_stack_[(3) - (3)].expression) );  }
+#line 308 "parser.ypp"
+    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_DIV , (yysemantic_stack_[(3) - (3)].expression) );  }
     break;
 
   case 42:
 /* Line 661 of lalr1.cc  */
-#line 307 "parser.ypp"
-    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_LESSEQU , (yysemantic_stack_[(3) - (3)].expression) );  }
+#line 309 "parser.ypp"
+    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_LESS , (yysemantic_stack_[(3) - (3)].expression) );  }
     break;
 
   case 43:
 /* Line 661 of lalr1.cc  */
-#line 308 "parser.ypp"
-    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_GREATER , (yysemantic_stack_[(3) - (3)].expression) );  }
+#line 310 "parser.ypp"
+    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_LESSEQU , (yysemantic_stack_[(3) - (3)].expression) );  }
     break;
 
   case 44:
 /* Line 661 of lalr1.cc  */
-#line 309 "parser.ypp"
-    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_GREATEREQUL , (yysemantic_stack_[(3) - (3)].expression) );  }
+#line 311 "parser.ypp"
+    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_GREATER , (yysemantic_stack_[(3) - (3)].expression) );  }
     break;
 
   case 45:
 /* Line 661 of lalr1.cc  */
-#line 311 "parser.ypp"
+#line 312 "parser.ypp"
+    {   (yyval.expression) = new CalcExprAST( (yysemantic_stack_[(3) - (1)].expression), OPERATOR_GREATEREQUL , (yysemantic_stack_[(3) - (3)].expression) );  }
+    break;
+
+  case 46:
+/* Line 661 of lalr1.cc  */
+#line 314 "parser.ypp"
     {
 			//TODO the VariableRefExprAST
 			(yyval.expression) = new VariableExprAST( (yysemantic_stack_[(1) - (1)].varref) );
@@ -771,35 +779,35 @@ namespace qb {
 		}
     break;
 
-  case 46:
+  case 47:
 /* Line 661 of lalr1.cc  */
-#line 316 "parser.ypp"
+#line 319 "parser.ypp"
     {
 			//常量
 			(yyval.expression) = new NumberExprAST( (yysemantic_stack_[(1) - (1)].integer) );
 		}
     break;
 
-  case 48:
+  case 49:
 /* Line 661 of lalr1.cc  */
-#line 321 "parser.ypp"
+#line 324 "parser.ypp"
     { //字符串
 			(yyval.expression) = new StringExprAST((yysemantic_stack_[(1) - (1)].string));
 		}
     break;
 
-  case 49:
+  case 50:
 /* Line 661 of lalr1.cc  */
-#line 326 "parser.ypp"
+#line 329 "parser.ypp"
     {
 		debug("ref menber %s . %s , not supported yet\n", (yysemantic_stack_[(3) - (1)].varref)->ID.c_str()  , (yysemantic_stack_[(3) - (3)].id)->c_str() );
 		exit(1); // 逐级传递
 	}
     break;
 
-  case 51:
+  case 52:
 /* Line 661 of lalr1.cc  */
-#line 331 "parser.ypp"
+#line 334 "parser.ypp"
     {
 		// 变量的引用? 反正是一个标识符的引用,
 		// 所以我构建一个标识符引用语句. 这个会被用来构建函数调用和数组语句以及变量.
@@ -808,9 +816,9 @@ namespace qb {
 	}
     break;
 
-  case 54:
+  case 55:
 /* Line 661 of lalr1.cc  */
-#line 347 "parser.ypp"
+#line 350 "parser.ypp"
     {
 					useDefautSubMain = false;
 					(yyval.function_definition) = new FunctionDimAST( *(yysemantic_stack_[(10) - (2)].id) , (yysemantic_stack_[(10) - (4)].arg_list), *(yysemantic_stack_[(10) - (7)].exprtype) );
@@ -819,9 +827,9 @@ namespace qb {
 				}
     break;
 
-  case 55:
+  case 56:
 /* Line 661 of lalr1.cc  */
-#line 355 "parser.ypp"
+#line 358 "parser.ypp"
     {
 					useDefautSubMain = false;
 					(yyval.function_definition) = new FunctionDimAST( *(yysemantic_stack_[(8) - (2)].id) , (yysemantic_stack_[(8) - (4)].arg_list) , "long" ) ;
@@ -830,9 +838,9 @@ namespace qb {
 				}
     break;
 
-  case 56:
+  case 57:
 /* Line 661 of lalr1.cc  */
-#line 365 "parser.ypp"
+#line 368 "parser.ypp"
     {
 				useDefautSubMain = false;
 				debug("!!SUB %s defined with arg !!\n",(yysemantic_stack_[(7) - (2)].id)->c_str());
@@ -843,15 +851,15 @@ namespace qb {
 			}
     break;
 
-  case 57:
+  case 58:
 /* Line 661 of lalr1.cc  */
-#line 375 "parser.ypp"
+#line 378 "parser.ypp"
     { (yyval.arg_list) = 0; }
     break;
 
-  case 58:
+  case 59:
 /* Line 661 of lalr1.cc  */
-#line 376 "parser.ypp"
+#line 379 "parser.ypp"
     {
 		(yyval.arg_list) = (yysemantic_stack_[(5) - (1)].arg_list);
 		(yyval.arg_list)->addchild( new ArgumentDimAST( *(yysemantic_stack_[(5) - (3)].id)  , * (yysemantic_stack_[(5) - (5)].exprtype) ) );
@@ -863,9 +871,9 @@ namespace qb {
 	}
     break;
 
-  case 59:
+  case 60:
 /* Line 661 of lalr1.cc  */
-#line 385 "parser.ypp"
+#line 388 "parser.ypp"
     {
 		debug("definning %s is type %p as arg\n",(yysemantic_stack_[(3) - (1)].id)->c_str(), (yysemantic_stack_[(3) - (3)].exprtype));
 		
@@ -874,18 +882,18 @@ namespace qb {
 	}
     break;
 
-  case 60:
+  case 61:
 /* Line 661 of lalr1.cc  */
-#line 393 "parser.ypp"
+#line 396 "parser.ypp"
     {
 		debug("definning %s is type %p\n",(yysemantic_stack_[(3) - (1)].id)->c_str(), (yysemantic_stack_[(3) - (3)].exprtype));
 		(yyval.dim_item) = new VariableDimAST( *(yysemantic_stack_[(3) - (1)].id)  , * (yysemantic_stack_[(3) - (3)].exprtype) );
 	}
     break;
 
-  case 61:
+  case 62:
 /* Line 661 of lalr1.cc  */
-#line 406 "parser.ypp"
+#line 409 "parser.ypp"
     {
 			// 单行 if then 语句
 			(yyval.if_clause) = new IFStmtAST( ExprASTPtr((yysemantic_stack_[(4) - (2)].expression)));
@@ -893,18 +901,18 @@ namespace qb {
 	}
     break;
 
-  case 62:
+  case 63:
 /* Line 661 of lalr1.cc  */
-#line 413 "parser.ypp"
+#line 416 "parser.ypp"
     {
 			(yyval.if_clause) = new IFStmtAST( ExprASTPtr((yysemantic_stack_[(6) - (2)].expression)));
 			(yyval.if_clause)->_then = CodeBlockASTPtr((yysemantic_stack_[(6) - (5)].codeblocks));
 		}
     break;
 
-  case 63:
+  case 64:
 /* Line 661 of lalr1.cc  */
-#line 421 "parser.ypp"
+#line 424 "parser.ypp"
     {
 			(yyval.if_clause) = new IFStmtAST( ExprASTPtr((yysemantic_stack_[(8) - (2)].expression)));
 			(yyval.if_clause)->_then = CodeBlockASTPtr((yysemantic_stack_[(8) - (5)].codeblocks));
@@ -912,9 +920,9 @@ namespace qb {
 		}
     break;
 
-  case 64:
+  case 65:
 /* Line 661 of lalr1.cc  */
-#line 434 "parser.ypp"
+#line 437 "parser.ypp"
     {
 			(yyval.while_loop) = new WhileLoopAST( ExprASTPtr((yysemantic_stack_[(5) - (2)].expression)) , (yysemantic_stack_[(5) - (4)].codeblocks));
 		}
@@ -922,7 +930,7 @@ namespace qb {
 
 
 /* Line 661 of lalr1.cc  */
-#line 926 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 934 "/home/cai/projects/basic/compiler/parser.cpp"
 	default:
           break;
       }
@@ -1108,24 +1116,24 @@ namespace qb {
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
-  const signed char parser::yypact_ninf_ = -94;
+  const signed char parser::yypact_ninf_ = -79;
   const short int
   parser::yypact_[] =
   {
-       324,   -94,   -34,   -32,   359,    -7,     1,    43,   359,   359,
-     -94,   -94,   -94,   -94,   359,    93,     8,   -94,   -20,    -2,
-     -94,   -94,    72,   155,     7,   -94,   -94,   -94,   -94,    48,
-      49,   -94,   165,   -17,    75,   -94,   -94,    -4,    59,   359,
-     361,   144,   135,   -94,   -94,   -94,     3,   -94,   355,   -94,
-     355,   -94,   359,   359,   359,   359,   359,   359,   359,   359,
-     -94,   359,    63,    65,    34,    71,    71,   -18,    67,    25,
-     165,   184,   -94,   -94,   324,   -94,   -94,   -94,   -94,   396,
-     403,   409,   205,    38,    38,   -94,   -94,   165,   -94,   -94,
-     -94,    23,    94,    35,    44,   -94,   -94,   -94,   -94,   359,
-     -94,   -94,   324,   207,   359,   -94,   -18,    79,   324,    56,
-     165,   161,   -94,   -94,    97,   232,   324,   -18,   -94,   324,
-     -18,   -94,   255,   100,   278,   -94,   -94,   324,   -94,   301,
-     -94
+       332,   -79,   -34,   -31,    50,   -19,    -3,   -36,    50,    50,
+     -79,   -79,   -79,   -79,    50,    28,   110,   -79,   -21,    -4,
+     -79,   -79,    -2,   168,     5,   -79,   -79,   -79,   -79,    37,
+      40,   -79,   411,   -16,    24,   -79,   -79,    32,    13,    50,
+     370,   157,   148,   -79,   -79,   -79,     1,   -79,   363,   -79,
+     363,   -79,    50,    50,    50,    50,    50,    50,    50,    50,
+     -79,    50,    54,    57,   367,    63,    63,    10,    60,    21,
+     411,   186,   -79,   -79,   332,   -79,   -79,   -79,   -79,    62,
+     418,   424,   131,   103,   103,   -79,   -79,   411,   -79,   -79,
+     -79,   -29,    90,   -14,    51,   -79,   -79,   -79,   -79,   -79,
+      50,   -79,   -79,   332,   210,    50,   -79,    10,    82,   332,
+      98,   411,   162,   -79,   -79,   102,   236,   332,    10,   -79,
+     332,    10,   -79,   260,   106,   284,   -79,   -79,   332,   -79,
+     308,   -79
   };
 
   /* YYDEFACT[S] -- default reduction number in state S.  Performed when
@@ -1134,36 +1142,36 @@ namespace qb {
   const unsigned char
   parser::yydefact_[] =
   {
-         0,     8,     0,     0,     0,     0,     0,    30,     0,     0,
-      51,    46,    48,    47,     0,     0,     0,     5,     0,     0,
-      14,    12,    35,     0,    45,    20,    19,    17,    18,     0,
-       0,    35,    16,    45,     0,    13,    15,     0,     0,    28,
+         0,     8,     0,     0,     0,     0,     0,    31,     0,     0,
+      52,    47,    49,    48,     0,     0,     0,     5,     0,     0,
+      14,    12,    36,     0,    46,    20,    19,    17,    18,     0,
+       0,    36,    16,    46,     0,    13,    15,     0,     0,    29,
        0,     0,     0,     1,     2,     4,     0,     6,     0,     7,
        0,     9,     0,     0,     0,     0,     0,     0,     0,     0,
-      21,     0,     0,     0,     0,    57,    57,     0,     0,    25,
-      32,     0,    52,    53,     0,    36,     3,    10,    11,    44,
-      42,    41,    43,    38,    37,    39,    40,    22,    50,    49,
-      33,     0,     0,     0,     0,    23,    24,    60,    29,    26,
-      27,    61,     0,     0,     0,    34,     0,     0,     0,     0,
-      31,     0,    64,    59,     0,     0,     0,     0,    62,     0,
-       0,    56,     0,     0,     0,    58,    55,     0,    63,     0,
-      54
+      21,     0,     0,     0,     0,    58,    58,     0,     0,    26,
+      33,     0,    53,    54,     0,    37,     3,    10,    11,    45,
+      43,    42,    44,    39,    38,    40,    41,    22,    51,    50,
+      34,     0,     0,     0,     0,    23,    24,    25,    61,    30,
+      27,    28,    62,     0,     0,     0,    35,     0,     0,     0,
+       0,    32,     0,    65,    60,     0,     0,     0,     0,    63,
+       0,     0,    57,     0,     0,     0,    59,    56,     0,    64,
+       0,    55
   };
 
   /* YYPGOTO[NTERM-NUM].  */
-  const signed char
+  const short int
   parser::yypgoto_[] =
   {
-       -94,   -94,   -72,   -15,   109,    18,   120,   -93,   -94,   -94,
-      64,     0,    78,     6,    69,   -94,   -94,    81,   -94,   -94,
-     -94
+       -79,   -79,   -71,   -15,   115,   -41,   128,   -78,   -79,   -79,
+      72,     0,    27,     6,    67,   -79,   -79,    83,   -79,   -79,
+     -79
   };
 
   /* YYDEFGOTO[NTERM-NUM].  */
   const signed char
   parser::yydefgoto_[] =
   {
-        -1,    15,    16,    17,    18,    19,    20,    97,    21,    39,
+        -1,    15,    16,    17,    18,    19,    20,    98,    21,    39,
       69,    31,    23,    24,    74,    25,    26,    93,    35,    27,
       28
   };
@@ -1175,98 +1183,102 @@ namespace qb {
   const unsigned char
   parser::yytable_[] =
   {
-        22,    45,   103,    47,    62,    63,    76,    29,    61,    30,
-      33,    44,    37,   113,    33,    33,    22,    62,    63,    61,
-      33,    49,    95,    96,   123,    48,    47,   125,    62,    63,
-     111,     1,    64,     2,    34,     3,   115,     4,     5,     6,
-       7,     8,    10,    50,   122,    33,     9,   124,    48,    10,
-      11,    12,    13,    58,    59,   129,    64,    14,    33,    33,
-      33,    33,    33,    33,    33,    33,    77,    33,    78,   104,
-      33,    99,   100,   105,    22,    10,    11,    12,    13,   116,
-     117,   107,    32,    14,    90,   108,    40,    41,    45,   101,
-     107,    38,    42,    43,   109,    51,    45,    65,    66,    67,
-      45,    68,    22,    22,    88,    33,    89,    45,    22,    45,
-      33,    22,    92,    98,    45,    22,    22,    70,   106,    22,
-     114,   120,    22,   127,    22,    46,    36,    22,    91,    22,
-      79,    80,    81,    82,    83,    84,    85,    86,     0,    87,
-     102,     0,    70,    52,    53,    54,    55,    94,    56,    57,
-      58,    59,    52,    53,    54,    55,     0,    56,    57,    58,
-      59,     0,     0,    52,    53,    54,    55,    72,    56,    57,
-      58,    59,     0,    52,    53,    54,    55,   110,    56,    57,
-      58,    59,   110,     0,     1,    75,     2,     0,     3,    73,
-       4,     5,     6,     7,     8,     0,   118,   119,     0,     9,
-      60,     0,    10,    11,    12,    13,     0,    72,     0,     2,
-      14,     3,     0,     4,     5,     6,     7,     8,    56,    57,
-      58,    59,     9,     0,     0,    10,    11,    12,    13,    73,
-       1,     0,     2,    14,     3,     0,     4,     5,     6,     7,
-       8,     0,     0,     0,     0,     9,   112,     0,    10,    11,
-      12,    13,     0,     0,     0,     1,    14,     2,   121,     3,
-       0,     4,     5,     6,     7,     8,     0,     0,     0,     0,
-       9,     0,     0,    10,    11,    12,    13,     0,     1,     0,
-       2,    14,     3,   126,     4,     5,     6,     7,     8,     0,
-       0,     0,     0,     9,     0,     0,    10,    11,    12,    13,
-       0,     1,     0,     2,    14,     3,     0,     4,     5,     6,
-       7,     8,     0,   128,     0,     0,     9,     0,     0,    10,
-      11,    12,    13,     0,     1,     0,     2,    14,     3,   130,
-       4,     5,     6,     7,     8,     0,     0,     0,     0,     9,
+        22,    45,    47,   104,    76,    62,    63,    77,    29,    78,
+      33,    30,    37,    38,    33,    33,    22,    61,   105,    49,
+      33,    51,   106,    34,    47,    48,    62,    63,    43,   114,
+     102,    32,   112,   108,    64,    40,    41,   109,   116,    10,
+     124,    42,    50,   126,    61,    33,   123,    48,    67,   125,
+      95,    96,    97,    62,    63,    64,    68,   130,    33,    33,
+      33,    33,    33,    33,    33,    33,    70,    33,   100,   101,
+      33,    53,    54,    55,    22,    56,    57,    58,    59,    79,
+      80,    81,    82,    83,    84,    85,    86,    65,    87,    45,
+      66,    70,    10,    11,    12,    13,    88,    45,   108,    89,
+      14,    45,   110,    22,    22,    92,    33,    99,    45,    22,
+      45,    33,    22,    44,   107,    45,    22,    22,    58,    59,
+      22,   117,   118,    22,   115,    22,   121,   111,    22,   128,
+      22,    46,   111,     1,    36,     2,    91,     3,   103,     4,
+       5,     6,     7,     8,    56,    57,    58,    59,     9,    94,
+       0,     0,    10,    11,    12,    13,    52,    53,    54,    55,
+      14,    56,    57,    58,    59,    52,    53,    54,    55,     0,
+      56,    57,    58,    59,     0,     0,    52,    53,    54,    55,
+      72,    56,    57,    58,    59,     1,     0,     2,     0,     3,
+       0,     4,     5,     6,     7,     8,     0,   119,   120,    75,
+       9,     0,     0,    73,    10,    11,    12,    13,     0,    72,
+       0,     2,    14,     3,    60,     4,     5,     6,     7,     8,
+       0,     0,     0,     0,     9,     0,     0,     0,    10,    11,
+      12,    13,    73,     1,     0,     2,    14,     3,     0,     4,
+       5,     6,     7,     8,     0,     0,     0,     0,     9,   113,
+       0,     0,    10,    11,    12,    13,     0,     0,     0,     1,
+      14,     2,   122,     3,     0,     4,     5,     6,     7,     8,
+       0,     0,     0,     0,     9,     0,     0,     0,    10,    11,
+      12,    13,     0,     1,     0,     2,    14,     3,   127,     4,
+       5,     6,     7,     8,     0,     0,     0,     0,     9,     0,
        0,     0,    10,    11,    12,    13,     0,     1,     0,     2,
-      14,     3,     0,     4,     5,     6,     7,     8,     0,     0,
-       0,     0,     9,     0,     0,    10,    11,    12,    13,    52,
-      53,    54,    55,    14,    56,    57,    58,    59,     0,     0,
-       2,     0,     3,     0,     4,     5,     6,     7,     8,     0,
-       0,     0,     0,     9,     0,    71,    10,    11,    12,    13,
-      10,    11,    12,    13,    14,    53,    54,    55,    14,    56,
-      57,    58,    59,    54,    55,     0,    56,    57,    58,    59,
-      55,     0,    56,    57,    58,    59
+      14,     3,     0,     4,     5,     6,     7,     8,     0,   129,
+       0,     0,     9,     0,     0,     0,    10,    11,    12,    13,
+       0,     1,     0,     2,    14,     3,   131,     4,     5,     6,
+       7,     8,     0,     0,     0,     0,     9,     0,     0,     0,
+      10,    11,    12,    13,     0,     1,     0,     2,    14,     3,
+       0,     4,     5,     6,     7,     8,     0,     0,     0,     0,
+       9,     0,     0,     0,    10,    11,    12,    13,    52,    53,
+      54,    55,    14,    56,    57,    58,    59,     0,     2,     0,
+       3,     0,     4,     5,     6,     7,     8,     0,     0,     0,
+       0,     9,     0,     0,    71,    10,    11,    12,    13,    10,
+      11,    12,    13,    14,     0,     0,     0,    14,    90,    52,
+      53,    54,    55,     0,    56,    57,    58,    59,    54,    55,
+       0,    56,    57,    58,    59,    55,     0,    56,    57,    58,
+      59
   };
 
   /* YYCHECK.  */
   const short int
   parser::yycheck_[] =
   {
-         0,    16,    74,    23,    21,    22,     3,    41,    12,    41,
-       4,     3,     6,   106,     8,     9,    16,    21,    22,    12,
-      14,    23,    40,    41,   117,    45,    23,   120,    21,    22,
-     102,    23,    49,    25,    41,    27,   108,    29,    30,    31,
-      32,    33,    41,    45,   116,    39,    38,   119,    45,    41,
-      42,    43,    44,    15,    16,   127,    49,    49,    52,    53,
-      54,    55,    56,    57,    58,    59,    48,    61,    50,    46,
-      64,    46,    47,    50,    74,    41,    42,    43,    44,    23,
-      24,    46,     4,    49,    50,    50,     8,     9,   103,    71,
-      46,    48,    14,     0,    50,    23,   111,    49,    49,    24,
-     115,    42,   102,   103,    41,    99,    41,   122,   108,   124,
-     104,   111,    41,    46,   129,   115,   116,    39,    24,   119,
-      41,    24,   122,    23,   124,    16,     6,   127,    64,   129,
-      52,    53,    54,    55,    56,    57,    58,    59,    -1,    61,
-      71,    -1,    64,     8,     9,    10,    11,    66,    13,    14,
-      15,    16,     8,     9,    10,    11,    -1,    13,    14,    15,
-      16,    -1,    -1,     8,     9,    10,    11,    23,    13,    14,
-      15,    16,    -1,     8,     9,    10,    11,    99,    13,    14,
-      15,    16,   104,    -1,    23,    50,    25,    -1,    27,    45,
-      29,    30,    31,    32,    33,    -1,    35,    36,    -1,    38,
-      45,    -1,    41,    42,    43,    44,    -1,    23,    -1,    25,
-      49,    27,    -1,    29,    30,    31,    32,    33,    13,    14,
-      15,    16,    38,    -1,    -1,    41,    42,    43,    44,    45,
-      23,    -1,    25,    49,    27,    -1,    29,    30,    31,    32,
-      33,    -1,    -1,    -1,    -1,    38,    39,    -1,    41,    42,
-      43,    44,    -1,    -1,    -1,    23,    49,    25,    26,    27,
+         0,    16,    23,    74,     3,    21,    22,    48,    42,    50,
+       4,    42,     6,    49,     8,     9,    16,    12,    47,    23,
+      14,    23,    51,    42,    23,    46,    21,    22,     0,   107,
+      71,     4,   103,    47,    50,     8,     9,    51,   109,    42,
+     118,    14,    46,   121,    12,    39,   117,    46,    24,   120,
+      40,    41,    42,    21,    22,    50,    43,   128,    52,    53,
+      54,    55,    56,    57,    58,    59,    39,    61,    47,    48,
+      64,     9,    10,    11,    74,    13,    14,    15,    16,    52,
+      53,    54,    55,    56,    57,    58,    59,    50,    61,   104,
+      50,    64,    42,    43,    44,    45,    42,   112,    47,    42,
+      50,   116,    51,   103,   104,    42,   100,    47,   123,   109,
+     125,   105,   112,     3,    24,   130,   116,   117,    15,    16,
+     120,    23,    24,   123,    42,   125,    24,   100,   128,    23,
+     130,    16,   105,    23,     6,    25,    64,    27,    71,    29,
+      30,    31,    32,    33,    13,    14,    15,    16,    38,    66,
+      -1,    -1,    42,    43,    44,    45,     8,     9,    10,    11,
+      50,    13,    14,    15,    16,     8,     9,    10,    11,    -1,
+      13,    14,    15,    16,    -1,    -1,     8,     9,    10,    11,
+      23,    13,    14,    15,    16,    23,    -1,    25,    -1,    27,
+      -1,    29,    30,    31,    32,    33,    -1,    35,    36,    51,
+      38,    -1,    -1,    46,    42,    43,    44,    45,    -1,    23,
+      -1,    25,    50,    27,    46,    29,    30,    31,    32,    33,
+      -1,    -1,    -1,    -1,    38,    -1,    -1,    -1,    42,    43,
+      44,    45,    46,    23,    -1,    25,    50,    27,    -1,    29,
+      30,    31,    32,    33,    -1,    -1,    -1,    -1,    38,    39,
+      -1,    -1,    42,    43,    44,    45,    -1,    -1,    -1,    23,
+      50,    25,    26,    27,    -1,    29,    30,    31,    32,    33,
+      -1,    -1,    -1,    -1,    38,    -1,    -1,    -1,    42,    43,
+      44,    45,    -1,    23,    -1,    25,    50,    27,    28,    29,
+      30,    31,    32,    33,    -1,    -1,    -1,    -1,    38,    -1,
+      -1,    -1,    42,    43,    44,    45,    -1,    23,    -1,    25,
+      50,    27,    -1,    29,    30,    31,    32,    33,    -1,    35,
+      -1,    -1,    38,    -1,    -1,    -1,    42,    43,    44,    45,
+      -1,    23,    -1,    25,    50,    27,    28,    29,    30,    31,
+      32,    33,    -1,    -1,    -1,    -1,    38,    -1,    -1,    -1,
+      42,    43,    44,    45,    -1,    23,    -1,    25,    50,    27,
       -1,    29,    30,    31,    32,    33,    -1,    -1,    -1,    -1,
-      38,    -1,    -1,    41,    42,    43,    44,    -1,    23,    -1,
-      25,    49,    27,    28,    29,    30,    31,    32,    33,    -1,
-      -1,    -1,    -1,    38,    -1,    -1,    41,    42,    43,    44,
-      -1,    23,    -1,    25,    49,    27,    -1,    29,    30,    31,
-      32,    33,    -1,    35,    -1,    -1,    38,    -1,    -1,    41,
-      42,    43,    44,    -1,    23,    -1,    25,    49,    27,    28,
-      29,    30,    31,    32,    33,    -1,    -1,    -1,    -1,    38,
-      -1,    -1,    41,    42,    43,    44,    -1,    23,    -1,    25,
-      49,    27,    -1,    29,    30,    31,    32,    33,    -1,    -1,
-      -1,    -1,    38,    -1,    -1,    41,    42,    43,    44,     8,
-       9,    10,    11,    49,    13,    14,    15,    16,    -1,    -1,
-      25,    -1,    27,    -1,    29,    30,    31,    32,    33,    -1,
-      -1,    -1,    -1,    38,    -1,    34,    41,    42,    43,    44,
-      41,    42,    43,    44,    49,     9,    10,    11,    49,    13,
-      14,    15,    16,    10,    11,    -1,    13,    14,    15,    16,
-      11,    -1,    13,    14,    15,    16
+      38,    -1,    -1,    -1,    42,    43,    44,    45,     8,     9,
+      10,    11,    50,    13,    14,    15,    16,    -1,    25,    -1,
+      27,    -1,    29,    30,    31,    32,    33,    -1,    -1,    -1,
+      -1,    38,    -1,    -1,    34,    42,    43,    44,    45,    42,
+      43,    44,    45,    50,    -1,    -1,    -1,    50,    51,     8,
+       9,    10,    11,    -1,    13,    14,    15,    16,    10,    11,
+      -1,    13,    14,    15,    16,    11,    -1,    13,    14,    15,
+      16
   };
 
   /* STOS_[STATE-NUM] -- The (internal number of the) accessing
@@ -1275,19 +1287,19 @@ namespace qb {
   parser::yystos_[] =
   {
          0,    23,    25,    27,    29,    30,    31,    32,    33,    38,
-      41,    42,    43,    44,    49,    52,    53,    54,    55,    56,
-      57,    59,    62,    63,    64,    66,    67,    70,    71,    41,
-      41,    62,    63,    64,    41,    69,    57,    64,    48,    60,
-      63,    63,    63,     0,     3,    54,    55,    23,    45,    23,
-      45,    23,     8,     9,    10,    11,    13,    14,    15,    16,
-      45,    12,    21,    22,    49,    49,    49,    24,    42,    61,
-      63,    34,    23,    45,    65,    50,     3,    56,    56,    63,
-      63,    63,    63,    63,    63,    63,    63,    63,    41,    41,
-      50,    61,    41,    68,    68,    40,    41,    58,    46,    46,
-      47,    56,    65,    53,    46,    50,    24,    46,    50,    50,
-      63,    53,    39,    58,    41,    53,    23,    24,    35,    36,
-      24,    26,    53,    58,    53,    58,    28,    23,    35,    53,
-      28
+      42,    43,    44,    45,    50,    53,    54,    55,    56,    57,
+      58,    60,    63,    64,    65,    67,    68,    71,    72,    42,
+      42,    63,    64,    65,    42,    70,    58,    65,    49,    61,
+      64,    64,    64,     0,     3,    55,    56,    23,    46,    23,
+      46,    23,     8,     9,    10,    11,    13,    14,    15,    16,
+      46,    12,    21,    22,    50,    50,    50,    24,    43,    62,
+      64,    34,    23,    46,    66,    51,     3,    57,    57,    64,
+      64,    64,    64,    64,    64,    64,    64,    64,    42,    42,
+      51,    62,    42,    69,    69,    40,    41,    42,    59,    47,
+      47,    48,    57,    66,    54,    47,    51,    24,    47,    51,
+      51,    64,    54,    39,    59,    42,    54,    23,    24,    35,
+      36,    24,    26,    54,    59,    54,    59,    28,    23,    35,
+      54,    28
   };
 
 #if YYDEBUG
@@ -1300,8 +1312,8 @@ namespace qb {
      265,   266,   267,    45,    43,    42,    47,   268,   269,   270,
      271,   272,    46,   273,   274,   275,   276,   277,   278,   279,
      280,   281,   282,   283,   284,   285,   286,   287,   288,   289,
-     290,   291,   292,   293,   294,    58,    44,    59,    35,    40,
-      41
+     290,   291,   292,   293,   294,   295,    58,    44,    59,    35,
+      40,    41
   };
 #endif
 
@@ -1309,13 +1321,13 @@ namespace qb {
   const unsigned char
   parser::yyr1_[] =
   {
-         0,    51,    52,    52,    53,    53,    54,    54,    54,    54,
-      55,    55,    56,    56,    56,    56,    56,    56,    56,    56,
-      56,    56,    57,    58,    58,    59,    59,    59,    59,    60,
-      60,    61,    61,    62,    62,    63,    63,    63,    63,    63,
-      63,    63,    63,    63,    63,    63,    63,    63,    63,    64,
-      64,    64,    65,    65,    66,    66,    67,    68,    68,    68,
-      69,    70,    70,    70,    71
+         0,    52,    53,    53,    54,    54,    55,    55,    55,    55,
+      56,    56,    57,    57,    57,    57,    57,    57,    57,    57,
+      57,    57,    58,    59,    59,    59,    60,    60,    60,    60,
+      61,    61,    62,    62,    63,    63,    64,    64,    64,    64,
+      64,    64,    64,    64,    64,    64,    64,    64,    64,    64,
+      65,    65,    65,    66,    66,    67,    67,    68,    69,    69,
+      69,    70,    71,    71,    71,    72
   };
 
   /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
@@ -1324,11 +1336,11 @@ namespace qb {
   {
          0,     2,     2,     3,     2,     1,     2,     2,     1,     2,
        3,     3,     1,     2,     1,     2,     2,     1,     1,     1,
-       1,     2,     3,     1,     1,     3,     4,     4,     2,     3,
-       0,     3,     1,     3,     4,     1,     3,     3,     3,     3,
-       3,     3,     3,     3,     3,     1,     1,     1,     1,     3,
-       3,     1,     1,     1,    10,     8,     7,     0,     5,     3,
-       3,     4,     6,     8,     5
+       1,     2,     3,     1,     1,     1,     3,     4,     4,     2,
+       3,     0,     3,     1,     3,     4,     1,     3,     3,     3,
+       3,     3,     3,     3,     3,     3,     1,     1,     1,     1,
+       3,     3,     1,     1,     1,    10,     8,     7,     0,     5,
+       3,     3,     4,     6,     8,     5
   };
 
 #if YYDEBUG
@@ -1342,12 +1354,13 @@ namespace qb {
   "tMOD", "UPLUS", "UMINUS", "tPOW", "tDREF", "'.'", "tNEWLINE", "tAS",
   "tSUB", "tSUBEND", "tFUNCTION", "tFUNCTIONEND", "tRETURN", "tDIM",
   "tLET", "tPRINT", "tIF", "tTHEN", "tENDIF", "tELSE", "tELSEIF", "tWHILE",
-  "tENDWHILE", "tLONG", "tID", "tInteger", "tSTRING", "tNUMBER", "':'",
-  "','", "';'", "'#'", "'('", "')'", "$accept", "program", "lines", "line",
-  "statements", "statement", "assigment", "exprtype", "printstatement",
-  "printinto", "expression_list", "call_function_or_array", "expression",
-  "varref", "seperator", "function_definition", "sub_definition",
-  "arg_list", "dim_item", "if_clause", "while_loop", YY_NULL
+  "tENDWHILE", "tLONG", "tSTR", "tID", "tInteger", "tSTRING", "tNUMBER",
+  "':'", "','", "';'", "'#'", "'('", "')'", "$accept", "program", "lines",
+  "line", "statements", "statement", "assigment", "exprtype",
+  "printstatement", "printinto", "expression_list",
+  "call_function_or_array", "expression", "varref", "seperator",
+  "function_definition", "sub_definition", "arg_list", "dim_item",
+  "if_clause", "while_loop", YY_NULL
   };
 
 
@@ -1355,30 +1368,30 @@ namespace qb {
   const parser::rhs_number_type
   parser::yyrhs_[] =
   {
-        52,     0,    -1,    53,     3,    -1,    53,    55,     3,    -1,
-      53,    54,    -1,    54,    -1,    55,    23,    -1,    56,    23,
-      -1,    23,    -1,    62,    23,    -1,    55,    45,    56,    -1,
-      56,    45,    56,    -1,    59,    -1,    30,    69,    -1,    57,
-      -1,    31,    57,    -1,    29,    63,    -1,    70,    -1,    71,
-      -1,    67,    -1,    66,    -1,    63,    45,    -1,    64,    12,
-      63,    -1,    40,    -1,    41,    -1,    32,    60,    61,    -1,
-      32,    60,    61,    46,    -1,    32,    60,    61,    47,    -1,
-      32,    60,    -1,    48,    42,    46,    -1,    -1,    61,    46,
-      63,    -1,    63,    -1,    64,    49,    50,    -1,    64,    49,
-      61,    50,    -1,    62,    -1,    49,    63,    50,    -1,    63,
-      14,    63,    -1,    63,    13,    63,    -1,    63,    15,    63,
-      -1,    63,    16,    63,    -1,    63,    10,    63,    -1,    63,
-       9,    63,    -1,    63,    11,    63,    -1,    63,     8,    63,
-      -1,    64,    -1,    42,    -1,    44,    -1,    43,    -1,    64,
-      22,    41,    -1,    64,    21,    41,    -1,    41,    -1,    23,
-      -1,    45,    -1,    27,    41,    49,    68,    50,    24,    58,
-      23,    53,    28,    -1,    27,    41,    49,    68,    50,    23,
-      53,    28,    -1,    25,    41,    49,    68,    50,    53,    26,
-      -1,    -1,    68,    46,    41,    24,    58,    -1,    41,    24,
-      58,    -1,    41,    24,    58,    -1,    33,    63,    34,    56,
-      -1,    33,    63,    34,    65,    53,    35,    -1,    33,    63,
-      34,    65,    53,    36,    53,    35,    -1,    38,    63,    65,
-      53,    39,    -1
+        53,     0,    -1,    54,     3,    -1,    54,    56,     3,    -1,
+      54,    55,    -1,    55,    -1,    56,    23,    -1,    57,    23,
+      -1,    23,    -1,    63,    23,    -1,    56,    46,    57,    -1,
+      57,    46,    57,    -1,    60,    -1,    30,    70,    -1,    58,
+      -1,    31,    58,    -1,    29,    64,    -1,    71,    -1,    72,
+      -1,    68,    -1,    67,    -1,    64,    46,    -1,    65,    12,
+      64,    -1,    40,    -1,    41,    -1,    42,    -1,    32,    61,
+      62,    -1,    32,    61,    62,    47,    -1,    32,    61,    62,
+      48,    -1,    32,    61,    -1,    49,    43,    47,    -1,    -1,
+      62,    47,    64,    -1,    64,    -1,    65,    50,    51,    -1,
+      65,    50,    62,    51,    -1,    63,    -1,    50,    64,    51,
+      -1,    64,    14,    64,    -1,    64,    13,    64,    -1,    64,
+      15,    64,    -1,    64,    16,    64,    -1,    64,    10,    64,
+      -1,    64,     9,    64,    -1,    64,    11,    64,    -1,    64,
+       8,    64,    -1,    65,    -1,    43,    -1,    45,    -1,    44,
+      -1,    65,    22,    42,    -1,    65,    21,    42,    -1,    42,
+      -1,    23,    -1,    46,    -1,    27,    42,    50,    69,    51,
+      24,    59,    23,    54,    28,    -1,    27,    42,    50,    69,
+      51,    23,    54,    28,    -1,    25,    42,    50,    69,    51,
+      54,    26,    -1,    -1,    69,    47,    42,    24,    59,    -1,
+      42,    24,    59,    -1,    42,    24,    59,    -1,    33,    64,
+      34,    57,    -1,    33,    64,    34,    66,    54,    35,    -1,
+      33,    64,    34,    66,    54,    36,    54,    35,    -1,    38,
+      64,    66,    54,    39,    -1
   };
 
   /* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
@@ -1388,11 +1401,11 @@ namespace qb {
   {
          0,     0,     3,     6,    10,    13,    15,    18,    21,    23,
       26,    30,    34,    36,    39,    41,    44,    47,    49,    51,
-      53,    55,    58,    62,    64,    66,    70,    75,    80,    83,
-      87,    88,    92,    94,    98,   103,   105,   109,   113,   117,
-     121,   125,   129,   133,   137,   141,   143,   145,   147,   149,
-     153,   157,   159,   161,   163,   174,   183,   191,   192,   198,
-     202,   206,   211,   218,   227
+      53,    55,    58,    62,    64,    66,    68,    72,    77,    82,
+      85,    89,    90,    94,    96,   100,   105,   107,   111,   115,
+     119,   123,   127,   131,   135,   139,   143,   145,   147,   149,
+     151,   155,   159,   161,   163,   165,   176,   185,   193,   194,
+     200,   204,   208,   213,   220,   229
   };
 
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
@@ -1401,11 +1414,11 @@ namespace qb {
   {
          0,   164,   164,   174,   188,   200,   207,   208,   212,   213,
      220,   221,   228,   229,   230,   231,   232,   233,   234,   235,
-     236,   239,   243,   248,   251,   257,   264,   267,   270,   277,
-     278,   281,   282,   290,   291,   300,   301,   302,   303,   304,
-     305,   306,   307,   308,   309,   311,   316,   320,   321,   326,
-     330,   331,   339,   339,   345,   353,   363,   375,   376,   385,
-     393,   406,   411,   417,   432
+     236,   239,   243,   248,   251,   254,   260,   267,   270,   273,
+     280,   281,   284,   285,   293,   294,   303,   304,   305,   306,
+     307,   308,   309,   310,   311,   312,   314,   319,   323,   324,
+     329,   333,   334,   342,   342,   348,   356,   366,   378,   379,
+     388,   396,   409,   414,   420,   435
   };
 
   // Print the state stack on the debug stream.
@@ -1448,9 +1461,9 @@ namespace qb {
            0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,    48,     2,     2,     2,     2,
-      49,    50,    15,    14,    46,    13,    22,    16,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,    45,    47,
+       2,     2,     2,     2,     2,    49,     2,     2,     2,     2,
+      50,    51,    15,    14,    47,    13,    22,    16,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,    46,    48,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1474,7 +1487,7 @@ namespace qb {
        5,     6,     7,     8,     9,    10,    11,    12,    17,    18,
       19,    20,    21,    23,    24,    25,    26,    27,    28,    29,
       30,    31,    32,    33,    34,    35,    36,    37,    38,    39,
-      40,    41,    42,    43,    44
+      40,    41,    42,    43,    44,    45
     };
     if ((unsigned int) t <= yyuser_token_number_max_)
       return translate_table[t];
@@ -1483,19 +1496,19 @@ namespace qb {
   }
 
   const int parser::yyeof_ = 0;
-  const int parser::yylast_ = 425;
+  const int parser::yylast_ = 440;
   const int parser::yynnts_ = 21;
   const int parser::yyempty_ = -2;
   const int parser::yyfinal_ = 43;
   const int parser::yyterror_ = 1;
   const int parser::yyerrcode_ = 256;
-  const int parser::yyntokens_ = 51;
+  const int parser::yyntokens_ = 52;
 
-  const unsigned int parser::yyuser_token_number_max_ = 294;
+  const unsigned int parser::yyuser_token_number_max_ = 295;
   const parser::token_number_type parser::yyundef_token_ = 2;
 
 /* Line 1106 of lalr1.cc  */
 #line 21 "parser.ypp"
 } // qb
 /* Line 1106 of lalr1.cc  */
-#line 1502 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 1515 "/home/cai/projects/basic/compiler/parser.cpp"

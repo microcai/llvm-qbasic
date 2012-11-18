@@ -75,32 +75,6 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 	llvm::IRBuilder<> builder(ctx.llvmfunc->getContext());
 	builder.SetInsertPoint(ctx.block);
 
-	std::vector<llvm::Type *> brt_printArgs;
-	std::vector<llvm::Type *> printfArgs;
-	printfArgs.push_back(builder.getInt8PtrTy());
-
-	switch(sizeof(int)){
-		case 4:
-			brt_printArgs.push_back(builder.getInt32Ty());
-			break;
-		case 8:
-			brt_printArgs.push_back(builder.getInt64Ty());
-			break;
-		case 2:
-			brt_printArgs.push_back(builder.getInt16Ty());
-		default:
-			std::cerr << "unknow int type" << std::endl ;
-	}
-
-	llvm::Constant *brt_print =
-			ctx.module->getOrInsertFunction("brt_print",
-										llvm::FunctionType::get(builder.getInt32Ty(), brt_printArgs,
-		/*必须为true, 这样才能接受可变参数*/true));
-
-	llvm::Constant *printf_func = ctx.module->getOrInsertFunction("printf",
-										llvm::FunctionType::get(builder.getInt32Ty(), printfArgs,
-		/*必须为true, 这样才能接受可变参数*/true));
-
 	std::vector<llvm::Value*> args; // 先插入第3个开始的参数.
 	std::string	printfmt;
 
@@ -146,9 +120,14 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 	//调用 print
 	if(need_brt){
 		args.insert(args.begin(), qbc::getconstint(0) );
+
+		llvm::Constant *brt_print =qbc::getbuiltinprotype(ctx,"brt_print");
+
 		builder.CreateCall(brt_print,args ,"PRINT");
 	}
 	else{
+		llvm::Constant *printf_func =qbc::getbuiltinprotype(ctx,"printf");
+
 		builder.CreateCall(printf_func,args ,"PRINT_via_printf");
 	}
 
