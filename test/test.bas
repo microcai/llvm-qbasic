@@ -25,11 +25,7 @@ dim s as long
 dim a as long
 dim b as long
 
-a = 100
-b = 50
+print 123
 
-s = sum(a,b)
-
-print s
 
 end sub

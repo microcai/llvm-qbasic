@@ -169,3 +169,5 @@ ArgumentDimAST::ArgumentDimAST(const std::string _name, const std::string _type)
 {	
 }
 
+llvm::Function* FunctionDimAST::getllvm() {}
+

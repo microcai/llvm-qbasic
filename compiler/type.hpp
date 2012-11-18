@@ -258,6 +258,8 @@ public:
 class NumberExprTypeAST :public ExprTypeAST {
 
     virtual llvm::Type* llvm_type(ASTContext ctx);
+
+    virtual size_t size(){return sizeof(long);};
 	
 	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name,const std::string _typename);
 

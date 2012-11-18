@@ -144,20 +144,72 @@ llvm::Value* NumberExprTypeAST::Alloca(ASTContext ctx, const std::string _name,c
 {
 	debug("allocation for value %s type %s\n",_name.c_str(),_typename.c_str());
 	//TODO , 在堆栈上分配个变量
-
-	llvm::IRBuilder<> builder(ctx.llvmfunc->getContext());
-							  //ctx.llvmfunc->getEntryBlock().begin());
+	llvm::IRBuilder<> builder(&ctx.llvmfunc->getEntryBlock(),
+							  ctx.llvmfunc->getEntryBlock().begin());
+	
 	builder.SetInsertPoint(ctx.block);
 
 	return builder.CreateAlloca(this->llvm_type(ctx),0,_name);
 }
 
-llvm::Value* CallExprAST::getval(ASTContext)
+llvm::Value* CallExprAST::getval(ASTContext ctx)
 {
+	llvm::IRBuilder<> builder(ctx.block);
+
 	// call functions TODO
     debug("sigfault herekkk?\n");
+	llvm::Value * ret = NULL;
 
-    exit(1);
+	//获得函数定义
+	DimAST * dim = nameresolve(ctx);
+	FunctionDimAST* fundim = dynamic_cast<FunctionDimAST*>(dim);
+	
+	if(fundim){ //有定义, 则直接调用, 无定义就 ... 呵呵
+
+		// 获得符号类型
+		ExprTypeAST * symboltype = TypeNameResolve(ctx,dim->type);
+
+		//获得函数类型信息
+		llvm::Value * llvmfunc =	fundim->getval(ctx);
+
+		//构建参数列表
+		std::vector<llvm::Value*> args;
+		ret = builder.CreateCall(llvmfunc,args,this->ID->ID);
+
+	}else {
+		debug("function %s not defined", this->ID->ID.c_str());
+	    exit(1);
+	}
+	return ret;
+
+	   exit(1);
+
+#if 0
+	llvm::IRBuilder<>	builder(ctx.block);
+
+	// build call argument
+
+	std::vector<llvm::Value*> args;
+
+	if(callargs && callargs->expression_list.size() )
+	{
+		BOOST_FOREACH( ExprASTPtr expr , callargs->expression_list)
+		{
+			debug("pusing args \n");
+			args.push_back( expr->getval(ctx) );
+		}
+	}
+
+	if(args.empty()){
+		debug("===I will call to %s ==== with no argument\n",var->ID.c_str());
+		ret = builder.CreateCall(target);
+	}else{
+		debug("===I will call to %s ==== with argument number %d\n",var->ID.c_str() , args.size() );
+		ret = builder.CreateCall(target, args);
+	}
+	// use the result
+	
+#endif
 }
 
 

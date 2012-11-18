@@ -136,38 +136,6 @@ llvm::AllocaInst* CallExprAST::nameresolve(ASTContext ctx)
 	return NULL;
 }
 
-//TODO use the result !
-llvm::Value* CallExprAST::getval(ASTContext ctx)
-{
-	llvm::Value * ret = NULL;
-	
-	nameresolve(ctx);
-
-	llvm::IRBuilder<>	builder(ctx.block);
-
-	// build call argument
-
-	std::vector<llvm::Value*> args;
-
-	if(callargs && callargs->expression_list.size() )
-	{
-		BOOST_FOREACH( ExprASTPtr expr , callargs->expression_list)
-		{
-			debug("pusing args \n");
-			args.push_back( expr->getval(ctx) );
-		}
-	}
-	
-	if(args.empty()){
-		debug("===I will call to %s ==== with no argument\n",var->ID.c_str());
-		ret = builder.CreateCall(target);
-	}else{
-		debug("===I will call to %s ==== with argument number %d\n",var->ID.c_str() , args.size() );
-		ret = builder.CreateCall(target, args);
-	}
-	// use the result
-	return ret;
-}
 #endif
 
 llvm::BasicBlock* EmptyStmtAST::Codegen(ASTContext ctx)
@@ -176,10 +144,6 @@ llvm::BasicBlock* EmptyStmtAST::Codegen(ASTContext ctx)
     return ctx.block;
 }
 
-// llvm::BasicBlock* StatementAST::Codegen(ASTContext ctx)
-// {
-// 
-// }
 llvm::BasicBlock* PrintIntroAST::Codegen(ASTContext ctx)
 {
 	BOOST_ASSERT(TheFunction);
@@ -237,25 +201,29 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 
 	std::vector<llvm::Value*> args; // 先插入第3个开始的参数.
 	std::string	printfmt;
-#if 0
+
 	//第三个参数开始是 ... 参数对.
 	if(! callargs->expression_list.empty()){
 		// TODO : 支持字符串的版本修改第三个参数开始为参数对.
 		//std::for_E
 		BOOST_FOREACH(ExprASTPtr argitem,callargs->expression_list)
-		{	
+		{
+			if(!argitem->type(ctx)){
+				printfmt +="\n"; // 很重要,呵呵
+				continue;				
+			}
 			switch(argitem->type(ctx)->size()){ //按照大小来啊,果然
 				case sizeof(long): // 整数产量的类型
 
-					if( dynamic_cast<PointerTypeAST*>(argitem->type.get()) ){
-						//指针类型
+				//	if( dynamic_cast<PointerTypeAST*>(argitem->type(ctx)) ){
+						//类型
 						printfmt += "%p\t"; //TODO: 字符串
-					debug("add code for print list args type %%p\n");
+				//	debug("add code for print list args type %%p\n");
 
-					}else{
-					debug("add code for print list args type %%ld\n");
+			//		}else{
+						debug("add code for print list args type %%ld\n");
 						printfmt += "%ld\t";
-					}
+				//	}
 					args.push_back(	argitem->getval(ctx) );
 					break;
 				case sizeof(int):
@@ -270,7 +238,7 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 			}
 		}
 	}
-#endif
+
 	// 现在 brt 忽略第一个参数 , 其实质是 一个 map 到 FILE* 的转化, 由 btr_print 实现
 	//第二个参数是打印列表.
 	args.insert(args.begin(), builder.CreateGlobalStringPtr(printfmt.c_str()));
@@ -303,8 +271,6 @@ llvm::Value* VariableDimAST::getval(ASTContext ctx)
     printf("%s\n",__func__);
     exit(1);
 }
-
-
 
 //为变量分配空间
 llvm::BasicBlock* VariableDimAST::Codegen(ASTContext ctx)
@@ -531,6 +497,12 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 
 	target = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, this->name , ctx.module);
 	llvm::BasicBlock *entry = llvm::BasicBlock::Create(builder.getContext(), "entrypoint", target);
+
+	//挂到全局名称表中
+
+	ctx.codeblock->symbols.insert(std::make_pair(this->name,this));
+	
+	
 	//开始生成代码
 
 	ctx.block = entry;
@@ -542,6 +514,7 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 		callargs->Codegen(ctx);
 		ctx.codeblock = this->callargs.get();
 	}
+
 
 	//now code up the function body
 	body->parent = ctx.codeblock;

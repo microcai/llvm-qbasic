@@ -258,11 +258,16 @@ public:
     FunctionDimAST(const std::string _name, ArgumentDimsAST * callargs = NULL, const std::string _type = "");
 	//如果是声明, 为 dim 生成 llvm::Function * 声明供使用
     virtual llvm::BasicBlock* Codegen(ASTContext);
-    llvm::Value* getptr(ASTContext ctx);
+	
+    virtual	llvm::Value* getptr(ASTContext ctx);
+
+	//get a pointer to function
 	virtual	llvm::Value* getval(ASTContext ctx){
-		printf("%s\n",__func__);
-		exit(1);
+		return this->target;
 	}
+
+	// get defines for llvm
+	llvm::Function*	getllvm();
 };
 
 class DefaultMainFunctionAST : public FunctionDimAST
