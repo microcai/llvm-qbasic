@@ -446,6 +446,11 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 	}
 	ctx.block = bodyblock;	
 	builder.SetInsertPoint(ctx.block);
-	builder.CreateRetVoid();
+	if(retval)
+		builder.CreateRet(retval);
+	else if(exprtype)
+		builder.CreateRet(qbc::getconstlong(0)); // 返回 0 
+	else
+		builder.CreateRetVoid();
 	return blockforret;
 }

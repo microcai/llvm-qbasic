@@ -250,6 +250,7 @@ class FunctionDimAST: public DimAST
 {
 private:
 	llvm::Function	*		target;
+	llvm::Value		*		retval; // allocated for return value, should use that for return.
 public:
 	Linkage		linkage; //链接类型。static? extern ?
 	std::list<VariableDimASTPtr> args_type; //checked by CallExpr
