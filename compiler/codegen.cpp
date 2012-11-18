@@ -231,10 +231,6 @@ llvm::Value* FunctionDimAST::setret(ASTContext ctx,ExprASTPtr expr)
 	llvm::Value* ret = expr->getval(ctx);
 	
 	builder.CreateStore(ret,ctx.func->retval);
-
-	if(!returnblock){
-		returnblock = llvm::BasicBlock::Create(ctx.module->getContext(), "ret",this->target);
-	}
 	// jump to ret now !
 	return builder.CreateBr(returnblock);
 }
@@ -305,7 +301,8 @@ llvm::BasicBlock* LoopAST::bodygen(ASTContext ctx)
 {
 	loopbody->parent = ctx.codeblock;
 	ctx.codeblock = loopbody.get();	
-    return loopbody->Codegen(ctx);
+    llvm::BasicBlock* newblo =  loopbody->Codegen(ctx);
+	return newblo;
 }
 
 llvm::BasicBlock* WhileLoopAST::Codegen(ASTContext ctx)
@@ -334,9 +331,11 @@ llvm::BasicBlock* WhileLoopAST::Codegen(ASTContext ctx)
 	builder.CreateCondBr(expcond, cond_continue, while_body);
 
 	ctx.block = while_body;
-	this->bodygen(ctx);
+	while_body = this->bodygen(ctx);
 	builder.SetInsertPoint(while_body);
 	builder.CreateBr(cond_while);
+
+	cond_continue->moveAfter(while_body);
 	
 	return cond_continue;	
 }
@@ -428,6 +427,8 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 		ctx.codeblock = this->callargs.get();
 	}
 
+	returnblock = llvm::BasicBlock::Create(ctx.module->getContext(), "ret",this->target);
+
 	//now code up the function body
 	body->parent = ctx.codeblock;
 	llvm::BasicBlock * bodyblock = body->Codegen(ctx);
@@ -438,10 +439,12 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 	ctx.block = bodyblock;	
 	builder.SetInsertPoint(ctx.block);
 
-	if(returnblock){
-		builder.CreateBr(returnblock);
-		builder.SetInsertPoint(returnblock);
-	}	
+	builder.CreateBr(returnblock);
+
+	returnblock->moveAfter(bodyblock);
+	
+	builder.SetInsertPoint(returnblock);
+
 	if(retval)
 		builder.CreateRet(builder.CreateLoad(retval));
 	else if(exprtype)

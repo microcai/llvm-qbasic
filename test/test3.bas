@@ -4,10 +4,11 @@ sub main ( )
 
 DIM A as long
 
-A = 100
+A = 1000
 
 while A
 	print A ,
+	if A > 100 then A = A - 10
 	A = A - 1
 end while
 

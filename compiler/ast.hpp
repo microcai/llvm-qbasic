@@ -251,11 +251,13 @@ class FunctionDimAST: public DimAST
 {
 	friend ReturnAST;
 private:
+	llvm::BasicBlock *		returnblock; // insert before this ! please !
+
 	llvm::Function	*		target;
 	llvm::Value		*		retval; // allocated for return value, should use that for return.
-	llvm::BasicBlock *		returnblock;
 	llvm::Value*			setret(ASTContext,ExprASTPtr);
 public:
+	
 	Linkage		linkage; //链接类型。static? extern ?
 	std::list<VariableDimASTPtr> args_type; //checked by CallExpr
 

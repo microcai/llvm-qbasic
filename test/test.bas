@@ -21,6 +21,6 @@ a = "hello world"
 c = 100
 b = "yes my lorld"
 
-print a , b 
+print a , b, "hello world"
 
 end sub
