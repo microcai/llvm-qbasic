@@ -307,7 +307,10 @@ llvm::Value* CalcExprAST::getval(ASTContext ctx)
 		case OPERATOR_LESS:
 			return builder.CreateICmpSLT(LHS,RHS);
 		case OPERATOR_LESSEQU:
-			return builder.CreateICmpSLE(LHS,RHS);
+			if(!result){
+				result = lval->type(ctx)->getop()->operator_comp(ctx,op,lval,rval);
+			}
+			return result->getval(ctx);
 		case OPERATOR_GREATER:
 			return builder.CreateICmpSGT(LHS,RHS);
 		case OPERATOR_GREATEREQUL:

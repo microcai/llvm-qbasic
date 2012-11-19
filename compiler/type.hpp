@@ -396,6 +396,10 @@ public:
 
 	// 减法运算, 对于字符串来说无此类型的运算. 试图对字符串执行减法导致一个编译期错误
 	virtual ExprASTPtr operator_sub(ASTContext , ExprASTPtr lval, ExprASTPtr rval) =0 ;
+
+	// 各种比较运算
+
+	virtual	ExprASTPtr operator_comp(ASTContext ctx,MathOperator op,ExprASTPtr lval,ExprASTPtr rval) =0;
 };
 
 // 整数
@@ -403,6 +407,7 @@ class NumberExprOperation : public ExprOperation {
     virtual ExprASTPtr operator_assign(ASTContext , NamedExprASTPtr lval, ExprASTPtr rval);
     virtual ExprASTPtr operator_add(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
 	virtual ExprASTPtr operator_sub(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
+    virtual ExprASTPtr operator_comp(ASTContext ctx, MathOperator op, ExprASTPtr lval, ExprASTPtr rval);
 };
 
 // 字符串
@@ -410,6 +415,7 @@ class StringExprOperation : public ExprOperation {
     virtual ExprASTPtr operator_assign(ASTContext , NamedExprASTPtr lval, ExprASTPtr rval);
     virtual ExprASTPtr operator_add(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
     virtual ExprASTPtr operator_sub(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
+    virtual ExprASTPtr operator_comp(ASTContext ctx, MathOperator op, ExprASTPtr lval, ExprASTPtr rval);
 };
 
 ///////////////////////// 辅助函数

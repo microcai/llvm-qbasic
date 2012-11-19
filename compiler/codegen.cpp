@@ -358,6 +358,49 @@ llvm::BasicBlock* WhileLoopAST::Codegen(ASTContext ctx)
 	return cond_continue;	
 }
 
+//TODO, 生成 for loop
+llvm::BasicBlock* ForLoopAST::Codegen(ASTContext ctx)
+{
+	ExprTypeAST * exprtype  = this->refID->type(ctx);
+
+		// 变量赋予初始值
+	exprtype->getop()->operator_assign(ctx,refID,start);
+	
+	llvm::IRBuilder<> builder(ctx.block);
+
+	llvm::BasicBlock* for_cond = llvm::BasicBlock::Create(ctx.llvmfunc->getContext(), "for", ctx.llvmfunc);
+	llvm::BasicBlock* for_body = llvm::BasicBlock::Create(ctx.llvmfunc->getContext(), "forbody", ctx.llvmfunc);
+	llvm::BasicBlock* for_out = llvm::BasicBlock::Create(ctx.llvmfunc->getContext(), "forend", ctx.llvmfunc);
+
+	builder.CreateBr(for_cond);
+
+	ctx.block = for_cond; // 切换到  for_cond 生成代码
+	// 测试条件是否成立
+	llvm::Value * condval = exprtype->getop()->operator_comp(ctx,OPERATOR_LESSEQU,refID,end)->getval(ctx);
+
+	builder.SetInsertPoint(for_cond);
+	builder.CreateCondBr(condval,for_body,for_out);
+
+	ctx.block = for_body;
+	ctx.block =	bodygen(ctx);
+
+	builder.SetInsertPoint(ctx.block);
+
+	// 为变量+1
+	ExprASTPtr tmp = exprtype->getop()->operator_add(ctx,refID,step);
+
+	exprtype->getop()->operator_assign(ctx,refID,tmp);
+
+	builder.CreateBr(for_cond);
+
+	
+	ctx.block = for_out;
+	return for_out;
+	debug("=========generating for\n");
+	//exit(2);
+}
+
+
 llvm::BasicBlock* CodeBlockAST::Codegen(ASTContext ctx)
 {
 	if(!ctx.llvmfunc ){

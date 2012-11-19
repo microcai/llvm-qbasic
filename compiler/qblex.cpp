@@ -1052,7 +1052,7 @@ return token::tFUNCTIONEND;
 case 8:
 YY_RULE_SETUP
 #line 85 "qblex.ll"
-{ printf("end if\n"); return token::tENDIF; }
+return token::tENDIF;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP

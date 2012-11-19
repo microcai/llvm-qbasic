@@ -446,9 +446,14 @@ while_loop: tWHILE expression seperator
 		//*****************************************/
 		//* For 循环语句
 		//*****************************************/
-for_loop: tFOR tID tEQU expression tTO expression optstep tNEWLINE
+for_loop: tFOR varref tEQU expression tTO expression optstep  tNEWLINE
 				lines
 			tENDFOR {
 				debug("got for loop");
+				$$ = new ForLoopAST(new VariableExprAST($2), $4,$6, 0 ,$9);
 			}
-optstep	: tSTEP
+		;
+
+optstep	: /*empty*/
+		|tSTEP expression { debug("step");}
+		;

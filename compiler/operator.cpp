@@ -122,8 +122,27 @@ ExprASTPtr NumberExprOperation::operator_sub(ASTContext ctx, ExprASTPtr lval, Ex
 // 字符串减法
 ExprASTPtr StringExprOperation::operator_sub(ASTContext, ExprASTPtr lval, ExprASTPtr rval)
 {
-	debug("cannot have operator \"-\" on string type ");
+	debug("cannot have operator \"-\" on string type\n");
 	exit(2);
 }
 
+ExprASTPtr NumberExprOperation::operator_comp(ASTContext ctx, MathOperator op, ExprASTPtr lval, ExprASTPtr rval) {
+	llvm::Value * LHS =	lval->getval(ctx);
+	llvm::Value * RHS =	rval->getval(ctx);
+	llvm::IRBuilder<> builder(ctx.block);
+	llvm::Value * result;
+	
+	switch(op){
+		case OPERATOR_LESSEQU:
+			result = builder.CreateICmpSLE(LHS,RHS);			
+	}
+	
+	//TODO , 构造临时 Number 对象
+	TempExprAST *temp = new TempNumberExprAST(ctx,result);
+	return ExprASTPtr(temp);
+}
 
+ExprASTPtr StringExprOperation::operator_comp(ASTContext ctx, MathOperator op, ExprASTPtr lval, ExprASTPtr rval) {
+	debug("string comp not supported yet\n");
+	exit(2);
+}

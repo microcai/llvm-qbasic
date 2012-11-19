@@ -80,11 +80,11 @@ rem {
    return token::tNEWLINE;
 }
 
-end{whitespace}*sub|end{whitespace}*subroutine return token::tSUBEND;
-end{whitespace}*function return token::tFUNCTIONEND;
-fi|end{whitespace}*if	{ printf("end if\n"); return token::tENDIF; }
-end{whitespace}*while return token::tENDWHILE;
-end{whitespace}*for return token::tENDFOR;
+end{whitespace}*sub|end{whitespace}*subroutine	return token::tSUBEND;
+end{whitespace}*function 						return token::tFUNCTIONEND;
+fi|end{whitespace}*if							return token::tENDIF;
+end{whitespace}*while							return token::tENDWHILE;
+end{whitespace}*for								return token::tENDFOR;
 
 wend				{ printf("while end ! ======\n");return token::tENDWHILE; }
 while 				{ printf("while begin ! ======\n");return token::tWHILE; }

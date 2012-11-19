@@ -20,6 +20,6 @@ a = "hello world"
 c = 100
 b = "yes my lorld"
 
-print a , b, "hello world"
+print a , b, "hello world" , a + b , "ye" + "s"
 
 end sub

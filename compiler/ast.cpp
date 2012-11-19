@@ -80,11 +80,6 @@ DefaultMainFunctionAST::DefaultMainFunctionAST(CodeBlockAST * body)
 }
 
 
-WhileLoopAST::WhileLoopAST(ExprASTPtr _condition , CodeBlockAST* body)
-	:condition(_condition),LoopAST(body)
-{
-}
-
 ReferenceAST::ReferenceAST(std::string* tID) :ID(*tID)
 {
 	
@@ -161,4 +156,16 @@ AssigmentAST::AssigmentAST(NamedExprAST* lval, ExprAST* rval)
 ArgumentDimAST::ArgumentDimAST(const std::string _name, const std::string _type)
 	:VariableDimAST(_name,_type),modified_stackvar(0)
 {	
+}
+
+WhileLoopAST::WhileLoopAST(ExprASTPtr _condition , CodeBlockAST* body)
+	:condition(_condition),LoopAST(body)
+{
+}
+
+ForLoopAST::ForLoopAST(NamedExprAST* id, ExprAST* _start, ExprAST* _end, ExprAST* _step, CodeBlockAST* body) :LoopAST(body),start(_start),end(_end),step(_step),refID(id)
+{
+	if(!step){
+		step.reset(new ConstNumberExprAST(1));
+	}	
 }

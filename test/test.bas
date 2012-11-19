@@ -7,33 +7,15 @@
 */
 
 /*
-	print string test!
+	for loop test
 */
 
 sub main()
+dim a  as long
 
-dim a as string
-
-dim b as string
-
-a = "hello"
-
-b = "world"
-
-/*
-dim helloworld as string
-
-
-helloworld = a + " " + b
-
-*/
-
-print 010
-print a + b
-
-print 101
-REM, "and " , helloworld , "ki" + "ki"
-
-
+for a = 1 to 100
+REM step 3
+print a
+end for
 
 end sub
