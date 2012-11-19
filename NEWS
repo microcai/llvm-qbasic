@@ -2,6 +2,8 @@
 	[2012-11-19]
 		[1]	string literal and string variable can assign to string variable
 		[2] deallocating function local string when the function returns
+		[3] string and have "+" operation now
+		[4] auto generating temp string object and deallocated it if no longer requires
 
 	[2012-11-18]
 		[1] string support, but string not deallocated when function returns
