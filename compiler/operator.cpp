@@ -126,6 +126,47 @@ ExprASTPtr StringExprOperation::operator_sub(ASTContext, ExprASTPtr lval, ExprAS
 	exit(2);
 }
 
+//  数字乘法, 使用乘法指令
+ExprASTPtr NumberExprOperation::operator_mul(ASTContext ctx, ExprASTPtr lval, ExprASTPtr rval)
+{
+	llvm::Value * LHS =	lval->getval(ctx);
+	llvm::Value * RHS =	rval->getval(ctx);
+	llvm::IRBuilder<> builder(ctx.block);
+	llvm::Value * result;
+	
+	result = builder.CreateMul(LHS,RHS);
+	//TODO , 构造临时 Number 对象
+	TempExprAST *temp = new TempNumberExprAST(ctx,result);
+	return ExprASTPtr(temp);
+}
+
+// 字符串乘法, 直接提示不支持
+ExprASTPtr StringExprOperation::operator_mul(ASTContext ctx, ExprASTPtr lval, ExprASTPtr rval)
+{
+	debug("cannot have operator \"*\" on string type\n");
+	exit(2);
+}
+
+// 数字除法
+ExprASTPtr NumberExprOperation::operator_div(ASTContext ctx, ExprASTPtr lval, ExprASTPtr rval)
+{
+	llvm::Value * LHS =	lval->getval(ctx);
+	llvm::Value * RHS =	rval->getval(ctx);
+	llvm::IRBuilder<> builder(ctx.block);
+	llvm::Value * result = builder.CreateSDiv(LHS,RHS);
+
+	//TODO , 构造临时 Number 对象
+	TempExprAST *temp = new TempNumberExprAST(ctx,result);
+	return ExprASTPtr(temp);
+}
+
+// 字符串除法, 不支持的运算
+ExprASTPtr StringExprOperation::operator_div(ASTContext, ExprASTPtr lval, ExprASTPtr rval)
+{
+	debug("cannot have operator \"/\" on string type\n");
+	exit(2);
+}
+
 ExprASTPtr NumberExprOperation::operator_comp(ASTContext ctx, MathOperator op, ExprASTPtr lval, ExprASTPtr rval) {
 	llvm::Value * LHS =	lval->getval(ctx);
 	llvm::Value * RHS =	rval->getval(ctx);
@@ -133,8 +174,18 @@ ExprASTPtr NumberExprOperation::operator_comp(ASTContext ctx, MathOperator op, E
 	llvm::Value * result;
 	
 	switch(op){
+		case OPERATOR_LESS:
+			result = builder.CreateICmpSLT(LHS,RHS);
+			break;
 		case OPERATOR_LESSEQU:
-			result = builder.CreateICmpSLE(LHS,RHS);			
+			result = builder.CreateICmpSLE(LHS,RHS);
+			break;
+		case OPERATOR_GREATER:
+			result = builder.CreateICmpSGT(LHS,RHS);
+			break;
+		case OPERATOR_GREATEREQUL:
+			result = builder.CreateICmpSGE(LHS,RHS);
+			break;
 	}
 	
 	//TODO , 构造临时 Number 对象

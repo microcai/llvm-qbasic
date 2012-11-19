@@ -301,25 +301,26 @@ llvm::Value* CalcExprAST::getval(ASTContext ctx)
 				result = lval->type(ctx)->getop()->operator_sub(ctx,lval,rval);
 			return result->getval(ctx);
 		case OPERATOR_MUL:
-			return builder.CreateMul(LHS,RHS);
+			if(!result)
+				result = lval->type(ctx)->getop()->operator_mul(ctx,lval,rval);
+			return result->getval(ctx);
 		case OPERATOR_DIV:
-			return builder.CreateSDiv(LHS,RHS);
+			if(!result)
+				result = lval->type(ctx)->getop()->operator_div(ctx,lval,rval);
+			return result->getval(ctx);
+		case OPERATOR_GREATEREQUL:
+		case OPERATOR_GREATER:
 		case OPERATOR_LESS:
-			return builder.CreateICmpSLT(LHS,RHS);
 		case OPERATOR_LESSEQU:
 			if(!result){
 				result = lval->type(ctx)->getop()->operator_comp(ctx,op,lval,rval);
 			}
 			return result->getval(ctx);
-		case OPERATOR_GREATER:
-			return builder.CreateICmpSGT(LHS,RHS);
-		case OPERATOR_GREATEREQUL:
-			return builder.CreateICmpSGE(LHS,RHS);
 		default:
 			debug("operator not supported yet\n");
 			exit(1);
 	}
-	return ctx.block;
+	return result->getval(ctx);
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -395,4 +396,3 @@ TempStringExprAST::~TempStringExprAST()
 	llvm::Constant * func_free = qbc::getbuiltinprotype(ctx,"free");
 	builder.CreateCall(func_free,this->val);
 }
-
