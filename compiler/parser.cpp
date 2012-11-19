@@ -899,7 +899,16 @@ namespace qb {
 
   case 63:
 /* Line 661 of lalr1.cc  */
-#line 414 "parser.ypp"
+#line 404 "parser.ypp"
+    {
+		debug("definning %s with no type , default to long\n",(yysemantic_stack_[(1) - (1)].id)->c_str());
+		(yyval.dim_item) = new VariableDimAST( *(yysemantic_stack_[(1) - (1)].id)  , "long" );
+	}
+    break;
+
+  case 64:
+/* Line 661 of lalr1.cc  */
+#line 417 "parser.ypp"
     {
 			// 单行 if then 语句
 			(yyval.if_clause) = new IFStmtAST( ExprASTPtr((yysemantic_stack_[(4) - (2)].expression)));
@@ -907,18 +916,18 @@ namespace qb {
 	}
     break;
 
-  case 64:
+  case 65:
 /* Line 661 of lalr1.cc  */
-#line 421 "parser.ypp"
+#line 424 "parser.ypp"
     {
 			(yyval.if_clause) = new IFStmtAST( ExprASTPtr((yysemantic_stack_[(6) - (2)].expression)));
 			(yyval.if_clause)->_then = CodeBlockASTPtr((yysemantic_stack_[(6) - (5)].codeblocks));
 		}
     break;
 
-  case 65:
+  case 66:
 /* Line 661 of lalr1.cc  */
-#line 429 "parser.ypp"
+#line 432 "parser.ypp"
     {
 			(yyval.if_clause) = new IFStmtAST( ExprASTPtr((yysemantic_stack_[(8) - (2)].expression)));
 			(yyval.if_clause)->_then = CodeBlockASTPtr((yysemantic_stack_[(8) - (5)].codeblocks));
@@ -926,32 +935,32 @@ namespace qb {
 		}
     break;
 
-  case 66:
+  case 67:
 /* Line 661 of lalr1.cc  */
-#line 442 "parser.ypp"
+#line 445 "parser.ypp"
     {
 			(yyval.while_loop) = new WhileLoopAST( ExprASTPtr((yysemantic_stack_[(5) - (2)].expression)) , (yysemantic_stack_[(5) - (4)].codeblocks));
 		}
     break;
 
-  case 67:
+  case 68:
 /* Line 661 of lalr1.cc  */
-#line 451 "parser.ypp"
+#line 454 "parser.ypp"
     {
 				debug("got for loop");
 				(yyval.for_loop) = new ForLoopAST(new VariableExprAST((yysemantic_stack_[(10) - (2)].varref)), (yysemantic_stack_[(10) - (4)].expression),(yysemantic_stack_[(10) - (6)].expression), 0 ,(yysemantic_stack_[(10) - (9)].codeblocks));
 			}
     break;
 
-  case 69:
+  case 70:
 /* Line 661 of lalr1.cc  */
-#line 458 "parser.ypp"
+#line 461 "parser.ypp"
     { debug("step");}
     break;
 
 
 /* Line 661 of lalr1.cc  */
-#line 955 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 964 "/home/cai/projects/basic/compiler/parser.cpp"
 	default:
           break;
       }
@@ -1167,18 +1176,18 @@ namespace qb {
          0,     8,     0,     0,     0,     0,     0,    32,     0,     0,
        0,    53,    48,    50,    49,     0,     0,     0,     5,     0,
        0,    14,    12,    37,     0,    47,    21,    20,    17,    18,
-      19,     0,     0,    37,    16,    47,     0,    13,    15,     0,
+      19,     0,     0,    37,    16,    47,    63,    13,    15,     0,
        0,    30,     0,     0,     0,     0,     1,     2,     4,     0,
        6,     0,     7,     0,     9,     0,     0,     0,     0,     0,
        0,     0,     0,    22,     0,     0,     0,     0,    59,    59,
        0,     0,    27,    34,     0,    54,    55,     0,     0,    38,
        3,    10,    11,    46,    44,    43,    45,    40,    39,    41,
       42,    23,    52,    51,    35,     0,     0,     0,     0,    24,
-      25,    26,    62,    31,    28,    29,    63,     0,     0,     0,
-       0,    36,     0,     0,     0,     0,    33,     0,    66,     0,
-      61,     0,     0,     0,     0,    64,     0,    68,     0,    58,
-       0,     0,     0,     0,     0,    60,    57,     0,    65,    69,
-       0,     0,     0,    56,    67
+      25,    26,    62,    31,    28,    29,    64,     0,     0,     0,
+       0,    36,     0,     0,     0,     0,    33,     0,    67,     0,
+      61,     0,     0,     0,     0,    65,     0,    69,     0,    58,
+       0,     0,     0,     0,     0,    60,    57,     0,    66,    70,
+       0,     0,     0,    56,    68
   };
 
   /* YYPGOTO[NTERM-NUM].  */
@@ -1367,7 +1376,8 @@ namespace qb {
       64,    65,    65,    66,    66,    67,    67,    68,    68,    68,
       68,    68,    68,    68,    68,    68,    68,    68,    68,    68,
       68,    69,    69,    69,    70,    70,    71,    71,    72,    73,
-      73,    73,    74,    75,    75,    75,    76,    77,    78,    78
+      73,    73,    74,    74,    75,    75,    75,    76,    77,    78,
+      78
   };
 
   /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
@@ -1380,7 +1390,8 @@ namespace qb {
        2,     3,     0,     3,     1,     3,     4,     1,     3,     3,
        3,     3,     3,     3,     3,     3,     3,     1,     1,     1,
        1,     3,     3,     1,     1,     1,    10,     8,     7,     0,
-       5,     3,     3,     4,     6,     8,     5,    10,     0,     2
+       5,     3,     3,     1,     4,     6,     8,     5,    10,     0,
+       2
   };
 
 #if YYDEBUG
@@ -1429,11 +1440,11 @@ namespace qb {
       54,    73,    55,    23,    58,    28,    -1,    25,    46,    54,
       73,    55,    58,    26,    -1,    -1,    73,    51,    46,    24,
       63,    -1,    46,    24,    63,    -1,    46,    24,    63,    -1,
-      33,    68,    34,    61,    -1,    33,    68,    34,    70,    58,
-      35,    -1,    33,    68,    34,    70,    58,    36,    58,    35,
-      -1,    38,    68,    70,    58,    39,    -1,    40,    69,    12,
-      68,    42,    68,    78,    23,    58,    41,    -1,    -1,    43,
-      68,    -1
+      46,    -1,    33,    68,    34,    61,    -1,    33,    68,    34,
+      70,    58,    35,    -1,    33,    68,    34,    70,    58,    36,
+      58,    35,    -1,    38,    68,    70,    58,    39,    -1,    40,
+      69,    12,    68,    42,    68,    78,    23,    58,    41,    -1,
+      -1,    43,    68,    -1
   };
 
   /* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
@@ -1447,7 +1458,8 @@ namespace qb {
       84,    87,    91,    92,    96,    98,   102,   107,   109,   113,
      117,   121,   125,   129,   133,   137,   141,   145,   147,   149,
      151,   153,   157,   161,   163,   165,   167,   178,   187,   195,
-     196,   202,   206,   210,   215,   222,   231,   237,   248,   249
+     196,   202,   206,   210,   212,   217,   224,   233,   239,   250,
+     251
   };
 
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
@@ -1460,7 +1472,8 @@ namespace qb {
      278,   285,   286,   289,   290,   298,   299,   308,   309,   310,
      311,   312,   313,   314,   315,   316,   317,   319,   324,   328,
      329,   334,   338,   339,   347,   347,   353,   361,   371,   383,
-     384,   393,   401,   414,   419,   425,   440,   449,   457,   458
+     384,   393,   401,   404,   417,   422,   428,   443,   452,   460,
+     461
   };
 
   // Print the state stack on the debug stream.
@@ -1553,4 +1566,4 @@ namespace qb {
 #line 21 "parser.ypp"
 } // qb
 /* Line 1106 of lalr1.cc  */
-#line 1557 "/home/cai/projects/basic/compiler/parser.cpp"
+#line 1570 "/home/cai/projects/basic/compiler/parser.cpp"

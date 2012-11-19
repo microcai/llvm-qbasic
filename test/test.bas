@@ -11,10 +11,9 @@
 */
 
 sub main()
-dim a  as long
+dim a
 
 for a = 1 to 100
-REM step 3
 print a
 end for
 
