@@ -39,10 +39,8 @@
 
 #define debug	std::printf
 
-
-AST::AST()
-{
-}
+AST::AST(){}
+AST::~AST(){}
 
 PrintStmtAST::PrintStmtAST(PrintIntroAST * intro,ExprListAST* args)
 	:callargs(args),print_intro(intro)

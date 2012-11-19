@@ -78,7 +78,7 @@ class AST // :public boost::enable_shared_from_this<AST>
 {
 public:
 	AST();
-	virtual ~AST() = 0; // use pure virtual deconstruction
+	virtual ~AST()=0; // use pure virtual deconstruction
 private:
 	AST( const AST &  );
 	AST & operator =( const AST &  );

@@ -84,6 +84,7 @@ class ReferenceAST : public AST
 public:
 	std::string ID; //标识符
     ReferenceAST( std::string * tID );
+    virtual ~ReferenceAST(){};
 };
 typedef boost::shared_ptr<ReferenceAST> ReferenceASTPtr;
 
@@ -127,6 +128,16 @@ public:
 	virtual ExprTypeAST* type(ASTContext ){ return 0;}
 
     virtual llvm::Value* getval(ASTContext ){ return 0;}
+};
+
+// 用来管理临时对象, 这是实现 QBASIC C++ style 的临时对象的重点哦~
+class TempExprAST : public ExprAST{
+	virtual ExprTypeAST* type(ASTContext ){ return 0;}
+
+    virtual llvm::Value* getval(ASTContext ){ return 0;}
+
+    virtual ~TempExprAST() = 0;
+
 };
 
 // 常数表达式
@@ -220,6 +231,7 @@ public:
 
     ExprListAST(){}
 	void Append(ExprAST* exp);
+    virtual ~ExprListAST(){};
 };
 typedef boost::shared_ptr<ExprListAST> ExprListASTPtr;
 
@@ -284,6 +296,7 @@ public:
 public:
     ExprTypeAST(){}
     ExprTypeAST( size_t size , const std::string __typename );
+    virtual ~ExprTypeAST(){}; // do nothing
 };
 
 //	整型,支持数学运算
@@ -313,7 +326,6 @@ public:
     virtual ExprOperation* getop();
     virtual void destory(ASTContext , llvm::Value* Ptr);
 };
-
 
 //  函数对象类型. 这是基类
 //  而一个函数声明本身也是一个 callable 类型
@@ -356,17 +368,24 @@ public:
 	// 对于其他类型来说, 呵呵, 那就是 Load / Store 啦
 	// 运算结果是一个 ExprASTPtr , 事实上可以忽略,呵呵. C++编译器将自动释放它
 	virtual	ExprASTPtr operator_assign(ASTContext , NamedExprASTPtr lval, ExprASTPtr rval) = 0;
+
+	// 加法运算, 对于字符串来说, 这运算过程会生成一个临时字符串,
+	// 临时字符串 AST 对象将会被 AST节点被析构的时候向当前llvm basicbody 位置插入临时字符串的释放指令
+	virtual ExprASTPtr operator_add(ASTContext , ExprASTPtr lval, ExprASTPtr rval) =0 ;
 };
 
 // 整数
 class NumberExprOperation : public ExprOperation {
     virtual ExprASTPtr operator_assign(ASTContext , NamedExprASTPtr lval, ExprASTPtr rval);
+    virtual ExprASTPtr operator_add(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
 };
 
 // 字符串
 class StringExprOperation : public ExprOperation {
     virtual ExprASTPtr operator_assign(ASTContext , NamedExprASTPtr lval, ExprASTPtr rval);
+    virtual ExprASTPtr operator_add(ASTContext , ExprASTPtr lval, ExprASTPtr rval){}
 };
+
 ///////////////////////// 辅助函数
 
 ExprTypeAST*	TypeNameResolve(ASTContext ctx,const std::string _typename);

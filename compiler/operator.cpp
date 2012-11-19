@@ -67,3 +67,15 @@ ExprASTPtr StringExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr 
 	builder.CreateStore(dupedstr,lval->getptr(ctx));
 	return lval;
 }
+
+// 数字加法.
+ExprASTPtr NumberExprOperation::operator_add(ASTContext ctx, ExprASTPtr lval, ExprASTPtr rval)
+{
+	llvm::Value * LHS =	lval->getval(ctx);
+	llvm::Value * RHS =	rval->getval(ctx);
+	llvm::IRBuilder<> builder(ctx.block);
+	llvm::Value * result = builder.CreateAdd(LHS,RHS);
+
+	//TODO , 构造临时 Number 对象
+	
+}

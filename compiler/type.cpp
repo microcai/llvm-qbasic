@@ -279,15 +279,15 @@ llvm::Value* CalcExprAST::getval(ASTContext ctx)
 {
 	BOOST_ASSERT(ctx.llvmfunc);
 	//TODO, 生成计算表达式 !
-	llvm::Value * LHS =	this->lval->getval(ctx);
-	llvm::Value * RHS =	this->rval->getval(ctx);
+	llvm::Value * LHS =	lval->getval(ctx);
+	llvm::Value * RHS =	rval->getval(ctx);
 
 	llvm::IRBuilder<> builder(ctx.llvmfunc->getContext());
 	builder.SetInsertPoint(ctx.block);
 
 	switch(this->op){
 		case OPERATOR_ADD:
-			return builder.CreateAdd(LHS,RHS);
+			return lval->type(ctx)->getop()->operator_add(ctx,lval,rval)->getval(ctx);
 		case OPERATOR_SUB:
 			return builder.CreateSub(LHS,RHS);
 		case OPERATOR_MUL:
