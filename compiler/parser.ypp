@@ -81,13 +81,14 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 	StatementsAST*		statement_list;
 	AssigmentAST*		variable_assignment;
 	CodeBlockAST*		codeblocks;
-	IFStmtAST * if_clause;
+	IFStmtAST * 		if_clause;
 	
-	WhileLoopAST* while_loop;
+	WhileLoopAST* 		while_loop;
+	ForLoopAST*			for_loop;
 	
 	VariableDimAST*		dim_item;
 	ArgumentDimsAST*	arg_list;
-	FunctionDimAST	 *function_definition;
+	FunctionDimAST*		function_definition;
 
 	PrintIntroAST *print_intro;
 	std::string 	*cppstring;
@@ -128,6 +129,8 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %token tIF tTHEN tENDIF tELSE tELSEIF
 %token tWHILE tENDWHILE
 
+%token tFOR tENDFOR tTO tSTEP
+
 // 内置数据类型
 %token tLONG tSTR 
 
@@ -156,6 +159,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 
 %type <if_clause>					if_clause
 %type <while_loop>					while_loop
+%type <for_loop>					for_loop
 
 %type <call_function>				call_function_or_array
 
@@ -232,6 +236,7 @@ statement: printstatement { $$ = $1; }
 		| tRETURN expression { $$ = new ReturnAST($2);}
 		| if_clause {$$= $1;}
 		| while_loop {$$= $1;}
+		| for_loop {$$= $1;}
 		| sub_definition  {$$= $1;}
 		| function_definition  {$$= $1;}
 	//	| call_function_or_array ':'{ $$ = new CallStmtAST($1); }
@@ -437,3 +442,13 @@ while_loop: tWHILE expression seperator
 		tENDWHILE {
 			$$ = new WhileLoopAST( ExprASTPtr($2) , $4);
 		};
+
+		//*****************************************/
+		//* For 循环语句
+		//*****************************************/
+for_loop: tFOR tID tEQU expression tTO expression optstep tNEWLINE
+				lines
+			tENDFOR {
+				debug("got for loop");
+			}
+optstep	: tSTEP

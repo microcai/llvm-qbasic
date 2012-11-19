@@ -84,43 +84,49 @@ end{whitespace}*sub|end{whitespace}*subroutine return token::tSUBEND;
 end{whitespace}*function return token::tFUNCTIONEND;
 fi|end{whitespace}*if	{ printf("end if\n"); return token::tENDIF; }
 end{whitespace}*while return token::tENDWHILE;
+end{whitespace}*for return token::tENDFOR;
+
 wend				{ printf("while end ! ======\n");return token::tENDWHILE; }
 while 				{ printf("while begin ! ======\n");return token::tWHILE; }
 
-function         return token::tFUNCTION;
-sub|subroutine return token::tSUB;
-if			return token::tIF;
-then		return token::tTHEN;
-else		return token::tELSE;
-elif|elseif	return token::tELSEIF;
-return		return token::tRETURN;
-str|string		return token::tSTR;
+function			return token::tFUNCTION;
+sub|subroutine		return token::tSUB;
+if					return token::tIF;
+then				return token::tTHEN;
+else				return token::tELSE;
+elif|elseif			return token::tELSEIF;
+return				return token::tRETURN;
+for					return token::tFOR;
+to 					return token::tTO;
+setp				return token::tSTEP;
 
-long return token::tLONG;/* variables type*/
+str|string			return token::tSTR;
+int|long			return token::tLONG;/* variables type*/
 
-as return token::tAS;
-dim 	 return token::tDIM;
+as 					return token::tAS;
+dim					return token::tDIM;
 
-let return token::tLET;
+let					return token::tLET;
 
-print return token::tPRINT;
+print				return token::tPRINT;
 
-"->"	return token::tDREF;
+"->" 				return token::tDREF;
 
-\^|\*\* return token::tPOW;
-"and" return token::tAND;
-"&&" return token::tAND;
-"mod"|"%" return token::tMOD;
-"not" return token::tNOT;
-"or" return token::tOR;
-"==" return token::tEQU;
-"=" return token::tEQU;
-">=" return token::tGEQ;
-">" return token::tGTN;
-"<=" return token::tLEQ;
-"<" return token::tLTN;
-"<>" return token::tNEQ;
-"!" return token::tNOT;
+\^|\*\* 			return token::tPOW;
+
+"and"				return token::tAND;
+"&&"				return token::tAND;
+
+"mod"|"%"|"\\"		return token::tMOD;
+"|"|"or"			return token::tOR;
+"="|"=="			return token::tEQU;
+
+">="				return token::tGEQ;
+">"					return token::tGTN;
+"<="				return token::tLEQ;
+"<"					return token::tLTN;
+"<>"				return token::tNEQ;
+"not"|"!"			return token::tNOT;
 
 {whitespace}+ /* eat whitespace */
 

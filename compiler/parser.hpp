@@ -90,20 +90,21 @@ namespace qb {
 	StatementsAST*		statement_list;
 	AssigmentAST*		variable_assignment;
 	CodeBlockAST*		codeblocks;
-	IFStmtAST * if_clause;
+	IFStmtAST * 		if_clause;
 	
-	WhileLoopAST* while_loop;
+	WhileLoopAST* 		while_loop;
+	ForLoopAST*			for_loop;
 	
 	VariableDimAST*		dim_item;
 	ArgumentDimsAST*	arg_list;
-	FunctionDimAST	 *function_definition;
+	FunctionDimAST*		function_definition;
 
 	PrintIntroAST *print_intro;
 	std::string 	*cppstring;
 
 
 /* Line 36 of lalr1.cc  */
-#line 107 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 108 "/home/cai/projects/basic/compiler/parser.hpp"
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -147,12 +148,16 @@ namespace qb {
      tELSEIF = 287,
      tWHILE = 288,
      tENDWHILE = 289,
-     tLONG = 290,
-     tSTR = 291,
-     tID = 292,
-     tInteger = 293,
-     tSTRING = 294,
-     tNUMBER = 295
+     tFOR = 290,
+     tENDFOR = 291,
+     tTO = 292,
+     tSTEP = 293,
+     tLONG = 294,
+     tSTR = 295,
+     tID = 296,
+     tInteger = 297,
+     tSTRING = 298,
+     tNUMBER = 299
    };
 
     };
@@ -247,7 +252,7 @@ namespace qb {
     static const unsigned char yydefact_[];
 
     static const short int yypgoto_[];
-    static const signed char yydefgoto_[];
+    static const short int yydefgoto_[];
 
     /// What to do in a state.
     /// \a yytable_[yypact_[s]]: what to do in state \a s.
@@ -325,7 +330,7 @@ namespace qb {
 #line 21 "parser.ypp"
 } // qb
 /* Line 36 of lalr1.cc  */
-#line 329 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 334 "/home/cai/projects/basic/compiler/parser.hpp"
 
 
 

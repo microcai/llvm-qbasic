@@ -214,6 +214,11 @@ public:
     virtual llvm::BasicBlock* Codegen(ASTContext);
 };
 
+class ForLoopAST : public LoopAST
+{
+	
+};
+
 class VariableDimAST : public DimAST
 {
 	llvm::Value * alloca_var;
