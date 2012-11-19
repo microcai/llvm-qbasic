@@ -221,8 +221,8 @@ line: statements tNEWLINE { $$=$1;  }
 	}
 	;
 
-statements : statements ':' statement {  $$ = $1; $$->push_back(StatementASTPtr($3)); }
-		| statement ':' statement {
+statements : statements comma_or_colon statement {  $$ = $1; $$->push_back(StatementASTPtr($3)); }
+		| statement comma_or_colon statement {
 				$$ = new StatementsAST ;
 				$$->push_back(StatementASTPtr($1));
 				$$->push_back(StatementASTPtr($3));
@@ -241,7 +241,7 @@ statement: printstatement { $$ = $1; }
 		| function_definition  {$$= $1;}
 	//	| call_function_or_array ':'{ $$ = new CallStmtAST($1); }
 	//	| tNEWLINE { $$= new EmptyStmtAST();}
-		| expression ':' { /*TODO*/debug("here====3====\n"); exit(1);	}
+		| expression comma_or_colon { /*TODO*/debug("here====3====\n"); exit(1);	}
 		;
 
 
@@ -343,8 +343,10 @@ varref:	varref '.' tID {
 		debug("idref %s\n", $1->c_str());
 	}
 	;
-	
-seperator : tNEWLINE | ':' ;
+
+comma_or_colon : ':' | ';';
+
+seperator : tNEWLINE | ':';
 
 //*****************************************/
 //* 这里开始是函数和过程定义

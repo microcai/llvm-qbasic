@@ -75,6 +75,8 @@ rem {
 "'".* /* eat comment */ {
 }
 
+\;\n*				return token::tNEWLINE;
+
 \n* {
 	yylineno += strlen(yytext);
    return token::tNEWLINE;
@@ -127,6 +129,9 @@ print				return token::tPRINT;
 "<"					return token::tLTN;
 "<>"				return token::tNEQ;
 "not"|"!"			return token::tNOT;
+\*					return '*';
+
+
 
 {whitespace}+ /* eat whitespace */
 
