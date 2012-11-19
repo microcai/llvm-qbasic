@@ -48,7 +48,7 @@ PrintStmtAST::PrintStmtAST(PrintIntroAST * intro,ExprListAST* args)
 }
 
 PrintIntroAST::PrintIntroAST()
-	:NumberExprAST(0)
+	:ConstNumberExprAST(0)
 {
 
 	

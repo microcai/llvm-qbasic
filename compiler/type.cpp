@@ -56,12 +56,12 @@ ExprTypeAST*	TypeNameResolve(ASTContext ctx,const std::string _typename)
 	return NULL;
 }
 
-ExprTypeAST* NumberExprAST::type(ASTContext)
+ExprTypeAST* ConstNumberExprAST::type(ASTContext)
 {
     return &numbertype;
 }
 
-ExprTypeAST* StringExprAST::type(ASTContext)
+ExprTypeAST* ConstStringExprAST::type(ASTContext)
 {
 	return &stringtype;
 }
@@ -143,12 +143,12 @@ void StringExprTypeAST::destory(ASTContext ctx, llvm::Value* Ptr)
 }
 
 
-llvm::Value* NumberExprAST::getval(ASTContext ctx)
+llvm::Value* ConstNumberExprAST::getval(ASTContext ctx)
 {
 	return qbc::getconstlong(	this->v);
 }
 
-llvm::Value* StringExprAST::getval(ASTContext ctx)
+llvm::Value* ConstStringExprAST::getval(ASTContext ctx)
 {
 	llvm::IRBuilder<>	builder(ctx.block);
 	
@@ -289,7 +289,7 @@ llvm::Value* CalcExprAST::getval(ASTContext ctx)
 		case OPERATOR_ADD:
 			return lval->type(ctx)->getop()->operator_add(ctx,lval,rval)->getval(ctx);
 		case OPERATOR_SUB:
-			return builder.CreateSub(LHS,RHS);
+			return lval->type(ctx)->getop()->operator_sub(ctx,lval,rval)->getval(ctx);
 		case OPERATOR_MUL:
 			return builder.CreateMul(LHS,RHS);
 		case OPERATOR_DIV:
@@ -326,7 +326,7 @@ StringExprTypeAST::StringExprTypeAST() :ExprTypeAST(sizeof(void*),"string")
 {	
 }
 
-StringExprAST::StringExprAST(const std::string _str)
+ConstStringExprAST::ConstStringExprAST(const std::string _str)
 	:str(_str)
 {
 }
@@ -360,4 +360,10 @@ CalcExprAST::CalcExprAST(ExprAST* l, MathOperator _op, ExprAST* r)
 	:lval(l),rval(r),op(_op)
 {
 	
+}
+
+TempNumberExprAST::TempNumberExprAST(llvm::Value* numberresult)
+	:TempExprAST(numberresult , & numbertype)
+{
+
 }

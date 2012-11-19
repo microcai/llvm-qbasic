@@ -294,7 +294,7 @@ typedef std::list<ExprASTPtr>	FunctionParameterListAST;
 ////////////////////////////////////////////////////////////////////////////////
 
 //打印目的地. 默认打印到屏幕
-class PrintIntroAST : public NumberExprAST
+class PrintIntroAST : public ConstNumberExprAST
 {
 public:
 	PrintIntroAST();

@@ -73,7 +73,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 	
 	
 	std::string *  		exprtype; // name of the type
-	NumberExprAST* 		number_expression;
+	ConstNumberExprAST* 		number_expression;
 	CallExprAST*		call_function;
 
     PrintStmtAST*		printstatement;
@@ -318,11 +318,11 @@ expression: call_function_or_array
 		}
 		| tInteger  {
 			//常量
-			$$ = new NumberExprAST( $1 );
+			$$ = new ConstNumberExprAST( $1 );
 		}
 		| tNUMBER //浮点数
 		| tSTRING { //字符串
-			$$ = new StringExprAST($1);
+			$$ = new ConstStringExprAST($1);
 		}
 		;
 

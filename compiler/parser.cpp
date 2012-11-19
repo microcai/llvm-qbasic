@@ -784,7 +784,7 @@ namespace qb {
 #line 319 "parser.ypp"
     {
 			//常量
-			(yyval.expression) = new NumberExprAST( (yysemantic_stack_[(1) - (1)].integer) );
+			(yyval.expression) = new ConstNumberExprAST( (yysemantic_stack_[(1) - (1)].integer) );
 		}
     break;
 
@@ -792,7 +792,7 @@ namespace qb {
 /* Line 661 of lalr1.cc  */
 #line 324 "parser.ypp"
     { //字符串
-			(yyval.expression) = new StringExprAST((yysemantic_stack_[(1) - (1)].string));
+			(yyval.expression) = new ConstStringExprAST((yysemantic_stack_[(1) - (1)].string));
 		}
     break;
 

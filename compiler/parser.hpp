@@ -82,7 +82,7 @@ namespace qb {
 	
 	
 	std::string *  		exprtype; // name of the type
-	NumberExprAST* 		number_expression;
+	ConstNumberExprAST* 		number_expression;
 	CallExprAST*		call_function;
 
     PrintStmtAST*		printstatement;

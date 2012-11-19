@@ -77,5 +77,38 @@ ExprASTPtr NumberExprOperation::operator_add(ASTContext ctx, ExprASTPtr lval, Ex
 	llvm::Value * result = builder.CreateAdd(LHS,RHS);
 
 	//TODO , 构造临时 Number 对象
-	
+	TempExprAST *temp = new TempNumberExprAST(result);
+	return ExprASTPtr( temp);
 }
+
+// 字符串加法
+ExprASTPtr StringExprOperation::operator_add(ASTContext, ExprASTPtr lval, ExprASTPtr rval)
+{
+	//TODO , 调用 strlen 获得字符串长度, 然后调用 strcpy + strcat
+
+	debug("string cat is not implemented yet\n");
+	exit(2);	
+}
+
+
+// 数字减法
+ExprASTPtr NumberExprOperation::operator_sub(ASTContext ctx, ExprASTPtr lval, ExprASTPtr rval)
+{	
+	llvm::Value * LHS =	lval->getval(ctx);
+	llvm::Value * RHS =	rval->getval(ctx);
+	llvm::IRBuilder<> builder(ctx.block);
+	llvm::Value * result = builder.CreateSub(LHS,RHS);
+
+	//TODO , 构造临时 Number 对象
+	TempExprAST *temp = new TempNumberExprAST(result);
+	return ExprASTPtr(temp);
+}
+
+// 字符串减法
+ExprASTPtr StringExprOperation::operator_sub(ASTContext, ExprASTPtr lval, ExprASTPtr rval)
+{
+	debug("cannot have operator \"-\" on string type ");
+	exit(2);
+}
+
+

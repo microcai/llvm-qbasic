@@ -132,34 +132,54 @@ public:
 
 // 用来管理临时对象, 这是实现 QBASIC C++ style 的临时对象的重点哦~
 class TempExprAST : public ExprAST{
-	virtual ExprTypeAST* type(ASTContext ){ return 0;}
+	llvm::Value * val;
+	ExprTypeAST * _type;
+public:
+    virtual ExprTypeAST* type(ASTContext ctx){return _type;}
 
-    virtual llvm::Value* getval(ASTContext ){ return 0;}
+	TempExprAST(llvm::Value * _val ,ExprTypeAST * type):val(_val),_type(type){};
+    virtual llvm::Value* getval(ASTContext ) { return val;}
+    virtual ~TempExprAST(){};
+};
 
-    virtual ~TempExprAST() = 0;
 
+class TempNumberExprAST : public TempExprAST
+{
+public:
+    TempNumberExprAST(llvm::Value * numberresult);
 };
 
 // 常数表达式
-class NumberExprAST : public ExprAST
+class ConstNumberExprAST : public ExprAST
 {
 	int v;
 public:
-	NumberExprAST( long num){ v = num;};
+	ConstNumberExprAST( long num){ v = num;};
 public:
+	
     virtual ExprTypeAST* type(ASTContext );
 
     virtual llvm::Value* getval(ASTContext );	
 };
 
 // 用户字符串, 终于实现了有木有!
-class StringExprAST :public ExprAST
+class ConstStringExprAST :public ExprAST
 {
 	std::string			str;
 public:
-	StringExprAST(const std::string _str);
+	ConstStringExprAST(const std::string _str);
 	virtual ExprTypeAST* type(ASTContext );
     virtual llvm::Value* getval(ASTContext );;
+};
+
+class TempStringExprAST : public TempExprAST
+{
+	llvm::Value * value;
+public:
+
+    virtual llvm::Value* getval(ASTContext ){ return value;}
+
+    TempStringExprAST(llvm::Value * result);
 };
 
 // 命名表达式. 命名的表达式是 Function Call , 数组, 变量 的基类
@@ -372,18 +392,23 @@ public:
 	// 加法运算, 对于字符串来说, 这运算过程会生成一个临时字符串,
 	// 临时字符串 AST 对象将会被 AST节点被析构的时候向当前llvm basicbody 位置插入临时字符串的释放指令
 	virtual ExprASTPtr operator_add(ASTContext , ExprASTPtr lval, ExprASTPtr rval) =0 ;
+
+	// 减法运算, 对于字符串来说无此类型的运算. 试图对字符串执行减法导致一个编译期错误
+	virtual ExprASTPtr operator_sub(ASTContext , ExprASTPtr lval, ExprASTPtr rval) =0 ;
 };
 
 // 整数
 class NumberExprOperation : public ExprOperation {
     virtual ExprASTPtr operator_assign(ASTContext , NamedExprASTPtr lval, ExprASTPtr rval);
     virtual ExprASTPtr operator_add(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
+	virtual ExprASTPtr operator_sub(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
 };
 
 // 字符串
 class StringExprOperation : public ExprOperation {
     virtual ExprASTPtr operator_assign(ASTContext , NamedExprASTPtr lval, ExprASTPtr rval);
-    virtual ExprASTPtr operator_add(ASTContext , ExprASTPtr lval, ExprASTPtr rval){}
+    virtual ExprASTPtr operator_add(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
+    virtual ExprASTPtr operator_sub(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
 };
 
 ///////////////////////// 辅助函数
