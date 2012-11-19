@@ -10,6 +10,7 @@ llvm-qbc is a QBASIC compiler as well as an runtime library ( statically linked 
 	[4] highly optimized
 
 # Status update
+	[*] string is capable of doing "+" operation
 	[*]	string literal and string variable can assign to string variable
 	[*] deallocating function local string when the function returns
 	[*]	being able to print numbers and string literal to screen
