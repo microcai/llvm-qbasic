@@ -150,9 +150,12 @@ llvm::Value* ConstNumberExprAST::getval(ASTContext ctx)
 
 llvm::Value* ConstStringExprAST::getval(ASTContext ctx)
 {
+	if(val)
+		return val;
 	llvm::IRBuilder<>	builder(ctx.block);
-	
-	return builder.CreateGlobalStringPtr( this->str );
+
+	// cache the result
+	return val = builder.CreateGlobalStringPtr( this->str );
 }
 
 DimAST* NamedExprAST::nameresolve(ASTContext ctx)
@@ -327,7 +330,7 @@ StringExprTypeAST::StringExprTypeAST() :ExprTypeAST(sizeof(void*),"string")
 }
 
 ConstStringExprAST::ConstStringExprAST(const std::string _str)
-	:str(_str)
+	:str(_str),val(0)
 {
 }
 
@@ -366,4 +369,10 @@ TempNumberExprAST::TempNumberExprAST(llvm::Value* numberresult)
 	:TempExprAST(numberresult , & numbertype)
 {
 
+}
+
+TempStringExprAST::TempStringExprAST(llvm::Value* result)
+	:TempExprAST(result, & stringtype)
+{
+	
 }

@@ -82,12 +82,27 @@ ExprASTPtr NumberExprOperation::operator_add(ASTContext ctx, ExprASTPtr lval, Ex
 }
 
 // 字符串加法
-ExprASTPtr StringExprOperation::operator_add(ASTContext, ExprASTPtr lval, ExprASTPtr rval)
+ExprASTPtr StringExprOperation::operator_add(ASTContext ctx, ExprASTPtr lval, ExprASTPtr rval)
 {
-	//TODO , 调用 strlen 获得字符串长度, 然后调用 strcpy + strcat
+	llvm::IRBuilder<> builder(ctx.block);
 
-	debug("string cat is not implemented yet\n");
-	exit(2);	
+	llvm::Constant * llvmfunc_calloc =  qbc::getbuiltinprotype(ctx,"calloc");
+	llvm::Constant * llvmfunc_strlen =  qbc::getbuiltinprotype(ctx,"strlen");
+	llvm::Constant * llvmfunc_strcpy = qbc::getbuiltinprotype(ctx,"strcpy");
+	llvm::Constant * llvmfunc_strcat = qbc::getbuiltinprotype(ctx,"strcat");
+
+	llvm::Value * string_left_length = builder.CreateCall(llvmfunc_strlen,lval->getval(ctx));
+	llvm::Value * string_right_length = builder.CreateCall(llvmfunc_strlen,rval->getval(ctx));
+
+	llvm::Value * result_length = builder.CreateAdd(string_left_length,string_right_length);
+
+	llvm::Value * resultstring = builder.CreateCall2(llvmfunc_calloc,result_length,
+												 qbc::getconstlong(1));
+	
+	builder.CreateCall2(llvmfunc_strcpy,resultstring,lval->getval(ctx));
+	builder.CreateCall2(llvmfunc_strcat,resultstring,rval->getval(ctx));
+	ExprASTPtr ret(new TempStringExprAST(resultstring));
+	return ret;
 }
 
 

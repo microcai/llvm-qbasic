@@ -45,6 +45,18 @@ llvm::Value * getconstlong(long v)
 	return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(sizeoflong(),(uint64_t)v,true));
 }
 
+static llvm::Type * getplatformlongtype()
+{
+	switch(sizeof(long)){
+		case 8:
+			return llvm::Type::getInt64Ty(llvm::getGlobalContext());
+		case 4:
+			return llvm::Type::getInt32Ty(llvm::getGlobalContext());
+		case 2:
+			return llvm::Type::getInt16Ty(llvm::getGlobalContext());
+	}
+}
+
 static llvm::Constant *getbuiltinprotype_printf(ASTContext ctx)
 {
 	llvm::IRBuilder<> builder(ctx.block);
@@ -62,19 +74,7 @@ static llvm::Constant *getbuiltinprotype_brt_print(ASTContext ctx)
 {
 	llvm::IRBuilder<> builder(ctx.block);
 	std::vector<llvm::Type *> brt_printArgs;
-
-	switch(sizeof(int)){
-		case 4:
-			brt_printArgs.push_back(builder.getInt32Ty());
-			break;
-		case 8:
-			brt_printArgs.push_back(builder.getInt64Ty());
-			break;
-		case 2:
-			brt_printArgs.push_back(builder.getInt16Ty());
-		//default:
-		//	std::cerr << "unknow int type of int\n" << std::endl ;
-	}
+	brt_printArgs.push_back(getplatformlongtype());
 
 	llvm::Constant *brt_print =
 			ctx.module->getOrInsertFunction("brt_print",
@@ -89,18 +89,23 @@ static llvm::Constant *getbuiltinprotype_malloc(ASTContext ctx)
 	llvm::IRBuilder<> builder(ctx.block);
 	std::vector<llvm::Type *> args;
 
-	switch(sizeof(size_t)){
-	case 4:
-		args.push_back(builder.getInt32Ty());
-		break;
-	case 8:
-		args.push_back(builder.getInt64Ty());
-		break;
-	case 2:
-		args.push_back(builder.getInt16Ty());
-	}
+	args.push_back(getplatformlongtype());
 
 	llvm::Constant *func = ctx.module->getOrInsertFunction("malloc",
+										llvm::FunctionType::get(builder.getInt8PtrTy(), args,false));
+
+	return func;
+}
+
+static llvm::Constant *getbuiltinprotype_calloc(ASTContext ctx)
+{
+	llvm::IRBuilder<> builder(ctx.block);
+	std::vector<llvm::Type *> args;
+
+	args.push_back(getplatformlongtype());
+	args.push_back(getplatformlongtype());
+
+	llvm::Constant *func = ctx.module->getOrInsertFunction("calloc",
 										llvm::FunctionType::get(builder.getInt8PtrTy(), args,false));
 
 	return func;
@@ -129,6 +134,40 @@ static llvm::Constant *getbuiltinprotype_strdup(ASTContext ctx)
 	return func;
 }
 
+static llvm::Constant *getbuiltinprotype_strlen(ASTContext ctx)
+{
+	llvm::IRBuilder<> builder(ctx.block);
+	std::vector<llvm::Type *> args;
+	args.push_back(builder.getInt8PtrTy());
+
+	llvm::Constant *func = ctx.module->getOrInsertFunction("strlen",
+										llvm::FunctionType::get(getplatformlongtype(), args,false));
+	return func;
+}
+
+static llvm::Constant *getbuiltinprotype_strcpy(ASTContext ctx)
+{
+	llvm::IRBuilder<> builder(ctx.block);
+	std::vector<llvm::Type *> args;
+	args.push_back(builder.getInt8PtrTy());
+	args.push_back(builder.getInt8PtrTy());
+
+	llvm::Constant *func = ctx.module->getOrInsertFunction("strcpy",
+										llvm::FunctionType::get(builder.getInt8PtrTy(), args,false));
+	return func;
+}
+
+static llvm::Constant *getbuiltinprotype_strcat(ASTContext ctx)
+{
+	llvm::IRBuilder<> builder(ctx.block);
+	std::vector<llvm::Type *> args;
+	args.push_back(builder.getInt8PtrTy());
+	args.push_back(builder.getInt8PtrTy());
+
+	llvm::Constant *func = ctx.module->getOrInsertFunction("strcat",
+										llvm::FunctionType::get(builder.getInt8PtrTy(), args,false));
+	return func;
+}
 // 从字符串获得标准C库和内置BRT库的标准声明
 llvm::Constant * getbuiltinprotype(ASTContext ctx,const std::string name)
 {
@@ -145,13 +184,24 @@ llvm::Constant * getbuiltinprotype(ASTContext ctx,const std::string name)
 		if(name == "malloc"){
 			return getbuiltinprotype_malloc(ctx);
 		}
+		if(name == "calloc"){
+			return getbuiltinprotype_calloc(ctx);
+		}
 		if(name == "free"){
 			return getbuiltinprotype_free(ctx);
 		}
 		if(name == "strdup"){
 			return getbuiltinprotype_strdup(ctx);
 		}
-
+		if(name == "strlen"){
+			return getbuiltinprotype_strlen(ctx);
+		}
+		if(name == "strcpy"){
+			return getbuiltinprotype_strcpy(ctx);
+		}
+		if(name == "strcat"){
+			return getbuiltinprotype_strcat(ctx);
+		}
 		printf("no define for %s yet\n",name.c_str());
 		exit(1);
 	}

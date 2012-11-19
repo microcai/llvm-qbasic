@@ -12,15 +12,6 @@
 
 sub main()
 
-dim a as string
-dim b as string
-
-dim c as long
-
-a = "hello world"
-c = 100
-b = "yes my lorld"
-
-print a , b, "hello world"
+print "hello" + " world"
 
 end sub

@@ -165,6 +165,7 @@ public:
 // 用户字符串, 终于实现了有木有!
 class ConstStringExprAST :public ExprAST
 {
+	llvm::Value *		val;
 	std::string			str;
 public:
 	ConstStringExprAST(const std::string _str);
@@ -174,11 +175,7 @@ public:
 
 class TempStringExprAST : public TempExprAST
 {
-	llvm::Value * value;
 public:
-
-    virtual llvm::Value* getval(ASTContext ){ return value;}
-
     TempStringExprAST(llvm::Value * result);
 };
 
