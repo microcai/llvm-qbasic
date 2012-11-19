@@ -219,7 +219,7 @@ class ForLoopAST : public LoopAST
 	NamedExprASTPtr	refID;
 	ExprASTPtr		start,end;
 	ExprASTPtr		step;
-	
+
 public:
     ForLoopAST(NamedExprAST * id, ExprAST * start, ExprAST * end, ExprAST * step,CodeBlockAST* body);
     virtual llvm::BasicBlock* Codegen(ASTContext );

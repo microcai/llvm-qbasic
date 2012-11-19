@@ -12,7 +12,7 @@
 
 function fab( i as long) as long
 
-return i * i 
+return i * i ;
 
 end function
 
