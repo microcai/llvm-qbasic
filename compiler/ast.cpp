@@ -55,18 +55,18 @@ PrintIntroAST::PrintIntroAST()
 }
 
 
-DimAST::DimAST(const std::string _name, const std::string _type)
+DimAST::DimAST(const std::string _name, ExprTypeASTPtr _type)
 	:name(_name),type(_type)
 {
 
 }
 
-VariableDimAST::VariableDimAST(const std::string _name, const std::string _type)
+VariableDimAST::VariableDimAST(const std::string _name, ExprTypeASTPtr _type)
 	:DimAST(_name,_type)
 {
 }
 
-FunctionDimAST::FunctionDimAST(const std::string _name,ArgumentDimsAST*	_callargs, const std::string _type)
+FunctionDimAST::FunctionDimAST(const std::string _name, ExprTypeASTPtr _type,ArgumentDimsAST * _callargs)
 	:DimAST(_name,_type),callargs(_callargs)
 {
 	
@@ -74,7 +74,7 @@ FunctionDimAST::FunctionDimAST(const std::string _name,ArgumentDimsAST*	_callarg
 
 
 DefaultMainFunctionAST::DefaultMainFunctionAST(CodeBlockAST * body)
-	:FunctionDimAST("main",0,"" )
+	:FunctionDimAST("main",VoidExprTypeAST::GetVoidExprTypeAST())
 {
 	this->body = CodeBlockASTPtr(body);
 }
@@ -153,7 +153,7 @@ AssigmentAST::AssigmentAST(NamedExprAST* lval, ExprAST* rval)
 {
 }
 
-ArgumentDimAST::ArgumentDimAST(const std::string _name, const std::string _type)
+ArgumentDimAST::ArgumentDimAST(const std::string _name, ExprTypeASTPtr _type)
 	:VariableDimAST(_name,_type),modified_stackvar(0)
 {	
 }

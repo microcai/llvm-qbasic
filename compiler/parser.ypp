@@ -72,8 +72,8 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 	PrintIntroAST*		printinto;
 	
 	
-	std::string *  		exprtype; // name of the type
-	ConstNumberExprAST* 		number_expression;
+	ExprType *  		exprtype; // name of the type
+	ConstNumberExprAST* number_expression;
 	CallExprAST*		call_function;
 
     PrintStmtAST*		printstatement;
@@ -161,7 +161,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %type <while_loop>					while_loop
 %type <for_loop>					for_loop
 
-%type <call_function>				call_function_or_array
+%type <call_function>    			call_function
 
 %%
 
@@ -214,7 +214,7 @@ line: statements tNEWLINE { $$=$1;  }
 		$$ = new StatementsAST ; $$->push_back(StatementASTPtr($1));
 	}
 	| tNEWLINE { debug("空行"); $$ = 0;}
-	| call_function_or_array tNEWLINE {
+	| call_function tNEWLINE {
 		CallStmtAST * callstmt =  new CallStmtAST( $1 );
 		$$ = new StatementsAST ;
 		$$->push_back( StatementASTPtr(callstmt)  );
@@ -239,7 +239,7 @@ statement: printstatement { $$ = $1; }
 		| for_loop {$$= $1;}
 		| sub_definition  {$$= $1;}
 		| function_definition  {$$= $1;}
-	//	| call_function_or_array ':'{ $$ = new CallStmtAST($1); }
+	//	| call_function ':'{ $$ = new CallStmtAST($1); }
 	//	| tNEWLINE { $$= new EmptyStmtAST();}
 		| expression comma_or_colon { /*TODO*/debug("here====3====\n"); exit(1);	}
 		;
@@ -251,15 +251,19 @@ assigment: varref tEQU expression {
 	};
 
 exprtype: tLONG	{
-		$$ = new std::string("long");
+		$$ = new ExprType (NumberExprTypeAST::GetNumberExprTypeAST());
 	}
 	| tSTR {
-		$$ = new std::string("string");
+		$$ = new ExprType (StringExprTypeAST::GetStringExprTypeAST());
 	}
 	| tID {
 		debug("define as user type not supported\n");
 		exit(1);
-	};
+	}
+	| exprtype '(' tNUMBER ')'{
+		// 数组啊!!
+	}
+	;
 
 printstatement:
 	tPRINT  printinto  expression_list  {
@@ -293,7 +297,7 @@ expression_list: expression_list ',' expression { $$ = $1 ; $$->Append($3); }
 	}
 	;
 
-call_function_or_array:
+call_function:
 		// 这个也是函数调用
 		varref '('  ')' { $$ = new CallExprAST($1); debug("functioncall %s with no arg\n", $1->ID.c_str()); } 
 		| varref  '(' expression_list ')' { 	 // 这个可能是函数调用, 也许是数组哦 :)
@@ -301,11 +305,11 @@ call_function_or_array:
 			 debug("functioncall %s with  args!!!!\n" , $1->ID.c_str() );
 
 			 $$ = new CallExprAST($1 , $3 );			
-		}
+		};
 
 
 	
-expression: call_function_or_array
+expression: call_function
 		| '(' expression ')'
 		| expression '+' expression {   $$ = new CalcExprAST( $1, OPERATOR_ADD , $3 );  }
 		| expression '-' expression {   $$ = new CalcExprAST( $1, OPERATOR_SUB , $3 );  }
@@ -356,7 +360,7 @@ function_definition: tFUNCTION tID '(' arg_list ')' tAS exprtype tNEWLINE
 						lines
 				tFUNCTIONEND {
 					useDefautSubMain = false;
-					$$ = new FunctionDimAST( *$2 , $4, *$7 );
+					$$ = new FunctionDimAST( *$2 , *$7, $4 );
 
 					$$->body = CodeBlockASTPtr($9);
 				}
@@ -364,7 +368,7 @@ function_definition: tFUNCTION tID '(' arg_list ')' tAS exprtype tNEWLINE
 					lines
 				tFUNCTIONEND {
 					useDefautSubMain = false;
-					$$ = new FunctionDimAST( *$2 , $4 , "long" ) ;
+					$$ = new FunctionDimAST( *$2 , NumberExprTypeAST::GetNumberExprTypeAST(),$4 ) ;
 
 					$$->body = CodeBlockASTPtr($7);
 				}
@@ -376,7 +380,7 @@ sub_definition: tSUB  tID  '(' arg_list ')'
 				useDefautSubMain = false;
 				debug("!!SUB %s defined with arg !!\n",$2->c_str());
 
-				$$ = new FunctionDimAST( *$2,$4); //delete $2;				
+				$$ = new FunctionDimAST( *$2, VoidExprTypeAST::GetVoidExprTypeAST(), $4); //delete $2;
 				$6->parent = $4;
 				$$->body = CodeBlockASTPtr($6);
 			}
@@ -405,7 +409,7 @@ dim_item: tID tAS exprtype {
 		$$ = new VariableDimAST( *$1  , * $3 );
 	} | tID {
 		debug("definning %s with no type , default to long\n",$1->c_str());
-		$$ = new VariableDimAST( *$1  , "long" );
+		$$ = new VariableDimAST( *$1  , NumberExprTypeAST::GetNumberExprTypeAST() );
 	};
 
 

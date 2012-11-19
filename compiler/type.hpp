@@ -94,7 +94,45 @@ class MemberReferenceAST : public ReferenceAST
     MemberReferenceAST(std::string* members);
 };
 
-class ExprTypeAST;
+class ExprOperation;
+// 变量类型定义.
+class ExprTypeAST : public AST
+{
+	std::string		_typename;
+	size_t			_size; // 类型大小.
+	// 取地址操作 , 上层的 ExprAST 的 getptr 即调用此操作.
+	// 对大部分的表达式来说, 如果无法获得地址, 在屏幕上打印无法对某类型取地址. 然后退出或者返回 NULL
+public:
+
+
+	// name of type
+	virtual std::string name(ASTContext){return _typename;};
+
+	virtual llvm::Type	* llvm_type(ASTContext ctx) = 0;
+
+	// 为该类型在栈上分配一块内存, 返回分配的指针 , 有可能的话,起个名字
+	virtual llvm::Value * Alloca(ASTContext ctx, const std::string _name) = 0;
+
+	// 为该类型生成初始化操作指令 , 默认为空操作, 也就是只要分配个内存就可以了
+	virtual void initalize(ASTContext, llvm::Value * Ptr) {};
+
+	// 为该类型生成初始化指令,带参数的.
+// 	virtual initalize(ASTContext, llvm::Value * Ptr , llvm::Value* initalizedata) = 0;
+
+	// 为该类型生成删除操作, 默认为空操作, 也就是只要移动栈指针就可以了
+	virtual void destory(ASTContext, llvm::Value * Ptr) {};
+
+	virtual	size_t size(){return _size;};
+
+	// 这是最重要的类型了, 类型只所以为类型就是因为这个
+	virtual ExprOperation * getop() = 0;
+
+public:
+    ExprTypeAST(){}
+    ExprTypeAST( size_t size , const std::string __typename );
+    virtual ~ExprTypeAST(){}; // do nothing
+};
+typedef boost::shared_ptr<ExprTypeAST>		ExprTypeASTPtr;
 
 // 表达式, 是个虚基类, 这样 AST 到 ExprAST 都是纯虚的
 class ExprAST: public AST //
@@ -132,14 +170,14 @@ public:
 
 // 用来管理临时对象, 这是实现 QBASIC C++ style 的临时对象的重点哦~
 class TempExprAST : public ExprAST{
-	ExprTypeAST * _type;
+	ExprTypeASTPtr _type;
 public:
 	llvm::Value * val;
 	ASTContext ctx;
 	
-    virtual ExprTypeAST* type(ASTContext ctx){return _type;}
+    virtual ExprTypeAST* type(ASTContext ctx){return _type.get();}
 
-	TempExprAST(ASTContext _ctx,llvm::Value * _val ,ExprTypeAST * type);
+	TempExprAST(ASTContext _ctx,llvm::Value * _val ,ExprTypeASTPtr type);
     virtual llvm::Value* getval(ASTContext ) { return val;}
     virtual ~TempExprAST(){};
 };
@@ -282,46 +320,27 @@ public:
 
 typedef boost::shared_ptr<CallExprAST>	CallExprASTPtr;
 
-class ExprOperation;
-// 变量类型定义.
-class ExprTypeAST : public AST
-{
-	std::string		_typename;
-	size_t			_size; // 类型大小.
-	// 取地址操作 , 上层的 ExprAST 的 getptr 即调用此操作.
-	// 对大部分的表达式来说, 如果无法获得地址, 在屏幕上打印无法对某类型取地址. 然后退出或者返回 NULL
+
+// wrapper class
+class ExprType {
+	ExprTypeASTPtr	_type;
 public:
+	ExprType(ExprTypeASTPtr type):_type(type){}
+	operator	ExprTypeASTPtr(){ExprTypeASTPtr tmp = _type; delete this;  return tmp;}
+};
 
-	
-	// name of type
-	virtual std::string name(ASTContext){return _typename;};
-	
-	virtual llvm::Type	* llvm_type(ASTContext ctx) = 0;
 
-	// 为该类型在栈上分配一块内存, 返回分配的指针 , 有可能的话,起个名字
-	virtual llvm::Value * Alloca(ASTContext ctx, const std::string _name,const std::string _typename) = 0;
-
-	// 为该类型生成初始化操作指令 , 默认为空操作, 也就是只要分配个内存就可以了
-	virtual void initalize(ASTContext, llvm::Value * Ptr) {};
-
-	// 为该类型生成初始化指令,带参数的.
-// 	virtual initalize(ASTContext, llvm::Value * Ptr , llvm::Value* initalizedata) = 0;
-
-	// 为该类型生成删除操作, 默认为空操作, 也就是只要移动栈指针就可以了
-	virtual void destory(ASTContext, llvm::Value * Ptr) {};
-	
-	virtual	size_t size(){return _size;};
-
-	virtual ExprOperation * getop() = 0;
-
+class VoidExprTypeAST : public ExprTypeAST{
 public:
-    ExprTypeAST(){}
-    ExprTypeAST( size_t size , const std::string __typename );
-    virtual ~ExprTypeAST(){}; // do nothing
+	static ExprTypeASTPtr GetVoidExprTypeAST();
+    virtual llvm::Type* llvm_type(ASTContext ctx);
+    virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name){return NULL;}
+    virtual ExprOperation* getop(){return NULL;}
 };
 
 //	整型,支持数学运算
 class NumberExprTypeAST :public ExprTypeAST {
+	void * operator new(size_t); // disallow new
 public:
     NumberExprTypeAST();
 	
@@ -329,23 +348,27 @@ public:
 
     virtual size_t size(){return sizeof(long);};
 	
-	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name,const std::string _typename);
+	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
 
     virtual ExprOperation* getop();
+
+	static ExprTypeASTPtr   GetNumberExprTypeAST();
 };
 
 //  字符串 支持!
 class StringExprTypeAST : public ExprTypeAST
 {
+	void * operator new(size_t); // disallow new
 public:
     StringExprTypeAST();
     virtual llvm::Type* llvm_type(ASTContext ctx);
 
     virtual size_t size(){return sizeof(long);}; //yes没错, 字符串类型只占用8个字节,也就是一个指针哦!
 
-	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name,const std::string _typename);
+	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
     virtual ExprOperation* getop();
     virtual void destory(ASTContext , llvm::Value* Ptr);
+	static ExprTypeASTPtr GetStringExprTypeAST();
 };
 
 //  函数对象类型. 这是基类
@@ -427,6 +450,3 @@ class StringExprOperation : public ExprOperation {
     virtual ExprASTPtr operator_comp(ASTContext ctx, MathOperator op, ExprASTPtr lval, ExprASTPtr rval);
 };
 
-///////////////////////// 辅助函数
-
-ExprTypeAST*	TypeNameResolve(ASTContext ctx,const std::string _typename);

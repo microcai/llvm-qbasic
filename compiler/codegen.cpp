@@ -161,11 +161,11 @@ llvm::BasicBlock* VariableDimAST::Codegen(ASTContext ctx)
 	BOOST_ASSERT(ctx.llvmfunc);
 
 	//map type name to type
-	ExprTypeAST * exptype = TypeNameResolve(ctx,this->type);
+	ExprTypeASTPtr exptype =  this->type;
 	
-	debug("allocate stack for var %s , type %s\n", name.c_str(), type.c_str());
+	debug("allocate stack for var %s , type %s\n", name.c_str(), type->name(ctx).c_str());
 
-	alloca_var = exptype->Alloca(ctx,this->name,this->type);
+	alloca_var = exptype->Alloca(ctx,this->name);
 
 	// register with symbolic table
 	ctx.codeblock->symbols.insert(std::make_pair(this->name,this));
@@ -177,8 +177,8 @@ llvm::BasicBlock* VariableDimAST::valuedegen(ASTContext ctx)
 {
 	BOOST_ASSERT(ctx.llvmfunc);
 	//map type name to type
-	ExprTypeAST * exptype = TypeNameResolve(ctx,this->type);
-	debug("dellocate stack for var %s , type %s\n", name.c_str(), type.c_str());
+	ExprTypeASTPtr exptype = this->type;
+	debug("dellocate stack for var %s , type %s\n", name.c_str(), exptype->name(ctx).c_str());
 	exptype->destory(ctx,alloca_var);
 	return ctx.block;
 }
@@ -209,7 +209,7 @@ llvm::Value* ArgumentDimAST::getptr(ASTContext ctx)
 		return modified_stackvar;
 	}
 	// REALLOCATE and update the pointer
-	return this->modified_stackvar = TypeNameResolve(ctx,this->type)->Alloca(ctx,this->name,this->type);
+	return this->modified_stackvar = this->type->Alloca(ctx,this->name);
 }
 
 llvm::BasicBlock* ArgumentDimAST::Codegen(ASTContext ctx)
@@ -241,7 +241,7 @@ llvm::Value* FunctionDimAST::setret(ASTContext ctx,ExprASTPtr expr)
 	llvm::IRBuilder<> builder(ctx.block);
 
 	if(!retval)
-		retval = TypeNameResolve(ctx,type)->Alloca(ctx,"return value",type);
+		retval = type->Alloca(ctx,"return value");
 
 	llvm::Value* ret = expr->getval(ctx);
 	
@@ -474,16 +474,14 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 		{
 			StatementASTPtr stp = *it;
 			ArgumentDimAST * dim = dynamic_cast<ArgumentDimAST*>( stp );
-			ExprTypeAST * exprtype = TypeNameResolve(ctx,dim->type);
 
-			args.push_back(exprtype->llvm_type(ctx));
+			args.push_back(dim->type->llvm_type(ctx));
 		}
 	}
 
-	ExprTypeAST * exprtype = TypeNameResolve(ctx,this->type);
 	//函数返回类型
 	llvm::FunctionType *funcType =
-		llvm::FunctionType::get(exprtype ? exprtype->llvm_type(ctx) : builder.getVoidTy(),args,true);
+		llvm::FunctionType::get(type ? type->llvm_type(ctx) : builder.getVoidTy(),args,true);
 
 	target = ctx.llvmfunc =
 		llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, this->name , ctx.module);
@@ -525,7 +523,7 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 
 	if(retval)
 		builder.CreateRet(builder.CreateLoad(retval));
-	else if(exprtype)
+	else if(type)
 		builder.CreateRet(qbc::getconstlong(0)); // 返回 0 
 	else
 		builder.CreateRetVoid();

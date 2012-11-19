@@ -41,35 +41,42 @@
 #define debug std::printf
 
 //static map of the internal type system
+static	NumberExprTypeAST	_numbertype;
+static	StringExprTypeAST	_stringtype;
+static	VoidExprTypeAST		_voidtype;
+static	ExprTypeASTPtr numbertype(&_numbertype);
+static	ExprTypeASTPtr stringtype(&_stringtype);
+static	ExprTypeASTPtr voidtype(&_voidtype);
 
-static	NumberExprTypeAST numbertype;
-static	StringExprTypeAST stringtype;
-
-
-// todo 检查当前 block 并回朔到根节点, 查找定义
-ExprTypeAST*	TypeNameResolve(ASTContext ctx,const std::string _typename)
+ExprTypeASTPtr VoidExprTypeAST::GetVoidExprTypeAST()
 {
-	if(_typename == "long")
-		return &numbertype;
-	if(_typename == "string")
-		return &stringtype;
-	return NULL;
+	return voidtype;
 }
+
+ExprTypeASTPtr NumberExprTypeAST::GetNumberExprTypeAST()
+{
+	return numbertype;
+}
+
+ExprTypeASTPtr StringExprTypeAST::GetStringExprTypeAST()
+{
+	return stringtype;
+}
+
 
 ExprTypeAST* ConstNumberExprAST::type(ASTContext)
 {
-    return &numbertype;
+    return &_numbertype;
 }
 
 ExprTypeAST* ConstStringExprAST::type(ASTContext)
 {
-	return &stringtype;
+	return &_stringtype;
 }
 
 ExprTypeAST* VariableExprAST::type(ASTContext ctx)
 {
-    //TODO . 通过递归查找当前 block 和父 block 进行 name -> type 的转换
-    return TypeNameResolve(ctx,nameresolve(ctx)->type);
+	return nameresolve(ctx)->type.get();
 }
 
 ExprTypeAST* AssignmentExprAST::type(ASTContext ctx)
@@ -86,9 +93,13 @@ ExprTypeAST* CalcExprAST::type(ASTContext ctx)
 
 ExprTypeAST* CallExprAST::type(ASTContext ctx)
 {	
-	return TypeNameResolve(ctx,nameresolve(ctx)->type);
+	return nameresolve(ctx)->type.get();
 }
 
+llvm::Type* VoidExprTypeAST::llvm_type(ASTContext ctx)
+{
+	llvm::Type::getVoidTy(ctx.module->getContext());
+}
 
 llvm::Type* NumberExprTypeAST::llvm_type(ASTContext ctx)
 {
@@ -106,9 +117,9 @@ llvm::Type* StringExprTypeAST::llvm_type(ASTContext ctx)
 	return llvm::Type::getInt8PtrTy(llvm::getGlobalContext());
 }
 
-llvm::Value* NumberExprTypeAST::Alloca(ASTContext ctx, const std::string _name,const std::string _typename)
+llvm::Value* NumberExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
 {
-	debug("allocation for value %s type %s\n",_name.c_str(),_typename.c_str());
+	debug("allocation for value %s type long\n",_name.c_str());
 	//TODO , 在堆栈上分配个变量
 	llvm::IRBuilder<> builder(&ctx.llvmfunc->getEntryBlock(),
 							  ctx.llvmfunc->getEntryBlock().begin());
@@ -118,9 +129,9 @@ llvm::Value* NumberExprTypeAST::Alloca(ASTContext ctx, const std::string _name,c
 	return builder.CreateAlloca(this->llvm_type(ctx),0,_name);
 }
 
-llvm::Value* StringExprTypeAST::Alloca(ASTContext ctx, const std::string _name, const std::string _typename)
+llvm::Value* StringExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
 {
-	debug("allocation for value %s type string\n",_name.c_str(),_typename.c_str());
+	debug("allocation for value %s type string\n",_name.c_str());
 	//TODO , 在堆栈上分配个变量
 	llvm::IRBuilder<> builder(&ctx.llvmfunc->getEntryBlock(),
 							  ctx.llvmfunc->getEntryBlock().begin());
@@ -221,7 +232,7 @@ llvm::Value* CallExprAST::defaultprototype(ASTContext ctx, std::string functionn
 
 	std::vector<llvm::Type*> no_args;
 
-	return ctx.module->getOrInsertFunction(functionname,llvm::FunctionType::get(numbertype.llvm_type(ctx), no_args,true));
+	return ctx.module->getOrInsertFunction(functionname,llvm::FunctionType::get(_numbertype.llvm_type(ctx), no_args,true));
 }
 
 llvm::Value* VariableExprAST::getval(ASTContext ctx)
@@ -376,16 +387,16 @@ CalcExprAST::CalcExprAST(ExprAST* l, MathOperator _op, ExprAST* r)
 	
 }
 
-TempExprAST::TempExprAST(ASTContext _ctx, llvm::Value* _val, ExprTypeAST* type) :ctx(_ctx),val(_val),_type(type) {}
+TempExprAST::TempExprAST(ASTContext _ctx, llvm::Value* _val, ExprTypeASTPtr type) :ctx(_ctx),val(_val),_type(type) {}
 
 TempNumberExprAST::TempNumberExprAST(ASTContext ctx,llvm::Value* numberresult)
-	:TempExprAST(ctx,numberresult , & numbertype)
+	:TempExprAST(ctx,numberresult , numbertype)
 {
 
 }
 
 TempStringExprAST::TempStringExprAST(ASTContext ctx,llvm::Value* result)
-	:TempExprAST(ctx,result, & stringtype)
+	:TempExprAST(ctx,result,  stringtype)
 {
 	
 }

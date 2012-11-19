@@ -81,8 +81,8 @@ namespace qb {
 	PrintIntroAST*		printinto;
 	
 	
-	std::string *  		exprtype; // name of the type
-	ConstNumberExprAST* 		number_expression;
+	ExprType *  		exprtype; // name of the type
+	ConstNumberExprAST* number_expression;
 	CallExprAST*		call_function;
 
     PrintStmtAST*		printstatement;
@@ -281,7 +281,7 @@ namespace qb {
     /// A `-1'-separated list of the rules' RHS.
     static const rhs_number_type yyrhs_[];
     /// For each rule, the index of the first RHS symbol in \a yyrhs_.
-    static const unsigned char yyprhs_[];
+    static const unsigned short int yyprhs_[];
     /// For each rule, its source line number.
     static const unsigned short int yyrline_[];
     /// For each scanner token number, its symbol number.

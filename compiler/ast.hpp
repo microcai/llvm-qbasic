@@ -112,10 +112,10 @@ public:
 class DimAST: public StatementAST
 {
 public:
-	DimAST(const std::string _name , const std::string _typename);
+	DimAST(const std::string _name , ExprTypeASTPtr _type);
 	//ExprType type; // the type of the expresion
 	std::string		name; //定义的符号的名字.
-	std::string		type; // 定义的符号的名字. 将在 typetable 获得type的定义
+	ExprTypeASTPtr	type; //定义的符号的类型. 将在 typetable 获得type的定义
 	virtual llvm::BasicBlock* Codegen(ASTContext) = 0; // generate alloca
 	// gengerate deconstructions , default is don't do that, override on subclass
 	virtual llvm::BasicBlock* valuedegen(ASTContext){};	
@@ -229,7 +229,7 @@ class VariableDimAST : public DimAST
 {
 	llvm::Value * alloca_var;
 public:
-	VariableDimAST(const std::string _name ,  const std::string	_type);
+	VariableDimAST(const std::string _name ,  ExprTypeASTPtr _type);
 	virtual llvm::BasicBlock* Codegen(ASTContext);
     virtual llvm::BasicBlock* valuedegen(ASTContext ctx);
     virtual llvm::Value* getptr(ASTContext ctx);
@@ -242,7 +242,7 @@ class ArgumentDimAST : public VariableDimAST
 	// 如果没有本地修改, 就可以直接使用传入的变量,如果本地进行修改了, 就重新分配一个.
 	llvm::Value * modified_stackvar;
 public:
-	ArgumentDimAST(const std::string _name ,  const std::string	_type);
+	ArgumentDimAST(const std::string _name , ExprTypeASTPtr	_type);
 	virtual llvm::BasicBlock* Codegen(ASTContext);
     virtual llvm::Value* getptr(ASTContext ctx);
 	virtual	llvm::Value* getval(ASTContext ctx);
@@ -280,7 +280,7 @@ public:
 
 	CodeBlockASTPtr	body; //函数体
 	
-    FunctionDimAST(const std::string _name, ArgumentDimsAST * callargs = NULL, const std::string _type = "");
+    FunctionDimAST(const std::string _name, ExprTypeASTPtr,ArgumentDimsAST * callargs = NULL);
 	//如果是声明, 为 dim 生成 llvm::Function * 声明供使用
     virtual llvm::BasicBlock* Codegen(ASTContext);
 	
