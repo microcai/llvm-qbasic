@@ -77,7 +77,7 @@ ExprASTPtr NumberExprOperation::operator_add(ASTContext ctx, ExprASTPtr lval, Ex
 	llvm::Value * result = builder.CreateAdd(LHS,RHS);
 
 	//TODO , 构造临时 Number 对象
-	TempExprAST *temp = new TempNumberExprAST(result);
+	TempExprAST *temp = new TempNumberExprAST(ctx,result);
 	return ExprASTPtr( temp);
 }
 
@@ -86,7 +86,7 @@ ExprASTPtr StringExprOperation::operator_add(ASTContext ctx, ExprASTPtr lval, Ex
 {
 	llvm::IRBuilder<> builder(ctx.block);
 
-	llvm::Constant * llvmfunc_calloc =  qbc::getbuiltinprotype(ctx,"calloc");
+	llvm::Constant * llvmfunc_calloc =  qbc::getbuiltinprotype(ctx,"malloc");
 	llvm::Constant * llvmfunc_strlen =  qbc::getbuiltinprotype(ctx,"strlen");
 	llvm::Constant * llvmfunc_strcpy = qbc::getbuiltinprotype(ctx,"strcpy");
 	llvm::Constant * llvmfunc_strcat = qbc::getbuiltinprotype(ctx,"strcat");
@@ -96,12 +96,12 @@ ExprASTPtr StringExprOperation::operator_add(ASTContext ctx, ExprASTPtr lval, Ex
 
 	llvm::Value * result_length = builder.CreateAdd(string_left_length,string_right_length);
 
-	llvm::Value * resultstring = builder.CreateCall2(llvmfunc_calloc,result_length,
+	llvm::Value * resultstring = builder.CreateCall(llvmfunc_calloc,
 												 qbc::getconstlong(1));
 	
 	builder.CreateCall2(llvmfunc_strcpy,resultstring,lval->getval(ctx));
 	builder.CreateCall2(llvmfunc_strcat,resultstring,rval->getval(ctx));
-	ExprASTPtr ret(new TempStringExprAST(resultstring));
+	ExprASTPtr ret(new TempStringExprAST(ctx,resultstring));
 	return ret;
 }
 
@@ -115,7 +115,7 @@ ExprASTPtr NumberExprOperation::operator_sub(ASTContext ctx, ExprASTPtr lval, Ex
 	llvm::Value * result = builder.CreateSub(LHS,RHS);
 
 	//TODO , 构造临时 Number 对象
-	TempExprAST *temp = new TempNumberExprAST(result);
+	TempExprAST *temp = new TempNumberExprAST(ctx,result);
 	return ExprASTPtr(temp);
 }
 

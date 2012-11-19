@@ -131,6 +131,10 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 		builder.CreateCall(printf_func,args ,"PRINT_via_printf");
 	}
 
+	// delete the param list
+
+	this->callargs.reset();
+
 	return ctx.block;
 }
 

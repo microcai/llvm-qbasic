@@ -16,15 +16,23 @@ dim a as string
 
 dim b as string
 
-dim helloworld as string
-
 a = "hello"
 
 b = "world"
 
+/*
+dim helloworld as string
+
+
 helloworld = a + " " + b
 
-print a , b , "and " , helloworld , "ki" + "ki"
+*/
+
+print 010
+print a + b
+
+print 101
+REM, "and " , helloworld , "ki" + "ki"
 
 
 

@@ -132,12 +132,14 @@ public:
 
 // 用来管理临时对象, 这是实现 QBASIC C++ style 的临时对象的重点哦~
 class TempExprAST : public ExprAST{
-	llvm::Value * val;
 	ExprTypeAST * _type;
 public:
+	llvm::Value * val;
+	ASTContext ctx;
+	
     virtual ExprTypeAST* type(ASTContext ctx){return _type;}
 
-	TempExprAST(llvm::Value * _val ,ExprTypeAST * type):val(_val),_type(type){};
+	TempExprAST(ASTContext _ctx,llvm::Value * _val ,ExprTypeAST * type);
     virtual llvm::Value* getval(ASTContext ) { return val;}
     virtual ~TempExprAST(){};
 };
@@ -146,7 +148,7 @@ public:
 class TempNumberExprAST : public TempExprAST
 {
 public:
-    TempNumberExprAST(llvm::Value * numberresult);
+    TempNumberExprAST(ASTContext ctx,llvm::Value * numberresult);
 };
 
 // 常数表达式
@@ -176,7 +178,8 @@ public:
 class TempStringExprAST : public TempExprAST
 {
 public:
-    TempStringExprAST(llvm::Value * result);
+    TempStringExprAST(ASTContext ctx,llvm::Value * result);
+    virtual ~TempStringExprAST();
 };
 
 // 命名表达式. 命名的表达式是 Function Call , 数组, 变量 的基类
@@ -219,6 +222,7 @@ public:
 class CalcExprAST : public ExprAST{
 	MathOperator	op;
 	ExprASTPtr		lval,rval;
+	ExprASTPtr		result; // cache the result :)
 public: // 以两个子表达式构建
 	CalcExprAST(ExprAST * , MathOperator op , ExprAST * );
 	virtual ExprTypeAST* type(ASTContext);

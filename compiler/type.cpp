@@ -282,6 +282,7 @@ llvm::Value* CallExprAST::getval(ASTContext ctx)
 
 llvm::Value* CalcExprAST::getval(ASTContext ctx)
 {
+	
 	BOOST_ASSERT(ctx.llvmfunc);
 	//TODO, 生成计算表达式 !
 	llvm::Value * LHS =	lval->getval(ctx);
@@ -292,9 +293,13 @@ llvm::Value* CalcExprAST::getval(ASTContext ctx)
 
 	switch(this->op){
 		case OPERATOR_ADD:
-			return lval->type(ctx)->getop()->operator_add(ctx,lval,rval)->getval(ctx);
+			if(!result)
+				result = lval->type(ctx)->getop()->operator_add(ctx,lval,rval);
+			return result->getval(ctx);
 		case OPERATOR_SUB:
-			return lval->type(ctx)->getop()->operator_sub(ctx,lval,rval)->getval(ctx);
+			if(!result)
+				result = lval->type(ctx)->getop()->operator_sub(ctx,lval,rval);
+			return result->getval(ctx);
 		case OPERATOR_MUL:
 			return builder.CreateMul(LHS,RHS);
 		case OPERATOR_DIV:
@@ -367,14 +372,24 @@ CalcExprAST::CalcExprAST(ExprAST* l, MathOperator _op, ExprAST* r)
 	
 }
 
-TempNumberExprAST::TempNumberExprAST(llvm::Value* numberresult)
-	:TempExprAST(numberresult , & numbertype)
+TempExprAST::TempExprAST(ASTContext _ctx, llvm::Value* _val, ExprTypeAST* type) :ctx(_ctx),val(_val),_type(type) {}
+
+TempNumberExprAST::TempNumberExprAST(ASTContext ctx,llvm::Value* numberresult)
+	:TempExprAST(ctx,numberresult , & numbertype)
 {
 
 }
 
-TempStringExprAST::TempStringExprAST(llvm::Value* result)
-	:TempExprAST(result, & stringtype)
+TempStringExprAST::TempStringExprAST(ASTContext ctx,llvm::Value* result)
+	:TempExprAST(ctx,result, & stringtype)
 {
 	
 }
+
+TempStringExprAST::~TempStringExprAST()
+{
+	llvm::IRBuilder<>	builder(ctx.block);
+	llvm::Constant * func_free = qbc::getbuiltinprotype(ctx,"free");
+	builder.CreateCall(func_free,this->val);
+}
+
