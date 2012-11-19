@@ -128,6 +128,8 @@ llvm::Value* StringExprTypeAST::Alloca(ASTContext ctx, const std::string _name, 
 	builder.SetInsertPoint(ctx.block);
 
 	llvm::Value * newval = builder.CreateAlloca(this->llvm_type(ctx),0,_name);
+
+	builder.CreateStore( qbc::getnull(), newval);
 	return newval;
 }
 

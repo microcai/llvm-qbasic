@@ -21,6 +21,8 @@
 
 namespace qbc{
 
+llvm::Value * getnull();
+	
 llvm::Value * getconstint(int v);
 
 llvm::Value * getconstlong(long v);

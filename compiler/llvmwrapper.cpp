@@ -35,6 +35,12 @@ static unsigned sizeoflong()
 	return sizeof(long)*8;
 }
 
+llvm::Value * getnull()
+{
+	llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(llvm::getGlobalContext()));
+}
+
+
 llvm::Value * getconstint(int v)
 {
 	return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(sizeofint(),(uint64_t)v,true));

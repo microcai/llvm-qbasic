@@ -12,6 +12,20 @@
 
 sub main()
 
-print "hello" + " world"
+dim a as string
+
+dim b as string
+
+dim helloworld as string
+
+a = "hello"
+
+b = "world"
+
+helloworld = a + " " + b
+
+print a , b , "and " , helloworld , "ki" + "ki"
+
+
 
 end sub
