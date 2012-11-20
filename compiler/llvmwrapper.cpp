@@ -174,6 +174,19 @@ static llvm::Constant *getbuiltinprotype_strcat(ASTContext ctx)
 										llvm::FunctionType::get(builder.getInt8PtrTy(), args,false));
 	return func;
 }
+
+static llvm::Constant *getbuiltinprotype_btr_qbarray_new(ASTContext ctx)
+{
+	llvm::IRBuilder<> builder(ctx.block);
+	std::vector<llvm::Type *> args;
+	args.push_back(builder.getInt8PtrTy());
+	args.push_back(getplatformlongtype());
+
+	llvm::Constant *func = ctx.module->getOrInsertFunction("btr_qbarray_new",
+										llvm::FunctionType::get(builder.getVoidTy(), args,false));
+	return func;
+}
+
 // 从字符串获得标准C库和内置BRT库的标准声明
 llvm::Constant * getbuiltinprotype(ASTContext ctx,const std::string name)
 {
@@ -208,6 +221,8 @@ llvm::Constant * getbuiltinprotype(ASTContext ctx,const std::string name)
 		if(name == "strcat"){
 			return getbuiltinprotype_strcat(ctx);
 		}
+		if(name == "btr_qbarray_new")
+			return getbuiltinprotype_btr_qbarray_new(ctx);
 		printf("no define for %s yet\n",name.c_str());
 		exit(1);
 	}
