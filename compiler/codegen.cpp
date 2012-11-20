@@ -361,7 +361,7 @@ llvm::BasicBlock* WhileLoopAST::Codegen(ASTContext ctx)
 //TODO, 生成 for loop
 llvm::BasicBlock* ForLoopAST::Codegen(ASTContext ctx)
 {
-	ExprTypeAST * exprtype  = this->refID->type(ctx);
+	ExprTypeASTPtr exprtype  = this->refID->type(ctx);
 
 		// 变量赋予初始值
 	exprtype->getop()->operator_assign(ctx,refID,start);

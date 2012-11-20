@@ -141,7 +141,7 @@ public:
 	//获得表达式类型信息, 如果是计算表达式, 需要的是递归操作哦
 	//注意,不要释放返回值. 返回值是由 block 管理的.
 	//block 退出的时候会释放掉本 block 注册的类型 (本地类型定义)
-	virtual ExprTypeAST* type(ASTContext ) = 0;
+	virtual ExprTypeASTPtr type(ASTContext ) = 0;
 
 	// 生成获得变量值的操作.
 	// 对于计算表达式来说, 这个是递归操作
@@ -163,7 +163,7 @@ typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
 class EmptyExprAST : public ExprAST
 {
 public:
-	virtual ExprTypeAST* type(ASTContext ){ return 0;}
+	virtual ExprTypeASTPtr type(ASTContext );
 
     virtual llvm::Value* getval(ASTContext ){ return 0;}
 };
@@ -175,7 +175,7 @@ public:
 	llvm::Value * val;
 	ASTContext ctx;
 	
-    virtual ExprTypeAST* type(ASTContext ctx){return _type.get();}
+    virtual ExprTypeASTPtr type(ASTContext ctx){return _type;}
 
 	TempExprAST(ASTContext _ctx,llvm::Value * _val ,ExprTypeASTPtr type);
     virtual llvm::Value* getval(ASTContext ) { return val;}
@@ -197,7 +197,7 @@ public:
 	ConstNumberExprAST( long num){ v = num;};
 public:
 	
-    virtual ExprTypeAST* type(ASTContext );
+    virtual ExprTypeASTPtr type(ASTContext );
 
     virtual llvm::Value* getval(ASTContext );	
 };
@@ -209,7 +209,7 @@ class ConstStringExprAST :public ExprAST
 	std::string			str;
 public:
 	ConstStringExprAST(const std::string _str);
-	virtual ExprTypeAST* type(ASTContext );
+	virtual ExprTypeASTPtr type(ASTContext );
     virtual llvm::Value* getval(ASTContext );;
 };
 
@@ -230,7 +230,7 @@ public:
 	//以 ReferenceName 构造
 	NamedExprAST(ReferenceAST * _ID);
 	// 调用获得 ID 的类型系统. 通过查找当前 block 和父 block 进行 name -> type 的转换
-	virtual ExprTypeAST*	type(ASTContext ) = 0;
+	virtual ExprTypeASTPtr	type(ASTContext ) = 0;
 
 	//生成获得变量指针的操作. 用于赋值操作,
 	virtual llvm::Value*	getptr(ASTContext) = 0;
@@ -252,7 +252,7 @@ public:
     virtual llvm::Value* getptr(ASTContext );
 	
 	// 调用获得 ID 的类型系统
-	virtual ExprTypeAST* type(ASTContext ctx);
+	virtual ExprTypeASTPtr type(ASTContext ctx);
     virtual ~VariableExprAST(){}	
 };
 
@@ -263,7 +263,7 @@ class CalcExprAST : public ExprAST{
 	ExprASTPtr		result; // cache the result :)
 public: // 以两个子表达式构建
 	CalcExprAST(ExprAST * , MathOperator op , ExprAST * );
-	virtual ExprTypeAST* type(ASTContext);
+	virtual ExprTypeASTPtr type(ASTContext);
     virtual llvm::Value* getval(ASTContext);
 };
 
@@ -277,7 +277,7 @@ public:
 	// 赋值表达式必须使用一个命名的类型为左值
 	AssignmentExprAST(NamedExprAST* , ExprAST *);
 	
-    virtual ExprTypeAST* type(ASTContext);
+    virtual ExprTypeASTPtr type(ASTContext);
     virtual llvm::Value* getval(ASTContext);
 };
 
@@ -309,7 +309,7 @@ class CallExprAST : public CallOrArrayExprAST
 	ExprListASTPtr				callargs;
 public:
 	CallExprAST(ReferenceAST * , ExprListAST * exp_list = NULL);
-	virtual ExprTypeAST*	type(ASTContext);
+	virtual ExprTypeASTPtr	type(ASTContext);
 
     virtual llvm::Value* getptr(ASTContext) { return 0;}; // cann't get the address
     virtual llvm::Value* getval(ASTContext);
@@ -340,7 +340,8 @@ public:
 
 //	整型,支持数学运算
 class NumberExprTypeAST :public ExprTypeAST {
-	void * operator new(size_t); // disallow new
+// 	void * operator new(size_t); // disallow new
+// 	void operator delete(void *);// disallow delete
 public:
     NumberExprTypeAST();
 	
@@ -358,7 +359,7 @@ public:
 //  字符串 支持!
 class StringExprTypeAST : public ExprTypeAST
 {
-	void * operator new(size_t); // disallow new
+// 	void * operator new(size_t); // disallow new
 public:
     StringExprTypeAST();
     virtual llvm::Type* llvm_type(ASTContext ctx);
@@ -382,7 +383,7 @@ class ArrayExprTypeAST : public CallOrArrayExprAST
 	 *			void * ptr; // pointer to the location of the memory
 	 *};
 	 **/ 
-	void * operator new(size_t); // disallow new
+// 	void * operator new(size_t); // disallow new
 public:
     ArrayExprTypeAST();
     virtual llvm::Type* llvm_type(ASTContext ctx);

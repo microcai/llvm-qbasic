@@ -123,7 +123,8 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %token tFUNCTION
 %token tFUNCTIONEND
 %token tRETURN
-%token tDIM tLET tPRINT
+%token tLET tPRINT
+%token tARRAYDIM tDIM
 
 %token tIF tTHEN tENDIF tELSE tELSEIF
 %token tWHILE tENDWHILE
@@ -229,7 +230,7 @@ statements : statements comma_or_colon statement {  $$ = $1; $$->push_back(State
 		;
 
 statement: printstatement { $$ = $1; }
-		| tDIM dim_item { $$ = $2; }
+		| dim_item { $$ = $1; }
 		| assigment {$$= $1;}
 		| tLET assigment { $$ = $2;}
 		| tRETURN expression { $$ = new ReturnAST($2);}
@@ -309,7 +310,7 @@ call_function:
 
 	
 expression: call_function
-		| '(' expression ')'
+		| '(' expression ')' { $$ = $2 ;}
 		| expression '+' expression {   $$ = new CalcExprAST( $1, OPERATOR_ADD , $3 );  }
 		| expression '-' expression {   $$ = new CalcExprAST( $1, OPERATOR_SUB , $3 );  }
 		| expression '*' expression {   $$ = new CalcExprAST( $1, OPERATOR_MUL , $3 );  }
@@ -334,11 +335,11 @@ expression: call_function
 		}
 		;
 
-varref:	varref '.' tID {
-		debug("ref menber %s . %s , not supported yet\n", $1->ID.c_str()  , $3->c_str() );
+varref:	expression '.' tID { //没错, 成员引用, 前面可是可以为表达式的 !
+		debug("ref menber %s . %s , not supported yet\n" );
 		exit(1); // 逐级传递
 	}// 成员变量
-	| varref tDREF  tID  // 指针解引用
+	| expression tDREF  tID  // 指针解引用
 	| tID {
 		// 变量的引用? 反正是一个标识符的引用,
 		// 所以我构建一个标识符引用语句. 这个会被用来构建函数调用和数组语句以及变量.
@@ -403,12 +404,17 @@ arg_list:{ $$ = 0; }
 	}
 	;
 
-dim_item: tID tAS exprtype {
-		debug("definning %s is type %p\n",$1->c_str(), $3);
-		$$ = new VariableDimAST( *$1  , * $3 );
-	} | tID {
-		debug("definning %s with no type , default to long\n",$1->c_str());
-		$$ = new VariableDimAST( *$1  , NumberExprTypeAST::GetNumberExprTypeAST() );
+dim_item: tDIM tID tAS exprtype {
+		debug("definning %s is type %p\n",$2->c_str(), $4);
+		$$ = new VariableDimAST( *$2  , * $4 );
+	} | tDIM tID {
+		debug("definning %s with no type , default to long\n",$2->c_str());
+		$$ = new VariableDimAST( *$2  , NumberExprTypeAST::GetNumberExprTypeAST() );
+	}
+	| tARRAYDIM tID tAS exprtype {
+		debug("definning array\n");
+
+		exit(1);
 	};
 
 

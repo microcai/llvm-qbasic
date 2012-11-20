@@ -41,12 +41,9 @@
 #define debug std::printf
 
 //static map of the internal type system
-static	NumberExprTypeAST	_numbertype;
-static	StringExprTypeAST	_stringtype;
-static	VoidExprTypeAST		_voidtype;
-static	ExprTypeASTPtr numbertype(&_numbertype);
-static	ExprTypeASTPtr stringtype(&_stringtype);
-static	ExprTypeASTPtr voidtype(&_voidtype);
+static	ExprTypeASTPtr numbertype(new NumberExprTypeAST);
+static	ExprTypeASTPtr stringtype(new StringExprTypeAST);
+static	ExprTypeASTPtr voidtype(new VoidExprTypeAST);
 
 ExprTypeASTPtr VoidExprTypeAST::GetVoidExprTypeAST()
 {
@@ -63,37 +60,40 @@ ExprTypeASTPtr StringExprTypeAST::GetStringExprTypeAST()
 	return stringtype;
 }
 
-
-ExprTypeAST* ConstNumberExprAST::type(ASTContext)
-{
-    return &_numbertype;
+ExprTypeASTPtr EmptyExprAST::type(ASTContext) {
+    return ExprTypeASTPtr();
 }
 
-ExprTypeAST* ConstStringExprAST::type(ASTContext)
+ExprTypeASTPtr ConstNumberExprAST::type(ASTContext)
 {
-	return &_stringtype;
+    return numbertype;
 }
 
-ExprTypeAST* VariableExprAST::type(ASTContext ctx)
+ExprTypeASTPtr ConstStringExprAST::type(ASTContext)
 {
-	return nameresolve(ctx)->type.get();
+	return stringtype;
 }
 
-ExprTypeAST* AssignmentExprAST::type(ASTContext ctx)
+ExprTypeASTPtr VariableExprAST::type(ASTContext ctx)
+{
+	return nameresolve(ctx)->type;
+}
+
+ExprTypeASTPtr AssignmentExprAST::type(ASTContext ctx)
 {
 	//TODO, result the type
 	return lval->type(ctx);
 }
 
-ExprTypeAST* CalcExprAST::type(ASTContext ctx)
+ExprTypeASTPtr CalcExprAST::type(ASTContext ctx)
 {
 	//类型是左边的操作符的类型
 	return lval->type(ctx);
 }
 
-ExprTypeAST* CallExprAST::type(ASTContext ctx)
+ExprTypeASTPtr CallExprAST::type(ASTContext ctx)
 {	
-	return nameresolve(ctx)->type.get();
+	return nameresolve(ctx)->type;
 }
 
 llvm::Type* VoidExprTypeAST::llvm_type(ASTContext ctx)
@@ -232,7 +232,7 @@ llvm::Value* CallExprAST::defaultprototype(ASTContext ctx, std::string functionn
 
 	std::vector<llvm::Type*> no_args;
 
-	return ctx.module->getOrInsertFunction(functionname,llvm::FunctionType::get(_numbertype.llvm_type(ctx), no_args,true));
+	return ctx.module->getOrInsertFunction(functionname,llvm::FunctionType::get(numbertype->llvm_type(ctx), no_args,true));
 }
 
 llvm::Value* VariableExprAST::getval(ASTContext ctx)
@@ -407,3 +407,4 @@ TempStringExprAST::~TempStringExprAST()
 	llvm::Constant * func_free = qbc::getbuiltinprotype(ctx,"free");
 	builder.CreateCall(func_free,this->val);
 }
+
