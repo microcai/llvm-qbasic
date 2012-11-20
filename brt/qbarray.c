@@ -1,5 +1,10 @@
+/**
+ * this file is part of llvm-qbc
+ */
+
 /*
-    some helper functions for generationg llvm-IR
+    array support for internal data struct
+
     Copyright (C) 2012  microcai <microcai@fedoraproject.org>
 
     This library is free software; you can redistribute it and/or
@@ -16,17 +21,32 @@
     License along with this library; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
-#pragma once
-#include "ast.hpp"
+#include <memory.h>
+#include <stdlib.h>
+#include "qbc.h"
 
-namespace qbc{
+void btr_qbarray_new(QBArray * array, size_t element)
+{
+	memset(array,0,sizeof(*array));
 
-llvm::Value * getnull();
-	
-llvm::Value * getconstint(int v);
+	array->elementsize = element;
+	// ROUNDUP
+	array->stride = (element / sizeof(int) + 1 ) * sizeof(int);	
+}
 
-llvm::Value * getconstlong(long v);
+void btr_qbarray_free(QBArray * array)
+{
+	free(array->ptr);
+	memset(array,0,sizeof(*array));
+}
 
-llvm::Constant * getbuiltinprotype(ASTContext ctx, const std::string name);
-llvm::Type * getplatformlongtype();
+void * btr_qbarray_at(QBArray * array,int index)
+{
+	// 没有内存就分配呗
+	if(!array->ptr || array->capacity < index * array->stride){
+		//多分配32个
+		array->capacity = (index + 32)*array->stride;
+		array->ptr = realloc(array->ptr,array->capacity);
+	}
+	return ((unsigned char*)array->ptr) + (index - 1  * array->stride);
 }

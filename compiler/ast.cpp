@@ -90,8 +90,8 @@ void ExprListAST::Append(ExprAST* exp)
     expression_list.push_back( ExprASTPtr(exp));
 }
 
-CallStmtAST::CallStmtAST(CallExprAST* callexp)
-	:callable(callexp)
+ExprStmtAST::ExprStmtAST(ExprAST* exp)
+	:expr(exp)
 {
 	
 }

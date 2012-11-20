@@ -74,7 +74,7 @@ namespace qb {
 	double 				number;        /* double number */
 	long				integer;			/* long number */
 
-	ReferenceAST*		varref;
+	NamedExprAST *		varref;
 	ExprAST*			expression;
 	ExprListAST*		expression_list;
 
@@ -138,26 +138,27 @@ namespace qb {
      tFUNCTION = 277,
      tFUNCTIONEND = 278,
      tRETURN = 279,
-     tDIM = 280,
-     tLET = 281,
-     tPRINT = 282,
-     tIF = 283,
-     tTHEN = 284,
-     tENDIF = 285,
-     tELSE = 286,
-     tELSEIF = 287,
-     tWHILE = 288,
-     tENDWHILE = 289,
-     tFOR = 290,
-     tENDFOR = 291,
-     tTO = 292,
-     tSTEP = 293,
-     tLONG = 294,
-     tSTR = 295,
-     tID = 296,
-     tInteger = 297,
-     tSTRING = 298,
-     tNUMBER = 299
+     tLET = 280,
+     tPRINT = 281,
+     tARRAYDIM = 282,
+     tDIM = 283,
+     tIF = 284,
+     tTHEN = 285,
+     tENDIF = 286,
+     tELSE = 287,
+     tELSEIF = 288,
+     tWHILE = 289,
+     tENDWHILE = 290,
+     tFOR = 291,
+     tENDFOR = 292,
+     tTO = 293,
+     tSTEP = 294,
+     tLONG = 295,
+     tSTR = 296,
+     tID = 297,
+     tInteger = 298,
+     tSTRING = 299,
+     tNUMBER = 300
    };
 
     };
@@ -251,7 +252,7 @@ namespace qb {
     /// Zero means the default is an error.
     static const unsigned char yydefact_[];
 
-    static const short int yypgoto_[];
+    static const signed char yypgoto_[];
     static const short int yydefgoto_[];
 
     /// What to do in a state.
@@ -259,7 +260,7 @@ namespace qb {
     /// - if positive, shift that token.
     /// - if negative, reduce the rule which number is the opposite.
     /// - if zero, do what YYDEFACT says.
-    static const unsigned char yytable_[];
+    static const short int yytable_[];
     static const signed char yytable_ninf_;
 
     static const short int yycheck_[];
@@ -330,7 +331,7 @@ namespace qb {
 #line 21 "parser.ypp"
 } // qb
 /* Line 36 of lalr1.cc  */
-#line 334 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 335 "/home/cai/projects/basic/compiler/parser.hpp"
 
 
 

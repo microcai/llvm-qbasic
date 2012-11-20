@@ -95,6 +95,8 @@ class MemberReferenceAST : public ReferenceAST
 };
 
 class ExprOperation;
+class ExprAST;
+typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
 // 变量类型定义.
 class ExprTypeAST : public AST
 {
@@ -111,7 +113,7 @@ public:
 	virtual llvm::Type	* llvm_type(ASTContext ctx) = 0;
 
 	// 为该类型在栈上分配一块内存, 返回分配的指针 , 有可能的话,起个名字
-	virtual llvm::Value * Alloca(ASTContext ctx, const std::string _name) = 0;
+	virtual llvm::Value * Alloca(ASTContext ctx, const std::string _name){};
 
 	// 为该类型生成初始化操作指令 , 默认为空操作, 也就是只要分配个内存就可以了
 	virtual void initalize(ASTContext, llvm::Value * Ptr) {};
@@ -127,6 +129,9 @@ public:
 	// 这是最重要的类型了, 类型只所以为类型就是因为这个
 	virtual ExprOperation * getop() = 0;
 
+	// 为 llvm::Valut * 构造一个新的类型, 用来自动释放
+	virtual ExprASTPtr		createtemp(ASTContext ,llvm::Value *)=0;//{ exit(10);};
+
 public:
     ExprTypeAST(){}
     ExprTypeAST( size_t size , const std::string __typename );
@@ -141,7 +146,7 @@ public:
 	//获得表达式类型信息, 如果是计算表达式, 需要的是递归操作哦
 	//注意,不要释放返回值. 返回值是由 block 管理的.
 	//block 退出的时候会释放掉本 block 注册的类型 (本地类型定义)
-	virtual ExprTypeAST* type(ASTContext ) = 0;
+	virtual ExprTypeASTPtr type(ASTContext ) = 0;
 
 	// 生成获得变量值的操作.
 	// 对于计算表达式来说, 这个是递归操作
@@ -155,7 +160,7 @@ public:
     virtual ~ExprAST(){}
 };
 
-typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
+
 
 // 空表达式. 空表达式的类型是 void
 // 用法 1 : 声明无返回值的函数
@@ -163,7 +168,7 @@ typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
 class EmptyExprAST : public ExprAST
 {
 public:
-	virtual ExprTypeAST* type(ASTContext ){ return 0;}
+	virtual ExprTypeASTPtr type(ASTContext );
 
     virtual llvm::Value* getval(ASTContext ){ return 0;}
 };
@@ -175,7 +180,7 @@ public:
 	llvm::Value * val;
 	ASTContext ctx;
 	
-    virtual ExprTypeAST* type(ASTContext ctx){return _type.get();}
+    virtual ExprTypeASTPtr type(ASTContext ctx){return _type;}
 
 	TempExprAST(ASTContext _ctx,llvm::Value * _val ,ExprTypeASTPtr type);
     virtual llvm::Value* getval(ASTContext ) { return val;}
@@ -197,7 +202,7 @@ public:
 	ConstNumberExprAST( long num){ v = num;};
 public:
 	
-    virtual ExprTypeAST* type(ASTContext );
+    virtual ExprTypeASTPtr type(ASTContext );
 
     virtual llvm::Value* getval(ASTContext );	
 };
@@ -209,7 +214,7 @@ class ConstStringExprAST :public ExprAST
 	std::string			str;
 public:
 	ConstStringExprAST(const std::string _str);
-	virtual ExprTypeAST* type(ASTContext );
+	virtual ExprTypeASTPtr type(ASTContext );
     virtual llvm::Value* getval(ASTContext );;
 };
 
@@ -230,13 +235,14 @@ public:
 	//以 ReferenceName 构造
 	NamedExprAST(ReferenceAST * _ID);
 	// 调用获得 ID 的类型系统. 通过查找当前 block 和父 block 进行 name -> type 的转换
-	virtual ExprTypeAST*	type(ASTContext ) = 0;
+	virtual ExprTypeASTPtr	type(ASTContext ) = 0;
 
 	//生成获得变量指针的操作. 用于赋值操作,
 	virtual llvm::Value*	getptr(ASTContext) = 0;
 
 	//获得定义地
 	virtual DimAST* nameresolve(ASTContext ctx);
+
     virtual ~NamedExprAST(){}
 };
 typedef boost::shared_ptr<NamedExprAST> NamedExprASTPtr;
@@ -250,10 +256,12 @@ public:
 	virtual llvm::Value* getval(ASTContext );
 	
     virtual llvm::Value* getptr(ASTContext );
+
+    virtual DimAST* nameresolve(ASTContext ctx);
 	
 	// 调用获得 ID 的类型系统
-	virtual ExprTypeAST* type(ASTContext ctx);
-    virtual ~VariableExprAST(){}	
+	virtual ExprTypeASTPtr type(ASTContext ctx);
+    virtual ~VariableExprAST(){}
 };
 
 // 数学运算表达式.
@@ -263,7 +271,7 @@ class CalcExprAST : public ExprAST{
 	ExprASTPtr		result; // cache the result :)
 public: // 以两个子表达式构建
 	CalcExprAST(ExprAST * , MathOperator op , ExprAST * );
-	virtual ExprTypeAST* type(ASTContext);
+	virtual ExprTypeASTPtr type(ASTContext);
     virtual llvm::Value* getval(ASTContext);
 };
 
@@ -277,7 +285,7 @@ public:
 	// 赋值表达式必须使用一个命名的类型为左值
 	AssignmentExprAST(NamedExprAST* , ExprAST *);
 	
-    virtual ExprTypeAST* type(ASTContext);
+    virtual ExprTypeASTPtr type(ASTContext);
     virtual llvm::Value* getval(ASTContext);
 };
 
@@ -296,26 +304,17 @@ typedef boost::shared_ptr<ExprListAST> ExprListASTPtr;
 
 // 数组或者函数调用.
 // 返回的类型就是数组成员的类型, 或者是函数的返回类型
-// 依据是 Reference 的类型是 CallableExprTypeAST 则为函数调用
-class CallOrArrayExprAST : public NamedExprAST
+// 依据是 calltarget 的类型是 CallableExprTypeAST 则为函数调用
+class CallExprAST : public ExprAST
 {
-public:
-    CallOrArrayExprAST(ReferenceAST* _ID);
-    virtual ~CallOrArrayExprAST(){}
-};
-
-class CallExprAST : public CallOrArrayExprAST
-{
+	NamedExprASTPtr				calltarget; // should be callable
 	ExprListASTPtr				callargs;
 public:
-	CallExprAST(ReferenceAST * , ExprListAST * exp_list = NULL);
-	virtual ExprTypeAST*	type(ASTContext);
+	CallExprAST(NamedExprAST* , ExprListAST * exp_list = NULL);
+	virtual ExprTypeASTPtr	type(ASTContext);
 
     virtual llvm::Value* getptr(ASTContext) { return 0;}; // cann't get the address
     virtual llvm::Value* getval(ASTContext);
-		// 函数有自己的nameresolve 过程
-    virtual DimAST* nameresolve(ASTContext ctx);
-	static	llvm::Value * defaultprototype(ASTContext ctx,std::string functionname);
 };
 
 typedef boost::shared_ptr<CallExprAST>	CallExprASTPtr;
@@ -336,11 +335,13 @@ public:
     virtual llvm::Type* llvm_type(ASTContext ctx);
     virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name){return NULL;}
     virtual ExprOperation* getop(){return NULL;}
+    virtual ExprASTPtr createtemp(ASTContext , llvm::Value* ){ printf("can\t allocate for VoidExprTypeAST\n"); exit(10);};
 };
 
 //	整型,支持数学运算
 class NumberExprTypeAST :public ExprTypeAST {
-	void * operator new(size_t); // disallow new
+// 	void * operator new(size_t); // disallow new
+// 	void operator delete(void *);// disallow delete
 public:
     NumberExprTypeAST();
 	
@@ -352,13 +353,15 @@ public:
 
     virtual ExprOperation* getop();
 
+    virtual ExprASTPtr createtemp(ASTContext ctx,llvm::Value* val);
+
 	static ExprTypeASTPtr   GetNumberExprTypeAST();
 };
 
 //  字符串 支持!
 class StringExprTypeAST : public ExprTypeAST
 {
-	void * operator new(size_t); // disallow new
+// 	void * operator new(size_t); // disallow new
 public:
     StringExprTypeAST();
     virtual llvm::Type* llvm_type(ASTContext ctx);
@@ -368,46 +371,61 @@ public:
 	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
     virtual ExprOperation* getop();
     virtual void destory(ASTContext , llvm::Value* Ptr);
+
+    virtual ExprASTPtr createtemp(ASTContext , llvm::Value* );
+	
 	static ExprTypeASTPtr GetStringExprTypeAST();
 };
 
 //  数组支持!
-class ArrayExprTypeAST : public CallOrArrayExprAST
+class ArrayExprTypeAST : public ExprTypeAST
 {
 	/**
 	 * NOTE:
 	 *
-	 * An Array is of the type
-	 * 		struct Array {
-	 *			void * ptr; // pointer to the location of the memory
-	 *};
-	 **/ 
-	void * operator new(size_t); // disallow new
+	 * An Array is of the type  struct QBArray
+	 **/
+	ExprTypeASTPtr	elementtype;
 public:
-    ArrayExprTypeAST();
+    ArrayExprTypeAST(ExprTypeASTPtr elementtype);
     virtual llvm::Type* llvm_type(ASTContext ctx);
 
     virtual size_t size(){return sizeof(struct QBArray);}; //yes没错, 数组类型的内部实现就是 struct QBArray.
 
 	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
     virtual ExprOperation* getop();
-    virtual void destory(ASTContext , llvm::Value* Ptr);
-	static ExprTypeASTPtr GetStringExprTypeAST();
+    virtual void destory(ASTContext , llvm::Value* Ptr){};
+
+	static ExprTypeASTPtr create(ExprTypeASTPtr);
+    virtual ExprASTPtr createtemp(ASTContext , llvm::Value* ){
+		{ printf("can\t allocate for ArrayExprTypeAST\n"); exit(10);};
+	};
 };
 
 //  函数对象类型. 这是基类
 //  而一个函数声明本身也是一个 callable 类型
 //  一个函数指针是 callable 类型
 //  一个函数对象也是 callable 类型
-class CallableExprTypeAST : ExprTypeAST{
+class CallableExprTypeAST : public ExprTypeAST{
+	ExprTypeASTPtr	returntype;
+	friend class FunctionDimAST;
+public:
+    CallableExprTypeAST(ExprTypeASTPtr	_returntype):returntype(_returntype){
+		
+	}
+	static	llvm::Value * defaultprototype(ASTContext ctx,std::string functionname);
+    virtual ExprOperation* getop();
+    virtual llvm::Type* llvm_type(ASTContext ctx);
+    virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name){
 
+		printf("alloca function?\n");
+		*((char*)0) = 0;
+		exit(0);
+		
+	}
+    virtual ExprASTPtr createtemp(ASTContext , llvm::Value* );
 };
 
-//  可调用的外部符号. 这是用名字调用函数的办法
-class CallableNameExprTypeAST{
-
-
-};
 
 /////////////// 一下类型未实现
 
@@ -435,23 +453,26 @@ public:
 	// 每个类型都会有自己的 Operator 实现.
 	// 对于其他类型来说, 呵呵, 那就是 Load / Store 啦
 	// 运算结果是一个 ExprASTPtr , 事实上可以忽略,呵呵. C++编译器将自动释放它
-	virtual	ExprASTPtr operator_assign(ASTContext , NamedExprASTPtr lval, ExprASTPtr rval) = 0;
+	virtual	ExprASTPtr operator_assign(ASTContext , NamedExprASTPtr lval, ExprASTPtr rval);
 
 	// 加法运算, 对于字符串来说, 这运算过程会生成一个临时字符串,
 	// 临时字符串 AST 对象将会被 AST节点被析构的时候向当前llvm basicbody 位置插入临时字符串的释放指令
-	virtual ExprASTPtr operator_add(ASTContext , ExprASTPtr lval, ExprASTPtr rval) =0 ;
+	virtual ExprASTPtr operator_add(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
 
 	// 减法运算, 对于字符串来说无此类型的运算. 试图对字符串执行减法导致一个编译期错误
-	virtual ExprASTPtr operator_sub(ASTContext , ExprASTPtr lval, ExprASTPtr rval) =0 ;
+	virtual ExprASTPtr operator_sub(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
 
 	// 乘法运算, 对字符串来说无此类型的运算
-	virtual ExprASTPtr operator_mul(ASTContext, ExprASTPtr lval, ExprASTPtr rval) =0;
+	virtual ExprASTPtr operator_mul(ASTContext, ExprASTPtr lval, ExprASTPtr rval);
 
 	//除法
-	virtual ExprASTPtr operator_div(ASTContext, ExprASTPtr lval, ExprASTPtr rval) =0;
+	virtual ExprASTPtr operator_div(ASTContext, ExprASTPtr lval, ExprASTPtr rval);
 	
 	// 各种比较运算
-	virtual	ExprASTPtr operator_comp(ASTContext,MathOperator op,ExprASTPtr lval,ExprASTPtr rval) =0;
+	virtual	ExprASTPtr operator_comp(ASTContext, MathOperator op, ExprASTPtr lval,ExprASTPtr rval);
+
+	// 括号操作, 也就是函数调用, 或者是数组下标寻址
+	virtual ExprASTPtr operator_call(ASTContext, NamedExprASTPtr target, ExprListASTPtr callargslist);
 };
 
 // 整数
@@ -468,9 +489,10 @@ class NumberExprOperation : public ExprOperation {
 class StringExprOperation : public ExprOperation {
     virtual ExprASTPtr operator_assign(ASTContext , NamedExprASTPtr lval, ExprASTPtr rval);
     virtual ExprASTPtr operator_add(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
-    virtual ExprASTPtr operator_sub(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
-    virtual ExprASTPtr operator_mul(ASTContext ctx, ExprASTPtr lval, ExprASTPtr rval);
-    virtual ExprASTPtr operator_div(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
     virtual ExprASTPtr operator_comp(ASTContext ctx, MathOperator op, ExprASTPtr lval, ExprASTPtr rval);
 };
 
+// 函数
+class FunctionExprOperation : public ExprOperation{
+    virtual ExprASTPtr operator_call(ASTContext , NamedExprASTPtr target, ExprListASTPtr callargslist);
+};

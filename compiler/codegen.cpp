@@ -48,17 +48,16 @@ llvm::BasicBlock* EmptyStmtAST::Codegen(ASTContext ctx)
 
 llvm::BasicBlock* PrintIntroAST::Codegen(ASTContext ctx)
 {
-	BOOST_ASSERT(TheFunction);
 	debug("PrintIntroAST expr for \n");
 	return ctx.block;
 }
 
 //* 调用函数
-llvm::BasicBlock* CallStmtAST::Codegen(ASTContext ctx)
+llvm::BasicBlock* ExprStmtAST::Codegen(ASTContext ctx)
 {
 	debug("call function? generating the call here!\n");
 	// 然后调用吧
-	callable->getval(ctx);
+	expr->getval(ctx);
 
 	// 忽略返回数值
 	return ctx.block;
@@ -141,7 +140,7 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 // 获得分配的空间
 llvm::Value* VariableDimAST::getptr(ASTContext ctx)
 {
-	debug("get ptr of this %p\n", alloca_var);
+	debug("get ptr of this alloca %p\n", alloca_var);
 	return alloca_var;
 }
 
@@ -239,9 +238,9 @@ llvm::Value* FunctionDimAST::getptr(ASTContext ctx)
 llvm::Value* FunctionDimAST::setret(ASTContext ctx,ExprASTPtr expr)
 {
 	llvm::IRBuilder<> builder(ctx.block);
-
+	
 	if(!retval)
-		retval = type->Alloca(ctx,"return value");
+		retval = dynamic_cast<CallableExprTypeAST*>(type.get())->returntype->Alloca(ctx,"return value");
 
 	llvm::Value* ret = expr->getval(ctx);
 	
@@ -361,7 +360,7 @@ llvm::BasicBlock* WhileLoopAST::Codegen(ASTContext ctx)
 //TODO, 生成 for loop
 llvm::BasicBlock* ForLoopAST::Codegen(ASTContext ctx)
 {
-	ExprTypeAST * exprtype  = this->refID->type(ctx);
+	ExprTypeASTPtr exprtype  = this->refID->type(ctx);
 
 		// 变量赋予初始值
 	exprtype->getop()->operator_assign(ctx,refID,start);
@@ -489,7 +488,7 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 	llvm::BasicBlock *entry = llvm::BasicBlock::Create(builder.getContext(), "entrypoint", ctx.llvmfunc);
 
 	//挂到全局名称表中
-	ctx.codeblock->functions.insert(std::make_pair(this->name,this));
+	ctx.codeblock->symbols.insert(std::make_pair(this->name,this));
 	
 	//开始生成代码
 	ctx.block = entry;

@@ -88,7 +88,7 @@ end{whitespace}*function 						return token::tFUNCTIONEND;
 fi|end{whitespace}*if							return token::tENDIF;
 end{whitespace}*while							return token::tENDWHILE;
 end{whitespace}*for								return token::tENDFOR;
-
+arraydim							return token::tARRAYDIM;
 wend				{ printf("while end ! ======\n");return token::tENDWHILE; }
 while 				{ printf("while begin ! ======\n");return token::tWHILE; }
 

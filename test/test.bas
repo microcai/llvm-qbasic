@@ -10,18 +10,12 @@
 	for loop test
 */
 
-function fab( i as long) as long
-
-return i * i ;
-
+function abc( a as long)
+	print 123
 end function
 
-
 sub main()
-dim a
 
-for a = 1 to 100
-print fab(a),
-end for
+	abc(1)
 
 end sub

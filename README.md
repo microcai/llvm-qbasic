@@ -2,12 +2,23 @@
 
 llvm-qbc is a QBASIC compiler as well as an runtime library ( statically linked )
 
+# Why BASIC ?
+
+To answer this questions, you must ask, why not BASIC?
+Because there is no BASIC compiler that is cross-platform, and feature complete.
+And basic interpreter is even worse, you can't distribute your program unless you
+distribute its interpreter first, but most commercial basic interpreter had limited
+premit for re-distribution. Then ? Compile ? You can't even find a compiler that supports
+calling C functions. What can we do with basic without the help of all avalable C libraries?
+
+To make things even worse, BASIC have not standart that every compiler agree with.
 
 # goal
-	[1]	completed QBASIC support
+	[1]	complete QBASIC support
 	[3] pointer support
 	[2]	call C function as freely as possible
 	[4] highly optimized
+	[5] a builtin GUI facility
 
 # Status update
 	[*] for loop without step

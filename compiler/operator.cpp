@@ -18,6 +18,8 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include <cstdio>
+#include <boost/make_shared.hpp>
+#include <boost/foreach.hpp>
 #include <llvm/Support/IRBuilder.h>
 
 #include "ast.hpp"
@@ -28,6 +30,7 @@
 
 static	NumberExprOperation	numberop;
 static	StringExprOperation stringop;
+static	FunctionExprOperation funcop;
 
 ExprOperation* NumberExprTypeAST::getop()
 {
@@ -39,6 +42,58 @@ ExprOperation* StringExprTypeAST::getop()
 	return & stringop;
 }
 
+ExprOperation* ArrayExprTypeAST::getop()
+{
+	exit(1);
+}
+
+ExprOperation* CallableExprTypeAST::getop()
+{
+	return &funcop;
+}
+
+ExprASTPtr ExprOperation::operator_assign(ASTContext, NamedExprASTPtr lval, ExprASTPtr rval)
+{
+	debug("can not assign to  this target\n");
+    exit(2);
+}
+
+ExprASTPtr ExprOperation::operator_add(ASTContext, ExprASTPtr lval, ExprASTPtr rval)
+{
+	debug("can not add this target\n");
+    exit(2);
+}
+
+ExprASTPtr ExprOperation::operator_sub(ASTContext, ExprASTPtr lval, ExprASTPtr rval)
+{
+	debug("can not sub this target\n");
+    exit(2);
+}
+
+ExprASTPtr ExprOperation::operator_mul(ASTContext, ExprASTPtr lval, ExprASTPtr rval)
+{
+	debug("can not mul this target\n");
+    exit(2);
+}
+
+ExprASTPtr ExprOperation::operator_div(ASTContext, ExprASTPtr lval, ExprASTPtr rval)
+{
+	debug("can not div this target\n");
+    exit(2);
+}
+
+ExprASTPtr ExprOperation::operator_comp(ASTContext, MathOperator op, ExprASTPtr lval, ExprASTPtr rval)
+{
+    debug("can comp non-comp target\n");
+    exit(2);
+}
+
+ExprASTPtr ExprOperation::operator_call(ASTContext, NamedExprASTPtr target, ExprListASTPtr callargslist)
+{
+	debug("can not call on a non-callable target\n");
+	exit(2);
+}
+
 //	call get on lval and rval, then wrapper an value to NumberExprAST;
 ExprASTPtr NumberExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr lval, ExprASTPtr rval)
 {
@@ -48,7 +103,7 @@ ExprASTPtr NumberExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr 
  	llvm::IRBuilder<> builder(ctx.block);
  	// 生成赋值语句,因为是简单的整型赋值,所以可以直接生成而不用调用 operator==()
   	builder.CreateStore(RHS,LHS);
-		debug("get ptr of this\n");
+	debug("get ptr of this\n");
 	return lval; // FIXME 可以吧, 呵呵
 }
 
@@ -77,8 +132,7 @@ ExprASTPtr NumberExprOperation::operator_add(ASTContext ctx, ExprASTPtr lval, Ex
 	llvm::Value * result = builder.CreateAdd(LHS,RHS);
 
 	//TODO , 构造临时 Number 对象
-	TempExprAST *temp = new TempNumberExprAST(ctx,result);
-	return ExprASTPtr( temp);
+	return lval->type(ctx)->createtemp(ctx,result);
 }
 
 // 字符串加法
@@ -101,8 +155,7 @@ ExprASTPtr StringExprOperation::operator_add(ASTContext ctx, ExprASTPtr lval, Ex
 	
 	builder.CreateCall2(llvmfunc_strcpy,resultstring,lval->getval(ctx));
 	builder.CreateCall2(llvmfunc_strcat,resultstring,rval->getval(ctx));
-	ExprASTPtr ret(new TempStringExprAST(ctx,resultstring));
-	return ret;
+	return 	lval->type(ctx)->createtemp(ctx,resultstring);
 }
 
 
@@ -115,15 +168,7 @@ ExprASTPtr NumberExprOperation::operator_sub(ASTContext ctx, ExprASTPtr lval, Ex
 	llvm::Value * result = builder.CreateSub(LHS,RHS);
 
 	//TODO , 构造临时 Number 对象
-	TempExprAST *temp = new TempNumberExprAST(ctx,result);
-	return ExprASTPtr(temp);
-}
-
-// 字符串减法
-ExprASTPtr StringExprOperation::operator_sub(ASTContext, ExprASTPtr lval, ExprASTPtr rval)
-{
-	debug("cannot have operator \"-\" on string type\n");
-	exit(2);
+	return boost::make_shared<TempNumberExprAST>(ctx,result);
 }
 
 //  数字乘法, 使用乘法指令
@@ -136,15 +181,7 @@ ExprASTPtr NumberExprOperation::operator_mul(ASTContext ctx, ExprASTPtr lval, Ex
 	
 	result = builder.CreateMul(LHS,RHS);
 	//TODO , 构造临时 Number 对象
-	TempExprAST *temp = new TempNumberExprAST(ctx,result);
-	return ExprASTPtr(temp);
-}
-
-// 字符串乘法, 直接提示不支持
-ExprASTPtr StringExprOperation::operator_mul(ASTContext ctx, ExprASTPtr lval, ExprASTPtr rval)
-{
-	debug("cannot have operator \"*\" on string type\n");
-	exit(2);
+	return boost::make_shared<TempNumberExprAST>(ctx,result);
 }
 
 // 数字除法
@@ -156,18 +193,11 @@ ExprASTPtr NumberExprOperation::operator_div(ASTContext ctx, ExprASTPtr lval, Ex
 	llvm::Value * result = builder.CreateSDiv(LHS,RHS);
 
 	//TODO , 构造临时 Number 对象
-	TempExprAST *temp = new TempNumberExprAST(ctx,result);
-	return ExprASTPtr(temp);
+	return boost::make_shared<TempNumberExprAST>(ctx,result);
 }
 
-// 字符串除法, 不支持的运算
-ExprASTPtr StringExprOperation::operator_div(ASTContext, ExprASTPtr lval, ExprASTPtr rval)
+ExprASTPtr NumberExprOperation::operator_comp(ASTContext ctx, MathOperator op, ExprASTPtr lval, ExprASTPtr rval)
 {
-	debug("cannot have operator \"/\" on string type\n");
-	exit(2);
-}
-
-ExprASTPtr NumberExprOperation::operator_comp(ASTContext ctx, MathOperator op, ExprASTPtr lval, ExprASTPtr rval) {
 	llvm::Value * LHS =	lval->getval(ctx);
 	llvm::Value * RHS =	rval->getval(ctx);
 	llvm::IRBuilder<> builder(ctx.block);
@@ -189,11 +219,62 @@ ExprASTPtr NumberExprOperation::operator_comp(ASTContext ctx, MathOperator op, E
 	}
 	
 	//TODO , 构造临时 Number 对象
-	TempExprAST *temp = new TempNumberExprAST(ctx,result);
-	return ExprASTPtr(temp);
+	return boost::make_shared<TempNumberExprAST>(ctx,result);
 }
 
-ExprASTPtr StringExprOperation::operator_comp(ASTContext ctx, MathOperator op, ExprASTPtr lval, ExprASTPtr rval) {
+ExprASTPtr StringExprOperation::operator_comp(ASTContext ctx,MathOperator op, ExprASTPtr lval, ExprASTPtr rval)
+{
 	debug("string comp not supported yet\n");
 	exit(2);
 }
+
+// 函数调用
+ExprASTPtr FunctionExprOperation::operator_call(ASTContext ctx,NamedExprASTPtr calltarget,ExprListASTPtr callargs)
+{
+	llvm::IRBuilder<> builder(ctx.llvmfunc->getContext());
+	builder.SetInsertPoint(ctx.block);
+
+	// call functions TODO
+    debug("sigfault herekkk?\n");
+	llvm::Value * ret = NULL;
+
+	//获得函数定义
+
+	DimAST * funcdim = calltarget->nameresolve(ctx);
+	
+	llvm::Value * llvmfunc =funcdim->getval(ctx);
+
+	if(!llvmfunc){ //有定义, 则直接调用, 无定义就 ... 呵呵
+		llvmfunc = dynamic_cast<CallableExprTypeAST*>(funcdim)->defaultprototype(ctx,calltarget->ID->ID);
+	}
+
+	//构建参数列表
+	std::vector<llvm::Value*> args;
+	if(callargs && callargs->expression_list.size() )
+	{
+		BOOST_FOREACH( ExprASTPtr expr , callargs->expression_list)
+		{
+			debug("pusing args \n");
+			args.push_back( expr->getval(ctx) );
+		}
+	}
+
+	return calltarget->type(ctx)->createtemp( ctx, builder.CreateCall(llvmfunc,args) );
+}
+
+ExprASTPtr NumberExprTypeAST::createtemp(ASTContext ctx, llvm::Value* val)
+{
+	return boost::make_shared<TempNumberExprAST>(ctx,val);
+}
+
+ExprASTPtr StringExprTypeAST::createtemp(ASTContext ctx, llvm::Value* val)
+{
+    return boost::make_shared<TempStringExprAST>(ctx,val);
+}
+
+//TODO
+ExprASTPtr CallableExprTypeAST::createtemp(ASTContext ctx, llvm::Value*v)
+{
+	return this->returntype->createtemp(ctx,v);
+}
+

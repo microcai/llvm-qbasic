@@ -23,6 +23,7 @@
 #include <boost/weak_ptr.hpp>
 #include <boost/foreach.hpp>
 #include <boost/assert.hpp>
+#include <boost/make_shared.hpp>
 
 #include <llvm/DerivedTypes.h>
 #include <llvm/Constants.h>
@@ -41,12 +42,9 @@
 #define debug std::printf
 
 //static map of the internal type system
-static	NumberExprTypeAST	_numbertype;
-static	StringExprTypeAST	_stringtype;
-static	VoidExprTypeAST		_voidtype;
-static	ExprTypeASTPtr numbertype(&_numbertype);
-static	ExprTypeASTPtr stringtype(&_stringtype);
-static	ExprTypeASTPtr voidtype(&_voidtype);
+static	ExprTypeASTPtr numbertype(new NumberExprTypeAST);
+static	ExprTypeASTPtr stringtype(new StringExprTypeAST);
+static	ExprTypeASTPtr voidtype(new VoidExprTypeAST);
 
 ExprTypeASTPtr VoidExprTypeAST::GetVoidExprTypeAST()
 {
@@ -63,37 +61,46 @@ ExprTypeASTPtr StringExprTypeAST::GetStringExprTypeAST()
 	return stringtype;
 }
 
-
-ExprTypeAST* ConstNumberExprAST::type(ASTContext)
+ExprTypeASTPtr ArrayExprTypeAST::create(ExprTypeASTPtr elementtype)
 {
-    return &_numbertype;
+	return boost::make_shared<ArrayExprTypeAST>(elementtype);
 }
 
-ExprTypeAST* ConstStringExprAST::type(ASTContext)
+ExprTypeASTPtr EmptyExprAST::type(ASTContext)
 {
-	return &_stringtype;
+    return ExprTypeASTPtr();
 }
 
-ExprTypeAST* VariableExprAST::type(ASTContext ctx)
+ExprTypeASTPtr ConstNumberExprAST::type(ASTContext)
 {
-	return nameresolve(ctx)->type.get();
+    return numbertype;
 }
 
-ExprTypeAST* AssignmentExprAST::type(ASTContext ctx)
+ExprTypeASTPtr ConstStringExprAST::type(ASTContext)
+{
+	return stringtype;
+}
+
+ExprTypeASTPtr VariableExprAST::type(ASTContext ctx)
+{
+	return nameresolve(ctx)->type;
+}
+
+ExprTypeASTPtr AssignmentExprAST::type(ASTContext ctx)
 {
 	//TODO, result the type
 	return lval->type(ctx);
 }
 
-ExprTypeAST* CalcExprAST::type(ASTContext ctx)
+ExprTypeASTPtr CalcExprAST::type(ASTContext ctx)
 {
 	//类型是左边的操作符的类型
 	return lval->type(ctx);
 }
 
-ExprTypeAST* CallExprAST::type(ASTContext ctx)
-{	
-	return nameresolve(ctx)->type.get();
+ExprTypeASTPtr CallExprAST::type(ASTContext ctx)
+{
+	return calltarget->nameresolve(ctx)->type;
 }
 
 llvm::Type* VoidExprTypeAST::llvm_type(ASTContext ctx)
@@ -115,6 +122,31 @@ llvm::Type* NumberExprTypeAST::llvm_type(ASTContext ctx)
 llvm::Type* StringExprTypeAST::llvm_type(ASTContext ctx)
 {
 	return llvm::Type::getInt8PtrTy(llvm::getGlobalContext());
+}
+
+// 数组的 llvm_type 事实上是 ....
+llvm::Type* ArrayExprTypeAST::llvm_type(ASTContext ctx)
+{
+	static llvm::Type * arraytype =NULL;
+	if(!arraytype){
+		std::vector<llvm::Type*>	members;
+
+		members.push_back(llvm::Type::getInt8PtrTy(ctx.module->getContext()));
+
+ 		members.push_back(qbc::getplatformlongtype());
+		members.push_back(qbc::getplatformlongtype());
+		members.push_back(qbc::getplatformlongtype());
+
+		arraytype = llvm::StructType::create(members,"QBArray");
+	}
+	return arraytype;
+}
+
+llvm::Type* CallableExprTypeAST::llvm_type(ASTContext ctx)
+{
+	return this->returntype->llvm_type(ctx);
+	debug("get function type of  llvm\n");
+    exit(0);
 }
 
 llvm::Value* NumberExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
@@ -144,6 +176,22 @@ llvm::Value* StringExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
 	return newval;
 }
 
+llvm::Value* ArrayExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
+{
+	debug("allocation for array %s type %s\n",_name.c_str() , this->elementtype->name(ctx).c_str());
+
+	llvm::IRBuilder<> builder(&ctx.llvmfunc->getEntryBlock(),
+							  ctx.llvmfunc->getEntryBlock().begin());
+	//TODO , 在堆栈上分配个变量
+	llvm::Value * newval = builder.CreateAlloca(this->llvm_type(ctx),0,_name);
+
+	//接着调用 btr_qbarray_new()
+	llvm::Constant * btr_qbarray_new = qbc::getbuiltinprotype(ctx,"btr_qbarray_new");
+
+	builder.CreateCall2(btr_qbarray_new,newval,qbc::getconstlong(elementtype->size()));
+	return newval;
+}
+
 void StringExprTypeAST::destory(ASTContext ctx, llvm::Value* Ptr)
 {
 	debug("generate dealloca for string\n");
@@ -155,6 +203,15 @@ void StringExprTypeAST::destory(ASTContext ctx, llvm::Value* Ptr)
 	builder.CreateCall(func_free,builder.CreateLoad(Ptr));
 }
 
+llvm::Value* CallableExprTypeAST::defaultprototype(ASTContext ctx, std::string functionname)
+{
+    //build default function type
+    llvm::IRBuilder<>	builder(ctx.block);
+    std::vector<llvm::Type*> no_args;
+
+    return ctx.module->getOrInsertFunction(
+		functionname,llvm::FunctionType::get(numbertype->llvm_type(ctx), no_args,true));
+}
 
 llvm::Value* ConstNumberExprAST::getval(ASTContext ctx)
 {
@@ -171,10 +228,9 @@ llvm::Value* ConstStringExprAST::getval(ASTContext ctx)
 	return val = builder.CreateGlobalStringPtr( this->str );
 }
 
-DimAST* NamedExprAST::nameresolve(ASTContext ctx)
+DimAST* VariableExprAST::nameresolve(ASTContext ctx)
 {
 	// 首先查找变量的分配 FIXME 将来要支持结构体成员
-
 	std::string varname =  this->ID->ID;
 
 	debug("searching for var %s\n",varname.c_str());
@@ -198,9 +254,16 @@ DimAST* NamedExprAST::nameresolve(ASTContext ctx)
 	return nameresolve(ctx);
 }
 
+DimAST* NamedExprAST::nameresolve(ASTContext ctx)
+{
+	debug("NamedExprAST::nameresolve\n");
+	exit(1);
+}
+
+#if 0
 DimAST* CallExprAST::nameresolve(ASTContext ctx)
 {
-	std::string functionname = this->ID->ID;
+	std::string functionname = this->calltarget->getptr(ctx);
 
 	debug("searching for function %s\n",functionname.c_str());
 
@@ -224,16 +287,7 @@ DimAST* CallExprAST::nameresolve(ASTContext ctx)
 	return nameresolve(ctx);
 }
 
-
-llvm::Value* CallExprAST::defaultprototype(ASTContext ctx, std::string functionname)
-{
-	//build default function type
-	llvm::IRBuilder<>	builder(ctx.block);
-
-	std::vector<llvm::Type*> no_args;
-
-	return ctx.module->getOrInsertFunction(functionname,llvm::FunctionType::get(_numbertype.llvm_type(ctx), no_args,true));
-}
+#endif
 
 llvm::Value* VariableExprAST::getval(ASTContext ctx)
 {
@@ -260,35 +314,8 @@ llvm::Value* AssignmentExprAST::getval(ASTContext ctx)
 
 llvm::Value* CallExprAST::getval(ASTContext ctx)
 {
-	llvm::IRBuilder<> builder(ctx.llvmfunc->getContext());
-	builder.SetInsertPoint(ctx.block);
-
-	// call functions TODO
-    debug("sigfault herekkk?\n");
-	llvm::Value * ret = NULL;
-
-	//获得函数定义
-	llvm::Value * llvmfunc = NULL;
-	DimAST * dim = nameresolve(ctx);
-	FunctionDimAST* fundim = dynamic_cast<FunctionDimAST*>(dim);
-	
-	if(fundim){ //有定义, 则直接调用, 无定义就 ... 呵呵
-		llvmfunc = fundim->getptr(ctx);
-	}else{
-		llvmfunc = defaultprototype(ctx,this->ID->ID);
-	}
-
-	//构建参数列表
-	std::vector<llvm::Value*> args;
-	if(callargs && callargs->expression_list.size() )
-	{
-		BOOST_FOREACH( ExprASTPtr expr , callargs->expression_list)
-		{
-			debug("pusing args \n");
-			args.push_back( expr->getval(ctx) );
-		}
-	}
-	return builder.CreateCall(llvmfunc,args,this->ID->ID);
+	ExprASTPtr tmp = calltarget->type(ctx)->getop()->operator_call(ctx,calltarget,callargs);
+	return tmp->getval(ctx);
 }
 
 llvm::Value* CalcExprAST::getval(ASTContext ctx)
@@ -356,6 +383,14 @@ ConstStringExprAST::ConstStringExprAST(const std::string _str)
 {
 }
 
+
+ArrayExprTypeAST::ArrayExprTypeAST(ExprTypeASTPtr _elementtype)
+	:elementtype(_elementtype)
+{
+	
+}
+
+
 NamedExprAST::NamedExprAST(ReferenceAST* _ID)
 	:ID(_ID)
 {
@@ -371,13 +406,8 @@ AssignmentExprAST::AssignmentExprAST(NamedExprAST* l, ExprAST*r)
 {
 }
 
-CallOrArrayExprAST::CallOrArrayExprAST(ReferenceAST* _ID)
-	:NamedExprAST(_ID)
-{
-}
-
-CallExprAST::CallExprAST(ReferenceAST* ID, ExprListAST* exp_list)
-	:CallOrArrayExprAST(ID),callargs(exp_list)
+CallExprAST::CallExprAST(NamedExprAST* _target, ExprListAST* exp_list)
+	:callargs(exp_list),calltarget(_target)
 {
 }
 

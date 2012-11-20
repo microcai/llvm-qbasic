@@ -51,7 +51,7 @@ llvm::Value * getconstlong(long v)
 	return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(sizeoflong(),(uint64_t)v,true));
 }
 
-static llvm::Type * getplatformlongtype()
+llvm::Type * getplatformlongtype()
 {
 	switch(sizeof(long)){
 		case 8:
@@ -63,14 +63,26 @@ static llvm::Type * getplatformlongtype()
 	}
 }
 
+#define GETBUILTINTYPE_ENTER()	\
+	llvm::IRBuilder<> builder(ctx.block); std::vector<llvm::Type *> args
+		
+#define	BUILTINTYPE_DEFINE(x ,  ret , block )	\
+	static llvm::Constant *getbuiltinprotype_##x(ASTContext ctx) \
+	{\
+		GETBUILTINTYPE_ENTER(); \
+		block \
+		llvm::Constant *func = ctx.module->getOrInsertFunction(#x, \
+		llvm::FunctionType::get(builder.get##ret##Ty(), args,false)); \
+		return func; \
+	}
+
 static llvm::Constant *getbuiltinprotype_printf(ASTContext ctx)
 {
-	llvm::IRBuilder<> builder(ctx.block);
-	std::vector<llvm::Type *> printfArgs;
-	printfArgs.push_back(builder.getInt8PtrTy());
+	GETBUILTINTYPE_ENTER();
+	args.push_back(builder.getInt8PtrTy());
 
 	llvm::Constant *printf_func = ctx.module->getOrInsertFunction("printf",
-										llvm::FunctionType::get(builder.getInt32Ty(), printfArgs,
+										llvm::FunctionType::get(builder.getInt32Ty(), args,
 		/*必须为true, 这样才能接受可变参数*/true));
 
 	return printf_func;
@@ -78,72 +90,32 @@ static llvm::Constant *getbuiltinprotype_printf(ASTContext ctx)
 
 static llvm::Constant *getbuiltinprotype_brt_print(ASTContext ctx)
 {
-	llvm::IRBuilder<> builder(ctx.block);
-	std::vector<llvm::Type *> brt_printArgs;
-	brt_printArgs.push_back(getplatformlongtype());
+	GETBUILTINTYPE_ENTER();
+	args.push_back(getplatformlongtype());
 
 	llvm::Constant *brt_print =
 			ctx.module->getOrInsertFunction("brt_print",
-										llvm::FunctionType::get(builder.getInt32Ty(), brt_printArgs,
+										llvm::FunctionType::get(builder.getInt32Ty(), args,
 		/*必须为true, 这样才能接受可变参数*/true));
 
 	return brt_print;
 }
 
-static llvm::Constant *getbuiltinprotype_malloc(ASTContext ctx)
-{
-	llvm::IRBuilder<> builder(ctx.block);
-	std::vector<llvm::Type *> args;
+BUILTINTYPE_DEFINE(malloc , Int8Ptr , {
+	args.push_back(getplatformlongtype());}  )
 
+BUILTINTYPE_DEFINE(calloc , Int8Ptr , {
 	args.push_back(getplatformlongtype());
+	args.push_back(getplatformlongtype());}  )
 
-	llvm::Constant *func = ctx.module->getOrInsertFunction("malloc",
-										llvm::FunctionType::get(builder.getInt8PtrTy(), args,false));
+BUILTINTYPE_DEFINE(free , Void , {args.push_back(builder.getInt8PtrTy());}  )
 
-	return func;
-}
-
-static llvm::Constant *getbuiltinprotype_calloc(ASTContext ctx)
-{
-	llvm::IRBuilder<> builder(ctx.block);
-	std::vector<llvm::Type *> args;
-
-	args.push_back(getplatformlongtype());
-	args.push_back(getplatformlongtype());
-
-	llvm::Constant *func = ctx.module->getOrInsertFunction("calloc",
-										llvm::FunctionType::get(builder.getInt8PtrTy(), args,false));
-
-	return func;
-}
-
-static llvm::Constant *getbuiltinprotype_free(ASTContext ctx)
-{
-	llvm::IRBuilder<> builder(ctx.block);
-	std::vector<llvm::Type *> args;
-	args.push_back(builder.getInt8PtrTy());
-
-	llvm::Constant *func = ctx.module->getOrInsertFunction("free",
-										llvm::FunctionType::get(builder.getVoidTy(), args,false));
-
-	return func;
-}
-
-static llvm::Constant *getbuiltinprotype_strdup(ASTContext ctx)
-{
-	llvm::IRBuilder<> builder(ctx.block);
-	std::vector<llvm::Type *> args;
-	args.push_back(builder.getInt8PtrTy());
-
-	llvm::Constant *func = ctx.module->getOrInsertFunction("strdup",
-										llvm::FunctionType::get(builder.getInt8PtrTy(), args,false));
-	return func;
-}
+BUILTINTYPE_DEFINE(strdup , Int8Ptr , {args.push_back(builder.getInt8PtrTy());}  )
 
 static llvm::Constant *getbuiltinprotype_strlen(ASTContext ctx)
 {
-	llvm::IRBuilder<> builder(ctx.block);
-	std::vector<llvm::Type *> args;
+	GETBUILTINTYPE_ENTER();
+
 	args.push_back(builder.getInt8PtrTy());
 
 	llvm::Constant *func = ctx.module->getOrInsertFunction("strlen",
@@ -151,66 +123,50 @@ static llvm::Constant *getbuiltinprotype_strlen(ASTContext ctx)
 	return func;
 }
 
-static llvm::Constant *getbuiltinprotype_strcpy(ASTContext ctx)
-{
-	llvm::IRBuilder<> builder(ctx.block);
-	std::vector<llvm::Type *> args;
+BUILTINTYPE_DEFINE(strcpy , Int8Ptr , {
 	args.push_back(builder.getInt8PtrTy());
-	args.push_back(builder.getInt8PtrTy());
+	args.push_back(builder.getInt8PtrTy());}  )
 
-	llvm::Constant *func = ctx.module->getOrInsertFunction("strcpy",
-										llvm::FunctionType::get(builder.getInt8PtrTy(), args,false));
-	return func;
-}
-
-static llvm::Constant *getbuiltinprotype_strcat(ASTContext ctx)
-{
-	llvm::IRBuilder<> builder(ctx.block);
-	std::vector<llvm::Type *> args;
+BUILTINTYPE_DEFINE(strcat , Int8Ptr , {
 	args.push_back(builder.getInt8PtrTy());
-	args.push_back(builder.getInt8PtrTy());
+	args.push_back(builder.getInt8PtrTy());}  )
 
-	llvm::Constant *func = ctx.module->getOrInsertFunction("strcat",
-										llvm::FunctionType::get(builder.getInt8PtrTy(), args,false));
-	return func;
-}
+BUILTINTYPE_DEFINE(btr_qbarray_new , Void , {
+	args.push_back(builder.getInt8PtrTy());
+	args.push_back(getplatformlongtype());}  )
+
+
+BUILTINTYPE_DEFINE(btr_qbarray_free , Void , {
+	args.push_back(builder.getInt8PtrTy());
+	args.push_back(getplatformlongtype());}  )
+
+#undef BUILTINTYPE_DEFINE
+#undef GETBUILTINTYPE_ENTER
+
 // 从字符串获得标准C库和内置BRT库的标准声明
 llvm::Constant * getbuiltinprotype(ASTContext ctx,const std::string name)
 {
 	llvm::Function * retfunc = ctx.module->getFunction(name);
-
+#define			RETURNBUILTINENTRY(x)	\
+	if(name == #x ) { return getbuiltinprotype_##x (ctx); }
+	
 	if(!retfunc){ // 根据函数名字生成
+		RETURNBUILTINENTRY(printf)
+		RETURNBUILTINENTRY(brt_print)
+		RETURNBUILTINENTRY(malloc)
+		RETURNBUILTINENTRY(calloc)
+		RETURNBUILTINENTRY(free)
+		RETURNBUILTINENTRY(strdup)
+		RETURNBUILTINENTRY(strlen)
+		RETURNBUILTINENTRY(strcpy)
+		RETURNBUILTINENTRY(strcat)
+		RETURNBUILTINENTRY(btr_qbarray_new)
+		RETURNBUILTINENTRY(btr_qbarray_free)
 
-		if(name == "printf"){
-			return getbuiltinprotype_printf(ctx);
-		}
-		if(name == "brt_print"){
-			return getbuiltinprotype_brt_print(ctx);
-		}
-		if(name == "malloc"){
-			return getbuiltinprotype_malloc(ctx);
-		}
-		if(name == "calloc"){
-			return getbuiltinprotype_calloc(ctx);
-		}
-		if(name == "free"){
-			return getbuiltinprotype_free(ctx);
-		}
-		if(name == "strdup"){
-			return getbuiltinprotype_strdup(ctx);
-		}
-		if(name == "strlen"){
-			return getbuiltinprotype_strlen(ctx);
-		}
-		if(name == "strcpy"){
-			return getbuiltinprotype_strcpy(ctx);
-		}
-		if(name == "strcat"){
-			return getbuiltinprotype_strcat(ctx);
-		}
 		printf("no define for %s yet\n",name.c_str());
 		exit(1);
 	}
+#undef RETURNBUILTINENTRY
 	return retfunc;
 }
 
