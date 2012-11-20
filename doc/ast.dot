@@ -1,0 +1,73 @@
+digraph AST{
+
+    node [shape="record"];
+
+
+
+AST -> ExprAST
+
+AST -> StatementAST;
+
+AST -> ReferenceAST;
+
+AST -> ExprTypeAST;
+
+StatementAST -> AssigmentAST;
+StatementAST -> CallStmtAST;
+StatementAST -> CodeBlockAST  -> ArgumentDimsAST;
+StatementAST -> DimAST ->VariableDimAST ->ArgumentDimAST;
+StatementAST -> EmptyStmtAST;
+
+StatementAST -> IFStmtAST;
+StatementAST -> LoopAST ->WhileLoopAST;
+StatementAST -> PrintStmtAST;
+StatementAST -> ReturnAST;
+
+LoopAST -> ForLoopAST;
+
+DimAST -> FunctionDimAST ->DefaultMainFunctionAST;
+
+
+	subgraph type_hpp {
+	    
+	      label="type.hpp";
+	      
+	      
+	      ExprAST;
+	       EmptyExprAST;
+	      TempExprAST ;
+	      TempNumberExprAST;
+	      ConstNumberExprAST;
+	      ExprAST-> ConstStringExprAST;
+	      ExprAST -> NamedExprAST -> VariableExprAST;
+	      ExprAST -> CalcExprAST ;
+	      
+	     NamedExprAST -> CallOrArrayExprAST ->CallExprAST;
+	      
+	    CallOrArrayExprAST->  ArrayExprTypeAST;
+	    
+	     ExprAST -> AssignmentExprAST;
+	      
+	      AST -> ExprListAST;
+	      
+	      
+	      ExprTypeAST -> VoidExprTypeAST;
+	      
+	    ExprTypeAST ->  NumberExprTypeAST
+	    ExprTypeAST ->  StringExprTypeAST
+	    
+	    
+	    ExprOperation  -> NumberExprOperation;
+	    	    ExprOperation  -> StringExprOperation;
+
+	    
+	    
+	};
+	
+	      ExprAST -> EmptyExprAST;
+	      ExprAST -> TempExprAST ->TempNumberExprAST;
+	      TempExprAST ->TempStringExprAST ;
+	      
+	      ExprAST -> ConstNumberExprAST	;
+
+}
