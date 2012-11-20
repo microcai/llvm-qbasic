@@ -66,7 +66,8 @@ ExprTypeASTPtr ArrayExprTypeAST::create(ExprTypeASTPtr elementtype)
 	return boost::make_shared<ArrayExprTypeAST>(elementtype);
 }
 
-ExprTypeASTPtr EmptyExprAST::type(ASTContext) {
+ExprTypeASTPtr EmptyExprAST::type(ASTContext)
+{
     return ExprTypeASTPtr();
 }
 
@@ -139,6 +140,13 @@ llvm::Type* ArrayExprTypeAST::llvm_type(ASTContext ctx)
 		arraytype = llvm::StructType::create(members,"QBArray");
 	}
 	return arraytype;
+}
+
+llvm::Type* CallableExprTypeAST::llvm_type(ASTContext ctx)
+{
+	return this->returntype->llvm_type(ctx);
+	debug("get function type of  llvm\n");
+    exit(0);
 }
 
 llvm::Value* NumberExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
@@ -306,7 +314,8 @@ llvm::Value* AssignmentExprAST::getval(ASTContext ctx)
 
 llvm::Value* CallExprAST::getval(ASTContext ctx)
 {
-	return calltarget->type(ctx)->getop()->operator_call(ctx,calltarget,callargs)->getval(ctx);
+	ExprASTPtr tmp = calltarget->type(ctx)->getop()->operator_call(ctx,calltarget,callargs);
+	return tmp->getval(ctx);
 }
 
 llvm::Value* CalcExprAST::getval(ASTContext ctx)
@@ -428,4 +437,3 @@ TempStringExprAST::~TempStringExprAST()
 	llvm::Constant * func_free = qbc::getbuiltinprotype(ctx,"free");
 	builder.CreateCall(func_free,this->val);
 }
-

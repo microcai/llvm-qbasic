@@ -10,12 +10,12 @@
 	for loop test
 */
 
-function abc()
+function abc( a as long)
 	print 123
 end function
 
 sub main()
 
-	abc()
+	abc(1)
 
 end sub

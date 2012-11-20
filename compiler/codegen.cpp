@@ -140,7 +140,7 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 // 获得分配的空间
 llvm::Value* VariableDimAST::getptr(ASTContext ctx)
 {
-	debug("get ptr of this %p\n", alloca_var);
+	debug("get ptr of this alloca %p\n", alloca_var);
 	return alloca_var;
 }
 
@@ -238,9 +238,9 @@ llvm::Value* FunctionDimAST::getptr(ASTContext ctx)
 llvm::Value* FunctionDimAST::setret(ASTContext ctx,ExprASTPtr expr)
 {
 	llvm::IRBuilder<> builder(ctx.block);
-
+	
 	if(!retval)
-		retval = type->Alloca(ctx,"return value");
+		retval = dynamic_cast<CallableExprTypeAST*>(type.get())->returntype->Alloca(ctx,"return value");
 
 	llvm::Value* ret = expr->getval(ctx);
 	

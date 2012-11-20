@@ -130,7 +130,7 @@ public:
 	virtual ExprOperation * getop() = 0;
 
 	// 为 llvm::Valut * 构造一个新的类型, 用来自动释放
-	virtual ExprASTPtr		createtemp(ASTContext ,llvm::Value *){ exit(10);};
+	virtual ExprASTPtr		createtemp(ASTContext ,llvm::Value *)=0;//{ exit(10);};
 
 public:
     ExprTypeAST(){}
@@ -335,6 +335,7 @@ public:
     virtual llvm::Type* llvm_type(ASTContext ctx);
     virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name){return NULL;}
     virtual ExprOperation* getop(){return NULL;}
+    virtual ExprASTPtr createtemp(ASTContext , llvm::Value* ){ printf("can\t allocate for VoidExprTypeAST\n"); exit(10);};
 };
 
 //	整型,支持数学运算
@@ -396,6 +397,9 @@ public:
     virtual void destory(ASTContext , llvm::Value* Ptr){};
 
 	static ExprTypeASTPtr create(ExprTypeASTPtr);
+    virtual ExprASTPtr createtemp(ASTContext , llvm::Value* ){
+		{ printf("can\t allocate for ArrayExprTypeAST\n"); exit(10);};
+	};
 };
 
 //  函数对象类型. 这是基类
@@ -404,14 +408,22 @@ public:
 //  一个函数对象也是 callable 类型
 class CallableExprTypeAST : public ExprTypeAST{
 	ExprTypeASTPtr	returntype;
+	friend class FunctionDimAST;
 public:
     CallableExprTypeAST(ExprTypeASTPtr	_returntype):returntype(_returntype){
 		
 	}
 	static	llvm::Value * defaultprototype(ASTContext ctx,std::string functionname);
     virtual ExprOperation* getop();
-    virtual llvm::Type* llvm_type(ASTContext ctx){exit(0);}
-    virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name){exit(0);}
+    virtual llvm::Type* llvm_type(ASTContext ctx);
+    virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name){
+
+		printf("alloca function?\n");
+		*((char*)0) = 0;
+		exit(0);
+		
+	}
+    virtual ExprASTPtr createtemp(ASTContext , llvm::Value* );
 };
 
 

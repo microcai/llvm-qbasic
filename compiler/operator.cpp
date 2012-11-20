@@ -103,7 +103,7 @@ ExprASTPtr NumberExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr 
  	llvm::IRBuilder<> builder(ctx.block);
  	// 生成赋值语句,因为是简单的整型赋值,所以可以直接生成而不用调用 operator==()
   	builder.CreateStore(RHS,LHS);
-		debug("get ptr of this\n");
+	debug("get ptr of this\n");
 	return lval; // FIXME 可以吧, 呵呵
 }
 
@@ -264,10 +264,17 @@ ExprASTPtr FunctionExprOperation::operator_call(ASTContext ctx,NamedExprASTPtr c
 
 ExprASTPtr NumberExprTypeAST::createtemp(ASTContext ctx, llvm::Value* val)
 {
-    boost::make_shared<TempNumberExprAST>(ctx,val);
+	return boost::make_shared<TempNumberExprAST>(ctx,val);
 }
 
 ExprASTPtr StringExprTypeAST::createtemp(ASTContext ctx, llvm::Value* val)
 {
-    boost::make_shared<TempStringExprAST>(ctx,val);
+    return boost::make_shared<TempStringExprAST>(ctx,val);
 }
+
+//TODO
+ExprASTPtr CallableExprTypeAST::createtemp(ASTContext ctx, llvm::Value*v)
+{
+	return this->returntype->createtemp(ctx,v);
+}
+
