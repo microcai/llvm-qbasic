@@ -220,10 +220,9 @@ llvm::Value* ConstStringExprAST::getval(ASTContext ctx)
 	return val = builder.CreateGlobalStringPtr( this->str );
 }
 
-DimAST* NamedExprAST::nameresolve(ASTContext ctx)
+DimAST* VariableExprAST::nameresolve(ASTContext ctx)
 {
 	// 首先查找变量的分配 FIXME 将来要支持结构体成员
-
 	std::string varname =  this->ID->ID;
 
 	debug("searching for var %s\n",varname.c_str());
@@ -246,6 +245,13 @@ DimAST* NamedExprAST::nameresolve(ASTContext ctx)
 	ctx.codeblock = ctx.codeblock->parent;
 	return nameresolve(ctx);
 }
+
+DimAST* NamedExprAST::nameresolve(ASTContext ctx)
+{
+	debug("NamedExprAST::nameresolve\n");
+	exit(1);
+}
+
 #if 0
 DimAST* CallExprAST::nameresolve(ASTContext ctx)
 {
@@ -391,8 +397,8 @@ AssignmentExprAST::AssignmentExprAST(NamedExprAST* l, ExprAST*r)
 {
 }
 
-CallExprAST::CallExprAST(NamedExprAST* ID, ExprListAST* exp_list)
-	:callargs(exp_list)
+CallExprAST::CallExprAST(NamedExprAST* _target, ExprListAST* exp_list)
+	:callargs(exp_list),calltarget(_target)
 {
 }
 
@@ -422,3 +428,4 @@ TempStringExprAST::~TempStringExprAST()
 	llvm::Constant * func_free = qbc::getbuiltinprotype(ctx,"free");
 	builder.CreateCall(func_free,this->val);
 }
+

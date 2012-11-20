@@ -113,7 +113,7 @@ public:
 	virtual llvm::Type	* llvm_type(ASTContext ctx) = 0;
 
 	// 为该类型在栈上分配一块内存, 返回分配的指针 , 有可能的话,起个名字
-	virtual llvm::Value * Alloca(ASTContext ctx, const std::string _name) = 0;
+	virtual llvm::Value * Alloca(ASTContext ctx, const std::string _name){};
 
 	// 为该类型生成初始化操作指令 , 默认为空操作, 也就是只要分配个内存就可以了
 	virtual void initalize(ASTContext, llvm::Value * Ptr) {};
@@ -256,10 +256,12 @@ public:
 	virtual llvm::Value* getval(ASTContext );
 	
     virtual llvm::Value* getptr(ASTContext );
+
+    virtual DimAST* nameresolve(ASTContext ctx);
 	
 	// 调用获得 ID 的类型系统
 	virtual ExprTypeASTPtr type(ASTContext ctx);
-    virtual ~VariableExprAST(){}	
+    virtual ~VariableExprAST(){}
 };
 
 // 数学运算表达式.
@@ -390,7 +392,7 @@ public:
     virtual size_t size(){return sizeof(struct QBArray);}; //yes没错, 数组类型的内部实现就是 struct QBArray.
 
 	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
-    virtual ExprOperation* getop(){};
+    virtual ExprOperation* getop();
     virtual void destory(ASTContext , llvm::Value* Ptr){};
 
 	static ExprTypeASTPtr create(ExprTypeASTPtr);
@@ -400,9 +402,16 @@ public:
 //  而一个函数声明本身也是一个 callable 类型
 //  一个函数指针是 callable 类型
 //  一个函数对象也是 callable 类型
-class CallableExprTypeAST : ExprTypeAST{
+class CallableExprTypeAST : public ExprTypeAST{
+	ExprTypeASTPtr	returntype;
 public:
+    CallableExprTypeAST(ExprTypeASTPtr	_returntype):returntype(_returntype){
+		
+	}
 	static	llvm::Value * defaultprototype(ASTContext ctx,std::string functionname);
+    virtual ExprOperation* getop();
+    virtual llvm::Type* llvm_type(ASTContext ctx){exit(0);}
+    virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name){exit(0);}
 };
 
 
@@ -473,5 +482,5 @@ class StringExprOperation : public ExprOperation {
 
 // 函数
 class FunctionExprOperation : public ExprOperation{
-    virtual ExprASTPtr operator_call(ASTContext , NamedExprASTPtr target, ExprListASTPtr callargslist);;
+    virtual ExprASTPtr operator_call(ASTContext , NamedExprASTPtr target, ExprListASTPtr callargslist);
 };

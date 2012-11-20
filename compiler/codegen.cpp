@@ -53,11 +53,11 @@ llvm::BasicBlock* PrintIntroAST::Codegen(ASTContext ctx)
 }
 
 //* 调用函数
-llvm::BasicBlock* CallStmtAST::Codegen(ASTContext ctx)
+llvm::BasicBlock* ExprStmtAST::Codegen(ASTContext ctx)
 {
 	debug("call function? generating the call here!\n");
 	// 然后调用吧
-	callable->getval(ctx);
+	expr->getval(ctx);
 
 	// 忽略返回数值
 	return ctx.block;
@@ -488,7 +488,7 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 	llvm::BasicBlock *entry = llvm::BasicBlock::Create(builder.getContext(), "entrypoint", ctx.llvmfunc);
 
 	//挂到全局名称表中
-	ctx.codeblock->functions.insert(std::make_pair(this->name,this));
+	ctx.codeblock->symbols.insert(std::make_pair(this->name,this));
 	
 	//开始生成代码
 	ctx.block = entry;

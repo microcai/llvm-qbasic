@@ -10,24 +10,12 @@
 	for loop test
 */
 
-function ffffab( i as long) as long
-
-return i * i 
-
+function abc()
+	print 123
 end function
 
 sub main()
 
-dim a as long
-
-dim i as int
-
-for i = 1 to 100
-
-a  = ffffab(a)
-
-end for
-
-print a  REM the compile has internal support for printing array.
+	abc()
 
 end sub

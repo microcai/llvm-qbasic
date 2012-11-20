@@ -139,12 +139,12 @@ public:
     llvm::BasicBlock* Codegen(ASTContext);
 };
 
-// 对函数的调用, 实质是函数调用表达式的包装
-class CallStmtAST : public StatementAST
+// 一个表达式构成的空语句, 当然, 最有可能的是函数调用而已
+class ExprStmtAST : public StatementAST
 {
-	CallExprASTPtr		callable;
+	ExprASTPtr		expr;
 public:
-	CallStmtAST(CallExprAST * callexp);
+	ExprStmtAST(ExprAST * exp);
 
     virtual llvm::BasicBlock* Codegen(ASTContext);
 };
@@ -169,7 +169,7 @@ public:
 
 	CodeBlockAST*							parent; // 父作用域
 	std::map<std::string, DimAST*>			symbols; // 符号表, 映射到定义语句,获得定义语句
-	std::map<std::string, FunctionDimAST*>	functions; // 函数符号表
+//	std::map<std::string, FunctionDimAST*>	functions; // 函数符号表
 
     virtual llvm::BasicBlock* Codegen(ASTContext ctx);
 	virtual llvm::BasicBlock* GenLeave(ASTContext);

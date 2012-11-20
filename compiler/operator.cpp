@@ -42,6 +42,16 @@ ExprOperation* StringExprTypeAST::getop()
 	return & stringop;
 }
 
+ExprOperation* ArrayExprTypeAST::getop()
+{
+	exit(1);
+}
+
+ExprOperation* CallableExprTypeAST::getop()
+{
+	return &funcop;
+}
+
 ExprASTPtr ExprOperation::operator_assign(ASTContext, NamedExprASTPtr lval, ExprASTPtr rval)
 {
 	debug("can not assign to  this target\n");

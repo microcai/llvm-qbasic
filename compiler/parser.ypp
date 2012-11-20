@@ -215,15 +215,11 @@ line: statements tNEWLINE { $$=$1;  }
 	}
 	| tNEWLINE { debug("空行"); $$ = 0;}
 	| expression tNEWLINE {
-		
+			ExprStmtAST * callstmt =  new ExprStmtAST( $1 );
+			$$ = new StatementsAST ;
+			$$->push_back( StatementASTPtr(callstmt)  );
 	}
 	;
-// 	| call_function tNEWLINE {
-// 		CallStmtAST * callstmt =  new CallStmtAST( $1 );
-// 		$$ = new StatementsAST ;
-// 		$$->push_back( StatementASTPtr(callstmt)  );
-// 	}
-// 	;
 
 statements : statements comma_or_colon statement {  $$ = $1; $$->push_back(StatementASTPtr($3)); }
 		| statement comma_or_colon statement {
@@ -347,10 +343,10 @@ varref:	expression '.' tID { //没错, 成员引用, 前面可是可以为表达
 		// 变量的引用? 反正是一个标识符的引用,
 		// 所以我构建一个标识符引用语句. 这个会被用来构建函数调用和数组语句以及变量.
 		$$ = new VariableExprAST(  new ReferenceAST( $1 ));
-		debug("do we got this?\n");		
 	}
 	|call_function {
-		
+		debug("array not supported yet\n");
+		exit(2);
 	};
 
 comma_or_colon : ':' | ';';
@@ -365,7 +361,10 @@ function_definition: tFUNCTION tID '(' arg_list ')' tAS exprtype tNEWLINE
 						lines
 				tFUNCTIONEND {
 					useDefautSubMain = false;
-					$$ = new FunctionDimAST( *$2 , *$7, $4 );
+					
+					$$ = new FunctionDimAST(*$2,
+											ExprTypeASTPtr(new CallableExprTypeAST(*$7)),
+											$4);
 
 					$$->body = CodeBlockASTPtr($9);
 				}
@@ -373,7 +372,9 @@ function_definition: tFUNCTION tID '(' arg_list ')' tAS exprtype tNEWLINE
 					lines
 				tFUNCTIONEND {
 					useDefautSubMain = false;
-					$$ = new FunctionDimAST( *$2 , NumberExprTypeAST::GetNumberExprTypeAST(),$4 ) ;
+					$$ = new FunctionDimAST(*$2,
+											ExprTypeASTPtr(new CallableExprTypeAST(NumberExprTypeAST::GetNumberExprTypeAST())),
+											$4);
 
 					$$->body = CodeBlockASTPtr($7);
 				}
@@ -385,7 +386,9 @@ sub_definition: tSUB  tID  '(' arg_list ')'
 				useDefautSubMain = false;
 				debug("!!SUB %s defined with arg !!\n",$2->c_str());
 
-				$$ = new FunctionDimAST( *$2, VoidExprTypeAST::GetVoidExprTypeAST(), $4); //delete $2;
+				$$ = new FunctionDimAST( *$2,
+										 ExprTypeASTPtr(new CallableExprTypeAST(VoidExprTypeAST::GetVoidExprTypeAST())),
+										 $4); //delete $2;
 				$6->parent = $4;
 				$$->body = CodeBlockASTPtr($6);
 			}
