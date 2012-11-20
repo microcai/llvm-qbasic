@@ -19,6 +19,7 @@
 */
 #include <cstdio>
 #include <boost/make_shared.hpp>
+#include <boost/foreach.hpp>
 #include <llvm/Support/IRBuilder.h>
 
 #include "ast.hpp"
@@ -121,7 +122,7 @@ ExprASTPtr NumberExprOperation::operator_add(ASTContext ctx, ExprASTPtr lval, Ex
 	llvm::Value * result = builder.CreateAdd(LHS,RHS);
 
 	//TODO , 构造临时 Number 对象
-	return boost::make_shared<TempNumberExprAST>(ctx,result);
+	return lval->type(ctx)->createtemp(ctx,result);
 }
 
 // 字符串加法
@@ -144,7 +145,7 @@ ExprASTPtr StringExprOperation::operator_add(ASTContext ctx, ExprASTPtr lval, Ex
 	
 	builder.CreateCall2(llvmfunc_strcpy,resultstring,lval->getval(ctx));
 	builder.CreateCall2(llvmfunc_strcat,resultstring,rval->getval(ctx));
-	return boost::make_shared<TempStringExprAST>(ctx,resultstring);
+	return 	lval->type(ctx)->createtemp(ctx,resultstring);
 }
 
 
@@ -218,6 +219,45 @@ ExprASTPtr StringExprOperation::operator_comp(ASTContext ctx,MathOperator op, Ex
 }
 
 // 函数调用
-ExprASTPtr FunctionExprOperation::operator_call(ASTContext, NamedExprASTPtr target, ExprListASTPtr callargslist) {
+ExprASTPtr FunctionExprOperation::operator_call(ASTContext ctx,NamedExprASTPtr calltarget,ExprListASTPtr callargs)
+{
+	llvm::IRBuilder<> builder(ctx.llvmfunc->getContext());
+	builder.SetInsertPoint(ctx.block);
+
+	// call functions TODO
+    debug("sigfault herekkk?\n");
+	llvm::Value * ret = NULL;
+
+	//获得函数定义
+
+	DimAST * funcdim = calltarget->nameresolve(ctx);
 	
+	llvm::Value * llvmfunc =funcdim->getval(ctx);
+
+	if(!llvmfunc){ //有定义, 则直接调用, 无定义就 ... 呵呵
+		llvmfunc = dynamic_cast<CallableExprTypeAST*>(funcdim)->defaultprototype(ctx,calltarget->ID->ID);
+	}
+
+	//构建参数列表
+	std::vector<llvm::Value*> args;
+	if(callargs && callargs->expression_list.size() )
+	{
+		BOOST_FOREACH( ExprASTPtr expr , callargs->expression_list)
+		{
+			debug("pusing args \n");
+			args.push_back( expr->getval(ctx) );
+		}
+	}
+
+	return calltarget->type(ctx)->createtemp( ctx, builder.CreateCall(llvmfunc,args) );
+}
+
+ExprASTPtr NumberExprTypeAST::createtemp(ASTContext ctx, llvm::Value* val)
+{
+    boost::make_shared<TempNumberExprAST>(ctx,val);
+}
+
+ExprASTPtr StringExprTypeAST::createtemp(ASTContext ctx, llvm::Value* val)
+{
+    boost::make_shared<TempStringExprAST>(ctx,val);
 }

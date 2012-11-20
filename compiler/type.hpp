@@ -95,6 +95,8 @@ class MemberReferenceAST : public ReferenceAST
 };
 
 class ExprOperation;
+class ExprAST;
+typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
 // 变量类型定义.
 class ExprTypeAST : public AST
 {
@@ -127,6 +129,9 @@ public:
 	// 这是最重要的类型了, 类型只所以为类型就是因为这个
 	virtual ExprOperation * getop() = 0;
 
+	// 为 llvm::Valut * 构造一个新的类型, 用来自动释放
+	virtual ExprASTPtr		createtemp(ASTContext ,llvm::Value *){ exit(10);};
+
 public:
     ExprTypeAST(){}
     ExprTypeAST( size_t size , const std::string __typename );
@@ -155,7 +160,7 @@ public:
     virtual ~ExprAST(){}
 };
 
-typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
+
 
 // 空表达式. 空表达式的类型是 void
 // 用法 1 : 声明无返回值的函数
@@ -237,6 +242,7 @@ public:
 
 	//获得定义地
 	virtual DimAST* nameresolve(ASTContext ctx);
+
     virtual ~NamedExprAST(){}
 };
 typedef boost::shared_ptr<NamedExprAST> NamedExprASTPtr;
@@ -307,7 +313,6 @@ public:
 
     virtual llvm::Value* getptr(ASTContext) { return 0;}; // cann't get the address
     virtual llvm::Value* getval(ASTContext);
-	static	llvm::Value * defaultprototype(ASTContext ctx,std::string functionname);
 };
 
 typedef boost::shared_ptr<CallExprAST>	CallExprASTPtr;
@@ -345,6 +350,8 @@ public:
 
     virtual ExprOperation* getop();
 
+    virtual ExprASTPtr createtemp(ASTContext ctx,llvm::Value* val);
+
 	static ExprTypeASTPtr   GetNumberExprTypeAST();
 };
 
@@ -361,6 +368,9 @@ public:
 	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
     virtual ExprOperation* getop();
     virtual void destory(ASTContext , llvm::Value* Ptr);
+
+    virtual ExprASTPtr createtemp(ASTContext , llvm::Value* );
+	
 	static ExprTypeASTPtr GetStringExprTypeAST();
 };
 
@@ -391,14 +401,10 @@ public:
 //  一个函数指针是 callable 类型
 //  一个函数对象也是 callable 类型
 class CallableExprTypeAST : ExprTypeAST{
-
+public:
+	static	llvm::Value * defaultprototype(ASTContext ctx,std::string functionname);
 };
 
-//  可调用的外部符号. 这是用名字调用函数的办法
-class CallableNameExprTypeAST{
-
-
-};
 
 /////////////// 一下类型未实现
 

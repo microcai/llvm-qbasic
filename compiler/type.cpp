@@ -195,6 +195,15 @@ void StringExprTypeAST::destory(ASTContext ctx, llvm::Value* Ptr)
 	builder.CreateCall(func_free,builder.CreateLoad(Ptr));
 }
 
+llvm::Value* CallableExprTypeAST::defaultprototype(ASTContext ctx, std::string functionname)
+{
+    //build default function type
+    llvm::IRBuilder<>	builder(ctx.block);
+    std::vector<llvm::Type*> no_args;
+
+    return ctx.module->getOrInsertFunction(
+		functionname,llvm::FunctionType::get(numbertype->llvm_type(ctx), no_args,true));
+}
 
 llvm::Value* ConstNumberExprAST::getval(ASTContext ctx)
 {
@@ -266,16 +275,6 @@ DimAST* CallExprAST::nameresolve(ASTContext ctx)
 
 #endif
 
-llvm::Value* CallExprAST::defaultprototype(ASTContext ctx, std::string functionname)
-{
-	//build default function type
-	llvm::IRBuilder<>	builder(ctx.block);
-
-	std::vector<llvm::Type*> no_args;
-
-	return ctx.module->getOrInsertFunction(functionname,llvm::FunctionType::get(numbertype->llvm_type(ctx), no_args,true));
-}
-
 llvm::Value* VariableExprAST::getval(ASTContext ctx)
 {
  	llvm::IRBuilder<> builder(ctx.block);
@@ -301,31 +300,7 @@ llvm::Value* AssignmentExprAST::getval(ASTContext ctx)
 
 llvm::Value* CallExprAST::getval(ASTContext ctx)
 {
-	llvm::IRBuilder<> builder(ctx.llvmfunc->getContext());
-	builder.SetInsertPoint(ctx.block);
-
-	// call functions TODO
-    debug("sigfault herekkk?\n");
-	llvm::Value * ret = NULL;
-
-	//获得函数定义
-	llvm::Value * llvmfunc = calltarget->getptr(ctx);
-	
-	if(!llvmfunc){ //有定义, 则直接调用, 无定义就 ... 呵呵
-		llvmfunc = defaultprototype(ctx,calltarget->ID->ID);
-	}
-
-	//构建参数列表
-	std::vector<llvm::Value*> args;
-	if(callargs && callargs->expression_list.size() )
-	{
-		BOOST_FOREACH( ExprASTPtr expr , callargs->expression_list)
-		{
-			debug("pusing args \n");
-			args.push_back( expr->getval(ctx) );
-		}
-	}
-	return builder.CreateCall(llvmfunc,args);
+	return calltarget->type(ctx)->getop()->operator_call(ctx,calltarget,callargs)->getval(ctx);
 }
 
 llvm::Value* CalcExprAST::getval(ASTContext ctx)
