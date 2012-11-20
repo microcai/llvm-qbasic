@@ -64,7 +64,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 	double 				number;        /* double number */
 	long				integer;			/* long number */
 
-	ReferenceAST*		varref;
+	NamedExprAST *		varref;
 	ExprAST*			expression;
 	ExprListAST*		expression_list;
 
@@ -148,7 +148,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %type <statement_list>				line
 %type <statement_list>				statements
 %type <statement>					statement
-%type <dim_item>					dim_item
+%type <dim_item>					dim_item array_dim
 %type <arg_list>					arg_list
 %type <function_definition>			sub_definition
 %type <function_definition>			function_definition
@@ -214,12 +214,16 @@ line: statements tNEWLINE { $$=$1;  }
 		$$ = new StatementsAST ; $$->push_back(StatementASTPtr($1));
 	}
 	| tNEWLINE { debug("空行"); $$ = 0;}
-	| call_function tNEWLINE {
-		CallStmtAST * callstmt =  new CallStmtAST( $1 );
-		$$ = new StatementsAST ;
-		$$->push_back( StatementASTPtr(callstmt)  );
+	| expression tNEWLINE {
+		
 	}
 	;
+// 	| call_function tNEWLINE {
+// 		CallStmtAST * callstmt =  new CallStmtAST( $1 );
+// 		$$ = new StatementsAST ;
+// 		$$->push_back( StatementASTPtr(callstmt)  );
+// 	}
+// 	;
 
 statements : statements comma_or_colon statement {  $$ = $1; $$->push_back(StatementASTPtr($3)); }
 		| statement comma_or_colon statement {
@@ -231,6 +235,7 @@ statements : statements comma_or_colon statement {  $$ = $1; $$->push_back(State
 
 statement: printstatement { $$ = $1; }
 		| dim_item { $$ = $1; }
+		| array_dim { $$ = $1; }
 		| assigment {$$= $1;}
 		| tLET assigment { $$ = $2;}
 		| tRETURN expression { $$ = new ReturnAST($2);}
@@ -240,14 +245,13 @@ statement: printstatement { $$ = $1; }
 		| sub_definition  {$$= $1;}
 		| function_definition  {$$= $1;}
 	//	| call_function ':'{ $$ = new CallStmtAST($1); }
-	//	| tNEWLINE { $$= new EmptyStmtAST();}
 		| expression comma_or_colon { /*TODO*/debug("here====3====\n"); exit(1);	}
 		;
 
 
 assigment: varref tEQU expression {
-		VariableExprAST * varref = new VariableExprAST($1);
-		$$ = new AssigmentAST(varref, $3);
+		//VariableExprAST * varref = new VariableExprAST($1);
+		$$ = new AssigmentAST($1, $3);
 	};
 
 exprtype: tLONG	{
@@ -299,10 +303,13 @@ expression_list: expression_list ',' expression { $$ = $1 ; $$->Append($3); }
 
 call_function:
 		// 这个也是函数调用
-		varref '('  ')' { $$ = new CallExprAST($1); debug("functioncall %s with no arg\n", $1->ID.c_str()); } 
+		varref '('  ')' {
+			$$ = new CallExprAST($1);
+			debug("functioncall %s with no arg\n", $1->ID->ID.c_str());
+		}
 		| varref  '(' expression_list ')' { 	 // 这个可能是函数调用, 也许是数组哦 :)
 			 // 现在就当是函数调用了, 在后面的阶段再生成数组访问
-			 debug("functioncall %s with  args!!!!\n" , $1->ID.c_str() );
+			 debug("functioncall %s with  args!!!!\n" , $1->ID->ID.c_str() );
 
 			 $$ = new CallExprAST($1 , $3 );			
 		};
@@ -320,11 +327,7 @@ expression: call_function
 		| expression tGTN expression {   $$ = new CalcExprAST( $1, OPERATOR_GREATER , $3 );  }
 		| expression tGEQ expression {   $$ = new CalcExprAST( $1, OPERATOR_GREATEREQUL , $3 );  }
 
- 		| varref	{
-			//TODO the VariableRefExprAST
-			$$ = new VariableExprAST( $1 );
-			debug("do we got this?\n");			
-		}
+ 		| varref
 		| tInteger  {
 			//常量
 			$$ = new ConstNumberExprAST( $1 );
@@ -339,14 +342,16 @@ varref:	expression '.' tID { //没错, 成员引用, 前面可是可以为表达
 		debug("ref menber %s . %s , not supported yet\n" );
 		exit(1); // 逐级传递
 	}// 成员变量
-	| expression tDREF  tID  // 指针解引用
+	| expression tDREF  tID  { exit(1); } // 指针解引用
 	| tID {
 		// 变量的引用? 反正是一个标识符的引用,
 		// 所以我构建一个标识符引用语句. 这个会被用来构建函数调用和数组语句以及变量.
-		$$ = new ReferenceAST( $1 );
-		debug("idref %s\n", $1->c_str());
+		$$ = new VariableExprAST(  new ReferenceAST( $1 ));
+		debug("do we got this?\n");		
 	}
-	;
+	|call_function {
+		
+	};
 
 comma_or_colon : ':' | ';';
 
@@ -404,17 +409,19 @@ arg_list:{ $$ = 0; }
 	}
 	;
 
+array_dim : tARRAYDIM tID tAS exprtype {
+
+		debug("definning %s as array\n",$2->c_str());
+
+		$$ = new VariableDimAST( *$2  , ArrayExprTypeAST::create(* $4) );
+	};
+
 dim_item: tDIM tID tAS exprtype {
 		debug("definning %s is type %p\n",$2->c_str(), $4);
 		$$ = new VariableDimAST( *$2  , * $4 );
 	} | tDIM tID {
 		debug("definning %s with no type , default to long\n",$2->c_str());
 		$$ = new VariableDimAST( *$2  , NumberExprTypeAST::GetNumberExprTypeAST() );
-	}
-	| tARRAYDIM tID tAS exprtype {
-		debug("definning array\n");
-
-		exit(1);
 	};
 
 
@@ -464,7 +471,7 @@ for_loop: tFOR varref tEQU expression tTO expression optstep  tNEWLINE
 				lines
 			tENDFOR {
 				debug("got for loop");
-				$$ = new ForLoopAST(new VariableExprAST($2), $4,$6, 0 ,$9);
+				$$ = new ForLoopAST($2, $4,$6, 0 ,$9);
 			}
 		;
 

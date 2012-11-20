@@ -23,6 +23,7 @@
 #include <boost/weak_ptr.hpp>
 #include <boost/foreach.hpp>
 #include <boost/assert.hpp>
+#include <boost/make_shared.hpp>
 
 #include <llvm/DerivedTypes.h>
 #include <llvm/Constants.h>
@@ -58,6 +59,11 @@ ExprTypeASTPtr NumberExprTypeAST::GetNumberExprTypeAST()
 ExprTypeASTPtr StringExprTypeAST::GetStringExprTypeAST()
 {
 	return stringtype;
+}
+
+ExprTypeASTPtr ArrayExprTypeAST::create(ExprTypeASTPtr elementtype)
+{
+	return boost::make_shared<ArrayExprTypeAST>(elementtype);
 }
 
 ExprTypeASTPtr EmptyExprAST::type(ASTContext) {
@@ -117,6 +123,24 @@ llvm::Type* StringExprTypeAST::llvm_type(ASTContext ctx)
 	return llvm::Type::getInt8PtrTy(llvm::getGlobalContext());
 }
 
+// 数组的 llvm_type 事实上是 ....
+llvm::Type* ArrayExprTypeAST::llvm_type(ASTContext ctx)
+{
+	static llvm::Type * arraytype =NULL;
+	if(!arraytype){
+		std::vector<llvm::Type*>	members;
+
+		members.push_back(llvm::Type::getInt8PtrTy(ctx.module->getContext()));
+
+ 		members.push_back(qbc::getplatformlongtype());
+		members.push_back(qbc::getplatformlongtype());
+		members.push_back(qbc::getplatformlongtype());
+
+		arraytype = llvm::StructType::create(members,"QBArray");
+	}
+	return arraytype;
+}
+
 llvm::Value* NumberExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
 {
 	debug("allocation for value %s type long\n",_name.c_str());
@@ -141,6 +165,22 @@ llvm::Value* StringExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
 	llvm::Value * newval = builder.CreateAlloca(this->llvm_type(ctx),0,_name);
 
 	builder.CreateStore( qbc::getnull(), newval);
+	return newval;
+}
+
+llvm::Value* ArrayExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
+{
+	debug("allocation for array %s type %s\n",_name.c_str() , this->elementtype->name(ctx).c_str());
+
+	llvm::IRBuilder<> builder(&ctx.llvmfunc->getEntryBlock(),
+							  ctx.llvmfunc->getEntryBlock().begin());
+	//TODO , 在堆栈上分配个变量
+	llvm::Value * newval = builder.CreateAlloca(this->llvm_type(ctx),0,_name);
+
+	//接着调用 btr_qbarray_new()
+	llvm::Constant * btr_qbarray_new = qbc::getbuiltinprotype(ctx,"btr_qbarray_new");
+
+	builder.CreateCall2(btr_qbarray_new,newval,qbc::getconstlong(elementtype->size()));
 	return newval;
 }
 
@@ -200,6 +240,7 @@ DimAST* NamedExprAST::nameresolve(ASTContext ctx)
 
 DimAST* CallExprAST::nameresolve(ASTContext ctx)
 {
+#if 0
 	std::string functionname = this->ID->ID;
 
 	debug("searching for function %s\n",functionname.c_str());
@@ -222,6 +263,7 @@ DimAST* CallExprAST::nameresolve(ASTContext ctx)
 	}
 	ctx.codeblock = ctx.codeblock->parent;
 	return nameresolve(ctx);
+#endif 
 }
 
 
@@ -275,7 +317,7 @@ llvm::Value* CallExprAST::getval(ASTContext ctx)
 	if(fundim){ //有定义, 则直接调用, 无定义就 ... 呵呵
 		llvmfunc = fundim->getptr(ctx);
 	}else{
-		llvmfunc = defaultprototype(ctx,this->ID->ID);
+	//	llvmfunc = defaultprototype(ctx,this->ID->ID);
 	}
 
 	//构建参数列表
@@ -288,7 +330,7 @@ llvm::Value* CallExprAST::getval(ASTContext ctx)
 			args.push_back( expr->getval(ctx) );
 		}
 	}
-	return builder.CreateCall(llvmfunc,args,this->ID->ID);
+	//return builder.CreateCall(llvmfunc,args,this->ID->ID);
 }
 
 llvm::Value* CalcExprAST::getval(ASTContext ctx)
@@ -356,6 +398,14 @@ ConstStringExprAST::ConstStringExprAST(const std::string _str)
 {
 }
 
+
+ArrayExprTypeAST::ArrayExprTypeAST(ExprTypeASTPtr _elementtype)
+	:elementtype(_elementtype)
+{
+	
+}
+
+
 NamedExprAST::NamedExprAST(ReferenceAST* _ID)
 	:ID(_ID)
 {
@@ -371,13 +421,8 @@ AssignmentExprAST::AssignmentExprAST(NamedExprAST* l, ExprAST*r)
 {
 }
 
-CallOrArrayExprAST::CallOrArrayExprAST(ReferenceAST* _ID)
-	:NamedExprAST(_ID)
-{
-}
-
-CallExprAST::CallExprAST(ReferenceAST* ID, ExprListAST* exp_list)
-	:CallOrArrayExprAST(ID),callargs(exp_list)
+CallExprAST::CallExprAST(NamedExprAST* ID, ExprListAST* exp_list)
+	:callargs(exp_list)
 {
 }
 
@@ -407,4 +452,3 @@ TempStringExprAST::~TempStringExprAST()
 	llvm::Constant * func_free = qbc::getbuiltinprotype(ctx,"free");
 	builder.CreateCall(func_free,this->val);
 }
-

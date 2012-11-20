@@ -48,7 +48,6 @@ llvm::BasicBlock* EmptyStmtAST::Codegen(ASTContext ctx)
 
 llvm::BasicBlock* PrintIntroAST::Codegen(ASTContext ctx)
 {
-	BOOST_ASSERT(TheFunction);
 	debug("PrintIntroAST expr for \n");
 	return ctx.block;
 }

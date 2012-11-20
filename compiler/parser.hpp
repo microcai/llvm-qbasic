@@ -74,7 +74,7 @@ namespace qb {
 	double 				number;        /* double number */
 	long				integer;			/* long number */
 
-	ReferenceAST*		varref;
+	NamedExprAST *		varref;
 	ExprAST*			expression;
 	ExprListAST*		expression_list;
 
@@ -260,7 +260,7 @@ namespace qb {
     /// - if positive, shift that token.
     /// - if negative, reduce the rule which number is the opposite.
     /// - if zero, do what YYDEFACT says.
-    static const unsigned char yytable_[];
+    static const short int yytable_[];
     static const signed char yytable_ninf_;
 
     static const short int yycheck_[];

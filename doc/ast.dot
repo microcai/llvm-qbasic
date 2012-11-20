@@ -1,73 +1,52 @@
-digraph AST{
+digraph AST {
 
-    node [shape="record"];
-
-
-
-AST -> ExprAST
-
-AST -> StatementAST;
-
-AST -> ReferenceAST;
-
-AST -> ExprTypeAST;
-
-StatementAST -> AssigmentAST;
-StatementAST -> CallStmtAST;
-StatementAST -> CodeBlockAST  -> ArgumentDimsAST;
-StatementAST -> DimAST ->VariableDimAST ->ArgumentDimAST;
-StatementAST -> EmptyStmtAST;
-
-StatementAST -> IFStmtAST;
-StatementAST -> LoopAST ->WhileLoopAST;
-StatementAST -> PrintStmtAST;
-StatementAST -> ReturnAST;
-
-LoopAST -> ForLoopAST;
-
-DimAST -> FunctionDimAST ->DefaultMainFunctionAST;
-
-
+  size="9,1000";
+	graph [ratio=compress];
+	node [shape=record];
 	subgraph type_hpp {
-	    
-	      label="type.hpp";
-	      
-	      
-	      ExprAST;
-	       EmptyExprAST;
-	      TempExprAST ;
-	      TempNumberExprAST;
-	      ConstNumberExprAST;
-	      ExprAST-> ConstStringExprAST;
-	      ExprAST -> NamedExprAST -> VariableExprAST;
-	      ExprAST -> CalcExprAST ;
-	      
-	     NamedExprAST -> CallOrArrayExprAST ->CallExprAST;
-	      
-	    CallOrArrayExprAST->  ArrayExprTypeAST;
-	    
-	     ExprAST -> AssignmentExprAST;
-	      
-	      AST -> ExprListAST;
-	      
-	      
-	      ExprTypeAST -> VoidExprTypeAST;
-	      
-	    ExprTypeAST ->  NumberExprTypeAST
-	    ExprTypeAST ->  StringExprTypeAST
-	    
-	    
-	    ExprOperation  -> NumberExprOperation;
-	    	    ExprOperation  -> StringExprOperation;
-
-	    
-	    
-	};
-	
-	      ExprAST -> EmptyExprAST;
-	      ExprAST -> TempExprAST ->TempNumberExprAST;
-	      TempExprAST ->TempStringExprAST ;
-	      
-	      ExprAST -> ConstNumberExprAST	;
-
+		graph [label="type.hpp"];
+		AST -> ExprListAST;
+		ExprAST -> ConstStringExprAST;
+		ExprAST -> NamedExprAST;
+		ExprAST -> CalcExprAST;
+		ExprAST -> AssignmentExprAST;
+		ExprTypeAST -> VoidExprTypeAST;
+		ExprTypeAST -> NumberExprTypeAST;
+		ExprTypeAST -> StringExprTypeAST;
+		EmptyExprAST;
+		TempExprAST;
+		TempNumberExprAST;
+		ConstNumberExprAST;
+		NamedExprAST -> VariableExprAST;
+		NamedExprAST -> CallOrArrayExprAST;
+		CallOrArrayExprAST -> CallExprAST;
+		CallOrArrayExprAST -> ArrayExprTypeAST;
+		ExprOperation -> NumberExprOperation;
+		ExprOperation -> StringExprOperation;
+	}
+	AST -> ExprAST;
+	AST -> StatementAST;
+	AST -> ReferenceAST;
+	AST -> ExprTypeAST;
+	ExprAST -> EmptyExprAST;
+	ExprAST -> TempExprAST;
+	ExprAST -> ConstNumberExprAST;
+	StatementAST -> AssigmentAST;
+	StatementAST -> CallStmtAST;
+	StatementAST -> CodeBlockAST;
+	StatementAST -> DimAST;
+	StatementAST -> EmptyStmtAST;
+	StatementAST -> IFStmtAST;
+	StatementAST -> LoopAST;
+	StatementAST -> PrintStmtAST;
+	StatementAST -> ReturnAST;
+	CodeBlockAST -> ArgumentDimsAST;
+	DimAST -> VariableDimAST;
+	DimAST -> FunctionDimAST;
+	VariableDimAST -> ArgumentDimAST;
+	LoopAST -> WhileLoopAST;
+	LoopAST -> ForLoopAST;
+	FunctionDimAST -> DefaultMainFunctionAST;
+	TempExprAST -> TempNumberExprAST;
+	TempExprAST -> TempStringExprAST;
 }

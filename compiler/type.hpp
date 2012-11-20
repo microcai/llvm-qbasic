@@ -296,19 +296,13 @@ typedef boost::shared_ptr<ExprListAST> ExprListASTPtr;
 
 // 数组或者函数调用.
 // 返回的类型就是数组成员的类型, 或者是函数的返回类型
-// 依据是 Reference 的类型是 CallableExprTypeAST 则为函数调用
-class CallOrArrayExprAST : public NamedExprAST
+// 依据是 calltarget 的类型是 CallableExprTypeAST 则为函数调用
+class CallExprAST : public ExprAST
 {
-public:
-    CallOrArrayExprAST(ReferenceAST* _ID);
-    virtual ~CallOrArrayExprAST(){}
-};
-
-class CallExprAST : public CallOrArrayExprAST
-{
+	NamedExprASTPtr				calltarget; // should be callable
 	ExprListASTPtr				callargs;
 public:
-	CallExprAST(ReferenceAST * , ExprListAST * exp_list = NULL);
+	CallExprAST(NamedExprAST* , ExprListAST * exp_list = NULL);
 	virtual ExprTypeASTPtr	type(ASTContext);
 
     virtual llvm::Value* getptr(ASTContext) { return 0;}; // cann't get the address
@@ -373,27 +367,25 @@ public:
 };
 
 //  数组支持!
-class ArrayExprTypeAST : public CallOrArrayExprAST
+class ArrayExprTypeAST : public ExprTypeAST
 {
 	/**
 	 * NOTE:
 	 *
-	 * An Array is of the type
-	 * 		struct Array {
-	 *			void * ptr; // pointer to the location of the memory
-	 *};
-	 **/ 
-// 	void * operator new(size_t); // disallow new
+	 * An Array is of the type  struct QBArray
+	 **/
+	ExprTypeASTPtr	elementtype;
 public:
-    ArrayExprTypeAST();
+    ArrayExprTypeAST(ExprTypeASTPtr elementtype);
     virtual llvm::Type* llvm_type(ASTContext ctx);
 
     virtual size_t size(){return sizeof(struct QBArray);}; //yes没错, 数组类型的内部实现就是 struct QBArray.
 
 	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
-    virtual ExprOperation* getop();
-    virtual void destory(ASTContext , llvm::Value* Ptr);
-	static ExprTypeASTPtr GetStringExprTypeAST();
+    virtual ExprOperation* getop(){};
+    virtual void destory(ASTContext , llvm::Value* Ptr){};
+
+	static ExprTypeASTPtr create(ExprTypeASTPtr);
 };
 
 //  函数对象类型. 这是基类

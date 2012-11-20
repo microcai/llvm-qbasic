@@ -19,18 +19,6 @@
 */
 
 #include <stdio.h>
-#include <string>
-#include <list>
-#include <map>
-#include <iostream>
-
-#include <boost/shared_ptr.hpp>
-#include <boost/scoped_ptr.hpp>
-
-#include <llvm/Value.h>
-#include <llvm/Module.h>
-#include <llvm/Support/IRBuilder.h>
-#include <llvm/Type.h>
 
 #ifdef __linux__
 #define SYSTEM_NAME "Linux"
@@ -42,6 +30,9 @@
 
 char *replace (char *);         /* replace escape characters */
 
-struct QBArray{
-	
-};
+typedef struct QBArray{
+	void*		ptr; // pointer to the allocated address
+	size_t		elementsize;// size of the element
+	size_t		stride; // size to move the pointer to touch the next element
+	size_t		capacity; // the capacity of the allocated memory
+}QBArray;

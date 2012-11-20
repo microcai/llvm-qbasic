@@ -51,7 +51,7 @@ llvm::Value * getconstlong(long v)
 	return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(sizeoflong(),(uint64_t)v,true));
 }
 
-static llvm::Type * getplatformlongtype()
+llvm::Type * getplatformlongtype()
 {
 	switch(sizeof(long)){
 		case 8:
