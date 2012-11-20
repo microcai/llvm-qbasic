@@ -101,7 +101,7 @@ elif|elseif			return token::tELSEIF;
 return				return token::tRETURN;
 for					return token::tFOR;
 to 					return token::tTO;
-setp				return token::tSTEP;
+step				return token::tSTEP;
 
 str|string			return token::tSTR;
 int|long			return token::tLONG;/* variables type*/
