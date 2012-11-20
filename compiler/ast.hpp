@@ -21,16 +21,7 @@
 #ifndef __AST_H__
 #define __AST_H__
 
-#include <string>
-#include <list>
-#include <map>
-
-#include <boost/shared_ptr.hpp>
-#include <boost/concept_check.hpp>
-#include <llvm/Value.h>
-#include <llvm/Module.h>
-#include <llvm/Type.h>
-#include <llvm/Instructions.h>
+#include "qbc.h"
 
 enum MathOperator{
 	OPERATOR_ADD = 1 , // +

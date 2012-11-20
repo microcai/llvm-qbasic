@@ -1,15 +1,11 @@
 
 #include "qbc.h"
 
-#include <iostream>
-#include <boost/shared_ptr.hpp>
-#include <boost/scoped_ptr.hpp>
 #include <boost/format.hpp>
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
 #include <boost/filesystem.hpp>
 namespace fs=boost::filesystem;
-#include <llvm/Support/IRBuilder.h>
 #include <llvm/PassManager.h>
 #include <llvm/PassManagers.h>
 #include <llvm/LinkAllPasses.h>
@@ -18,6 +14,8 @@ namespace fs=boost::filesystem;
 #include <llvm/Support/ToolOutputFile.h>
 #include <llvm/Support/FormattedStream.h>
 #include <llvm/Support/Host.h>
+
+#include "ast.hpp"
 #include "parser.hpp"
 
 extern FILE *yyin;

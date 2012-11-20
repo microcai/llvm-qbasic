@@ -24,9 +24,8 @@
 
 /* Include main header file. */
 #include "qbc.h"
+#include "ast.hpp"
 #include "parser.hpp"
-#include <boost/make_shared.hpp>
-#include <boost/concept_check.hpp>
 
 extern	StatementAST * program;
 

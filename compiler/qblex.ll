@@ -33,6 +33,7 @@
 
 /* Include main header file. */
 #include "qbc.h"
+#include "ast.hpp"
 
 /* Get tokens from parser library. */
 #include "parser.hpp"

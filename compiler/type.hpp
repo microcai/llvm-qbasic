@@ -371,6 +371,30 @@ public:
 	static ExprTypeASTPtr GetStringExprTypeAST();
 };
 
+//  数组支持!
+class ArrayExprTypeAST : public CallOrArrayExprAST
+{
+	/**
+	 * NOTE:
+	 *
+	 * An Array is of the type
+	 * 		struct Array {
+	 *			void * ptr; // pointer to the location of the memory
+	 *};
+	 **/ 
+	void * operator new(size_t); // disallow new
+public:
+    ArrayExprTypeAST();
+    virtual llvm::Type* llvm_type(ASTContext ctx);
+
+    virtual size_t size(){return sizeof(struct QBArray);}; //yes没错, 数组类型的内部实现就是 struct QBArray.
+
+	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
+    virtual ExprOperation* getop();
+    virtual void destory(ASTContext , llvm::Value* Ptr);
+	static ExprTypeASTPtr GetStringExprTypeAST();
+};
+
 //  函数对象类型. 这是基类
 //  而一个函数声明本身也是一个 callable 类型
 //  一个函数指针是 callable 类型
