@@ -191,41 +191,25 @@ static llvm::Constant *getbuiltinprotype_btr_qbarray_new(ASTContext ctx)
 llvm::Constant * getbuiltinprotype(ASTContext ctx,const std::string name)
 {
 	llvm::Function * retfunc = ctx.module->getFunction(name);
-
+#define			RETURNBUILTINENTRY(x)	\
+	if(name == #x ) { return getbuiltinprotype_##x (ctx); }
+	
 	if(!retfunc){ // 根据函数名字生成
+		RETURNBUILTINENTRY(printf)
+		RETURNBUILTINENTRY(brt_print)
+		RETURNBUILTINENTRY(malloc)
+		RETURNBUILTINENTRY(calloc)
+		RETURNBUILTINENTRY(free)
+		RETURNBUILTINENTRY(strdup)
+		RETURNBUILTINENTRY(strlen)
+		RETURNBUILTINENTRY(strcpy)
+		RETURNBUILTINENTRY(strcat)
+		RETURNBUILTINENTRY(btr_qbarray_new)
 
-		if(name == "printf"){
-			return getbuiltinprotype_printf(ctx);
-		}
-		if(name == "brt_print"){
-			return getbuiltinprotype_brt_print(ctx);
-		}
-		if(name == "malloc"){
-			return getbuiltinprotype_malloc(ctx);
-		}
-		if(name == "calloc"){
-			return getbuiltinprotype_calloc(ctx);
-		}
-		if(name == "free"){
-			return getbuiltinprotype_free(ctx);
-		}
-		if(name == "strdup"){
-			return getbuiltinprotype_strdup(ctx);
-		}
-		if(name == "strlen"){
-			return getbuiltinprotype_strlen(ctx);
-		}
-		if(name == "strcpy"){
-			return getbuiltinprotype_strcpy(ctx);
-		}
-		if(name == "strcat"){
-			return getbuiltinprotype_strcat(ctx);
-		}
-		if(name == "btr_qbarray_new")
-			return getbuiltinprotype_btr_qbarray_new(ctx);
 		printf("no define for %s yet\n",name.c_str());
 		exit(1);
 	}
+#undef RETURNBUILTINENTRY
 	return retfunc;
 }
 
