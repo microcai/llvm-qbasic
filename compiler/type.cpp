@@ -98,8 +98,8 @@ ExprTypeASTPtr CalcExprAST::type(ASTContext ctx)
 }
 
 ExprTypeASTPtr CallExprAST::type(ASTContext ctx)
-{	
-	return nameresolve(ctx)->type;
+{
+	return calltarget->nameresolve(ctx)->type;
 }
 
 llvm::Type* VoidExprTypeAST::llvm_type(ASTContext ctx)
@@ -237,11 +237,10 @@ DimAST* NamedExprAST::nameresolve(ASTContext ctx)
 	ctx.codeblock = ctx.codeblock->parent;
 	return nameresolve(ctx);
 }
-
+#if 0
 DimAST* CallExprAST::nameresolve(ASTContext ctx)
 {
-#if 0
-	std::string functionname = this->ID->ID;
+	std::string functionname = this->calltarget->getptr(ctx);
 
 	debug("searching for function %s\n",functionname.c_str());
 
@@ -263,9 +262,9 @@ DimAST* CallExprAST::nameresolve(ASTContext ctx)
 	}
 	ctx.codeblock = ctx.codeblock->parent;
 	return nameresolve(ctx);
-#endif 
 }
 
+#endif
 
 llvm::Value* CallExprAST::defaultprototype(ASTContext ctx, std::string functionname)
 {
@@ -310,14 +309,10 @@ llvm::Value* CallExprAST::getval(ASTContext ctx)
 	llvm::Value * ret = NULL;
 
 	//获得函数定义
-	llvm::Value * llvmfunc = NULL;
-	DimAST * dim = nameresolve(ctx);
-	FunctionDimAST* fundim = dynamic_cast<FunctionDimAST*>(dim);
+	llvm::Value * llvmfunc = calltarget->getptr(ctx);
 	
-	if(fundim){ //有定义, 则直接调用, 无定义就 ... 呵呵
-		llvmfunc = fundim->getptr(ctx);
-	}else{
-	//	llvmfunc = defaultprototype(ctx,this->ID->ID);
+	if(!llvmfunc){ //有定义, 则直接调用, 无定义就 ... 呵呵
+		llvmfunc = defaultprototype(ctx,calltarget->ID->ID);
 	}
 
 	//构建参数列表
@@ -330,7 +325,7 @@ llvm::Value* CallExprAST::getval(ASTContext ctx)
 			args.push_back( expr->getval(ctx) );
 		}
 	}
-	//return builder.CreateCall(llvmfunc,args,this->ID->ID);
+	return builder.CreateCall(llvmfunc,args);
 }
 
 llvm::Value* CalcExprAST::getval(ASTContext ctx)

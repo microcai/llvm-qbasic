@@ -307,8 +307,6 @@ public:
 
     virtual llvm::Value* getptr(ASTContext) { return 0;}; // cann't get the address
     virtual llvm::Value* getval(ASTContext);
-		// 函数有自己的nameresolve 过程
-    virtual DimAST* nameresolve(ASTContext ctx);
 	static	llvm::Value * defaultprototype(ASTContext ctx,std::string functionname);
 };
 
