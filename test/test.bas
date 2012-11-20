@@ -18,13 +18,13 @@ end function
 
 sub main()
 
-arraydim a as long
+dim a as long
 
 dim i as int
 
 for i = 1 to 100
 
-a(i) = 	ffffab(a)
+a  = ffffab(a)
 
 end for
 

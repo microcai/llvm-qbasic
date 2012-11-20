@@ -426,23 +426,26 @@ public:
 	// 每个类型都会有自己的 Operator 实现.
 	// 对于其他类型来说, 呵呵, 那就是 Load / Store 啦
 	// 运算结果是一个 ExprASTPtr , 事实上可以忽略,呵呵. C++编译器将自动释放它
-	virtual	ExprASTPtr operator_assign(ASTContext , NamedExprASTPtr lval, ExprASTPtr rval) = 0;
+	virtual	ExprASTPtr operator_assign(ASTContext , NamedExprASTPtr lval, ExprASTPtr rval);
 
 	// 加法运算, 对于字符串来说, 这运算过程会生成一个临时字符串,
 	// 临时字符串 AST 对象将会被 AST节点被析构的时候向当前llvm basicbody 位置插入临时字符串的释放指令
-	virtual ExprASTPtr operator_add(ASTContext , ExprASTPtr lval, ExprASTPtr rval) =0 ;
+	virtual ExprASTPtr operator_add(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
 
 	// 减法运算, 对于字符串来说无此类型的运算. 试图对字符串执行减法导致一个编译期错误
-	virtual ExprASTPtr operator_sub(ASTContext , ExprASTPtr lval, ExprASTPtr rval) =0 ;
+	virtual ExprASTPtr operator_sub(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
 
 	// 乘法运算, 对字符串来说无此类型的运算
-	virtual ExprASTPtr operator_mul(ASTContext, ExprASTPtr lval, ExprASTPtr rval) =0;
+	virtual ExprASTPtr operator_mul(ASTContext, ExprASTPtr lval, ExprASTPtr rval);
 
 	//除法
-	virtual ExprASTPtr operator_div(ASTContext, ExprASTPtr lval, ExprASTPtr rval) =0;
+	virtual ExprASTPtr operator_div(ASTContext, ExprASTPtr lval, ExprASTPtr rval);
 	
 	// 各种比较运算
-	virtual	ExprASTPtr operator_comp(ASTContext,MathOperator op,ExprASTPtr lval,ExprASTPtr rval) =0;
+	virtual	ExprASTPtr operator_comp(ASTContext, MathOperator op, ExprASTPtr lval,ExprASTPtr rval);
+
+	// 括号操作, 也就是函数调用, 或者是数组下标寻址
+	virtual ExprASTPtr operator_call(ASTContext, NamedExprASTPtr target, ExprListASTPtr callargslist);
 };
 
 // 整数
@@ -459,9 +462,10 @@ class NumberExprOperation : public ExprOperation {
 class StringExprOperation : public ExprOperation {
     virtual ExprASTPtr operator_assign(ASTContext , NamedExprASTPtr lval, ExprASTPtr rval);
     virtual ExprASTPtr operator_add(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
-    virtual ExprASTPtr operator_sub(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
-    virtual ExprASTPtr operator_mul(ASTContext ctx, ExprASTPtr lval, ExprASTPtr rval);
-    virtual ExprASTPtr operator_div(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
     virtual ExprASTPtr operator_comp(ASTContext ctx, MathOperator op, ExprASTPtr lval, ExprASTPtr rval);
 };
 
+// 函数
+class FunctionExprOperation : public ExprOperation{
+    virtual ExprASTPtr operator_call(ASTContext , NamedExprASTPtr target, ExprListASTPtr callargslist);;
+};
