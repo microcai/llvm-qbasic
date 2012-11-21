@@ -12,9 +12,25 @@
 
 function  fibonacci( n as long ) as long
 
+dim prev
+dim curr
+dim tmp
+dim idx
+
+curr=1
+prev=0
+tmp=0
+idx=0
+
 if  n < 2 then return n
 
-return  fibonacci(n - 2) + fibonacci(n - 1)
+for idx = 2 to n
+			tmp = prev
+			prev = curr
+			curr = tmp + prev	
+end for
+
+return curr
 
 end function
 

@@ -1,0 +1,80 @@
+fibonacci(40) benchmark test for QBASIC
+
+
+- - - - - - - - - - - - - - - - - - - - -
+C  gcc -O2
+
+#include <stdio.h>
+
+int fibonacci(n) {
+  if (n < 2) {
+    return n;
+  }
+  return fibonacci(n - 2) + fibonacci(n - 1);
+}
+
+int main() {
+  printf("%d\n", fibonacci(40));
+  return 0;
+}
+- - - - - - - - - - - - - - - - - - - - -
+real    0m0.462s
+user    0m0.462s
+sys     0m0.000s
+===========================================
+
+
+jua:
+
+ocal function fibonacci(n)
+  if n < 2 then
+      return n
+        end
+          return fibonacci(n - 2) + fibonacci(n - 1)
+end
+
+io.write(fibonacci(40), "\n")
+- - - - - - - - - - - - - - - - - - - - -
+real    0m16.516s
+user    0m16.507s
+sys     0m0.002s
+
+===========================================
+
+python
+
+def fibonacci(n):
+    if n < 2:
+        return n
+    return fibonacci(n - 2) + fibonacci(n - 1)
+
+print fibonacci(40)
+- - - - - - - - - - - - - - - - - - - - -
+real    0m46.014s
+user    0m45.962s
+sys     0m0.035s
+===========================================
+
+
+QBASIC  , llvm-qbc  fab.bas 
+
+function  fibonacci( n as long ) as long
+  dim f1
+  dim f2	
+  if  n < 2 then return n
+  f1 = fibonacci(n - 2)
+  f2 = fibonacci(n - 1)
+  return  f1 + f2
+
+end function
+
+sub main()
+  print  fibonacci(40 )
+end sub
+- - - - - - - - - - - - - - - - - - - - -
+real    0m1.065s
+user    0m1.065s
+sys     0m0.000s
+===========================================
+
+QBASIC is just a little slower that C ! I haven't optimize the code !
