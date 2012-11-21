@@ -203,6 +203,17 @@ void StringExprTypeAST::destory(ASTContext ctx, llvm::Value* Ptr)
 	builder.CreateCall(func_free,builder.CreateLoad(Ptr));
 }
 
+void ArrayExprTypeAST::destory(ASTContext ctx, llvm::Value* Ptr)
+{
+	debug("generate dealloca for QBArray\n");
+
+	llvm::IRBuilder<>	builder(ctx.block);
+
+	llvm::Constant * func_btr_qbarray_free = qbc::getbuiltinprotype(ctx,"btr_qbarray_free");
+
+	builder.CreateCall(func_btr_qbarray_free,Ptr);
+}
+
 llvm::Value* CallableExprTypeAST::defaultprototype(ASTContext ctx, std::string functionname)
 {
     //build default function type

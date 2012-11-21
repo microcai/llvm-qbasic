@@ -344,10 +344,8 @@ varref:	expression '.' tID { //没错, 成员引用, 前面可是可以为表达
 		// 所以我构建一个标识符引用语句. 这个会被用来构建函数调用和数组语句以及变量.
 		$$ = new VariableExprAST(  new ReferenceAST( $1 ));
 	}
-	|call_function {
-		debug("array not supported yet\n");
-		exit(2);
-	};
+	|call_function
+	;
 
 comma_or_colon : ':' | ';';
 

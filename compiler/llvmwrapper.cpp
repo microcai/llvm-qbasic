@@ -137,6 +137,9 @@ BUILTINTYPE_DEFINE(btr_qbarray_new , Void , {
 
 
 BUILTINTYPE_DEFINE(btr_qbarray_free , Void , {
+	args.push_back(builder.getInt8PtrTy());}  )
+
+BUILTINTYPE_DEFINE(btr_qbarray_at , Int8Ptr , {
 	args.push_back(builder.getInt8PtrTy());
 	args.push_back(getplatformlongtype());}  )
 
@@ -162,6 +165,7 @@ llvm::Constant * getbuiltinprotype(ASTContext ctx,const std::string name)
 		RETURNBUILTINENTRY(strcat)
 		RETURNBUILTINENTRY(btr_qbarray_new)
 		RETURNBUILTINENTRY(btr_qbarray_free)
+		RETURNBUILTINENTRY(btr_qbarray_at)
 
 		printf("no define for %s yet\n",name.c_str());
 		exit(1);

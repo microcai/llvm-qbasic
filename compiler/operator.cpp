@@ -30,6 +30,7 @@
 
 static	NumberExprOperation	numberop;
 static	StringExprOperation stringop;
+static	ArrayExprOperation	arrayop;
 static	FunctionExprOperation funcop;
 
 ExprOperation* NumberExprTypeAST::getop()
@@ -44,7 +45,7 @@ ExprOperation* StringExprTypeAST::getop()
 
 ExprOperation* ArrayExprTypeAST::getop()
 {
-	exit(1);
+	return &arrayop;
 }
 
 ExprOperation* CallableExprTypeAST::getop()
@@ -121,6 +122,23 @@ ExprASTPtr StringExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr 
 
 	builder.CreateStore(dupedstr,lval->getptr(ctx));
 	return lval;
+}
+
+// 为数组赋值
+ExprASTPtr ArrayExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr lval, ExprASTPtr rval)
+{
+	// 获得数组对象的指针, 这会生成一个 operator_call 操作获得一个指针呢! 不用当心
+	// AST 框架已经为我们做好了, 现在这个指针就可以直接赋值了, 放心的赋值吧.
+	llvm::Value * LHS =	lval->getptr(ctx);
+	llvm::Value * RHS =	rval->getval(ctx);
+	debug("operator assign for array number\n");
+
+	//lval->nameresolve(ctx)->type.
+//	return lval->type(ctx)->getop()->operator_assign(ctx,lval,rval);
+
+	//赋值也是很简单的, 要调用element类型的operator 就是了
+	debug("assign to array element \n");
+    exit(2);
 }
 
 // 数字加法.
@@ -228,6 +246,26 @@ ExprASTPtr StringExprOperation::operator_comp(ASTContext ctx,MathOperator op, Ex
 	exit(2);
 }
 
+// 那个, 数组下标调用
+ExprASTPtr ArrayExprOperation::operator_call(ASTContext ctx, NamedExprASTPtr target, ExprListASTPtr callargslist)
+{
+	llvm::IRBuilder<>	builder(ctx.block);
+	debug("array index\n");
+
+	// 获得数组地址
+	llvm::Value * arrayptr = target->nameresolve(ctx)->getptr(ctx);
+	// 获得下标
+	llvm::Value * index = callargslist->expression_list.begin()->get()->getval(ctx);
+
+	// 调用数组下标函数
+	llvm::Constant * func_qb_array_at = qbc::getbuiltinprotype(ctx,"btr_qbarray_at");
+
+	llvm::Value * tmpval = builder.CreateCall2(func_qb_array_at,arrayptr,index);
+
+
+	return target->type(ctx)->createtemp(ctx,tmpval);
+}
+
 // 函数调用
 ExprASTPtr FunctionExprOperation::operator_call(ASTContext ctx,NamedExprASTPtr calltarget,ExprListASTPtr callargs)
 {
@@ -270,6 +308,12 @@ ExprASTPtr NumberExprTypeAST::createtemp(ASTContext ctx, llvm::Value* val)
 ExprASTPtr StringExprTypeAST::createtemp(ASTContext ctx, llvm::Value* val)
 {
     return boost::make_shared<TempStringExprAST>(ctx,val);
+}
+
+ExprASTPtr ArrayExprTypeAST::createtemp(ASTContext ctx, llvm::Value*v)
+{
+	debug("allocate for ArrayExprTypeAST , elementtype is\n");//, elementtype->name(ctx).c_str());
+	return this->elementtype->createtemp(ctx,v);
 }
 
 //TODO

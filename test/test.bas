@@ -16,6 +16,12 @@ end function
 
 sub main()
 
-	abc(1)
+arraydim a as long
+
+dim b as long
+
+b = a(1) 
+
+//print "the pid is " , getpid()
 
 end sub

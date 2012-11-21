@@ -394,12 +394,11 @@ public:
 
 	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
     virtual ExprOperation* getop();
-    virtual void destory(ASTContext , llvm::Value* Ptr){};
+    virtual void destory(ASTContext , llvm::Value* Ptr);
+    virtual ExprASTPtr createtemp(ASTContext , llvm::Value* );
 
+public:
 	static ExprTypeASTPtr create(ExprTypeASTPtr);
-    virtual ExprASTPtr createtemp(ASTContext , llvm::Value* ){
-		{ printf("can\t allocate for ArrayExprTypeAST\n"); exit(10);};
-	};
 };
 
 //  函数对象类型. 这是基类
@@ -490,6 +489,11 @@ class StringExprOperation : public ExprOperation {
     virtual ExprASTPtr operator_assign(ASTContext , NamedExprASTPtr lval, ExprASTPtr rval);
     virtual ExprASTPtr operator_add(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
     virtual ExprASTPtr operator_comp(ASTContext ctx, MathOperator op, ExprASTPtr lval, ExprASTPtr rval);
+};
+
+class ArrayExprOperation : public ExprOperation{
+	virtual ExprASTPtr operator_assign(ASTContext ctx,NamedExprASTPtr lval,ExprASTPtr rval);
+    virtual ExprASTPtr operator_call(ASTContext , NamedExprASTPtr target, ExprListASTPtr callargslist);	
 };
 
 // 函数
