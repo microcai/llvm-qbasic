@@ -7,15 +7,15 @@
 */
 
 /*
-	for loop test
+	array test
 */
-
-function abc( a as long)
-	print 123
-end function
 
 sub main()
 
-	abc(1)
+arraydim a as long
+
+a(2) = 123456789
+
+print a(2)
 
 end sub

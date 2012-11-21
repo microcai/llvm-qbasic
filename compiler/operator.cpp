@@ -28,10 +28,11 @@
 
 #define debug std::printf
 
-static	NumberExprOperation	numberop;
-static	StringExprOperation stringop;
-static	FunctionExprOperation funcop;
-
+static	NumberExprOperation		numberop;
+static	StringExprOperation 	stringop;
+static	ArrayExprOperation		arrayop;
+static	FunctionExprOperation	funcop;
+static	PointerTypeOperation	pointerop;
 ExprOperation* NumberExprTypeAST::getop()
 {
 	return & numberop;
@@ -44,13 +45,34 @@ ExprOperation* StringExprTypeAST::getop()
 
 ExprOperation* ArrayExprTypeAST::getop()
 {
-	exit(1);
+	return &arrayop;
 }
 
 ExprOperation* CallableExprTypeAST::getop()
 {
 	return &funcop;
 }
+
+ExprOperation* PointerTypeAST::getop()
+{
+	return &pointerop;
+}
+
+PointerTypeASTPtr VoidExprTypeAST::getpointetype()
+{
+    return PointerTypeASTPtr();
+}
+
+PointerTypeASTPtr NumberExprTypeAST::getpointetype()
+{
+	return boost::make_shared<PointerTypeAST>(GetNumberExprTypeAST());
+}
+
+PointerTypeASTPtr StringExprTypeAST::getpointetype()
+{
+	return boost::make_shared<PointerTypeAST>(GetStringExprTypeAST());
+}
+
 
 ExprASTPtr ExprOperation::operator_assign(ASTContext, NamedExprASTPtr lval, ExprASTPtr rval)
 {
@@ -102,9 +124,10 @@ ExprASTPtr NumberExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr 
 
  	llvm::IRBuilder<> builder(ctx.block);
  	// 生成赋值语句,因为是简单的整型赋值,所以可以直接生成而不用调用 operator==()
+
+	LHS = builder.CreateBitCast(LHS,qbc::getplatformlongtype()->getPointerTo());
   	builder.CreateStore(RHS,LHS);
-	debug("get ptr of this\n");
-	return lval; // FIXME 可以吧, 呵呵
+	return lval->type(ctx)->createtemp(ctx,LHS,NULL);
 }
 
 //TODO 添加 free + strdup  指令
@@ -123,6 +146,22 @@ ExprASTPtr StringExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr 
 	return lval;
 }
 
+// 为数组赋值
+ExprASTPtr ArrayExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr lval, ExprASTPtr rval)
+{
+	// 获得数组对象的指针, 这会生成一个 operator_call 操作获得一个指针呢! 不用当心
+	// AST 框架已经为我们做好了, 现在这个指针就可以直接赋值了, 放心的赋值吧.
+
+	debug("operator assign for array number %p\n",lval.get());
+
+	ArrayExprTypeAST * reallval =dynamic_cast<ArrayExprTypeAST*>(lval->type(ctx).get());
+	
+	//赋值也是很简单的, 要调用element类型的operator 就是了
+	debug("assign to array element , %p \n" , reallval);
+
+	return reallval->elementtype->getop()->operator_assign(ctx,lval,rval);
+}
+
 // 数字加法.
 ExprASTPtr NumberExprOperation::operator_add(ASTContext ctx, ExprASTPtr lval, ExprASTPtr rval)
 {
@@ -132,7 +171,7 @@ ExprASTPtr NumberExprOperation::operator_add(ASTContext ctx, ExprASTPtr lval, Ex
 	llvm::Value * result = builder.CreateAdd(LHS,RHS);
 
 	//TODO , 构造临时 Number 对象
-	return lval->type(ctx)->createtemp(ctx,result);
+	return lval->type(ctx)->createtemp(ctx,result,NULL);
 }
 
 // 字符串加法
@@ -155,7 +194,7 @@ ExprASTPtr StringExprOperation::operator_add(ASTContext ctx, ExprASTPtr lval, Ex
 	
 	builder.CreateCall2(llvmfunc_strcpy,resultstring,lval->getval(ctx));
 	builder.CreateCall2(llvmfunc_strcat,resultstring,rval->getval(ctx));
-	return 	lval->type(ctx)->createtemp(ctx,resultstring);
+	return 	lval->type(ctx)->createtemp(ctx,resultstring,NULL);
 }
 
 
@@ -168,7 +207,7 @@ ExprASTPtr NumberExprOperation::operator_sub(ASTContext ctx, ExprASTPtr lval, Ex
 	llvm::Value * result = builder.CreateSub(LHS,RHS);
 
 	//TODO , 构造临时 Number 对象
-	return boost::make_shared<TempNumberExprAST>(ctx,result);
+	return	lval->type(ctx)->createtemp(ctx,result,NULL);
 }
 
 //  数字乘法, 使用乘法指令
@@ -181,7 +220,7 @@ ExprASTPtr NumberExprOperation::operator_mul(ASTContext ctx, ExprASTPtr lval, Ex
 	
 	result = builder.CreateMul(LHS,RHS);
 	//TODO , 构造临时 Number 对象
-	return boost::make_shared<TempNumberExprAST>(ctx,result);
+	return lval->type(ctx)->createtemp(ctx,result,NULL);
 }
 
 // 数字除法
@@ -193,7 +232,7 @@ ExprASTPtr NumberExprOperation::operator_div(ASTContext ctx, ExprASTPtr lval, Ex
 	llvm::Value * result = builder.CreateSDiv(LHS,RHS);
 
 	//TODO , 构造临时 Number 对象
-	return boost::make_shared<TempNumberExprAST>(ctx,result);
+	return lval->type(ctx)->createtemp(ctx,result,NULL);
 }
 
 ExprASTPtr NumberExprOperation::operator_comp(ASTContext ctx, MathOperator op, ExprASTPtr lval, ExprASTPtr rval)
@@ -219,13 +258,39 @@ ExprASTPtr NumberExprOperation::operator_comp(ASTContext ctx, MathOperator op, E
 	}
 	
 	//TODO , 构造临时 Number 对象
-	return boost::make_shared<TempNumberExprAST>(ctx,result);
+	return lval->type(ctx)->createtemp(ctx,result,NULL);
 }
 
 ExprASTPtr StringExprOperation::operator_comp(ASTContext ctx,MathOperator op, ExprASTPtr lval, ExprASTPtr rval)
 {
 	debug("string comp not supported yet\n");
 	exit(2);
+}
+
+// 那个, 数组下标调用
+ExprASTPtr ArrayExprOperation::operator_call(ASTContext ctx, NamedExprASTPtr target, ExprListASTPtr callargslist)
+{
+	llvm::IRBuilder<>	builder(ctx.block);
+	debug("array index\n");
+
+	// 获得数组地址
+	llvm::Value * arrayptr = target->getptr(ctx);
+	// 获得下标
+	llvm::Value * index = callargslist->expression_list.begin()->get()->getval(ctx);
+
+	// 调用数组下标函数
+	llvm::Constant * func_qb_array_at = qbc::getbuiltinprotype(ctx,"btr_qbarray_at");
+
+	llvm::Value * tmpval = builder.CreateCall2(func_qb_array_at,arrayptr,index);
+
+	ArrayExprTypeAST * realtarget =dynamic_cast<ArrayExprTypeAST*>(target->nameresolve(ctx)->type.get());
+
+	debug("realtarget is %p\n",realtarget);
+
+	ExprASTPtr tmp = realtarget->elementtype->createtemp(ctx,NULL, tmpval);
+	debug("array index,  little tmp created as %p\n",tmp.get());
+	return tmp;
+	exit(100);
 }
 
 // 函数调用
@@ -259,22 +324,28 @@ ExprASTPtr FunctionExprOperation::operator_call(ASTContext ctx,NamedExprASTPtr c
 		}
 	}
 
-	return calltarget->type(ctx)->createtemp( ctx, builder.CreateCall(llvmfunc,args) );
+	return calltarget->type(ctx)->createtemp( ctx, builder.CreateCall(llvmfunc,args) ,NULL);
 }
 
-ExprASTPtr NumberExprTypeAST::createtemp(ASTContext ctx, llvm::Value* val)
+ExprASTPtr NumberExprTypeAST::createtemp(ASTContext ctx, llvm::Value* val , llvm::Value *ptr)
 {
-	return boost::make_shared<TempNumberExprAST>(ctx,val);
+	return boost::make_shared<TempNumberExprAST>(ctx,val,ptr);
 }
 
-ExprASTPtr StringExprTypeAST::createtemp(ASTContext ctx, llvm::Value* val)
+ExprASTPtr StringExprTypeAST::createtemp(ASTContext ctx, llvm::Value* val , llvm::Value *ptr)
 {
-    return boost::make_shared<TempStringExprAST>(ctx,val);
+    return boost::make_shared<TempStringExprAST>(ctx,val,ptr);
+}
+
+ExprASTPtr ArrayExprTypeAST::createtemp(ASTContext ctx, llvm::Value*v , llvm::Value *ptr)
+{
+	debug("allocate for ArrayExprTypeAST , elementtype is\n");//, elementtype->name(ctx).c_str());
+	exit(1);//	return this->elementtype->createtemp(ctx,v);
 }
 
 //TODO
-ExprASTPtr CallableExprTypeAST::createtemp(ASTContext ctx, llvm::Value*v)
+ExprASTPtr CallableExprTypeAST::createtemp(ASTContext ctx, llvm::Value*v , llvm::Value *ptr)
 {
-	return this->returntype->createtemp(ctx,v);
+	return this->returntype->createtemp(ctx,v,ptr);
 }
 

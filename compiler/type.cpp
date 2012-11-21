@@ -100,7 +100,26 @@ ExprTypeASTPtr CalcExprAST::type(ASTContext ctx)
 
 ExprTypeASTPtr CallExprAST::type(ASTContext ctx)
 {
-	return calltarget->nameresolve(ctx)->type;
+	ExprTypeASTPtr typeast = calltarget->nameresolve(ctx)->type;
+
+	if(typeast){
+		debug("got type of function or array\n");
+	}
+	
+	ArrayExprTypeAST * arrayval =dynamic_cast<ArrayExprTypeAST*>(typeast.get());
+	CallableExprTypeAST* callval = dynamic_cast<CallableExprTypeAST*>(typeast.get());
+
+	if(arrayval){
+		debug("got type of function or array ? ==== array!\n");
+		return arrayval->elementtype;
+	}if(callval){
+		debug("got type of function or array ? ==== func!");
+		return callval->returntype;
+	}else
+	{
+		debug("operator () on non-function nor array");
+		exit(12);	
+	}
 }
 
 llvm::Type* VoidExprTypeAST::llvm_type(ASTContext ctx)
@@ -161,6 +180,12 @@ llvm::Value* NumberExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
 	return builder.CreateAlloca(this->llvm_type(ctx),0,_name);
 }
 
+llvm::Value* ExprTypeAST::deref(ASTContext ctx, llvm::Value* v)
+{
+	debug("de reference unkonw type\n");
+	exit(200);
+}
+
 llvm::Value* StringExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
 {
 	debug("allocation for value %s type string\n",_name.c_str());
@@ -192,6 +217,17 @@ llvm::Value* ArrayExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
 	return newval;
 }
 
+llvm::Value* NumberExprTypeAST::deref(ASTContext ctx, llvm::Value* v)
+{
+	llvm::IRBuilder<> builder(ctx.block);
+
+	debug("de reference long type\n");
+
+	llvm::Value * ptr = builder.CreateBitCast(v,qbc::getplatformlongtype()->getPointerTo());
+
+	return builder.CreateLoad(ptr);
+}
+
 void StringExprTypeAST::destory(ASTContext ctx, llvm::Value* Ptr)
 {
 	debug("generate dealloca for string\n");
@@ -201,6 +237,17 @@ void StringExprTypeAST::destory(ASTContext ctx, llvm::Value* Ptr)
 	llvm::Constant * func_free = qbc::getbuiltinprotype(ctx,"free");
 
 	builder.CreateCall(func_free,builder.CreateLoad(Ptr));
+}
+
+void ArrayExprTypeAST::destory(ASTContext ctx, llvm::Value* Ptr)
+{
+	debug("generate dealloca for QBArray\n");
+
+	llvm::IRBuilder<>	builder(ctx.block);
+
+	llvm::Constant * func_btr_qbarray_free = qbc::getbuiltinprotype(ctx,"btr_qbarray_free");
+
+	builder.CreateCall(func_btr_qbarray_free,Ptr);
 }
 
 llvm::Value* CallableExprTypeAST::defaultprototype(ASTContext ctx, std::string functionname)
@@ -260,34 +307,15 @@ DimAST* NamedExprAST::nameresolve(ASTContext ctx)
 	exit(1);
 }
 
-#if 0
-DimAST* CallExprAST::nameresolve(ASTContext ctx)
+llvm::Value* TempNumberExprAST::getval(ASTContext)
 {
-	std::string functionname = this->calltarget->getptr(ctx);
-
-	debug("searching for function %s\n",functionname.c_str());
-
-	if(! ctx.codeblock ){
-
-		fprintf(stderr,"function %s not defined, try to call any way, you will get ld undefined reference if function %s is not included in the linking command line\n",functionname.c_str(),functionname.c_str());
-
-		return NULL;
+	if(this->ptr)
+	{
+		return this->type(ctx)->deref(ctx,this->ptr);		
 	}
-
-	std::map< std::string, FunctionDimAST* >::iterator dimast_iter = ctx.codeblock->functions.find(functionname);
-
-	// 定义找到
-	if(dimast_iter != ctx.codeblock->functions.end()){
-
-		debug("searching for function %s have result %p\n",functionname.c_str(),dimast_iter->second);
-
-		return dimast_iter->second;
-	}
-	ctx.codeblock = ctx.codeblock->parent;
-	return nameresolve(ctx);
+	return this->val;
 }
 
-#endif
 
 llvm::Value* VariableExprAST::getval(ASTContext ctx)
 {
@@ -306,11 +334,20 @@ llvm::Value* VariableExprAST::getptr(ASTContext ctx)
 	return nameresolve(ctx)->getptr(ctx);
 }
 
+// 获得返回值的引用, 那么这个是数组吧?
+llvm::Value* CallExprAST::getptr(ASTContext ctx)
+{
+	ExprASTPtr tmp = calltarget->type(ctx)->getop()->operator_call(ctx,calltarget,callargs);
+	return tmp->getptr(ctx);
+}
+
 // so simple , right ?
 llvm::Value* AssignmentExprAST::getval(ASTContext ctx)
 {
 	return this->type(ctx)->getop()->operator_assign(ctx,this->lval,this->rval)->getval(ctx);
 }
+
+#include <signal.h>
 
 llvm::Value* CallExprAST::getval(ASTContext ctx)
 {
@@ -387,9 +424,17 @@ ConstStringExprAST::ConstStringExprAST(const std::string _str)
 ArrayExprTypeAST::ArrayExprTypeAST(ExprTypeASTPtr _elementtype)
 	:elementtype(_elementtype)
 {
-	
 }
 
+CallableExprTypeAST::CallableExprTypeAST(ExprTypeASTPtr _returntype)
+	:returntype(_returntype)
+{
+}
+
+PointerTypeAST::PointerTypeAST(ExprTypeASTPtr _pointeetype)
+	:pointeetype(_pointeetype)
+{
+}
 
 NamedExprAST::NamedExprAST(ReferenceAST* _ID)
 	:ID(_ID)
@@ -417,16 +462,16 @@ CalcExprAST::CalcExprAST(ExprAST* l, MathOperator _op, ExprAST* r)
 	
 }
 
-TempExprAST::TempExprAST(ASTContext _ctx, llvm::Value* _val, ExprTypeASTPtr type) :ctx(_ctx),val(_val),_type(type) {}
+TempExprAST::TempExprAST(ASTContext _ctx, llvm::Value* _val , llvm::Value *_ptr, ExprTypeASTPtr type) :ctx(_ctx),val(_val),_type(type),ptr(_ptr) {}
 
-TempNumberExprAST::TempNumberExprAST(ASTContext ctx,llvm::Value* numberresult)
-	:TempExprAST(ctx,numberresult , numbertype)
+TempNumberExprAST::TempNumberExprAST(ASTContext ctx,llvm::Value* numberresult, llvm::Value *ptr)
+	:TempExprAST(ctx,numberresult,ptr, numbertype)
 {
 
 }
 
-TempStringExprAST::TempStringExprAST(ASTContext ctx,llvm::Value* result)
-	:TempExprAST(ctx,result,  stringtype)
+TempStringExprAST::TempStringExprAST(ASTContext ctx,llvm::Value* result , llvm::Value *ptr)
+	:TempExprAST(ctx,result,ptr,  stringtype)
 {
 	
 }
