@@ -7,21 +7,15 @@
 */
 
 /*
-	for loop test
+	array test
 */
-
-function abc( a as long)
-	print 123
-end function
 
 sub main()
 
 arraydim a as long
 
-dim b as long
+a(2) = 123456789
 
-b = a(1) 
-
-//print "the pid is " , getpid()
+print a(2)
 
 end sub

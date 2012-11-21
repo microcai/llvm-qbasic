@@ -96,7 +96,11 @@ class MemberReferenceAST : public ReferenceAST
 
 class ExprOperation;
 class ExprAST;
+class PointerTypeAST;
+
 typedef boost::shared_ptr<ExprAST>	ExprASTPtr;
+typedef boost::shared_ptr<PointerTypeAST> PointerTypeASTPtr;
+
 // 变量类型定义.
 class ExprTypeAST : public AST
 {
@@ -115,6 +119,9 @@ public:
 	// 为该类型在栈上分配一块内存, 返回分配的指针 , 有可能的话,起个名字
 	virtual llvm::Value * Alloca(ASTContext ctx, const std::string _name){};
 
+	// 解引用指针, 用户解引用 Alloca 返回的指针或则是其他指针
+	virtual llvm::Value * deref(ASTContext ctx, llvm::Value *v);
+
 	// 为该类型生成初始化操作指令 , 默认为空操作, 也就是只要分配个内存就可以了
 	virtual void initalize(ASTContext, llvm::Value * Ptr) {};
 
@@ -129,13 +136,17 @@ public:
 	// 这是最重要的类型了, 类型只所以为类型就是因为这个
 	virtual ExprOperation * getop() = 0;
 
+	virtual	PointerTypeASTPtr	getpointetype() =0;
+
 	// 为 llvm::Valut * 构造一个新的类型, 用来自动释放
-	virtual ExprASTPtr		createtemp(ASTContext ,llvm::Value *)=0;//{ exit(10);};
+	virtual ExprASTPtr		createtemp(ASTContext ,llvm::Value * , llvm::Value *ptr)=0;//{ exit(10);};
 
 public:
     ExprTypeAST(){}
     ExprTypeAST( size_t size , const std::string __typename );
     virtual ~ExprTypeAST(){}; // do nothing
+protected:
+    void printf(const char* arg1);
 };
 typedef boost::shared_ptr<ExprTypeAST>		ExprTypeASTPtr;
 
@@ -156,6 +167,7 @@ public:
 	// 最终在程序生成的时候转化为正确的汇编语句.
 	// 对于计算表达式来说, 这是不能执行的操作, 故而不在基类里
 	virtual llvm::Value *getval(ASTContext) = 0;
+	virtual llvm::Value *getptr(ASTContext) = 0;
 
     virtual ~ExprAST(){}
 };
@@ -171,6 +183,7 @@ public:
 	virtual ExprTypeASTPtr type(ASTContext );
 
     virtual llvm::Value* getval(ASTContext ){ return 0;}
+    virtual llvm::Value* getptr(ASTContext ){exit(132);};
 };
 
 // 用来管理临时对象, 这是实现 QBASIC C++ style 的临时对象的重点哦~
@@ -178,12 +191,14 @@ class TempExprAST : public ExprAST{
 	ExprTypeASTPtr _type;
 public:
 	llvm::Value * val;
+	llvm::Value	* ptr;
 	ASTContext ctx;
 	
     virtual ExprTypeASTPtr type(ASTContext ctx){return _type;}
 
-	TempExprAST(ASTContext _ctx,llvm::Value * _val ,ExprTypeASTPtr type);
+	TempExprAST(ASTContext _ctx,llvm::Value * _val, llvm::Value *ptr,ExprTypeASTPtr type);
     virtual llvm::Value* getval(ASTContext ) { return val;}
+    virtual llvm::Value* getptr(ASTContext ){return ptr;}
     virtual ~TempExprAST(){};
 };
 
@@ -191,7 +206,8 @@ public:
 class TempNumberExprAST : public TempExprAST
 {
 public:
-    TempNumberExprAST(ASTContext ctx,llvm::Value * numberresult);
+    TempNumberExprAST(ASTContext ctx,llvm::Value * numberresult,llvm::Value * pointertoval);
+    virtual llvm::Value* getval(ASTContext );
 };
 
 // 常数表达式
@@ -204,7 +220,8 @@ public:
 	
     virtual ExprTypeASTPtr type(ASTContext );
 
-    virtual llvm::Value* getval(ASTContext );	
+    virtual llvm::Value* getval(ASTContext );
+	virtual llvm::Value* getptr(ASTContext ){exit(128);};
 };
 
 // 用户字符串, 终于实现了有木有!
@@ -215,13 +232,14 @@ class ConstStringExprAST :public ExprAST
 public:
 	ConstStringExprAST(const std::string _str);
 	virtual ExprTypeASTPtr type(ASTContext );
-    virtual llvm::Value* getval(ASTContext );;
+    virtual llvm::Value* getval(ASTContext );
+	virtual llvm::Value* getptr(ASTContext ){exit(129);};
 };
 
 class TempStringExprAST : public TempExprAST
 {
 public:
-    TempStringExprAST(ASTContext ctx,llvm::Value * result);
+    TempStringExprAST(ASTContext ctx,llvm::Value * result , llvm::Value *ptr);
     virtual ~TempStringExprAST();
 };
 
@@ -273,6 +291,7 @@ public: // 以两个子表达式构建
 	CalcExprAST(ExprAST * , MathOperator op , ExprAST * );
 	virtual ExprTypeASTPtr type(ASTContext);
     virtual llvm::Value* getval(ASTContext);
+	virtual llvm::Value* getptr(ASTContext){exit(177);}
 };
 
 // 赋值表达式. 注意, 在 QB 中没有赋值表达式
@@ -287,6 +306,7 @@ public:
 	
     virtual ExprTypeASTPtr type(ASTContext);
     virtual llvm::Value* getval(ASTContext);
+    virtual llvm::Value* getptr(ASTContext ){exit(127);};
 };
 
 typedef boost::shared_ptr<AssignmentExprAST> AssignmentExprASTPtr;
@@ -313,7 +333,7 @@ public:
 	CallExprAST(NamedExprAST* , ExprListAST * exp_list = NULL);
 	virtual ExprTypeASTPtr	type(ASTContext);
 
-    virtual llvm::Value* getptr(ASTContext) { return 0;}; // cann't get the address
+    virtual llvm::Value* getptr(ASTContext); // cann't get the address
     virtual llvm::Value* getval(ASTContext);
 };
 
@@ -335,7 +355,10 @@ public:
     virtual llvm::Type* llvm_type(ASTContext ctx);
     virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name){return NULL;}
     virtual ExprOperation* getop(){return NULL;}
-    virtual ExprASTPtr createtemp(ASTContext , llvm::Value* ){ printf("can\t allocate for VoidExprTypeAST\n"); exit(10);};
+    virtual PointerTypeASTPtr getpointetype();
+    virtual ExprASTPtr createtemp(ASTContext , llvm::Value* , llvm::Value *ptr ){ ::printf("can\'t allocate for VoidExprTypeAST\n");
+	exit(10);};
+
 };
 
 //	整型,支持数学运算
@@ -350,10 +373,13 @@ public:
     virtual size_t size(){return sizeof(long);};
 	
 	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
+    virtual llvm::Value* deref(ASTContext ctx, llvm::Value* v);
 
     virtual ExprOperation* getop();
 
-    virtual ExprASTPtr createtemp(ASTContext ctx,llvm::Value* val);
+    virtual PointerTypeASTPtr getpointetype();
+
+    virtual ExprASTPtr createtemp(ASTContext ctx,llvm::Value* val , llvm::Value *ptr);	
 
 	static ExprTypeASTPtr   GetNumberExprTypeAST();
 };
@@ -370,14 +396,18 @@ public:
 
 	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
     virtual ExprOperation* getop();
+    virtual PointerTypeASTPtr getpointetype();;
+	
     virtual void destory(ASTContext , llvm::Value* Ptr);
 
-    virtual ExprASTPtr createtemp(ASTContext , llvm::Value* );
+    virtual ExprASTPtr createtemp(ASTContext , llvm::Value*  , llvm::Value *ptr);
 	
 	static ExprTypeASTPtr GetStringExprTypeAST();
 };
 
 //  数组支持!
+class ArrayExprOperation;
+class CallExprAST;
 class ArrayExprTypeAST : public ExprTypeAST
 {
 	/**
@@ -386,6 +416,8 @@ class ArrayExprTypeAST : public ExprTypeAST
 	 * An Array is of the type  struct QBArray
 	 **/
 	ExprTypeASTPtr	elementtype;
+	friend class ArrayExprOperation;
+	friend class CallExprAST;
 public:
     ArrayExprTypeAST(ExprTypeASTPtr elementtype);
     virtual llvm::Type* llvm_type(ASTContext ctx);
@@ -394,8 +426,9 @@ public:
 
 	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
     virtual ExprOperation* getop();
+    virtual PointerTypeASTPtr getpointetype(){ ::printf("get pointer to type\n");exit(1);};
     virtual void destory(ASTContext , llvm::Value* Ptr);
-    virtual ExprASTPtr createtemp(ASTContext , llvm::Value* );
+    virtual ExprASTPtr createtemp(ASTContext , llvm::Value*  , llvm::Value *ptr);
 
 public:
 	static ExprTypeASTPtr create(ExprTypeASTPtr);
@@ -408,23 +441,38 @@ public:
 class CallableExprTypeAST : public ExprTypeAST{
 	ExprTypeASTPtr	returntype;
 	friend class FunctionDimAST;
+	friend class CallExprAST;
 public:
-    CallableExprTypeAST(ExprTypeASTPtr	_returntype):returntype(_returntype){
-		
-	}
+    CallableExprTypeAST(ExprTypeASTPtr	_returntype);
 	static	llvm::Value * defaultprototype(ASTContext ctx,std::string functionname);
     virtual ExprOperation* getop();
+	virtual PointerTypeASTPtr getpointetype(){::printf("get pointer to function\n");exit(1);};
+	
     virtual llvm::Type* llvm_type(ASTContext ctx);
     virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name){
 
-		printf("alloca function?\n");
+		::printf("alloca function?\n");
 		*((char*)0) = 0;
 		exit(0);
 		
 	}
-    virtual ExprASTPtr createtemp(ASTContext , llvm::Value* );
+    virtual ExprASTPtr createtemp(ASTContext , llvm::Value*  , llvm::Value *ptr);
 };
 
+// 指针类型
+class PointerTypeAST : public ExprTypeAST
+{
+	ExprTypeASTPtr		pointeetype;
+public:
+	PointerTypeAST(ExprTypeASTPtr _pointeetype);
+    virtual ExprOperation* getop();
+    virtual llvm::Type* llvm_type(ASTContext ctx){return llvm::Type::getInt8PtrTy(ctx.module->getContext());};
+    virtual PointerTypeASTPtr getpointetype(){::printf("pointer to pointer\n");exit(1);};
+    virtual ExprASTPtr createtemp(ASTContext ctx, llvm::Value* val , llvm::Value *ptr ){
+		::printf("pointer to tmp  val");
+		exit(1);
+	}
+};
 
 /////////////// 一下类型未实现
 
@@ -433,11 +481,6 @@ class FlatExprTypeAST : ExprTypeAST {
 
 };
 
-// 指针类型
-class PointerTypeAST : public ExprTypeAST
-{
-
-};
 
 // 引用类型
 class ReferenceTypeAST : public ExprTypeAST
@@ -499,4 +542,8 @@ class ArrayExprOperation : public ExprOperation{
 // 函数
 class FunctionExprOperation : public ExprOperation{
     virtual ExprASTPtr operator_call(ASTContext , NamedExprASTPtr target, ExprListASTPtr callargslist);
+};
+
+class PointerTypeOperation: public ExprOperation{
+
 };

@@ -27,8 +27,9 @@
 
 void btr_qbarray_new(QBArray * array, size_t element)
 {
-	memset(array,0,sizeof(*array));
+	memset(array,0,sizeof(QBArray));
 
+	array->capacity = 0;
 	array->elementsize = element;
 	// ROUNDUP
 	array->stride = (element / sizeof(int) + 1 ) * sizeof(int);	
@@ -40,13 +41,13 @@ void btr_qbarray_free(QBArray * array)
 	memset(array,0,sizeof(*array));
 }
 
-void * btr_qbarray_at(QBArray * array,int index)
+void * btr_qbarray_at(QBArray * array,size_t index)
 {
 	// 没有内存就分配呗
 	if(!array->ptr || array->capacity < index * array->stride){
-		//多分配32个
+		//多分配32个		
 		array->capacity = (index + 32)*array->stride;
-		array->ptr = realloc(array->ptr,array->capacity);
+		array->ptr =  realloc(array->ptr,array->capacity);
 	}
-	return ((unsigned char*)array->ptr) + (index - 1  * array->stride);
+	return ((unsigned char*)array->ptr) + ((index - 1)  * array->stride);
 }
