@@ -1,4 +1,8 @@
 # Status update
+	[2012-11-20]
+		[1] dymanic array (one index) support
+		[2] for with step support
+
 	[2012-11-19]
 		[1]	string literal and string variable can assign to string variable
 		[2] deallocating function local string when the function returns

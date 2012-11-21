@@ -21,7 +21,8 @@ To make things even worse, BASIC have not standart that every compiler agree wit
 	[5] a builtin GUI facility
 
 # Status update
-	[*] for loop without step
+	[*] dymanic array support, use arraydim to use that.
+	[*] for loop
 	[*] string is capable of doing "+" operation
 	[*]	string literal and string variable can assign to string variable
 	[*] deallocating function local string when the function returns
