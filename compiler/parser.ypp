@@ -441,11 +441,11 @@ if_clause: tIF  expression tTHEN statement {
 			$$ = new IFStmtAST( ExprASTPtr($2));
 			$$->_then = CodeBlockASTPtr(new CodeBlockAST($4));
 	}
-	|	tIF { debug("got if\n"); } expression tTHEN seperator
+	|	tIF  expression tTHEN seperator
  			lines
 		tENDIF {
-			//$$ = new IFStmtAST( ExprASTPtr($2));
-			//$$->_then = CodeBlockASTPtr($4);
+			$$ = new IFStmtAST( ExprASTPtr($2));
+			$$->_then = CodeBlockASTPtr($5);
 		}
 	|	tIF expression tTHEN seperator
  			lines
