@@ -357,15 +357,6 @@ llvm::Value* CallExprAST::getval(ASTContext ctx)
 
 llvm::Value* CalcExprAST::getval(ASTContext ctx)
 {
-	
-	BOOST_ASSERT(ctx.llvmfunc);
-	//TODO, 生成计算表达式 !
-	llvm::Value * LHS =	lval->getval(ctx);
-	llvm::Value * RHS =	rval->getval(ctx);
-
-	llvm::IRBuilder<> builder(ctx.llvmfunc->getContext());
-	builder.SetInsertPoint(ctx.block);
-
 	switch(this->op){
 		case OPERATOR_ADD:
 			if(!result)
