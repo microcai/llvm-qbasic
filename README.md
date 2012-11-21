@@ -35,6 +35,8 @@ To make things even worse, BASIC have not standart that every compiler agree wit
 	[*] basic mathmatical operation
 	[*] if statement
 
+# benchmark
+	see [ test/compare.txt  https://github.com/microcai/llvm-qbasic/blob/master/test/compare.txt ]
 # Implementation Detail
 
 	int/long is directly supported by LLVM, so , no discssiion needed.
