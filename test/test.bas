@@ -7,15 +7,35 @@
 */
 
 /*
-	array test
+	fibonacci test
 */
+
+function  fibonacci( n as long ) as long
+
+dim prev
+dim curr
+dim tmp
+dim idx
+
+curr=1
+prev=0
+tmp=0
+idx=0
+
+if  n < 2 then return n
+
+for idx = 2 to n
+			tmp = prev
+			prev = curr
+			curr = tmp + prev	
+end for
+
+return curr
+
+end function
 
 sub main()
 
-arraydim a as long
-
-a(2) = 123456789
-
-print a(2)
+print  fibonacci(36)
 
 end sub

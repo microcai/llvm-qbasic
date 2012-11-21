@@ -85,18 +85,19 @@ rem {
 
 end{whitespace}*sub|end{whitespace}*subroutine	return token::tSUBEND;
 end{whitespace}*function 						return token::tFUNCTIONEND;
-fi|end{whitespace}*if							return token::tENDIF;
 end{whitespace}*while							return token::tENDWHILE;
 end{whitespace}*for								return token::tENDFOR;
 arraydim							return token::tARRAYDIM;
 wend				{ printf("while end ! ======\n");return token::tENDWHILE; }
 while 				{ printf("while begin ! ======\n");return token::tWHILE; }
+endif|fi|end{whitespace}*if							return token::tENDIF;
 
 function			return token::tFUNCTION;
 sub|subroutine		return token::tSUB;
-if					return token::tIF;
 then				return token::tTHEN;
 else				return token::tELSE;
+if					{printf("if begin ! ======\n"); return token::tIF;}
+
 elif|elseif			return token::tELSEIF;
 return				return token::tRETURN;
 for					return token::tFOR;

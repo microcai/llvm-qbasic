@@ -249,6 +249,7 @@ llvm::Value* FunctionDimAST::setret(ASTContext ctx,ExprASTPtr expr)
 	if(!returnblock)
 		returnblock = llvm::BasicBlock::Create(ctx.module->getContext(), "ret",this->target);
 	// jump to ret now !
+
 	return builder.CreateBr(returnblock);
 }
 
@@ -489,7 +490,7 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 
 	//挂到全局名称表中
 	ctx.codeblock->symbols.insert(std::make_pair(this->name,this));
-	
+
 	//开始生成代码
 	ctx.block = entry;
 
@@ -499,6 +500,9 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 		ctx.block = callargs->Codegen(ctx);
 		ctx.codeblock = this->callargs.get();
 	}
+
+	retval = dynamic_cast<CallableExprTypeAST*>(type.get())->returntype->Alloca(ctx,"return value");
+
 
 	//now code up the function body
 	body->parent = ctx.codeblock;

@@ -349,7 +349,10 @@ varref:	expression '.' tID { //没错, 成员引用, 前面可是可以为表达
 
 comma_or_colon : ':' | ';';
 
-seperator : tNEWLINE | ':';
+seperator:
+		tNEWLINE
+		| ':'
+		;
 
 //*****************************************/
 //* 这里开始是函数和过程定义
@@ -433,16 +436,16 @@ dim_item: tDIM tID tAS exprtype {
 		//*****************************************/
 		//* 条件控制语句
 		//*****************************************/
-if_clause: tIF expression tTHEN statement {
+if_clause: tIF  expression tTHEN statement {
 			// 单行 if then 语句
 			$$ = new IFStmtAST( ExprASTPtr($2));
 			$$->_then = CodeBlockASTPtr(new CodeBlockAST($4));
 	}
-	|	tIF expression tTHEN seperator
+	|	tIF { debug("got if\n"); } expression tTHEN seperator
  			lines
 		tENDIF {
-			$$ = new IFStmtAST( ExprASTPtr($2));
-			$$->_then = CodeBlockASTPtr($5);
+			//$$ = new IFStmtAST( ExprASTPtr($2));
+			//$$->_then = CodeBlockASTPtr($4);
 		}
 	|	tIF expression tTHEN seperator
  			lines
