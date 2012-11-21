@@ -20,6 +20,6 @@ end function
 
 sub main()
 
-print  fibonacci(36)
+print  fibonacci(40)
 
 end sub
