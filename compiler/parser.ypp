@@ -246,12 +246,6 @@ statement: printstatement { $$ = $1; }
 		| expression comma_or_colon { /*TODO*/debug("here====3====\n"); exit(1);	}
 		;
 
-
-assigment: varref tEQU expression {
-		//VariableExprAST * varref = new VariableExprAST($1);
-		$$ = new AssigmentAST($1, $3);
-	};
-
 exprtype: tLONG	{
 		$$ = new ExprType (NumberExprTypeAST::GetNumberExprTypeAST());
 	}
@@ -298,21 +292,6 @@ expression_list: expression_list ',' expression { $$ = $1 ; $$->Append($3); }
 		$$->Append($1);
 	}
 	;
-
-call_function:
-		// 这个也是函数调用
-		varref '('  ')' {
-			$$ = new CallExprAST($1);
-			debug("functioncall %s with no arg\n", $1->ID->ID.c_str());
-		}
-		| varref  '(' expression_list ')' { 	 // 这个可能是函数调用, 也许是数组哦 :)
-			 // 现在就当是函数调用了, 在后面的阶段再生成数组访问
-			 debug("functioncall %s with  args!!!!\n" , $1->ID->ID.c_str() );
-
-			 $$ = new CallExprAST($1 , $3 );			
-		};
-
-
 	
 expression: call_function
 		| '(' expression ')' { $$ = $2 ;}
@@ -324,6 +303,7 @@ expression: call_function
 		| expression tLEQ expression {   $$ = new CalcExprAST( $1, OPERATOR_LESSEQU , $3 );  }
 		| expression tGTN expression {   $$ = new CalcExprAST( $1, OPERATOR_GREATER , $3 );  }
 		| expression tGEQ expression {   $$ = new CalcExprAST( $1, OPERATOR_GREATEREQUL , $3 );  }
+		| expression tEQU expression {   $$ = new CalcExprAST( $1, OPERATOR_GREATEREQUL , $3 );  }
 
  		| varref
 		| tInteger  {
@@ -335,6 +315,24 @@ expression: call_function
 			$$ = new ConstStringExprAST($1);
 		}
 		;
+
+assigment: varref '=' expression {
+		//VariableExprAST * varref = new VariableExprAST($1);
+		$$ = new AssigmentAST($1, $3);
+	};
+
+call_function:
+		// 这个也是函数调用
+		varref '('  ')' {
+			$$ = new CallExprAST($1);
+			debug("functioncall %s with no arg\n", $1->ID->ID.c_str());
+		}
+		| varref  '(' expression_list ')' { 	 // 这个可能是函数调用, 也许是数组哦 :)
+			 // 现在就当是函数调用了, 在后面的阶段再生成数组访问
+			 debug("functioncall %s with  args!!!!\n" , $1->ID->ID.c_str() );
+
+			 $$ = new CallExprAST($1 , $3 );
+		};
 
 varref:	expression '.' tID { //没错, 成员引用, 前面可是可以为表达式的 !
 		debug("ref menber %s . %s , not supported yet\n" );

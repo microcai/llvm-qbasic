@@ -365,8 +365,8 @@ static void yy_fatal_error (yyconst char msg[]  );
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
 
-#define YY_NUM_RULES 68
-#define YY_END_OF_BUFFER 69
+#define YY_NUM_RULES 69
+#define YY_END_OF_BUFFER 70
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -376,34 +376,34 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[260] =
     {   0,
-        6,    6,    0,    0,    0,    0,    0,    0,   69,   62,
-       47,    6,   45,   62,   37,   62,    4,   48,   46,   48,
-       48,   48,   48,   57,    5,   43,   39,   41,   59,   59,
-       59,   59,   59,   59,   59,   59,   59,   59,   59,   59,
-       59,   59,   59,   34,   38,   64,   65,   64,   66,   67,
-       68,   47,    6,    0,   61,   36,    4,   34,   56,   55,
-       33,   58,    2,    3,    0,   57,    0,    5,   42,   44,
-       39,   40,   60,   59,   59,   59,   29,   59,   59,   59,
-       59,   59,   14,   59,   59,   21,   59,   59,   59,   59,
-       59,   59,   38,   51,   59,   59,   59,   59,   59,   25,
+        6,    6,    0,    0,    0,    0,    0,    0,   70,   63,
+       48,    6,   46,   63,   37,   63,    4,   49,   47,   49,
+       49,   49,   49,   58,    5,   44,   40,   42,   60,   60,
+       60,   60,   60,   60,   60,   60,   60,   60,   60,   60,
+       60,   60,   60,   34,   38,   65,   66,   65,   67,   68,
+       69,   48,    6,    0,   62,   36,    4,   34,   57,   56,
+       33,   59,    2,    3,    0,   58,    0,    5,   43,   45,
+       39,   41,   61,   60,   60,   60,   29,   60,   60,   60,
+       60,   60,   14,   60,   60,   21,   60,   60,   60,   60,
+       60,   60,   38,   52,   60,   60,   60,   60,   60,   25,
 
-       59,   59,   59,   63,    3,    0,   58,   35,   59,   30,
-       59,   59,   59,   59,   59,   24,   59,   49,   28,   31,
-       59,   37,   50,   45,   59,    1,   59,   59,   27,   18,
-       59,   59,   59,   59,   59,   22,   20,    0,   59,   59,
-       59,   59,   59,   59,   59,   59,   28,   59,   59,   26,
-       59,   59,   59,   19,   53,   12,   59,   59,   59,    0,
-        0,    0,    0,   59,   59,   14,   59,   59,   59,   52,
-       54,   59,   59,   32,   59,   59,   59,   59,   13,    0,
-       59,   22,    0,    0,   14,    0,    0,    0,   10,   59,
-       59,    7,   59,   59,   59,   23,   27,   15,   59,    0,
+       60,   60,   60,   64,    3,    0,   59,   35,   60,   30,
+       60,   60,   60,   60,   60,   24,   60,   50,   28,   31,
+       60,   37,   51,   46,   60,    1,   60,   60,   27,   18,
+       60,   60,   60,   60,   60,   22,   20,    0,   60,   60,
+       60,   60,   60,   60,   60,   60,   28,   60,   60,   26,
+       60,   60,   60,   19,   54,   12,   60,   60,   60,    0,
+        0,    0,    0,   60,   60,   14,   60,   60,   60,   53,
+       55,   60,   60,   32,   60,   60,   60,   60,   13,    0,
+       60,   22,    0,    0,   14,    0,    0,    0,   10,   60,
+       60,    7,   60,   60,   60,   23,   27,   15,   60,    0,
 
-       59,   10,    0,    0,    7,    0,   59,   59,   59,   59,
-       59,   59,    0,   59,   59,    0,   11,    0,    0,    0,
-        0,   59,   59,   59,    9,   17,   49,    0,   59,   59,
-       11,    0,    0,    0,    9,   59,   16,   59,    0,   15,
-       59,    0,   16,    0,   59,   59,   15,   18,    0,    0,
-        8,   59,    8,    0,   59,    0,    7,    7,    0
+       60,   10,    0,    0,    7,    0,   60,   60,   60,   60,
+       60,   60,    0,   60,   60,    0,   11,    0,    0,    0,
+        0,   60,   60,   60,    9,   17,   50,    0,   60,   60,
+       11,    0,    0,    0,    9,   60,   16,   60,    0,   15,
+       60,    0,   16,    0,   60,   60,   15,   18,    0,    0,
+        8,   60,    8,    0,   60,    0,    7,    7,    0
     } ;
 
 static yyconst flex_int32_t yy_ec[256] =
@@ -1240,111 +1240,107 @@ return token::tEQU;
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 130 "qblex.ll"
-return token::tGEQ;
+#line 129 "qblex.ll"
+return '=';
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
 #line 131 "qblex.ll"
-return token::tGTN;
+return token::tGEQ;
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
 #line 132 "qblex.ll"
-return token::tLEQ;
+return token::tGTN;
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
 #line 133 "qblex.ll"
-return token::tLTN;
+return token::tLEQ;
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
 #line 134 "qblex.ll"
-return token::tNEQ;
+return token::tLTN;
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
 #line 135 "qblex.ll"
-return token::tNOT;
+return token::tNEQ;
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
 #line 136 "qblex.ll"
-return '*';
+return token::tNOT;
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 140 "qblex.ll"
-/* eat whitespace */
+#line 137 "qblex.ll"
+return '*';
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 142 "qblex.ll"
+#line 141 "qblex.ll"
+/* eat whitespace */
+	YY_BREAK
+case 49:
+YY_RULE_SETUP
+#line 143 "qblex.ll"
 {
    return yytext[1 - 1];
 }
 	YY_BREAK
-case 49:
+case 50:
 YY_RULE_SETUP
-#line 146 "qblex.ll"
+#line 147 "qblex.ll"
 {
    yylval->number = strtod ("inf", NULL);
    return token::tNUMBER;
 }
 	YY_BREAK
-case 50:
+case 51:
 YY_RULE_SETUP
-#line 151 "qblex.ll"
+#line 152 "qblex.ll"
 {
    yylval->number = strtod ("nan", NULL);
    return token::tNUMBER;
 }
 	YY_BREAK
-case 51:
+case 52:
 YY_RULE_SETUP
-#line 156 "qblex.ll"
+#line 157 "qblex.ll"
 {
    yylval->number = 3.1415926535897932;
    return token::tNUMBER;
 }
 	YY_BREAK
-case 52:
+case 53:
 YY_RULE_SETUP
-#line 161 "qblex.ll"
+#line 162 "qblex.ll"
 {
    yylval->number = 2.7182818284590452;
    return token::tNUMBER;
 }
 	YY_BREAK
-case 53:
+case 54:
 YY_RULE_SETUP
-#line 166 "qblex.ll"
+#line 167 "qblex.ll"
 {
    yylval->number = 1;
    return token::tNUMBER;
 }
 	YY_BREAK
-case 54:
+case 55:
 YY_RULE_SETUP
-#line 171 "qblex.ll"
+#line 172 "qblex.ll"
 {
    yylval->number = 0;
    return token::tNUMBER;
 }
 	YY_BREAK
-case 55:
-YY_RULE_SETUP
-#line 178 "qblex.ll"
-{
-   yylval->integer = atol (yytext);
-   printf("got %d\n",yylval->integer);
-   return token::tInteger;
-}
-	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 184 "qblex.ll"
+#line 179 "qblex.ll"
 {
    yylval->integer = atol (yytext);
    printf("got %d\n",yylval->integer);
@@ -1353,7 +1349,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 191 "qblex.ll"
+#line 185 "qblex.ll"
 {
    yylval->integer = atol (yytext);
    printf("got %d\n",yylval->integer);
@@ -1362,7 +1358,16 @@ YY_RULE_SETUP
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 197 "qblex.ll"
+#line 192 "qblex.ll"
+{
+   yylval->integer = atol (yytext);
+   printf("got %d\n",yylval->integer);
+   return token::tInteger;
+}
+	YY_BREAK
+case 59:
+YY_RULE_SETUP
+#line 198 "qblex.ll"
 {
    yylval->number = strtod (yytext, NULL);
     printf("got %f\n",yylval->number);
@@ -1370,27 +1375,27 @@ YY_RULE_SETUP
    return token::tNUMBER;
 }
 	YY_BREAK
-case 59:
+case 60:
 YY_RULE_SETUP
-#line 204 "qblex.ll"
+#line 205 "qblex.ll"
 {
    yylval->id = new std::string (yytext);
 //   printf("got %s\n", yytext);
    return token::tID;
 }
 	YY_BREAK
-case 60:
+case 61:
 YY_RULE_SETUP
-#line 210 "qblex.ll"
+#line 211 "qblex.ll"
 {
    yylval->id = new std::string (yytext);
    return token::tID;
 }
 	YY_BREAK
-case 61:
-/* rule 61 can match eol */
+case 62:
+/* rule 62 can match eol */
 YY_RULE_SETUP
-#line 216 "qblex.ll"
+#line 217 "qblex.ll"
 {
    if (yytext[yyleng - 1] == '\n') {
       printf ("string not terminated");
@@ -1408,54 +1413,54 @@ YY_RULE_SETUP
    }
 }
 	YY_BREAK
-case 62:
+case 63:
 YY_RULE_SETUP
-#line 233 "qblex.ll"
+#line 234 "qblex.ll"
 {
    return yytext[1 - 1];
 }
 	YY_BREAK
 
-case 63:
+case 64:
 YY_RULE_SETUP
-#line 239 "qblex.ll"
+#line 240 "qblex.ll"
 BEGIN (INITIAL);
 	YY_BREAK
 case YY_STATE_EOF(block_comment):
-#line 241 "qblex.ll"
+#line 242 "qblex.ll"
 error ("block comment not terminated");
 	YY_BREAK
-case 64:
-YY_RULE_SETUP
-#line 243 "qblex.ll"
-
-	YY_BREAK
 case 65:
-/* rule 65 can match eol */
 YY_RULE_SETUP
 #line 244 "qblex.ll"
+
+	YY_BREAK
+case 66:
+/* rule 66 can match eol */
+YY_RULE_SETUP
+#line 245 "qblex.ll"
 yylineno ++;
 	YY_BREAK
 
 
-case 66:
+case 67:
 YY_RULE_SETUP
-#line 249 "qblex.ll"
+#line 250 "qblex.ll"
 
 	YY_BREAK
-case 67:
-/* rule 67 can match eol */
+case 68:
+/* rule 68 can match eol */
 YY_RULE_SETUP
-#line 251 "qblex.ll"
+#line 252 "qblex.ll"
 BEGIN(INITIAL);
 	YY_BREAK
 
-case 68:
+case 69:
 YY_RULE_SETUP
-#line 254 "qblex.ll"
+#line 255 "qblex.ll"
 ECHO;
 	YY_BREAK
-#line 1459 "/home/cai/projects/basic/compiler/qblex.cpp"
+#line 1464 "/home/cai/projects/basic/compiler/qblex.cpp"
 case YY_STATE_EOF(remark):
 case YY_STATE_EOF(documentation):
 	yyterminate();
@@ -2413,7 +2418,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 254 "qblex.ll"
+#line 255 "qblex.ll"
 
 
 

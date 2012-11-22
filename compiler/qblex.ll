@@ -125,7 +125,8 @@ print				return token::tPRINT;
 
 "mod"|"%"|"\\"		return token::tMOD;
 "|"|"or"			return token::tOR;
-"="|"=="			return token::tEQU;
+"=="				return token::tEQU;
+"="					return '=';
 
 ">="				return token::tGEQ;
 ">"					return token::tGTN;
