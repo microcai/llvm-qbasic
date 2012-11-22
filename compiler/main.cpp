@@ -34,7 +34,7 @@ static std::list<std::string> argv_getinputfiles(int argc, char **argv)
 
 // generate llvm IR
 static void generateIR(StatementAST * ast , llvm::Module * module )
-{	//开始生成代码
+{
 	ASTContext ctx;
 	ctx.module = module;
 
@@ -62,7 +62,8 @@ static int generateobj(boost::shared_ptr<llvm::tool_output_file> Out , llvm::Mod
 
 	llvm::TargetMachine * machineTarget =
 		TheTarget->createTargetMachine(TheTriple.getTriple(), MCPU, FeaturesStr, Options);
-  // Figure out where we are going to send the output...
+
+	// Figure out where we are going to send the output...
 
 
 	llvm::formatted_raw_ostream FOS(Out->os());
@@ -136,7 +137,7 @@ int main(int argc, char **argv)
 
 	generateIR(program,module);
 
-	// ir 参数表示生成 llvm IR
+	// ir to generate llvm IR
 	if(vm.count("ir")){
 		module->dump();
 		return 0;
@@ -158,9 +159,9 @@ int main(int argc, char **argv)
 	
 	if(!vm.count("-c")){
 		// compile to excuteable
-		// 调用  gcc
+		// invoke  gcc
 #if _WIN32
-		printf("please invok link.exe your self, link to libbrt.a!\n");
+		printf("please invoke link.exe your self, link to libbrt.a!\n");
 		Out->keep();
 #else
 		std::string libdir = fs::path(argv[0]).parent_path().string();
@@ -170,7 +171,7 @@ int main(int argc, char **argv)
 		system(cmd.c_str());
 #endif
 	}else{
-		//不删除 obj 文件
+		//no delete obj file
 		Out->keep();
 	}
 	return 0;
