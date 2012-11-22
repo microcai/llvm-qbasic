@@ -108,7 +108,6 @@ void CodeBlockAST::addchild(StatementAST* item)
 {
     if(item)
 	{
-		debug("here === addchild1\n");
         this->statements.push_back(StatementASTPtr(item));
         item->parent = this;
     }
@@ -118,10 +117,7 @@ void CodeBlockAST::addchild(StatementsAST* items)
 	std::list< StatementASTPtr >::iterator it = items->begin();
 	for(;it != items->end() ; it ++)
 	{
-		debug("here === addchild2 -- beg\n");
 		(*it)->parent = this;
-//		item->parent = this;
-		debug("here === addchild2\n");
         this->statements.push_back(*it);
 	}
 }

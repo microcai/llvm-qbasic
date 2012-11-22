@@ -415,7 +415,6 @@ arg_list:{ $$ = 0; }
 	}
 	| tID tAS exprtype {
 		debug("definning %s is type %p as arg\n",$1->c_str(), $3);
-		
 		$$ = new ArgumentDimsAST ;
 		$$->addchild(new ArgumentDimAST( *$1  , * $3 ));
 	}
