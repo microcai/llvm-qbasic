@@ -1,4 +1,5 @@
-﻿function  fibonacci( n as long ) as long
+
+function fibonacci( n as long ) as long
 
 if  n < 2 then return n
 
