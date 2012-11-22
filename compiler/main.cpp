@@ -128,13 +128,11 @@ int main(int argc, char **argv)
 	llvm::InitializeAllAsmPrinters();
 	llvm::InitializeAllAsmParsers();
 
-	if(outfilename.empty()){
-		//选择一个
+	// 如果没有指定输出文件路径, 设置输出文件的路径为输入文件相同的路径下.
+	if(outfilename.empty())
 		outfilename = (fs::path(input).parent_path() / fs::basename(fs::path(input))).string();
-	}
 
 	llvm::Module *module = new llvm::Module( fs::basename(fs::path(input)).c_str(), llvm::getGlobalContext());
-
 	generateIR(program,module);
 
 	// ir to generate llvm IR
@@ -153,11 +151,11 @@ int main(int argc, char **argv)
 	boost::shared_ptr<llvm::tool_output_file> Out( new
 		llvm::tool_output_file(outname.c_str(), Err, llvm::raw_fd_ostream::F_Binary) );
 
-	if(generateobj(Out,module)==0){
+	if(generateobj(Out,module)==0)
 		printf("======== object file writed to %s ===========\n", outname.c_str());
-	}	
-	
-	if(!vm.count("-c")){
+
+	if(!vm.count("-c"))
+	{
 		// compile to excuteable
 		// invoke  gcc
 #if _WIN32
@@ -176,9 +174,10 @@ int main(int argc, char **argv)
 		printf("run %s\n",cmd.c_str());
 		system(cmd.c_str());
 #endif
-	}else{
-		//no delete obj file
+	} else {
+		// no delete obj file
 		Out->keep();
 	}
+
 	return 0;
 }
