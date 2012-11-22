@@ -1,4 +1,4 @@
-﻿/* A Bison parser, made by GNU Bison 2.6.5.  */
+/* A Bison parser, made by GNU Bison 2.6.5.  */
 
 /* Skeleton implementation for Bison LALR(1) parsers in C++
    
