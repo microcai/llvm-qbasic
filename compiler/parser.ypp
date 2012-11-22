@@ -95,7 +95,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 
 %token  tEOPROG
 
-// 操作符
+// operators
 %left tOR
 %left tAND
 %right tNOT
@@ -113,7 +113,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %nonassoc tDREF
 %nonassoc '.'
 
-//关键字
+//keywords
 %token tNEWLINE
 
 %token tAS
@@ -133,10 +133,10 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 
 %token tFOR tENDFOR tTO tSTEP
 
-// 内置数据类型
+// datatype built-in
 %token tLONG tSTR 
 
-// 数据 , 标识符, 变量名, 函数名, 等等
+// misc
 %token <id>		tID
 %token <integer> tInteger
 %token <string>	tSTRING
@@ -254,9 +254,6 @@ exprtype: tLONG	{
 		debug("define as user type not supported\n");
 		exit(1);
 	}
-	| exprtype '(' tNUMBER ')'{
-		// 数组啊!!
-	}
 	;
 
 printstatement:
@@ -306,11 +303,9 @@ expression: call_function
 
  		| varref
 		| tInteger  {
-			//常量
 			$$ = new ConstNumberExprAST( $1 );
 		}
-		| tNUMBER //浮点数
-		| tSTRING { //字符串
+		| tSTRING {
 			$$ = new ConstStringExprAST($1);
 		}
 		;
@@ -321,26 +316,20 @@ assigment: varref '=' expression {
 	};
 
 call_function:
-		// 这个也是函数调用
 		varref '('  ')' {
 			$$ = new CallExprAST($1);
 			debug("functioncall %s with no arg\n", $1->ID->ID.c_str());
 		}
-		| varref  '(' expression_list ')' { 	 // 这个可能是函数调用, 也许是数组哦 :)
-			 // 现在就当是函数调用了, 在后面的阶段再生成数组访问
-			 debug("functioncall %s with  args!!!!\n" , $1->ID->ID.c_str() );
-
+		| varref  '(' expression_list ')' {
 			 $$ = new CallExprAST($1 , $3 );
 		};
 
-varref:	expression '.' tID { //没错, 成员引用, 前面可是可以为表达式的 !
+varref:	expression '.' tID {
 		debug("ref menber %s . %s , not supported yet\n" );
-		exit(1); // 逐级传递
-	}// 成员变量
-	| expression tDREF  tID  { exit(1); } // 指针解引用
+		exit(1); 
+	}
+	| expression tDREF  tID  { exit(1); } 
 	| tID {
-		// 变量的引用? 反正是一个标识符的引用,
-		// 所以我构建一个标识符引用语句. 这个会被用来构建函数调用和数组语句以及变量.
 		$$ = new VariableExprAST(  new ReferenceAST( $1 ));
 	}
 	|call_function
@@ -378,9 +367,9 @@ dim_item: tDIM tID tAS exprtype {
 
 	};
 
-//*****************************************/
-//* 这里开始是函数和过程定义
-//*****************************************/
+/*****************************************
+ * here goes function_definition
+ *****************************************/
 
 function_definition: tFUNCTION tID '(' arg_list ')' tAS exprtype tNEWLINE
 						lines
@@ -434,14 +423,13 @@ arg_list:{ $$ = 0; }
 
 
 //*****************************************/
-//* 这里开始是循环和控制语句支持
+//* here goes Control Flow Statements
 //*****************************************/
 
 		//*****************************************/
-		//* 条件控制语句
+		//* if 
 		//*****************************************/
 if_clause: tIF  expression tTHEN statement {
-			// 单行 if then 语句
 			$$ = new IFStmtAST( ExprASTPtr($2));
 			$$->_then = CodeBlockASTPtr(new CodeBlockAST($4));
 	}
@@ -463,7 +451,7 @@ if_clause: tIF  expression tTHEN statement {
 ;
 
 		//*****************************************/
-		//* While 循环语句
+		//* While 
 		//*****************************************/
 
 while_loop: tWHILE expression seperator
@@ -473,7 +461,7 @@ while_loop: tWHILE expression seperator
 		};
 
 		//*****************************************/
-		//* For 循环语句
+		//* For 
 		//*****************************************/
 for_loop: tFOR varref tEQU expression tTO expression optstep  tNEWLINE
 				lines
