@@ -442,7 +442,7 @@ namespace qb {
 #line 170 "parser.ypp"
     {
 			if(useDefautSubMain){
-				debug("program ended\n");
+				debug("program ended , no main()\n");
 				program = new DefaultMainFunctionAST( (yysemantic_stack_[(2) - (1)].codeblocks) );
 			}else{
 				program = (yysemantic_stack_[(2) - (1)].codeblocks);

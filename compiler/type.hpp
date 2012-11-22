@@ -79,8 +79,9 @@
 // (10:03:50 PM) microcai: 咋样?
 //
 //
-// 引用语句, 只要是包含了一个"标识符" 并在随后的语句中提供标识符的"解析操作"
+// 引用语句, 只要是包含了一个"标识符" 并在随后的语句中提供标识符的"解析操作"    
 #endif
+
 class ReferenceAST : public AST
 {
 public:
@@ -152,7 +153,7 @@ public:
 #if 0
 	//获得表达式类型信息, 如果是计算表达式, 需要的是递归操作哦
 	//注意,不要释放返回值. 返回值是由 block 管理的.
-	//block 退出的时候会释放掉本 block 注册的类型 (本地类型定义)
+	//block 退出的时候会释放掉本 block 注册的类型 (本地类型定义)   
 #endif
 	virtual ExprTypeASTPtr type(ASTContext ) = 0;
 #if 0
@@ -162,7 +163,7 @@ public:
 	// 注意, 这里的意思是 "生成一个能获得该变量的操作".
 	// 返回值其实是一系列的llvm-IR 语句节点,
 	// 最终在程序生成的时候转化为正确的汇编语句.
-	// 对于计算表达式来说, 这是不能执行的操作, 故而不在基类里
+	// 对于计算表达式来说, 这是不能执行的操作, 故而不在基类里   
 #endif
 	virtual llvm::Value *getval(ASTContext) = 0;
 	virtual llvm::Value *getptr(ASTContext) = 0;
@@ -174,7 +175,7 @@ public:
 #if 0
 // 空表达式. 空表达式的类型是 void
 // 用法 1 : 声明无返回值的函数
-// 用法 2 :pirnt 语句通过识别参数列表里的空语句来正确生成回车符
+// 用法 2 :pirnt 语句通过识别参数列表里的空语句来正确生成回车符  
 #endif
 class EmptyExprAST : public ExprAST
 {
@@ -185,7 +186,7 @@ public:
     virtual llvm::Value* getptr(ASTContext ){exit(132);};
 };
 #if 0
-// 用来管理临时对象, 这是实现 QBASIC C++ style 的临时对象的重点哦~
+// 用来管理临时对象, 这是实现 QBASIC C++ style 的临时对象的重点哦~    
 #endif
 class TempExprAST : public ExprAST{
 	ExprTypeASTPtr _type;
@@ -242,13 +243,13 @@ public:
 };
 
 #if 0
-// 命名表达式. 命名的表达式是 Function Call , 数组, 变量 的基类
+// 命名表达式. 命名的表达式是 Function Call , 数组, 变量 的基类     
 #endif
 class DimAST;
 class NamedExprAST : public ExprAST
 {
 public:
-	ReferenceASTPtr			ID;	// 符号. 指向的是符号哦~ 通过符号表进行正确的类型判定
+	ReferenceASTPtr			ID;
 
 	NamedExprAST(ReferenceAST * _ID);
 
@@ -263,8 +264,8 @@ public:
 };
 typedef boost::shared_ptr<NamedExprAST> NamedExprASTPtr;
 #if 0
-// 变量引用. 如果变量是个函数, 则是函数指针类型哦 ~
-// 如果变量是数组, 则是数组类型哦.
+// 变量引用. 如果变量是个函数, 则是函数指针类型哦 ~ 
+// 如果变量是数组, 则是数组类型哦.        
 #endif
 class VariableExprAST : public NamedExprAST
 {
@@ -294,7 +295,7 @@ public:
 
 #if 0
 // 赋值表达式. 注意, 在 QB 中没有赋值表达式
-// 但是我在 AST 中使用一个包含赋值表达式的语句来使用这个 AST 提供的特性
+// 但是我在 AST 中使用一个包含赋值表达式的语句来使用这个 AST 提供的特性   
 #endif
 class AssignmentExprAST : public ExprAST
 {
@@ -302,7 +303,7 @@ class AssignmentExprAST : public ExprAST
 	ExprASTPtr 		rval;
 public:
 #if 0
-	// 赋值表达式必须使用一个命名的类型为左值
+	// 赋值表达式必须使用一个命名的类型为左值      
 #endif
 	AssignmentExprAST(NamedExprAST* , ExprAST *);
 	
@@ -326,7 +327,7 @@ typedef boost::shared_ptr<ExprListAST> ExprListASTPtr;
 #if 0
 // 数组或者函数调用.
 // 返回的类型就是数组成员的类型, 或者是函数的返回类型
-// 依据是 calltarget 的类型是 CallableExprTypeAST 则为函数调用
+// 依据是 calltarget 的类型是 CallableExprTypeAST 则为函数调用      
 #endif
 class CallExprAST : public ExprAST
 {
@@ -390,7 +391,7 @@ public:
     StringExprTypeAST();
     virtual llvm::Type* llvm_type(ASTContext ctx);
 
-    virtual size_t size(){return sizeof(long);}; //yes没错, 字符串类型只占用8个字节,也就是一个指针哦!
+    virtual size_t size(){return sizeof(size_t);}
 
 	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
     virtual ExprOperation* getop();
@@ -419,7 +420,7 @@ public:
     ArrayExprTypeAST(ExprTypeASTPtr elementtype);
     virtual llvm::Type* llvm_type(ASTContext ctx);
 
-    virtual size_t size(){return sizeof(struct QBArray);}; //yes没错, 数组类型的内部实现就是 struct QBArray.
+    virtual size_t size(){return sizeof(struct QBArray);}
 
 	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
     virtual ExprOperation* getop();
@@ -434,7 +435,7 @@ public:
 //  函数对象类型. 这是基类
 //  而一个函数声明本身也是一个 callable 类型
 //  一个函数指针是 callable 类型
-//  一个函数对象也是 callable 类型
+//  一个函数对象也是 callable 类型   
 #endif
 class CallableExprTypeAST : public ExprTypeAST{
 	ExprTypeASTPtr	returntype;
@@ -480,7 +481,7 @@ class ReferenceTypeAST : public ExprTypeAST
 
 };
 
-///////////////////////// 运算符支持
+///////////////////////// 运算符支持   
 #endif
 class ExprOperation{
 public:
@@ -488,38 +489,38 @@ public:
 	// 赋值运算符, 对于字符串来说, 这个运算符的意义就是调用 strdup
 	// 每个类型都会有自己的 Operator 实现.
 	// 对于其他类型来说, 呵呵, 那就是 Load / Store 啦
-	// 运算结果是一个 ExprASTPtr , 事实上可以忽略,呵呵. C++编译器将自动释放它
+	// 运算结果是一个 ExprASTPtr , 事实上可以忽略,呵呵. C++编译器将自动释放它  
 #endif
 	virtual	ExprASTPtr operator_assign(ASTContext , NamedExprASTPtr lval, ExprASTPtr rval);
 
 #if 0
 	// 加法运算, 对于字符串来说, 这运算过程会生成一个临时字符串,
-	// 临时字符串 AST 对象将会被 AST节点被析构的时候向当前llvm basicbody 位置插入临时字符串的释放指令
+	// 临时字符串 AST 对象将会被 AST节点被析构的时候向当前llvm basicbody 位置插入临时字符串的释放指令  
 #endif
 	virtual ExprASTPtr operator_add(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
 
 #if 0
-	// 减法运算, 对于字符串来说无此类型的运算. 试图对字符串执行减法导致一个编译期错误
+	// 减法运算, 对于字符串来说无此类型的运算. 试图对字符串执行减法导致一个编译期错误   
 #endif
 	virtual ExprASTPtr operator_sub(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
 
 #if 0
-	// 乘法运算, 对字符串来说无此类型的运算
+	// 乘法运算, 对字符串来说无此类型的运算  
 #endif
 	virtual ExprASTPtr operator_mul(ASTContext, ExprASTPtr lval, ExprASTPtr rval);
 
 #if 0
-	//除法
+	//除法  
 #endif
 	virtual ExprASTPtr operator_div(ASTContext, ExprASTPtr lval, ExprASTPtr rval);
 	
 #if 0
-	// 各种比较运算
+	// 各种比较运算  
 #endif
 	virtual	ExprASTPtr operator_comp(ASTContext, MathOperator op, ExprASTPtr lval,ExprASTPtr rval);
 
 #if 0
-	// 括号操作, 也就是函数调用, 或者是数组下标寻址
+	// 括号操作, 也就是函数调用, 或者是数组下标寻址  
 #endif
 	virtual ExprASTPtr operator_call(ASTContext, NamedExprASTPtr target, ExprListASTPtr callargslist);
 };
