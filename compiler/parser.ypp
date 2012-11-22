@@ -84,8 +84,9 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 	
 	WhileLoopAST* 		while_loop;
 	ForLoopAST*			for_loop;
-	
+
 	VariableDimAST*		dim_item;
+	std::vector<VariableDimASTPtr>*	struct_item_list;
 	ArgumentDimsAST*	arg_list;
 	FunctionDimAST*		function_definition;
 
@@ -151,6 +152,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %type <statement_list>				statements
 %type <statement>					statement
 %type <dim_item>					dim_item array_dim
+%type <struct_item_list>			struct_item_list
 %type <arg_list>					arg_list
 %type <function_definition>			sub_definition
 %type <function_definition>			function_definition
@@ -278,7 +280,7 @@ printstatement:
 	;
 
 printinto: '#' tInteger ','  { debug("print has got itger\n") ;}
-	| /*empty*/	{  debug("empty printinto\n");	}
+	| /*empty*/	{ $$ = 0;}
 	;
 	
 expression_list: expression_list ',' expression { $$ = $1 ; $$->Append($3); }
@@ -349,8 +351,16 @@ array_dim : tARRAYDIM tID tAS exprtype {
 		$$ = new VariableDimAST( *$2  , ArrayExprTypeAST::create(* $4) );
 	};
 
-struct_item_list: struct_item_list tNEWLINE tID tAS exprtype
-	| tID tAS exprtype 
+struct_item_list: struct_item_list tNEWLINE tID tAS exprtype {
+		$$->push_back( VariableDimASTPtr(new  VariableDimAST( *$3  , * $5 ) ));
+	
+	}
+	| tID tAS exprtype {
+
+		$$ = new std::vector<VariableDimASTPtr>;
+		$$->push_back( VariableDimASTPtr(new  VariableDimAST( *$1  , * $3 ) ));
+
+	}
 	;
 
 dim_item: tDIM tID tAS exprtype {

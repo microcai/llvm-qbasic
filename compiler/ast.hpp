@@ -246,6 +246,15 @@ public:
 };
 typedef boost::shared_ptr<VariableDimAST> VariableDimASTPtr;
 
+// 结构体声明.
+class StrucDimAST : public DimAST
+{
+public:
+	std::string	Typename; //新定义的结构体的类型.
+	std::vector<VariableDimASTPtr> members; //成员列表
+    virtual llvm::BasicBlock* Codegen(ASTContext ); // 这里要到父codebloks注册自己这个类型，以便后续声明使用.
+};
+
 class ArgumentDimAST : public VariableDimAST
 {
 	// 如果没有本地修改, 就可以直接使用传入的变量,如果本地进行修改了, 就重新分配一个.

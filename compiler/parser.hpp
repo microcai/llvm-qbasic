@@ -94,8 +94,9 @@ namespace qb {
 	
 	WhileLoopAST* 		while_loop;
 	ForLoopAST*			for_loop;
-	
+
 	VariableDimAST*		dim_item;
+	std::vector<VariableDimASTPtr>*	struct_item_list;
 	ArgumentDimsAST*	arg_list;
 	FunctionDimAST*		function_definition;
 
@@ -104,7 +105,7 @@ namespace qb {
 
 
 /* Line 36 of lalr1.cc  */
-#line 108 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 109 "/home/cai/projects/basic/compiler/parser.hpp"
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -333,7 +334,7 @@ namespace qb {
 #line 21 "parser.ypp"
 } // qb
 /* Line 36 of lalr1.cc  */
-#line 337 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 338 "/home/cai/projects/basic/compiler/parser.hpp"
 
 
 
