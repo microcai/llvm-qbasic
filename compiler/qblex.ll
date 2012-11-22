@@ -31,6 +31,10 @@
 
 %{
 
+#ifdef _WIN32
+#include <io.h>
+#endif
+
 /* Include main header file. */
 #include "qbc.h"
 #include "ast.hpp"

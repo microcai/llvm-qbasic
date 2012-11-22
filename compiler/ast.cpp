@@ -1,4 +1,4 @@
-/*
+﻿/*
     defination of QBASIC Abstruct Syntax Tree
     Copyright (C) 2012  microcai <microcai@fedoraproject.org>
 

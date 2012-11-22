@@ -1,4 +1,4 @@
-/*
+﻿/*
     operator support for internal data struct
 
     Copyright (C) 2012  microcai <microcai@fedoraproject.org>

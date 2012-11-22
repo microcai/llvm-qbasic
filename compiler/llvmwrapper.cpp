@@ -1,4 +1,4 @@
-/*
+﻿/*
     some helper functions for generationg llvm-IR
     Copyright (C) 2012  microcai <microcai@fedoraproject.org>
 
