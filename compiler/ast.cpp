@@ -69,7 +69,7 @@ FunctionDimAST::FunctionDimAST(const std::string _name, ExprTypeASTPtr _type, Ar
 {}
 
 DefaultMainFunctionAST::DefaultMainFunctionAST(CodeBlockAST * body)
-	: FunctionDimAST("main", VoidExprTypeAST::GetVoidExprTypeAST())
+	: FunctionDimAST("main", ExprTypeASTPtr(new CallableExprTypeAST(VoidExprTypeAST::GetVoidExprTypeAST())))
 {
 	this->body = CodeBlockASTPtr(body);
 }

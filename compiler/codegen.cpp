@@ -508,7 +508,6 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 
 	retval = dynamic_cast<CallableExprTypeAST*>(type.get())->returntype->Alloca(ctx,"return value");
 
-
 	//now code up the function body
 	body->parent = ctx.codeblock;
 	llvm::BasicBlock * bodyblock = body->Codegen(ctx);

@@ -1,24 +1,16 @@
-/*
-	llvm-QBASIC Compiler test
+//  无 sub main 测试
 
-	in development test cases
+DIM A as long
+dim B as long
+DIM C as long
 
-	for historcal test cases, see test[0-9]*.bas
-*/
 
-struct wgm
-	name as string
-	age  as long
-end struct
 
-sub main()
+A=12345 : B=15
+ 
+PRINT 2
 
-dim a as string
-dim b as string
+C=A + B
 
-a = "123"
-b = a
+print C , 1 + 1 , A + C , C - A , B * 2 , A / 10 , B
 
-print  "123" = "231" , a = b , a = "321"
-
-end sub
