@@ -87,8 +87,8 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 				printfmt +="\n"; // 很重要,呵呵
 				continue;				
 			}
-			switch(argitem->type(ctx)->size()){ //按照大小来啊,果然
-				case sizeof(long): // 整数产量的类型
+			switch(argitem->type(ctx)->size()){ //按照大小来啊,果然.
+				case sizeof(long): // 整数产量的类型.
 					if(argitem->type(ctx)->name(ctx) == "string"){
 						printfmt += "%s\t";
 						debug("add code for print list args type %%s\n");
@@ -117,12 +117,12 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 		}
 	}
 
-	// 现在 brt 忽略第一个参数 , 其实质是 一个 map 到 FILE* 的转化, 由 btr_print 实现
-	//第二个参数是打印列表.
+	// 现在 brt 忽略第一个参数 , 其实质是 一个 map 到 FILE* 的转化, 由 btr_print 实现.
+	// 第二个参数是打印列表.
 	args.insert(args.begin(), builder.CreateGlobalStringPtr(printfmt));
 
-	//builder.CreateCondBr();
-	//调用 print
+	// builder.CreateCondBr();
+	// 调用 print.
 	if(need_brt){
 		args.insert(args.begin(), qbc::getconstint(0) );
 
@@ -165,7 +165,7 @@ llvm::Value* VariableDimAST::getval(ASTContext ctx)
     exit(1);
 }
 
-//为变量分配空间.
+// 为变量分配空间.
 llvm::BasicBlock* VariableDimAST::Codegen(ASTContext ctx)
 {
 	BOOST_ASSERT(ctx.llvmfunc);
@@ -245,7 +245,7 @@ llvm::Value* FunctionDimAST::getptr(ASTContext ctx)
 	return this->target;
 }
 
-//	设置返回值.
+// 设置返回值.
 llvm::Value* FunctionDimAST::setret(ASTContext ctx,ExprASTPtr expr)
 {
 	llvm::IRBuilder<> builder(ctx.block);
@@ -389,7 +389,8 @@ llvm::BasicBlock* ForLoopAST::Codegen(ASTContext ctx)
 	builder.CreateBr(for_cond);
 	builder.SetInsertPoint(for_cond);
 
-	ctx.block = for_cond; // 切换到  for_cond 生成代码
+
+	ctx.block = for_cond; // 切换到  for_cond 生成代码.
 	// 测试条件是否成立.
 	llvm::Value * condval = exprtype->getop()->operator_comp(ctx,OPERATOR_LESSEQU,refID,end)->getval(ctx);
 

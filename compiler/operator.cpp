@@ -1,4 +1,4 @@
-﻿/*
+/*
     operator support for internal data struct
 
     Copyright (C) 2012  microcai <microcai@fedoraproject.org>
@@ -130,7 +130,7 @@ ExprASTPtr NumberExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr 
 	return lval->type(ctx)->createtemp(ctx,LHS,NULL);
 }
 
-//TODO 添加 free + strdup  指令
+//TODO 添加 free + strdup  指令.
 ExprASTPtr StringExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr lval, ExprASTPtr rval)
 {
 	llvm::IRBuilder<> builder(ctx.block);
@@ -146,7 +146,7 @@ ExprASTPtr StringExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr 
 	return lval;
 }
 
-// 为数组赋值
+// 为数组赋值.
 ExprASTPtr ArrayExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr lval, ExprASTPtr rval)
 {
 	// 获得数组对象的指针, 这会生成一个 operator_call 操作获得一个指针呢! 不用当心
@@ -156,7 +156,7 @@ ExprASTPtr ArrayExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr l
 
 	ArrayExprTypeAST * reallval =dynamic_cast<ArrayExprTypeAST*>(lval->type(ctx).get());
 	
-	//赋值也是很简单的, 要调用element类型的operator 就是了
+	//赋值也是很简单的, 要调用element类型的operator 就是了.
 	debug("assign to array element , %p \n" , reallval);
 
 	return reallval->elementtype->getop()->operator_assign(ctx,lval,rval);
@@ -170,11 +170,11 @@ ExprASTPtr NumberExprOperation::operator_add(ASTContext ctx, ExprASTPtr lval, Ex
 	llvm::IRBuilder<> builder(ctx.block);
 	llvm::Value * result = builder.CreateAdd(LHS,RHS);
 
-	//TODO , 构造临时 Number 对象
+	//TODO , 构造临时 Number 对象.
 	return lval->type(ctx)->createtemp(ctx,result,NULL);
 }
 
-// 字符串加法
+// 字符串加法.
 ExprASTPtr StringExprOperation::operator_add(ASTContext ctx, ExprASTPtr lval, ExprASTPtr rval)
 {
 	llvm::IRBuilder<> builder(ctx.block);
@@ -198,7 +198,7 @@ ExprASTPtr StringExprOperation::operator_add(ASTContext ctx, ExprASTPtr lval, Ex
 }
 
 
-// 数字减法
+// 数字减法.
 ExprASTPtr NumberExprOperation::operator_sub(ASTContext ctx, ExprASTPtr lval, ExprASTPtr rval)
 {	
 	llvm::Value * LHS =	lval->getval(ctx);
@@ -206,11 +206,11 @@ ExprASTPtr NumberExprOperation::operator_sub(ASTContext ctx, ExprASTPtr lval, Ex
 	llvm::IRBuilder<> builder(ctx.block);
 	llvm::Value * result = builder.CreateSub(LHS,RHS);
 
-	//TODO , 构造临时 Number 对象
+	//TODO , 构造临时 Number 对象.
 	return	lval->type(ctx)->createtemp(ctx,result,NULL);
 }
 
-//  数字乘法, 使用乘法指令
+//  数字乘法, 使用乘法指令.
 ExprASTPtr NumberExprOperation::operator_mul(ASTContext ctx, ExprASTPtr lval, ExprASTPtr rval)
 {
 	llvm::Value * LHS =	lval->getval(ctx);
@@ -219,11 +219,11 @@ ExprASTPtr NumberExprOperation::operator_mul(ASTContext ctx, ExprASTPtr lval, Ex
 	llvm::Value * result;
 	
 	result = builder.CreateMul(LHS,RHS);
-	//TODO , 构造临时 Number 对象
+	//TODO , 构造临时 Number 对象.
 	return lval->type(ctx)->createtemp(ctx,result,NULL);
 }
 
-// 数字除法
+// 数字除法.
 ExprASTPtr NumberExprOperation::operator_div(ASTContext ctx, ExprASTPtr lval, ExprASTPtr rval)
 {
 	llvm::Value * LHS =	lval->getval(ctx);
@@ -231,7 +231,7 @@ ExprASTPtr NumberExprOperation::operator_div(ASTContext ctx, ExprASTPtr lval, Ex
 	llvm::IRBuilder<> builder(ctx.block);
 	llvm::Value * result = builder.CreateSDiv(LHS,RHS);
 
-	//TODO , 构造临时 Number 对象
+	//TODO , 构造临时 Number 对象.
 	return lval->type(ctx)->createtemp(ctx,result,NULL);
 }
 
@@ -260,7 +260,7 @@ ExprASTPtr NumberExprOperation::operator_comp(ASTContext ctx, MathOperator op, E
 			break;
 	}
 	
-	//TODO , 构造临时 Number 对象
+	//TODO , 构造临时 Number 对象.
 	return lval->type(ctx)->createtemp(ctx,result,NULL);
 }
 
@@ -276,7 +276,7 @@ ExprASTPtr StringExprOperation::operator_comp(ASTContext ctx,MathOperator op, Ex
 			llvm::Constant * func_strcmp = qbc::getbuiltinprotype(ctx,"strcmp");
 			
 			result = builder.CreateCall2(func_strcmp,LHS,RHS);
-			// 返回值是 int , not long , 执行转化
+			// 返回值是 int , not long , 执行转化.
 			result = builder.CreateIntCast(result,qbc::getplatformlongtype(),true);
 			result = builder.CreateICmpEQ(result,qbc::getconstlong(0)); 
 		}
@@ -286,22 +286,22 @@ ExprASTPtr StringExprOperation::operator_comp(ASTContext ctx,MathOperator op, Ex
 			exit(1);
 	
 	}
-	//TODO , 构造临时 Number 对象
+	//TODO , 构造临时 Number 对象.
 	return NumberExprTypeAST::GetNumberExprTypeAST()->createtemp(ctx,result,NULL);
 }
 
-// 那个, 数组下标调用
+// 那个, 数组下标调用.
 ExprASTPtr ArrayExprOperation::operator_call(ASTContext ctx, NamedExprASTPtr target, ExprListASTPtr callargslist)
 {
 	llvm::IRBuilder<>	builder(ctx.block);
 	debug("array index\n");
 
-	// 获得数组地址
+	// 获得数组地址.
 	llvm::Value * arrayptr = target->getptr(ctx);
-	// 获得下标
+	// 获得下标.
 	llvm::Value * index = callargslist->expression_list.begin()->get()->getval(ctx);
 
-	// 调用数组下标函数
+	// 调用数组下标函数.
 	llvm::Constant * func_qb_array_at = qbc::getbuiltinprotype(ctx,"btr_qbarray_at");
 
 	llvm::Value * tmpval = builder.CreateCall2(func_qb_array_at,arrayptr,index);
@@ -316,7 +316,7 @@ ExprASTPtr ArrayExprOperation::operator_call(ASTContext ctx, NamedExprASTPtr tar
 	exit(100);
 }
 
-// 函数调用
+// 函数调用.
 ExprASTPtr FunctionExprOperation::operator_call(ASTContext ctx,NamedExprASTPtr calltarget,ExprListASTPtr callargs)
 {
 	llvm::IRBuilder<> builder(ctx.llvmfunc->getContext());
@@ -326,17 +326,17 @@ ExprASTPtr FunctionExprOperation::operator_call(ASTContext ctx,NamedExprASTPtr c
     debug("sigfault herekkk?\n");
 	llvm::Value * ret = NULL;
 
-	//获得函数定义
+	//获得函数定义.
 
 	DimAST * funcdim = calltarget->nameresolve(ctx);
 	
 	llvm::Value * llvmfunc =funcdim->getval(ctx);
 
-	if(!llvmfunc){ //有定义, 则直接调用, 无定义就 ... 呵呵
+	if(!llvmfunc){ //有定义, 则直接调用, 无定义就 ... 呵呵.
 		llvmfunc = dynamic_cast<CallableExprTypeAST*>(funcdim)->defaultprototype(ctx,calltarget->ID->ID);
 	}
 
-	//构建参数列表
+	//构建参数列表.
 	std::vector<llvm::Value*> args;
 	if(callargs && callargs->expression_list.size() )
 	{

@@ -118,7 +118,7 @@ public:
 
 #include "type.hpp"
 
-// dim 就是定义一个名字,变量或者函数/过程
+// dim 就是定义一个名字,变量或者函数/过程.
 class DimAST: public StatementAST
 {
 public:
@@ -175,7 +175,6 @@ public:
 
 	CodeBlockAST*							parent;		// 父作用域.
 	std::map<std::string, DimAST*>			symbols;	// 符号表, 映射到定义语句,获得定义语句.
-//	std::map<std::string, FunctionDimAST*>	functions;	// 函数符号表.
 
     virtual llvm::BasicBlock* Codegen(ASTContext ctx);
 	virtual llvm::BasicBlock* GenLeave(ASTContext);
@@ -279,7 +278,7 @@ private:
 	llvm::BasicBlock*		returnblock; // insert before this ! please !
 	llvm::Function*			target;
 	llvm::Value*			retval; // allocated for return value, should use that for return.
-	llvm::Value*			setret(ASTContext,ExprASTPtr);
+	llvm::Value*			setret(ASTContext ctx, ExprASTPtr expr);
 public:
 	
 	Linkage		linkage; //链接类型。static? extern ?
