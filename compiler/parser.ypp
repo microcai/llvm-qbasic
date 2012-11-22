@@ -197,17 +197,15 @@ lines: lines line {
 						$1 = $$ = new CodeBlockAST;
 					}
 					if($2){
-						debug("addchine1 , %p %p %p\n",$$,$1,$2);
 						$$->addchild($2);
 					}else{
-						debug("addchine1 voided , %p %p %p\n",$$,$1,$2);
 					}
 	}
 	| line {
-		$$ = 0;debug("addchine2\n");
+		$$ = 0;
 		if($1){
-			debug("addchine2 real\n");
-			$$ = new CodeBlockAST; 	$$->addchild($1); 	}
+			$$ = new CodeBlockAST; 	$$->addchild($1);
+		}
 	} ;
 
 line: statements tNEWLINE { $$=$1;  }
@@ -215,7 +213,7 @@ line: statements tNEWLINE { $$=$1;  }
 		if(!$1){debug("statement nil\n");}
 		$$ = new StatementsAST ; $$->push_back(StatementASTPtr($1));
 	}
-	| tNEWLINE { debug("空行"); $$ = 0;}
+	| tNEWLINE { $$ = 0;}
 	| expression tNEWLINE {
 			ExprStmtAST * callstmt =  new ExprStmtAST( $1 );
 			$$ = new StatementsAST ;
@@ -355,6 +353,31 @@ seperator:
 		| ':'
 		;
 
+array_dim : tARRAYDIM tID tAS exprtype {
+
+		debug("definning %s as array\n",$2->c_str());
+
+		$$ = new VariableDimAST( *$2  , ArrayExprTypeAST::create(* $4) );
+	};
+
+struct_item_list: struct_item_list tNEWLINE tID tAS exprtype
+	| tID tAS exprtype 
+	;
+
+dim_item: tDIM tID tAS exprtype {
+		$$ = new VariableDimAST( *$2  , * $4 );
+	}
+	|tDIM tID {
+		$$ = new VariableDimAST( *$2  , NumberExprTypeAST::GetNumberExprTypeAST() );
+	}
+	| tSTRUCTDIM tID tNEWLINE
+		struct_item_list tNEWLINE
+	  tENDSTRUCDIM {
+		debug("definning struct %s\n",$2->c_str());
+		exit(0);
+
+	};
+
 //*****************************************/
 //* 这里开始是函数和过程定义
 //*****************************************/
@@ -408,26 +431,6 @@ arg_list:{ $$ = 0; }
 		$$->addchild(new ArgumentDimAST( *$1  , * $3 ));
 	}
 	;
-
-array_dim : tARRAYDIM tID tAS exprtype {
-
-		debug("definning %s as array\n",$2->c_str());
-
-		$$ = new VariableDimAST( *$2  , ArrayExprTypeAST::create(* $4) );
-	};
-
-dim_item: tDIM tID tAS exprtype {
-		debug("definning %s is type %p\n",$2->c_str(), $4);
-		$$ = new VariableDimAST( *$2  , * $4 );
-	}
-	|tDIM tID {
-		$$ = new VariableDimAST( *$2  , NumberExprTypeAST::GetNumberExprTypeAST() );
-	}
-	| tSTRUCTDIM tID
-		dim_item
-	  tENDSTRUCDIM {
-		
-	};
 
 
 //*****************************************/

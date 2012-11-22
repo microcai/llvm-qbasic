@@ -6,6 +6,10 @@
 	for historcal test cases, see test[0-9]*.bas
 */
 
+struct wgm
+	name as string
+	age  as long
+end struct
 
 sub main()
 
