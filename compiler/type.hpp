@@ -1,4 +1,4 @@
-/*
+﻿/*
     defination of QBASIC Abstruct Syntax Tree - The Type System
     Copyright (C) 2012  microcai <microcai@fedoraproject.org>
 
@@ -390,8 +390,10 @@ public:
     StringExprTypeAST();
     virtual llvm::Type* llvm_type(ASTContext ctx);
 
-    virtual size_t size(){return sizeof(long);}; //yes没错, 字符串类型只占用8个字节,也就是一个指针哦!
-
+    virtual size_t size(){return sizeof(long);};
+#if 0
+	//yes没错, 字符串类型只占用8个字节,也就是一个指针哦!
+#endif
 	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
     virtual ExprOperation* getop();
     virtual PointerTypeASTPtr getpointetype();;
@@ -419,7 +421,11 @@ public:
     ArrayExprTypeAST(ExprTypeASTPtr elementtype);
     virtual llvm::Type* llvm_type(ASTContext ctx);
 
-    virtual size_t size(){return sizeof(struct QBArray);}; //yes没错, 数组类型的内部实现就是 struct QBArray.
+    virtual size_t size(){return sizeof(struct QBArray);};
+
+#if 0
+//yes没错, 数组类型的内部实现就是 struct QBArray.
+#endif
 
 	virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
     virtual ExprOperation* getop();
