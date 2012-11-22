@@ -169,7 +169,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 
 program: lines tEOPROG {
 			if(useDefautSubMain){
-				debug("program ended\n");
+				debug("program ended , no main()\n");
 				program = new DefaultMainFunctionAST( $1 );
 			}else{
 				program = $1;
