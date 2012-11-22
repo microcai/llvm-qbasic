@@ -95,6 +95,8 @@ ExprTypeASTPtr AssignmentExprAST::type(ASTContext ctx)
 ExprTypeASTPtr CalcExprAST::type(ASTContext ctx)
 {
 	//类型是左边的操作符的类型
+	if(op==OPERATOR_EQUL)
+		return numbertype;
 	return lval->type(ctx);
 }
 
@@ -386,6 +388,7 @@ llvm::Value* CalcExprAST::getval(ASTContext ctx)
 		case OPERATOR_GREATER:
 		case OPERATOR_LESS:
 		case OPERATOR_LESSEQU:
+		case OPERATOR_EQUL:
 			if(!result){
 				result = lval->type(ctx)->getop()->operator_comp(ctx,op,lval,rval);
 			}

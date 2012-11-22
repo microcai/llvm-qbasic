@@ -91,17 +91,23 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 				case sizeof(long): // 整数产量的类型
 					if(argitem->type(ctx)->name(ctx) == "string"){
 						printfmt += "%s\t";
-						debug("add code for print list args type %%p\n");					
+						debug("add code for print list args type %%s\n");
 					}else{
 						debug("add code for print list args type %%ld\n");
+#if __x86_64
 						printfmt += "%ld\t";
+#else
+						printfmt += "%d\t";
+#endif
 					}
 					args.push_back(	argitem->getval(ctx) );
 					break;
+#if __x86_64
 				case sizeof(int):
 					printfmt += "%d\t";
 					args.push_back(	argitem->getval(ctx) );
 					break;
+#endif
 				case 0:
 					printfmt +="\n"; // 很重要,呵呵
 				default:

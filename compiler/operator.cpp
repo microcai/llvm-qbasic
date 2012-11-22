@@ -255,6 +255,9 @@ ExprASTPtr NumberExprOperation::operator_comp(ASTContext ctx, MathOperator op, E
 		case OPERATOR_GREATEREQUL:
 			result = builder.CreateICmpSGE(LHS,RHS);
 			break;
+		case OPERATOR_EQUL:
+			result = builder.CreateICmpEQ(LHS,RHS);
+			break;
 	}
 	
 	//TODO , 构造临时 Number 对象
@@ -263,8 +266,28 @@ ExprASTPtr NumberExprOperation::operator_comp(ASTContext ctx, MathOperator op, E
 
 ExprASTPtr StringExprOperation::operator_comp(ASTContext ctx,MathOperator op, ExprASTPtr lval, ExprASTPtr rval)
 {
-	debug("string comp not supported yet\n");
-	exit(2);
+	llvm::Value * LHS =	lval->getval(ctx);
+	llvm::Value * RHS =	rval->getval(ctx);
+	llvm::IRBuilder<> builder(ctx.block);
+	llvm::Value * result;
+
+	switch(op){
+		case OPERATOR_EQUL:{// call strcmp
+			llvm::Constant * func_strcmp = qbc::getbuiltinprotype(ctx,"strcmp");
+			
+			result = builder.CreateCall2(func_strcmp,LHS,RHS);
+			// 返回值是 int , not long , 执行转化
+			result = builder.CreateIntCast(result,qbc::getplatformlongtype(),true);
+			result = builder.CreateICmpEQ(result,qbc::getconstlong(0)); 
+		}
+		break;
+		default:
+			debug("string comp not supported");
+			exit(1);
+	
+	}
+	//TODO , 构造临时 Number 对象
+	return NumberExprTypeAST::GetNumberExprTypeAST()->createtemp(ctx,result,NULL);
 }
 
 // 那个, 数组下标调用

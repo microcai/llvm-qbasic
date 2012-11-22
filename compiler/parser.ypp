@@ -303,7 +303,8 @@ expression: call_function
 		| expression tLEQ expression {   $$ = new CalcExprAST( $1, OPERATOR_LESSEQU , $3 );  }
 		| expression tGTN expression {   $$ = new CalcExprAST( $1, OPERATOR_GREATER , $3 );  }
 		| expression tGEQ expression {   $$ = new CalcExprAST( $1, OPERATOR_GREATEREQUL , $3 );  }
-		| expression tEQU expression {   $$ = new CalcExprAST( $1, OPERATOR_GREATEREQUL , $3 );  }
+		| expression tEQU expression {   $$ = new CalcExprAST( $1, OPERATOR_EQUL , $3 );  }
+		| expression '=' expression {   $$ = new CalcExprAST( $1, OPERATOR_EQUL , $3 );  }
 
  		| varref
 		| tInteger  {

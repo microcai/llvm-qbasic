@@ -131,6 +131,10 @@ BUILTINTYPE_DEFINE(strcat , Int8Ptr , {
 	args.push_back(builder.getInt8PtrTy());
 	args.push_back(builder.getInt8PtrTy());}  )
 
+BUILTINTYPE_DEFINE(strcmp , Int32 , {
+	args.push_back(builder.getInt8PtrTy());
+	args.push_back(builder.getInt8PtrTy());}  )
+
 BUILTINTYPE_DEFINE(btr_qbarray_new , Void , {
 	args.push_back(builder.getInt8PtrTy());
 	args.push_back(getplatformlongtype());}  )
@@ -163,6 +167,7 @@ llvm::Constant * getbuiltinprotype(ASTContext ctx,const std::string name)
 		RETURNBUILTINENTRY(strlen)
 		RETURNBUILTINENTRY(strcpy)
 		RETURNBUILTINENTRY(strcat)
+		RETURNBUILTINENTRY(strcmp)
 		RETURNBUILTINENTRY(btr_qbarray_new)
 		RETURNBUILTINENTRY(btr_qbarray_free)
 		RETURNBUILTINENTRY(btr_qbarray_at)
