@@ -142,38 +142,34 @@ int main(int argc, char **argv)
 	}
 	
 #if _WIN32
-	std::string outname = outfilename + ".obj";
+	std::string outobjname = outfilename + ".obj";
 #else
-	std::string outname = outfilename + ".o";
+	std::string outobjname = outfilename + ".o";
 #endif
 	std::string Err;
 
 	boost::shared_ptr<llvm::tool_output_file> Out( new
-		llvm::tool_output_file(outname.c_str(), Err, llvm::raw_fd_ostream::F_Binary) );
+		llvm::tool_output_file(outobjname.c_str(), Err, llvm::raw_fd_ostream::F_Binary) );
 
 	if(generateobj(Out,module)==0)
-		printf("======== object file writed to %s ===========\n", outname.c_str());
+		printf("======== object file writed to %s ===========\n", outobjname.c_str());
 
 	if(!vm.count("-c"))
 	{
 		// compile to excuteable
-		// invoke  gcc
 #if _WIN32
-		// no delete obj file, reset the Out pointer to close obj file.
-		Out->keep();
-		Out.reset();
-
 		std::string cmd = boost::str(boost::format("link.exe /out:%s %s msvcrt.lib")
-			% std::string(outfilename + ".exe") %  std::string(outfilename + ".obj"));
-		std::system(cmd.c_str());
-		printf("%s\n", cmd.c_str());
+			% std::string(outfilename + ".exe") %  outobjname );
 #else
+		// invoke  gcc
 		std::string libdir = fs::path(argv[0]).parent_path().string();
-		std::string cmd = boost::str(boost::format("gcc -o %s %s -L%s -lbrt") % outfilename %  (outfilename + ".o") % libdir.c_str());
-
-		printf("run %s\n",cmd.c_str());
-		system(cmd.c_str());
+		std::string cmd = boost::str(boost::format("gcc -o %s %s -L%s -lbrt")
+							% outfilename %  (outfilename + ".o") % libdir.c_str());
 #endif
+		printf("run linker: %s\n",cmd.c_str());
+		if(std::system(cmd.c_str())==0)
+			Out->keep(); // keep the file if linker runs fine
+
 	} else {
 		// no delete obj file
 		Out->keep();
