@@ -39,52 +39,44 @@
 
 #define debug	std::printf
 
-AST::AST(){}
-AST::~AST(){}
+AST::AST() {}
+AST::~AST() {}
 
 PrintStmtAST::PrintStmtAST(PrintIntroAST * intro,ExprListAST* args)
-	:callargs(args),print_intro(intro)
-{
-}
+	: callargs(args)
+	, print_intro(intro)
+{}
 
 PrintIntroAST::PrintIntroAST()
-	:ConstNumberExprAST(0)
-{
-
-	
-}
+	: ConstNumberExprAST(0)
+{}
 
 
 DimAST::DimAST(const std::string _name, ExprTypeASTPtr _type)
-	:name(_name),type(_type)
-{
-
-}
+	: name(_name), type(_type)
+{}
 
 VariableDimAST::VariableDimAST(const std::string _name, ExprTypeASTPtr _type)
-	:DimAST(_name,_type)
-{
-}
+	: DimAST(_name, _type)
+{}
 
-FunctionDimAST::FunctionDimAST(const std::string _name, ExprTypeASTPtr _type,ArgumentDimsAST * _callargs)
-	: DimAST(_name,_type),callargs(_callargs)
+FunctionDimAST::FunctionDimAST(const std::string _name, ExprTypeASTPtr _type, ArgumentDimsAST * _callargs)
+	: DimAST(_name, _type)
+	, callargs(_callargs)
 	, returnblock(NULL)
-{
-	
-}
-
+	, target(NULL)
+	, retval(NULL)
+{}
 
 DefaultMainFunctionAST::DefaultMainFunctionAST(CodeBlockAST * body)
-	:FunctionDimAST("main",VoidExprTypeAST::GetVoidExprTypeAST())
+	: FunctionDimAST("main", VoidExprTypeAST::GetVoidExprTypeAST())
 {
 	this->body = CodeBlockASTPtr(body);
 }
 
-
-ReferenceAST::ReferenceAST(std::string* tID) :ID(*tID)
-{
-	
-}
+ReferenceAST::ReferenceAST(std::string* tID)
+	: ID(*tID)
+{}
 
 void ExprListAST::Append(ExprAST* exp)
 {
@@ -92,26 +84,21 @@ void ExprListAST::Append(ExprAST* exp)
 }
 
 ExprStmtAST::ExprStmtAST(ExprAST* exp)
-	:expr(exp)
-{
-	
-}
+	: expr(exp)
+{}
 
 ReturnAST::ReturnAST(ExprAST* _expr)
-	:expr(_expr)
-{
-
-}
+	: expr(_expr)
+{}
 
 int CodeBlockAST::find(StatementAST* child)
 {
 	int index = 0;
 	BOOST_FOREACH( StatementASTPtr item , statements)
 	{
-		if( item == child ){
+		if(item == child)
 			return index;
-		}
-		index ++;
+		index++;
 	}
 	debug("not a child??????????\n");
 	exit(1);
@@ -119,7 +106,8 @@ int CodeBlockAST::find(StatementAST* child)
 
 void CodeBlockAST::addchild(StatementAST* item)
 {
-    if(item) {
+    if(item)
+	{
 		debug("here === addchild1\n");
         this->statements.push_back(StatementASTPtr(item));
         item->parent = this;
@@ -139,34 +127,38 @@ void CodeBlockAST::addchild(StatementsAST* items)
 }
 
 CodeBlockAST::CodeBlockAST(StatementsAST* items)
-	:parent(0)
+	: parent(NULL)
 {
     addchild(items);
 }
+
 CodeBlockAST::CodeBlockAST(StatementAST* item)
-	:parent(0)
+	: parent(NULL)
 {
     addchild(item);
 }
 
 AssigmentAST::AssigmentAST(NamedExprAST* lval, ExprAST* rval)
-	:assignexpr(new AssignmentExprAST(lval,rval))
-{
-}
+	: assignexpr(new AssignmentExprAST(lval, rval))
+{}
 
 ArgumentDimAST::ArgumentDimAST(const std::string _name, ExprTypeASTPtr _type)
-	:VariableDimAST(_name,_type),modified_stackvar(0)
-{	
-}
+	: VariableDimAST(_name, _type)
+	, modified_stackvar(NULL)
+{}
 
-WhileLoopAST::WhileLoopAST(ExprASTPtr _condition , CodeBlockAST* body)
-	:condition(_condition),LoopAST(body)
-{
-}
+WhileLoopAST::WhileLoopAST(ExprASTPtr _condition, CodeBlockAST* body)
+	: condition(_condition)
+	, LoopAST(body)
+{}
 
-ForLoopAST::ForLoopAST(NamedExprAST* id, ExprAST* _start, ExprAST* _end, ExprAST* _step, CodeBlockAST* body) :LoopAST(body),start(_start),end(_end),step(_step),refID(id)
+ForLoopAST::ForLoopAST(NamedExprAST* id, ExprAST* _start, ExprAST* _end, ExprAST* _step, CodeBlockAST* body)
+	: LoopAST(body)
+	, start(_start)
+	, end(_end)
+	, step(_step)
+	, refID(id)
 {
-	if(!step){
-		step.reset(new ConstNumberExprAST(1));
-	}	
+	if(!step)
+		step.reset(new ConstNumberExprAST(1));	
 }
