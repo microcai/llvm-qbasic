@@ -40,15 +40,15 @@ enum MathOperator{
 	OPERATOR_SUB , // -
 	OPERATOR_MUL , // *
 	OPERATOR_DIV , // /
-	Mod , // % , MOD
-	Power , // ^
+	OPERATOR_MOD , // % , MOD
+	OPERATOR_POWER , // ^
 
-	Equl , // == , =
-	NotEqul , // <> , >< , != as in basic
+	OPERATOR_EQUL , // == , =
+	OPERATOR_NOTEQUL, // <> , >< , != as in basic
 	OPERATOR_LESS , // <
-	OPERATOR_LESSEQU, // <=
-	OPERATOR_GREATER, // >
-	OPERATOR_GREATEREQUL, // >=
+	OPERATOR_LESSEQU , // <=
+	OPERATOR_GREATER , // >
+	OPERATOR_GREATEREQUL , // >=
 };
 
 
@@ -121,7 +121,7 @@ public:
 	ExprTypeASTPtr	type; //定义的符号的类型. 将在 typetable 获得type的定义
 	virtual llvm::BasicBlock* Codegen(ASTContext) = 0; // generate alloca
 	// gengerate deconstructions , default is don't do that, override on subclass
-	virtual llvm::BasicBlock* valuedegen(ASTContext){};	
+	virtual llvm::BasicBlock* valuedegen(ASTContext ctx){return ctx.block;};
 
 	virtual	llvm::Value*	getptr(ASTContext ctx) = 0 ; // the location for the allocated value
 	virtual	llvm::Value*	getval(ASTContext ctx) = 0;
@@ -267,7 +267,7 @@ typedef boost::shared_ptr<ArgumentDimsAST> ArgumentDimsASTPtr;
 // NOTE : 小心使用双重继承
 class FunctionDimAST: public DimAST
 {
-	friend ReturnAST;
+	friend class ReturnAST;
 private:
 	llvm::BasicBlock *		returnblock; // insert before this ! please !
 

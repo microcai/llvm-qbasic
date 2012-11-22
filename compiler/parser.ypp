@@ -125,6 +125,8 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %token tRETURN
 %token tLET tPRINT
 %token tARRAYDIM tDIM
+%token tSTRUCTDIM
+%token tENDSTRUCDIM
 
 %token tIF tTHEN tENDIF tELSE tELSEIF
 %token tWHILE tENDWHILE
@@ -399,11 +401,6 @@ arg_list:{ $$ = 0; }
 	|arg_list ',' tID tAS exprtype {
 		$$ = $1;
 		$$->addchild( new ArgumentDimAST( *$3  , * $5 ) );
-
-		debug("definning %s is type %p as arg\n",$3->c_str(), $5);
-
-		debug("define multiple line is not supported yet\n");
-		//exit(1);
 	}
 	| tID tAS exprtype {
 		debug("definning %s is type %p as arg\n",$1->c_str(), $3);
@@ -423,9 +420,14 @@ array_dim : tARRAYDIM tID tAS exprtype {
 dim_item: tDIM tID tAS exprtype {
 		debug("definning %s is type %p\n",$2->c_str(), $4);
 		$$ = new VariableDimAST( *$2  , * $4 );
-	} | tDIM tID {
-		debug("definning %s with no type , default to long\n",$2->c_str());
+	}
+	|tDIM tID {
 		$$ = new VariableDimAST( *$2  , NumberExprTypeAST::GetNumberExprTypeAST() );
+	}
+	| tSTRUCTDIM tID
+		dim_item
+	  tENDSTRUCDIM {
+		
 	};
 
 

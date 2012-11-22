@@ -142,23 +142,25 @@ namespace qb {
      tPRINT = 281,
      tARRAYDIM = 282,
      tDIM = 283,
-     tIF = 284,
-     tTHEN = 285,
-     tENDIF = 286,
-     tELSE = 287,
-     tELSEIF = 288,
-     tWHILE = 289,
-     tENDWHILE = 290,
-     tFOR = 291,
-     tENDFOR = 292,
-     tTO = 293,
-     tSTEP = 294,
-     tLONG = 295,
-     tSTR = 296,
-     tID = 297,
-     tInteger = 298,
-     tSTRING = 299,
-     tNUMBER = 300
+     tSTRUCTDIM = 284,
+     tENDSTRUCDIM = 285,
+     tIF = 286,
+     tTHEN = 287,
+     tENDIF = 288,
+     tELSE = 289,
+     tELSEIF = 290,
+     tWHILE = 291,
+     tENDWHILE = 292,
+     tFOR = 293,
+     tENDFOR = 294,
+     tTO = 295,
+     tSTEP = 296,
+     tLONG = 297,
+     tSTR = 298,
+     tID = 299,
+     tInteger = 300,
+     tSTRING = 301,
+     tNUMBER = 302
    };
 
     };
@@ -331,7 +333,7 @@ namespace qb {
 #line 21 "parser.ypp"
 } // qb
 /* Line 36 of lalr1.cc  */
-#line 335 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 337 "/home/cai/projects/basic/compiler/parser.hpp"
 
 
 

@@ -87,10 +87,12 @@ end{whitespace}*sub|end{whitespace}*subroutine	return token::tSUBEND;
 end{whitespace}*function 						return token::tFUNCTIONEND;
 end{whitespace}*while							return token::tENDWHILE;
 end{whitespace}*for								return token::tENDFOR;
-arraydim							return token::tARRAYDIM;
-wend				{ printf("while end ! ======\n");return token::tENDWHILE; }
-while 				{ printf("while begin ! ======\n");return token::tWHILE; }
-endif|fi|end{whitespace}*if							return token::tENDIF;
+array{whitespace}*dim|arraydim					return token::tARRAYDIM;
+wend											return token::tENDWHILE;
+while 											return token::tWHILE;
+endif|fi|end{whitespace}*if						return token::tENDIF;
+structdim|struct{whitespace}*dim|struct			return token::tSTRUCTDIM;
+end{whitespace}*struct							return token::tENDSTRUCDIM;
 
 function			return token::tFUNCTION;
 sub|subroutine		return token::tSUB;

@@ -117,7 +117,7 @@ public:
 	virtual llvm::Type	* llvm_type(ASTContext ctx) = 0;
 
 	// 为该类型在栈上分配一块内存, 返回分配的指针 , 有可能的话,起个名字
-	virtual llvm::Value * Alloca(ASTContext ctx, const std::string _name){};
+	virtual llvm::Value * Alloca(ASTContext ctx, const std::string _name){return NULL;}
 
 	// 解引用指针, 用户解引用 Alloca 返回的指针或则是其他指针
 	virtual llvm::Value * deref(ASTContext ctx, llvm::Value *v);
@@ -449,13 +449,7 @@ public:
 	virtual PointerTypeASTPtr getpointetype(){::printf("get pointer to function\n");exit(1);};
 	
     virtual llvm::Type* llvm_type(ASTContext ctx);
-    virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name){
-
-		::printf("alloca function?\n");
-		*((char*)0) = 0;
-		exit(0);
-		
-	}
+    virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
     virtual ExprASTPtr createtemp(ASTContext , llvm::Value*  , llvm::Value *ptr);
 };
 

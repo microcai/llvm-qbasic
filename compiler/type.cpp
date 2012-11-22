@@ -124,7 +124,7 @@ ExprTypeASTPtr CallExprAST::type(ASTContext ctx)
 
 llvm::Type* VoidExprTypeAST::llvm_type(ASTContext ctx)
 {
-	llvm::Type::getVoidTy(ctx.module->getContext());
+	return llvm::Type::getVoidTy(ctx.module->getContext());
 }
 
 llvm::Type* NumberExprTypeAST::llvm_type(ASTContext ctx)
@@ -215,6 +215,14 @@ llvm::Value* ArrayExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
 
 	builder.CreateCall2(btr_qbarray_new,newval,qbc::getconstlong(elementtype->size()));
 	return newval;
+}
+
+llvm::Value* CallableExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
+{
+    ::printf("alloca function?\n");
+    *((char*)0) = 0;
+    exit(0);
+
 }
 
 llvm::Value* NumberExprTypeAST::deref(ASTContext ctx, llvm::Value* v)
@@ -473,3 +481,4 @@ TempStringExprAST::~TempStringExprAST()
 	llvm::Constant * func_free = qbc::getbuiltinprotype(ctx,"free");
 	builder.CreateCall(func_free,this->val);
 }
+
