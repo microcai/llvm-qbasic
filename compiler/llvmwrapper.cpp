@@ -40,6 +40,15 @@ llvm::Value * getnull()
 	return llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(llvm::getGlobalContext()));
 }
 
+llvm::Value * getconstfalse()
+{
+	return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(1,0,true));
+}
+
+llvm::Value * getconsttrue()
+{
+	return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(1,1,true));
+}
 
 llvm::Value * getconstint(int v)
 {
@@ -49,6 +58,11 @@ llvm::Value * getconstint(int v)
 llvm::Value * getconstlong(long v)
 {
 	return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(sizeoflong(),(uint64_t)v,true));
+}
+
+llvm::Type * getbooltype()
+{
+	return llvm::Type::getInt1Ty(llvm::getGlobalContext());
 }
 
 llvm::Type * getplatformlongtype()

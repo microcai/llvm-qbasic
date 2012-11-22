@@ -1,4 +1,4 @@
-﻿/*
+/*
     Main Code Generation 
     Copyright (C) 2012  microcai <microcai@fedoraproject.org>
 
@@ -16,6 +16,7 @@
     License along with this library; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
+#undef NDEBUG
 
 #include <iostream>
 #include <boost/lexical_cast.hpp>
@@ -297,8 +298,10 @@ llvm::BasicBlock* IFStmtAST::Codegen(ASTContext ctx)
 	llvm::IRBuilder<> builder(ctx.block);
 
 	llvm::Value * expcond = this->_expr->getval(ctx);
+
+	expcond = builder.CreateIntCast(expcond,qbc::getbooltype(),1);
 	
-	expcond = builder.CreateICmpNE(expcond, qbc::getconstlong(0), "tmp");
+	expcond = builder.CreateICmpNE(expcond, qbc::getconstfalse(), "tmp");
 	builder.CreateCondBr(expcond, cond_true, cond_false);
 
 	// generating true
@@ -351,7 +354,8 @@ llvm::BasicBlock* WhileLoopAST::Codegen(ASTContext ctx)
 	builder.SetInsertPoint(cond_while);
 	ctx.block = cond_while;
 	llvm::Value * expcond = this->condition->getval(ctx);
-	expcond = builder.CreateICmpEQ(expcond, qbc::getconstlong(0), "tmp");
+	expcond = builder.CreateIntCast(expcond,qbc::getbooltype(),true);
+	expcond = builder.CreateICmpEQ(expcond, qbc::getconstfalse(), "tmp");
 	builder.CreateCondBr(expcond, cond_continue, while_body);
 
 	ctx.block = while_body;
@@ -379,12 +383,13 @@ llvm::BasicBlock* ForLoopAST::Codegen(ASTContext ctx)
 	llvm::BasicBlock* for_out = llvm::BasicBlock::Create(ctx.llvmfunc->getContext(), "forend", ctx.llvmfunc);
 
 	builder.CreateBr(for_cond);
+	builder.SetInsertPoint(for_cond);
 
 	ctx.block = for_cond; // 切换到  for_cond 生成代码
 	// 测试条件是否成立
 	llvm::Value * condval = exprtype->getop()->operator_comp(ctx,OPERATOR_LESSEQU,refID,end)->getval(ctx);
 
-	builder.SetInsertPoint(for_cond);
+	condval = builder.CreateIntCast(condval,qbc::getbooltype(),1);
 	builder.CreateCondBr(condval,for_body,for_out);
 
 	ctx.block = for_body;

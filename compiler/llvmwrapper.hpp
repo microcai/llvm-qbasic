@@ -25,8 +25,13 @@ llvm::Value * getnull();
 	
 llvm::Value * getconstint(int v);
 
+llvm::Value * getconstfalse();
+llvm::Value * getconsttrue();
+
 llvm::Value * getconstlong(long v);
 
 llvm::Constant * getbuiltinprotype(ASTContext ctx, const std::string name);
+
+llvm::Type * getbooltype();
 llvm::Type * getplatformlongtype();
 }
