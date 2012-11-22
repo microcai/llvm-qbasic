@@ -1,4 +1,4 @@
-/*
+﻿/*
     operator support for internal data struct
 
     Copyright (C) 2012  microcai <microcai@fedoraproject.org>
@@ -348,6 +348,12 @@ ExprASTPtr FunctionExprOperation::operator_call(ASTContext ctx,NamedExprASTPtr c
 	}
 
 	return calltarget->type(ctx)->createtemp( ctx, builder.CreateCall(llvmfunc,args) ,NULL);
+}
+
+ExprASTPtr VoidExprTypeAST::createtemp(ASTContext, llvm::Value*, llvm::Value* ptr)
+{
+	// just a hack for that! not we can't actullay allocate VoidType.
+	return ExprASTPtr(new ConstNumberExprAST(0));
 }
 
 ExprASTPtr NumberExprTypeAST::createtemp(ASTContext ctx, llvm::Value* val , llvm::Value *ptr)

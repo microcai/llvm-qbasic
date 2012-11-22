@@ -479,4 +479,3 @@ TempStringExprAST::~TempStringExprAST()
 	llvm::Constant * func_free = qbc::getbuiltinprotype(ctx,"free");
 	builder.CreateCall(func_free,this->val);
 }
-

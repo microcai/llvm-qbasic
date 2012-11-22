@@ -302,9 +302,8 @@ class AssignmentExprAST : public ExprAST
 	NamedExprASTPtr lval;
 	ExprASTPtr 		rval;
 public:
-#if 0
-	// 赋值表达式必须使用一个命名的类型为左值      
-#endif
+
+	// 赋值表达式必须使用一个命名的类型为左值.
 	AssignmentExprAST(NamedExprAST* , ExprAST *);
 	
     virtual ExprTypeASTPtr type(ASTContext);
@@ -324,11 +323,10 @@ public:
     virtual ~ExprListAST(){};
 };
 typedef boost::shared_ptr<ExprListAST> ExprListASTPtr;
-#if 0
+
 // 数组或者函数调用.
 // 返回的类型就是数组成员的类型, 或者是函数的返回类型
-// 依据是 calltarget 的类型是 CallableExprTypeAST 则为函数调用      
-#endif
+// 依据是 calltarget 的类型是 CallableExprTypeAST 则为函数调用.
 class CallExprAST : public ExprAST
 {
 	NamedExprASTPtr				calltarget; // should be callable
@@ -360,9 +358,7 @@ public:
     virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name){return NULL;}
     virtual ExprOperation* getop(){return NULL;}
     virtual PointerTypeASTPtr getpointetype();
-    virtual ExprASTPtr createtemp(ASTContext , llvm::Value* , llvm::Value *ptr ){ ::printf("can\'t allocate for VoidExprTypeAST\n");
-	exit(10);};
-
+    virtual ExprASTPtr createtemp(ASTContext , llvm::Value* , llvm::Value *ptr );
 };
 
 class NumberExprTypeAST :public ExprTypeAST {
