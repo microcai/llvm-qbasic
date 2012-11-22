@@ -1,4 +1,4 @@
-﻿/*
+/*
     Main Code Generation 
     Copyright (C) 2012  microcai <microcai@fedoraproject.org>
 
@@ -52,18 +52,18 @@ llvm::BasicBlock* PrintIntroAST::Codegen(ASTContext ctx)
 	return ctx.block;
 }
 
-//* 调用函数
+//* 调用函数.
 llvm::BasicBlock* ExprStmtAST::Codegen(ASTContext ctx)
 {
 	debug("call function? generating the call here!\n");
-	// 然后调用吧
+	// 然后调用吧.
 	expr->getval(ctx);
 
-	// 忽略返回数值
+	// 忽略返回数值.
 	return ctx.block;
 }
 
-//TODO 为 print 语句生成,
+//TODO 为 print 语句生成.
 llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 {
 	bool need_brt = false;
@@ -87,8 +87,8 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 				printfmt +="\n"; // 很重要,呵呵
 				continue;				
 			}
-			switch(argitem->type(ctx)->size()){ //按照大小来啊,果然
-				case sizeof(long): // 整数产量的类型
+			switch(argitem->type(ctx)->size()){ //按照大小来啊,果然.
+				case sizeof(long): // 整数产量的类型.
 					if(argitem->type(ctx)->name(ctx) == "string"){
 						printfmt += "%s\t";
 						debug("add code for print list args type %%s\n");
@@ -109,20 +109,20 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 					break;
 #endif
 				case 0:
-					printfmt +="\n"; // 很重要,呵呵
+					printfmt +="\n"; // 很重要,呵呵.
 				default:
-					//TODO, 目前只需要支持 number , brt_print 也只是支持数字
+					//TODO, 目前只需要支持 number , brt_print 也只是支持数字.
 					debug("print argument not supported\n");
 			}
 		}
 	}
 
-	// 现在 brt 忽略第一个参数 , 其实质是 一个 map 到 FILE* 的转化, 由 btr_print 实现
-	//第二个参数是打印列表.
+	// 现在 brt 忽略第一个参数 , 其实质是 一个 map 到 FILE* 的转化, 由 btr_print 实现.
+	// 第二个参数是打印列表.
 	args.insert(args.begin(), builder.CreateGlobalStringPtr(printfmt));
 
-	//builder.CreateCondBr();
-	//调用 print
+	// builder.CreateCondBr();
+	// 调用 print.
 	if(need_brt){
 		args.insert(args.begin(), qbc::getconstint(0) );
 
@@ -143,14 +143,14 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 	return ctx.block;
 }
 
-// 获得分配的空间
+// 获得分配的空间.
 llvm::Value* VariableDimAST::getptr(ASTContext ctx)
 {
 	debug("get ptr of this alloca %p\n", alloca_var);
 	return alloca_var;
 }
 
-// 获得变量的值
+// 获得变量的值.
 llvm::Value* VariableDimAST::getval(ASTContext ctx)
 {
 	llvm::IRBuilder<> builder(ctx.block);
@@ -165,7 +165,7 @@ llvm::Value* VariableDimAST::getval(ASTContext ctx)
     exit(1);
 }
 
-//为变量分配空间
+// 为变量分配空间.
 llvm::BasicBlock* VariableDimAST::Codegen(ASTContext ctx)
 {
 	BOOST_ASSERT(ctx.llvmfunc);
@@ -249,7 +249,7 @@ llvm::Value* FunctionDimAST::getptr(ASTContext ctx)
 	return this->target;
 }
 
-//	设置返回值
+// 设置返回值.
 llvm::Value* FunctionDimAST::setret(ASTContext ctx,ExprASTPtr expr)
 {
 	llvm::IRBuilder<> builder(ctx.block);
@@ -268,7 +268,7 @@ llvm::Value* FunctionDimAST::setret(ASTContext ctx,ExprASTPtr expr)
 	return builder.CreateBr(returnblock);
 }
 
-// 赋值语句, NOTE 直接调用赋值表达式
+// 赋值语句, NOTE 直接调用赋值表达式.
 llvm::BasicBlock* AssigmentAST::Codegen(ASTContext ctx)
 {
  	BOOST_ASSERT(ctx.llvmfunc);
@@ -284,7 +284,7 @@ llvm::BasicBlock* ReturnAST::Codegen(ASTContext ctx)
 	return ctx.block;
 }
 
-// IF ELSE 语句
+// IF ELSE 语句.
 llvm::BasicBlock* IFStmtAST::Codegen(ASTContext ctx)
 {
 	BOOST_ASSERT(ctx.llvmfunc);
@@ -381,7 +381,7 @@ llvm::BasicBlock* ForLoopAST::Codegen(ASTContext ctx)
 {
 	ExprTypeASTPtr exprtype  = this->refID->type(ctx);
 
-		// 变量赋予初始值
+		// 变量赋予初始值.
 	exprtype->getop()->operator_assign(ctx,refID,start);
 	
 	llvm::IRBuilder<> builder(ctx.block);
@@ -393,8 +393,8 @@ llvm::BasicBlock* ForLoopAST::Codegen(ASTContext ctx)
 	builder.CreateBr(for_cond);
 	builder.SetInsertPoint(for_cond);
 
-	ctx.block = for_cond; // 切换到  for_cond 生成代码
-	// 测试条件是否成立
+	ctx.block = for_cond; // 切换到  for_cond 生成代码.
+	// 测试条件是否成立.
 	llvm::Value * condval = exprtype->getop()->operator_comp(ctx,OPERATOR_LESSEQU,refID,end)->getval(ctx);
 
 	condval = builder.CreateIntCast(condval,qbc::getbooltype(),1);
@@ -405,7 +405,7 @@ llvm::BasicBlock* ForLoopAST::Codegen(ASTContext ctx)
 
 	builder.SetInsertPoint(ctx.block);
 
-	// 为变量+1
+	// 为变量+1.
 	ExprASTPtr tmp = exprtype->getop()->operator_add(ctx,refID,step);
 
 	exprtype->getop()->operator_assign(ctx,refID,tmp);
@@ -466,18 +466,18 @@ llvm::BasicBlock* CodeBlockAST::GenLeave(ASTContext ctx)
 	return ctx.block;
 }
 
-// 生成函数 参数和反回值支持
+// 生成函数 参数和反回值支持.
 llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 {
 	BOOST_ASSERT(!ctx.llvmfunc);
 	BOOST_ASSERT(!ctx.block);
 
-	ctx.func = this; // 设定当前函数
+	ctx.func = this; // 设定当前函数.
 	llvm::BasicBlock * blockforret = ctx.block;
 	
 	debug("generating function %s and its body now\n", this->name.c_str());
 
-	//首先生成全局可用的外部辅助函数
+	//首先生成全局可用的外部辅助函数.
 	llvm::IRBuilder<> builder(llvm::getGlobalContext());
 
 	// 参数生成 args
@@ -498,7 +498,7 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 		}
 	}
 
-	//函数返回类型
+	//函数返回类型.
 	llvm::FunctionType *funcType =
 		llvm::FunctionType::get(type ? type->llvm_type(ctx) : builder.getVoidTy(),args,true);
 
@@ -507,10 +507,10 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 
 	llvm::BasicBlock *entry = llvm::BasicBlock::Create(builder.getContext(), "entrypoint", ctx.llvmfunc);
 
-	//挂到全局名称表中
+	//挂到全局名称表中.
 	ctx.codeblock->symbols.insert(std::make_pair(this->name,this));
 
-	//开始生成代码
+	//开始生成代码.
 	ctx.block = entry;
 
 	// 为参数设定 name
@@ -539,14 +539,14 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 		ctx.block = returnblock;
 	}
 
-	//生成变量撤销操作
+	//生成变量撤销操作.
 	ctx.block = body->GenLeave(ctx);
 	builder.SetInsertPoint(ctx.block);
 
 	if(retval)
 		builder.CreateRet(builder.CreateLoad(retval));
 	else if(type)
-		builder.CreateRet(qbc::getconstlong(0)); // 返回 0 
+		builder.CreateRet(qbc::getconstlong(0)); // 返回 0
 	else
 		builder.CreateRetVoid();
 	return blockforret;
