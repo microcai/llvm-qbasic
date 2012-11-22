@@ -21,6 +21,6 @@ endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-add_subdirectory(brt)
 add_subdirectory(compiler)
+add_subdirectory(brt)
 add_subdirectory(test)
