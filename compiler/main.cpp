@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 	std::string outfilename;
 	po::options_description desc("qvod_crack options");
 	desc.add_options()
-		("help,h" , "display this help")
+		("help,h", "display this help")
 		(",c", "compile only")
 		("ir", "generate llvm-IR and stop")
 		("outfile,o", po::value<std::string>(&outfilename), "set outputname")
