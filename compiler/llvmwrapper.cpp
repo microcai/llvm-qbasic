@@ -37,7 +37,7 @@ static unsigned sizeoflong()
 
 llvm::Value * getnull()
 {
-	llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(llvm::getGlobalContext()));
+	return llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(llvm::getGlobalContext()));
 }
 
 
