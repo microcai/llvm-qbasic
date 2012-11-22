@@ -161,8 +161,14 @@ int main(int argc, char **argv)
 		// compile to excuteable
 		// invoke  gcc
 #if _WIN32
-		printf("please invoke link.exe your self, link to libbrt.a!\n");
+		// no delete obj file, reset the Out pointer to close obj file.
 		Out->keep();
+		Out.reset();
+
+		std::string cmd = boost::str(boost::format("link.exe /out:%s %s msvcrt.lib")
+			% std::string(outfilename + ".exe") %  std::string(outfilename + ".obj"));
+		std::system(cmd.c_str());
+		printf("%s\n", cmd.c_str());
 #else
 		std::string libdir = fs::path(argv[0]).parent_path().string();
 		std::string cmd = boost::str(boost::format("gcc -o %s %s -L%s -lbrt") % outfilename %  (outfilename + ".o") % libdir.c_str());
