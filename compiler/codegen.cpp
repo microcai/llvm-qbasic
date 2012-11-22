@@ -157,7 +157,12 @@ llvm::Value* VariableDimAST::getval(ASTContext ctx)
 	llvm::IRBuilder<> builder(ctx.block);
 
 	return builder.CreateLoad(getptr(ctx));
-    printf("%s\n",__func__);
+
+#ifdef WIN32
+	printf("%s\n", __FUNCTION__);
+#else
+	printf("%s\n", __func__);
+#endif
     exit(1);
 }
 
@@ -203,7 +208,11 @@ llvm::Value* ArgumentDimAST::getval(ASTContext ctx)
 		if(arg_it->getName() == this->name)
 			return arg_it;
 	}
+#ifdef WIN32
+	printf("%s\n", __FUNCTION__);
+#else
 	debug("bug here %s \n",__func__);
+#endif
 	exit(1);
 }
 
