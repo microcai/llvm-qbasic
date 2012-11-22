@@ -1,4 +1,4 @@
-﻿
+
 /*
     defination of QBASIC Abstruct Syntax Tree - The Type System
     Copyright (C) 2012  microcai <microcai@fedoraproject.org>
@@ -94,9 +94,9 @@ ExprTypeASTPtr AssignmentExprAST::type(ASTContext ctx)
 
 ExprTypeASTPtr CalcExprAST::type(ASTContext ctx)
 {
-	//类型是左边的操作符的类型
 	if(op==OPERATOR_EQUL)
 		return numbertype;
+	// left hand type
 	return lval->type(ctx);
 }
 
@@ -145,7 +145,7 @@ llvm::Type* StringExprTypeAST::llvm_type(ASTContext ctx)
 	return llvm::Type::getInt8PtrTy(llvm::getGlobalContext());
 }
 
-// 数组的 llvm_type 事实上是 ....
+// the llvm_type of array is in fact QBArray
 llvm::Type* ArrayExprTypeAST::llvm_type(ASTContext ctx)
 {
 	static llvm::Type * arraytype =NULL;
@@ -173,7 +173,7 @@ llvm::Type* CallableExprTypeAST::llvm_type(ASTContext ctx)
 llvm::Value* NumberExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
 {
 	debug("allocation for value %s type long\n",_name.c_str());
-	//TODO , 在堆栈上分配个变量
+
 	llvm::IRBuilder<> builder(&ctx.llvmfunc->getEntryBlock(),
 							  ctx.llvmfunc->getEntryBlock().begin());
 
@@ -191,7 +191,7 @@ llvm::Value* ExprTypeAST::deref(ASTContext ctx, llvm::Value* v)
 llvm::Value* StringExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
 {
 	debug("allocation for value %s type string\n",_name.c_str());
-	//TODO , 在堆栈上分配个变量
+
 	llvm::IRBuilder<> builder(&ctx.llvmfunc->getEntryBlock(),
 							  ctx.llvmfunc->getEntryBlock().begin());
 
@@ -209,10 +209,10 @@ llvm::Value* ArrayExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
 
 	llvm::IRBuilder<> builder(&ctx.llvmfunc->getEntryBlock(),
 							  ctx.llvmfunc->getEntryBlock().begin());
-	//TODO , 在堆栈上分配个变量
+
 	llvm::Value * newval = builder.CreateAlloca(this->llvm_type(ctx),0,_name);
 
-	//接着调用 btr_qbarray_new()
+	//call btr_qbarray_new()
 	llvm::Constant * btr_qbarray_new = qbc::getbuiltinprotype(ctx,"btr_qbarray_new");
 
 	builder.CreateCall2(btr_qbarray_new,newval,qbc::getconstlong(elementtype->size()));
@@ -287,10 +287,10 @@ llvm::Value* ConstStringExprAST::getval(ASTContext ctx)
 
 DimAST* VariableExprAST::nameresolve(ASTContext ctx)
 {
-	// 首先查找变量的分配 FIXME 将来要支持结构体成员
+	// FIXME add struct support
 	std::string varname =  this->ID->ID;
 
-	debug("searching for var %s\n",varname.c_str());
+// 	debug("searching for var %s\n",varname.c_str());
 
 	if(! ctx.codeblock ){
 		debug("var %s not defined\n",varname.c_str());
@@ -300,7 +300,6 @@ DimAST* VariableExprAST::nameresolve(ASTContext ctx)
 
 	std::map< std::string, DimAST* >::iterator dimast_iter = ctx.codeblock->symbols.find(varname);
 
-	// 定义找到
 	if(dimast_iter != ctx.codeblock->symbols.end()){
 
 		debug("searching for var %s have result %p\n",varname.c_str(),dimast_iter->second);
@@ -338,13 +337,11 @@ llvm::Value* VariableExprAST::getval(ASTContext ctx)
 	return nameresolve(ctx)->getval(ctx);
 }
 
-// 获得变量的分配
 llvm::Value* VariableExprAST::getptr(ASTContext ctx)
 {
 	return nameresolve(ctx)->getptr(ctx);
 }
 
-// 获得返回值的引用, 那么这个是数组吧?
 llvm::Value* CallExprAST::getptr(ASTContext ctx)
 {
 	ExprASTPtr tmp = calltarget->type(ctx)->getop()->operator_call(ctx,calltarget,callargs);
@@ -356,8 +353,6 @@ llvm::Value* AssignmentExprAST::getval(ASTContext ctx)
 {
 	return this->type(ctx)->getop()->operator_assign(ctx,this->lval,this->rval)->getval(ctx);
 }
-
-#include <signal.h>
 
 llvm::Value* CallExprAST::getval(ASTContext ctx)
 {
@@ -401,7 +396,7 @@ llvm::Value* CalcExprAST::getval(ASTContext ctx)
 }
 
 ///////////////////////////////////////////////////////////////////
-//////////////////// 构造函数们 ////////////////////////////////////
+//////////////////// constructors ////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 ExprTypeAST::ExprTypeAST(size_t size, const std::string __typename)
 	:_size(size),_typename(__typename)
