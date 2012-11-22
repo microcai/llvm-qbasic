@@ -67,7 +67,8 @@ VariableDimAST::VariableDimAST(const std::string _name, ExprTypeASTPtr _type)
 }
 
 FunctionDimAST::FunctionDimAST(const std::string _name, ExprTypeASTPtr _type,ArgumentDimsAST * _callargs)
-	:DimAST(_name,_type),callargs(_callargs)
+	: DimAST(_name,_type),callargs(_callargs)
+	, returnblock(NULL)
 {
 	
 }
