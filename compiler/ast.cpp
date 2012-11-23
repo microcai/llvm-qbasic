@@ -1,4 +1,4 @@
-﻿/*
+/*
     defination of QBASIC Abstruct Syntax Tree
     Copyright (C) 2012  microcai <microcai@fedoraproject.org>
 
@@ -157,4 +157,10 @@ ForLoopAST::ForLoopAST(NamedExprAST* id, ExprAST* _start, ExprAST* _end, ExprAST
 {
 	if(!step)
 		step.reset(new ConstNumberExprAST(1));	
+}
+
+StrucDimAST::StrucDimAST(const std::string _name)
+	:DimAST(_name,StructExprTypeAST::create(_name))
+{
+	
 }

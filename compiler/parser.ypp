@@ -86,7 +86,9 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 	ForLoopAST*			for_loop;
 
 	VariableDimAST*		dim_item;
-	std::vector<VariableDimASTPtr>*	struct_item_list;
+	VariableDimList*	struct_item_list;
+	StrucDimAST*		structdim;
+	
 	ArgumentDimsAST*	arg_list;
 	FunctionDimAST*		function_definition;
 
@@ -153,6 +155,7 @@ void qb::parser::error(const parser::location_type& loc, const std::string& msg)
 %type <statement>					statement
 %type <dim_item>					dim_item array_dim
 %type <struct_item_list>			struct_item_list
+%type <structdim>					struct_dim
 %type <arg_list>					arg_list
 %type <function_definition>			sub_definition
 %type <function_definition>			function_definition
@@ -337,11 +340,11 @@ varref:	expression '.' tID {
 	|call_function
 	;
 
-comma_or_colon : ':' | ';';
+comma_or_colon: ':' | ';';
 
 seperator:
 		tNEWLINE
-		| ':'
+		| comma_or_colon
 		;
 
 array_dim : tARRAYDIM tID tAS exprtype {
@@ -351,9 +354,8 @@ array_dim : tARRAYDIM tID tAS exprtype {
 		$$ = new VariableDimAST( *$2  , ArrayExprTypeAST::create(* $4) );
 	};
 
-struct_item_list: struct_item_list tNEWLINE tID tAS exprtype {
+struct_item_list: struct_item_list seperator tID tAS exprtype {
 		$$->push_back( VariableDimASTPtr(new  VariableDimAST( *$3  , * $5 ) ));
-	
 	}
 	| tID tAS exprtype {
 
@@ -368,14 +370,14 @@ dim_item: tDIM tID tAS exprtype {
 	}
 	|tDIM tID {
 		$$ = new VariableDimAST( *$2  , NumberExprTypeAST::GetNumberExprTypeAST() );
-	}
-	| tSTRUCTDIM tID tNEWLINE
-		struct_item_list tNEWLINE
-	  tENDSTRUCDIM {
-		debug("definning struct %s\n",$2->c_str());
-		exit(0);
-
 	};
+
+struct_dim: tSTRUCTDIM tID tNEWLINE
+				struct_item_list tNEWLINE
+			tENDSTRUCDIM {
+				$$ = new StrucDimAST();
+				debug("definning struct %s\n",$2->c_str());
+			};
 
 /*****************************************
  * here goes function_definition

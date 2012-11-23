@@ -96,7 +96,9 @@ namespace qb {
 	ForLoopAST*			for_loop;
 
 	VariableDimAST*		dim_item;
-	std::vector<VariableDimASTPtr>*	struct_item_list;
+	VariableDimList*	struct_item_list;
+	StrucDimAST*		structdim;
+	
 	ArgumentDimsAST*	arg_list;
 	FunctionDimAST*		function_definition;
 
@@ -105,7 +107,7 @@ namespace qb {
 
 
 /* Line 36 of lalr1.cc  */
-#line 109 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 111 "/home/cai/projects/basic/compiler/parser.hpp"
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -255,7 +257,7 @@ namespace qb {
     /// Zero means the default is an error.
     static const unsigned char yydefact_[];
 
-    static const short int yypgoto_[];
+    static const signed char yypgoto_[];
     static const short int yydefgoto_[];
 
     /// What to do in a state.
@@ -334,7 +336,7 @@ namespace qb {
 #line 21 "parser.ypp"
 } // qb
 /* Line 36 of lalr1.cc  */
-#line 338 "/home/cai/projects/basic/compiler/parser.hpp"
+#line 340 "/home/cai/projects/basic/compiler/parser.hpp"
 
 
 

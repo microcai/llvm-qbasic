@@ -193,6 +193,18 @@ llvm::BasicBlock* VariableDimAST::valuedegen(ASTContext ctx)
 	return ctx.block;
 }
 
+// 把类型名注册到 typename table
+llvm::BasicBlock* StrucDimAST::Codegen(ASTContext ctx)
+{
+	//递归计算自己的大小
+	size_t	selfsize = 0;
+	BOOST_FOREACH(VariableDimASTPtr dimitem , this->members)
+	{
+		selfsize += dimitem->type->size();
+	}
+	dynamic_cast<StructExprTypeAST*>(this->type.get())->size(selfsize);
+}
+
 llvm::Value* ArgumentDimAST::getval(ASTContext ctx)
 {
 	debug("ArgumentDimAST:: geting val %s of argument\n", this->name.c_str());

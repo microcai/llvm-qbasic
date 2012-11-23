@@ -462,62 +462,63 @@ public:
 	}
 };
 
-#if 0
-/////////////// 一下类型未实现
+class StructExprTypeAST : public ExprTypeAST{
+	size_t	_size;
+public:
+    StructExprTypeAST(const std::string __typename);
+    size_t size(){return _size;}
+	size_t size(size_t newsize){_size = newsize;return _size;} // set size
 
-//  浮点运算. 在不支持浮点数的平台这个类要提交浮点模拟
+public:
+	ExprASTPtr createtemp(ASTContext , llvm::Value* , llvm::Value* ptr){}
+	ExprOperation* getop();
+	PointerTypeASTPtr getpointetype(){}
+	llvm::Type* llvm_type(ASTContext ctx);
+
+public:
+	static ExprTypeASTPtr create( const std::string __typename);
+};
+
+/////////////// 一下类型未实现.
+
+//  浮点运算. 在不支持浮点数的平台这个类要提交浮点模拟.
 class FlatExprTypeAST : ExprTypeAST {
 
 };
 
 
-// 引用类型
+// 引用类型.
 class ReferenceTypeAST : public ExprTypeAST
 {
 
 };
 
-///////////////////////// 运算符支持   
-#endif
+///////////////////////// 运算符支持.
 class ExprOperation{
 public:
-#if 0
 	// 赋值运算符, 对于字符串来说, 这个运算符的意义就是调用 strdup
 	// 每个类型都会有自己的 Operator 实现.
 	// 对于其他类型来说, 呵呵, 那就是 Load / Store 啦
-	// 运算结果是一个 ExprASTPtr , 事实上可以忽略,呵呵. C++编译器将自动释放它  
-#endif
+	// 运算结果是一个 ExprASTPtr , 事实上可以忽略,呵呵. C++编译器将自动释放它.
 	virtual	ExprASTPtr operator_assign(ASTContext , NamedExprASTPtr lval, ExprASTPtr rval);
 
-#if 0
 	// 加法运算, 对于字符串来说, 这运算过程会生成一个临时字符串,
-	// 临时字符串 AST 对象将会被 AST节点被析构的时候向当前llvm basicbody 位置插入临时字符串的释放指令  
-#endif
+	// 临时字符串 AST 对象将会被 AST节点被析构的时候向当前llvm basicbody 位置插入临时字符串的释放指令.
 	virtual ExprASTPtr operator_add(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
 
-#if 0
-	// 减法运算, 对于字符串来说无此类型的运算. 试图对字符串执行减法导致一个编译期错误   
-#endif
+	// 减法运算, 对于字符串来说无此类型的运算. 试图对字符串执行减法导致一个编译期错误.
 	virtual ExprASTPtr operator_sub(ASTContext , ExprASTPtr lval, ExprASTPtr rval);
 
-#if 0
-	// 乘法运算, 对字符串来说无此类型的运算  
-#endif
+	// 乘法运算, 对字符串来说无此类型的运算.
 	virtual ExprASTPtr operator_mul(ASTContext, ExprASTPtr lval, ExprASTPtr rval);
 
-#if 0
-	//除法  
-#endif
+	//除法.
 	virtual ExprASTPtr operator_div(ASTContext, ExprASTPtr lval, ExprASTPtr rval);
-	
-#if 0
-	// 各种比较运算  
-#endif
+
+	// 各种比较运算.
 	virtual	ExprASTPtr operator_comp(ASTContext, MathOperator op, ExprASTPtr lval,ExprASTPtr rval);
 
-#if 0
-	// 括号操作, 也就是函数调用, 或者是数组下标寻址  
-#endif
+	// 括号操作, 也就是函数调用, 或者是数组下标寻址.
 	virtual ExprASTPtr operator_call(ASTContext, NamedExprASTPtr target, ExprListASTPtr callargslist);
 };
 
@@ -547,4 +548,8 @@ class FunctionExprOperation : public ExprOperation{
 
 class PointerTypeOperation: public ExprOperation{
 
+};
+
+class StructTypeOperation : public ExprOperation{
+	
 };

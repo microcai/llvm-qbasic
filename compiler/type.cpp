@@ -66,6 +66,11 @@ ExprTypeASTPtr ArrayExprTypeAST::create(ExprTypeASTPtr elementtype)
 	return boost::make_shared<ArrayExprTypeAST>(elementtype);
 }
 
+ExprTypeASTPtr StructExprTypeAST::create(const std::string __typename)
+{
+	return boost::make_shared<StructExprTypeAST>(__typename);
+}
+
 ExprTypeASTPtr EmptyExprAST::type(ASTContext)
 {
     return ExprTypeASTPtr();
@@ -168,6 +173,13 @@ llvm::Type* CallableExprTypeAST::llvm_type(ASTContext ctx)
 	return this->returntype->llvm_type(ctx);
 	debug("get function type of  llvm\n");
     exit(0);
+}
+
+// 结构体的 llvm_type 实际上是 。。。 各个子成员的集合.
+llvm::Type* StructExprTypeAST::llvm_type(ASTContext ctx)
+{
+	//TODO 获得子成员的类型，并依次堆叠
+	
 }
 
 llvm::Value* NumberExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
@@ -432,6 +444,14 @@ PointerTypeAST::PointerTypeAST(ExprTypeASTPtr _pointeetype)
 	:pointeetype(_pointeetype)
 {
 }
+
+StructExprTypeAST::StructExprTypeAST(const std::string __typename)
+	:ExprTypeAST(0,__typename)
+{
+	
+}
+
+
 
 NamedExprAST::NamedExprAST(ReferenceAST* _ID)
 	:ID(_ID)

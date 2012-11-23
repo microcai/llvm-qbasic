@@ -33,6 +33,8 @@ static	StringExprOperation 	stringop;
 static	ArrayExprOperation		arrayop;
 static	FunctionExprOperation	funcop;
 static	PointerTypeOperation	pointerop;
+static	StringExprOperation		structop;
+
 ExprOperation* NumberExprTypeAST::getop()
 {
 	return & numberop;
@@ -56,6 +58,11 @@ ExprOperation* CallableExprTypeAST::getop()
 ExprOperation* PointerTypeAST::getop()
 {
 	return &pointerop;
+}
+
+ExprOperation* StructExprTypeAST::getop()
+{
+	return &structop;
 }
 
 PointerTypeASTPtr VoidExprTypeAST::getpointetype()

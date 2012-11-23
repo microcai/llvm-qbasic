@@ -245,14 +245,16 @@ public:
 	virtual	llvm::Value* getval(ASTContext ctx);
 };
 typedef boost::shared_ptr<VariableDimAST> VariableDimASTPtr;
+typedef std::list<VariableDimASTPtr> VariableDimList;
 
 // 结构体声明.
 class StrucDimAST : public DimAST
 {
 public:
+    StrucDimAST(const std::string _name);
 	std::string	Typename; //新定义的结构体的类型.
-	std::vector<VariableDimASTPtr> members; //成员列表
-    virtual llvm::BasicBlock* Codegen(ASTContext ); // 这里要到父codebloks注册自己这个类型，以便后续声明使用.
+	VariableDimList members; //成员列表
+    virtual llvm::BasicBlock* Codegen(ASTContext ctx); // 这里要到父codebloks注册自己这个类型，以便后续声明使用.
 };
 
 class ArgumentDimAST : public VariableDimAST
