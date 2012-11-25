@@ -375,7 +375,7 @@ dim_item: tDIM tID tAS exprtype {
 struct_dim: tSTRUCTDIM tID tNEWLINE
 				struct_item_list tNEWLINE
 			tENDSTRUCDIM {
-				$$ = new StrucDimAST();
+				$$ = new StrucDimAST(*$2,$4);
 				debug("definning struct %s\n",$2->c_str());
 			};
 

@@ -196,13 +196,21 @@ llvm::BasicBlock* VariableDimAST::valuedegen(ASTContext ctx)
 // 把类型名注册到 typename table
 llvm::BasicBlock* StrucDimAST::Codegen(ASTContext ctx)
 {
-	//递归计算自己的大小
+	// 构建一个新的 ExprTypeAST*
+	ExprTypeAST * newtype = new StructExprTypeAST(Typename);
+
+	// 设定成员名字和类型的映射，还有名字和偏移
+
+	//递归计算自己的大小.
 	size_t	selfsize = 0;
 	BOOST_FOREACH(VariableDimASTPtr dimitem , this->members)
 	{
+// 		newtype->
 		selfsize += dimitem->type->size();
 	}
-	dynamic_cast<StructExprTypeAST*>(this->type.get())->size(selfsize);
+
+	
+	//dynamic_cast<StructExprTypeAST*>(this->type.get())->size(selfsize);
 }
 
 llvm::Value* ArgumentDimAST::getval(ASTContext ctx)

@@ -248,10 +248,10 @@ typedef boost::shared_ptr<VariableDimAST> VariableDimASTPtr;
 typedef std::list<VariableDimASTPtr> VariableDimList;
 
 // 结构体声明.
-class StrucDimAST : public DimAST
+class StrucDimAST : public StatementAST
 {
 public:
-    StrucDimAST(const std::string _name);
+    StrucDimAST(const std::string _typename,VariableDimList members);
 	std::string	Typename; //新定义的结构体的类型.
 	VariableDimList members; //成员列表
     virtual llvm::BasicBlock* Codegen(ASTContext ctx); // 这里要到父codebloks注册自己这个类型，以便后续声明使用.

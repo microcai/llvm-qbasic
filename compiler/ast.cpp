@@ -159,8 +159,8 @@ ForLoopAST::ForLoopAST(NamedExprAST* id, ExprAST* _start, ExprAST* _end, ExprAST
 		step.reset(new ConstNumberExprAST(1));	
 }
 
-StrucDimAST::StrucDimAST(const std::string _name)
-	:DimAST(_name,StructExprTypeAST::create(_name))
+StrucDimAST::StrucDimAST(const std::string _name,VariableDimList _members)
 {
-	
+	this->Typename = _name;
+	this->members = _members;	
 }
