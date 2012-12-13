@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 2.6.5.  */
+/* A Bison parser, made by GNU Bison 2.7.  */
 
 /* Stack handling for Bison parsers in C++
    
@@ -40,10 +40,10 @@
 
 # include <deque>
 
-/* Line 37 of stack.hh  */
+/* Line 34 of stack.hh  */
 #line 21 "parser.ypp"
 namespace qb {
-/* Line 37 of stack.hh  */
+/* Line 34 of stack.hh  */
 #line 48 "/home/cai/projects/basic/compiler/stack.hh"
   template <class T, class S = std::deque<T> >
   class stack
@@ -126,10 +126,10 @@ namespace qb {
     const S& stack_;
     unsigned int range_;
   };
-/* Line 119 of stack.hh  */
+/* Line 116 of stack.hh  */
 #line 21 "parser.ypp"
 } // qb
-/* Line 119 of stack.hh  */
+/* Line 116 of stack.hh  */
 #line 134 "/home/cai/projects/basic/compiler/stack.hh"
 
 #endif /* !YY_YY_HOME_CAI_PROJECTS_BASIC_COMPILER_STACK_HH_INCLUDED  */

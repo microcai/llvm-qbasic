@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 2.6.5.  */
+/* A Bison parser, made by GNU Bison 2.7.  */
 
 /* Positions for Bison parsers in C++
    
@@ -50,10 +50,10 @@
 #  endif
 # endif
 
-/* Line 38 of location.cc  */
+/* Line 36 of location.cc  */
 #line 21 "parser.ypp"
 namespace qb {
-/* Line 38 of location.cc  */
+/* Line 36 of location.cc  */
 #line 58 "/home/cai/projects/basic/compiler/position.hh"
   /// Abstract a position.
   class position
@@ -157,17 +157,18 @@ namespace qb {
    ** \param ostr the destination output stream
    ** \param pos a reference to the position to redirect
    */
-  inline std::ostream&
-  operator<< (std::ostream& ostr, const position& pos)
+  template <typename YYChar>
+  inline std::basic_ostream<YYChar>&
+  operator<< (std::basic_ostream<YYChar>& ostr, const position& pos)
   {
     if (pos.filename)
       ostr << *pos.filename << ':';
     return ostr << pos.line << '.' << pos.column;
   }
 
-/* Line 149 of location.cc  */
+/* Line 148 of location.cc  */
 #line 21 "parser.ypp"
 } // qb
-/* Line 149 of location.cc  */
-#line 173 "/home/cai/projects/basic/compiler/position.hh"
+/* Line 148 of location.cc  */
+#line 174 "/home/cai/projects/basic/compiler/position.hh"
 #endif /* !YY_YY_HOME_CAI_PROJECTS_BASIC_COMPILER_POSITION_HH_INCLUDED  */

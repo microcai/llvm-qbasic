@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 2.6.5.  */
+/* A Bison parser, made by GNU Bison 2.7.  */
 
 /* Skeleton interface for Bison LALR(1) parsers in C++
    
@@ -52,10 +52,10 @@
 # define YYDEBUG 0
 #endif
 
-/* Line 36 of lalr1.cc  */
+/* Line 33 of lalr1.cc  */
 #line 21 "parser.ypp"
 namespace qb {
-/* Line 36 of lalr1.cc  */
+/* Line 33 of lalr1.cc  */
 #line 60 "/home/cai/projects/basic/compiler/parser.hpp"
 
   /// A Bison parser.
@@ -66,7 +66,7 @@ namespace qb {
 #ifndef YYSTYPE
     union semantic_type
     {
-/* Line 36 of lalr1.cc  */
+/* Line 33 of lalr1.cc  */
 #line 61 "parser.ypp"
 
 	char *				string;         /* quoted string */
@@ -106,7 +106,7 @@ namespace qb {
 	std::string 	*cppstring;
 
 
-/* Line 36 of lalr1.cc  */
+/* Line 33 of lalr1.cc  */
 #line 111 "/home/cai/projects/basic/compiler/parser.hpp"
     };
 #else
@@ -307,6 +307,7 @@ namespace qb {
 
     /// \brief Reclaim the memory associated to a symbol.
     /// \param yymsg        Why this token is reclaimed.
+    ///                     If null, do not display the symbol, just free it.
     /// \param yytype       The symbol type.
     /// \param yyvaluep     Its semantic value.
     /// \param yylocationp  Its location.
@@ -332,11 +333,11 @@ namespace qb {
     static const token_number_type yyundef_token_;
 
   };
-/* Line 36 of lalr1.cc  */
+/* Line 33 of lalr1.cc  */
 #line 21 "parser.ypp"
 } // qb
-/* Line 36 of lalr1.cc  */
-#line 340 "/home/cai/projects/basic/compiler/parser.hpp"
+/* Line 33 of lalr1.cc  */
+#line 341 "/home/cai/projects/basic/compiler/parser.hpp"
 
 
 
