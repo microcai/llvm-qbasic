@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 2.6.5.  */
+/* A Bison parser, made by GNU Bison 2.6.2.  */
 
 /* Positions for Bison parsers in C++
    
@@ -31,15 +31,15 @@
    version 2.2 of Bison.  */
 
 /**
- ** \file /home/cai/projects/basic/compiler/position.hh
+ ** \file /Users/kiyangqi/Desktop/llvm-qbasic/compiler/position.hh
  ** Define the qb::position class.
  */
 
-#ifndef YY_YY_HOME_CAI_PROJECTS_BASIC_COMPILER_POSITION_HH_INCLUDED
-# define YY_YY_HOME_CAI_PROJECTS_BASIC_COMPILER_POSITION_HH_INCLUDED
+#ifndef YY_USERS_KIYANGQI_DESKTOP_LLVM_QBASIC_COMPILER_POSITION_HH
+# define YY_USERS_KIYANGQI_DESKTOP_LLVM_QBASIC_COMPILER_POSITION_HH
 
 # include <algorithm> // std::max
-# include <iostream>
+# include <iosfwd>
 # include <string>
 
 # ifndef YY_NULL
@@ -54,7 +54,7 @@
 #line 21 "parser.ypp"
 namespace qb {
 /* Line 38 of location.cc  */
-#line 58 "/home/cai/projects/basic/compiler/position.hh"
+#line 58 "/Users/kiyangqi/Desktop/llvm-qbasic/compiler/position.hh"
   /// Abstract a position.
   class position
   {
@@ -106,7 +106,7 @@ namespace qb {
   };
 
   /// Add and assign a position.
-  inline position&
+  inline const position&
   operator+= (position& res, const int width)
   {
     res.columns (width);
@@ -122,7 +122,7 @@ namespace qb {
   }
 
   /// Add and assign a position.
-  inline position&
+  inline const position&
   operator-= (position& res, const int width)
   {
     return res += -width;
@@ -169,5 +169,5 @@ namespace qb {
 #line 21 "parser.ypp"
 } // qb
 /* Line 149 of location.cc  */
-#line 173 "/home/cai/projects/basic/compiler/position.hh"
-#endif /* !YY_YY_HOME_CAI_PROJECTS_BASIC_COMPILER_POSITION_HH_INCLUDED  */
+#line 173 "/Users/kiyangqi/Desktop/llvm-qbasic/compiler/position.hh"
+#endif /* !YY_USERS_KIYANGQI_DESKTOP_LLVM_QBASIC_COMPILER_POSITION_HH  */
