@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 2.6.5.  */
+/* A Bison parser, made by GNU Bison 2.6.2.  */
 
 /* Locations for Bison parsers in C++
    
@@ -31,20 +31,22 @@
    version 2.2 of Bison.  */
 
 /**
- ** \file /home/cai/projects/basic/compiler/location.hh
+ ** \file /Users/kiyangqi/Desktop/llvm-qbasic/compiler/location.hh
  ** Define the qb::location class.
  */
 
-#ifndef YY_YY_HOME_CAI_PROJECTS_BASIC_COMPILER_LOCATION_HH_INCLUDED
-# define YY_YY_HOME_CAI_PROJECTS_BASIC_COMPILER_LOCATION_HH_INCLUDED
+#ifndef YY_USERS_KIYANGQI_DESKTOP_LLVM_QBASIC_COMPILER_LOCATION_HH
+# define YY_USERS_KIYANGQI_DESKTOP_LLVM_QBASIC_COMPILER_LOCATION_HH
 
+# include <iostream>
+# include <string>
 # include "position.hh"
 
-/* Line 164 of location.cc  */
+/* Line 166 of location.cc  */
 #line 21 "parser.ypp"
 namespace qb {
-/* Line 164 of location.cc  */
-#line 48 "/home/cai/projects/basic/compiler/location.hh"
+/* Line 166 of location.cc  */
+#line 50 "/Users/kiyangqi/Desktop/llvm-qbasic/compiler/location.hh"
 
   /// Abstract a location.
   class location
@@ -172,10 +174,10 @@ namespace qb {
     return ostr;
   }
 
-/* Line 292 of location.cc  */
+/* Line 294 of location.cc  */
 #line 21 "parser.ypp"
 } // qb
-/* Line 292 of location.cc  */
-#line 180 "/home/cai/projects/basic/compiler/location.hh"
+/* Line 294 of location.cc  */
+#line 182 "/Users/kiyangqi/Desktop/llvm-qbasic/compiler/location.hh"
 
-#endif /* !YY_YY_HOME_CAI_PROJECTS_BASIC_COMPILER_LOCATION_HH_INCLUDED  */
+#endif /* !YY_USERS_KIYANGQI_DESKTOP_LLVM_QBASIC_COMPILER_LOCATION_HH  */

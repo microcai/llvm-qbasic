@@ -2,4 +2,4 @@ test*
 !test*.bas
 !test/
 .kdev*
-
+build/

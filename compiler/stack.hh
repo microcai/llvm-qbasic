@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 2.6.5.  */
+/* A Bison parser, made by GNU Bison 2.6.2.  */
 
 /* Stack handling for Bison parsers in C++
    
@@ -31,12 +31,12 @@
    version 2.2 of Bison.  */
 
 /**
- ** \file /home/cai/projects/basic/compiler/stack.hh
+ ** \file /Users/kiyangqi/Desktop/llvm-qbasic/compiler/stack.hh
  ** Define the qb::stack class.
  */
 
-#ifndef YY_YY_HOME_CAI_PROJECTS_BASIC_COMPILER_STACK_HH_INCLUDED
-# define YY_YY_HOME_CAI_PROJECTS_BASIC_COMPILER_STACK_HH_INCLUDED
+#ifndef YY_USERS_KIYANGQI_DESKTOP_LLVM_QBASIC_COMPILER_STACK_HH
+# define YY_USERS_KIYANGQI_DESKTOP_LLVM_QBASIC_COMPILER_STACK_HH
 
 # include <deque>
 
@@ -44,7 +44,7 @@
 #line 21 "parser.ypp"
 namespace qb {
 /* Line 37 of stack.hh  */
-#line 48 "/home/cai/projects/basic/compiler/stack.hh"
+#line 48 "/Users/kiyangqi/Desktop/llvm-qbasic/compiler/stack.hh"
   template <class T, class S = std::deque<T> >
   class stack
   {
@@ -130,6 +130,6 @@ namespace qb {
 #line 21 "parser.ypp"
 } // qb
 /* Line 119 of stack.hh  */
-#line 134 "/home/cai/projects/basic/compiler/stack.hh"
+#line 134 "/Users/kiyangqi/Desktop/llvm-qbasic/compiler/stack.hh"
 
-#endif /* !YY_YY_HOME_CAI_PROJECTS_BASIC_COMPILER_STACK_HH_INCLUDED  */
+#endif /* !YY_USERS_KIYANGQI_DESKTOP_LLVM_QBASIC_COMPILER_STACK_HH  */
