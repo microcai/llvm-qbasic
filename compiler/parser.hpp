@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 2.6.5.  */
+/* A Bison parser, made by GNU Bison 2.6.2.  */
 
 /* Skeleton interface for Bison LALR(1) parsers in C++
    
@@ -31,14 +31,14 @@
    version 2.2 of Bison.  */
 
 /**
- ** \file /home/cai/projects/basic/compiler/parser.hpp
+ ** \file /Users/kiyangqi/Desktop/llvm-qbasic/compiler/parser.hpp
  ** Define the qb::parser class.
  */
 
 /* C++ LALR(1) parser skeleton written by Akim Demaille.  */
 
-#ifndef YY_YY_HOME_CAI_PROJECTS_BASIC_COMPILER_PARSER_HPP_INCLUDED
-# define YY_YY_HOME_CAI_PROJECTS_BASIC_COMPILER_PARSER_HPP_INCLUDED
+#ifndef YY_USERS_KIYANGQI_DESKTOP_LLVM_QBASIC_COMPILER_PARSER_HPP
+# define YY_USERS_KIYANGQI_DESKTOP_LLVM_QBASIC_COMPILER_PARSER_HPP
 
 
 
@@ -52,11 +52,11 @@
 # define YYDEBUG 0
 #endif
 
-/* Line 36 of lalr1.cc  */
+/* Line 267 of lalr1.cc  */
 #line 21 "parser.ypp"
 namespace qb {
-/* Line 36 of lalr1.cc  */
-#line 60 "/home/cai/projects/basic/compiler/parser.hpp"
+/* Line 267 of lalr1.cc  */
+#line 60 "/Users/kiyangqi/Desktop/llvm-qbasic/compiler/parser.hpp"
 
   /// A Bison parser.
   class parser
@@ -66,7 +66,7 @@ namespace qb {
 #ifndef YYSTYPE
     union semantic_type
     {
-/* Line 36 of lalr1.cc  */
+/* Line 267 of lalr1.cc  */
 #line 61 "parser.ypp"
 
 	char *				string;         /* quoted string */
@@ -103,8 +103,8 @@ namespace qb {
 	std::string 	*cppstring;
 
 
-/* Line 36 of lalr1.cc  */
-#line 108 "/home/cai/projects/basic/compiler/parser.hpp"
+/* Line 267 of lalr1.cc  */
+#line 108 "/Users/kiyangqi/Desktop/llvm-qbasic/compiler/parser.hpp"
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -329,12 +329,12 @@ namespace qb {
     static const token_number_type yyundef_token_;
 
   };
-/* Line 36 of lalr1.cc  */
+/* Line 267 of lalr1.cc  */
 #line 21 "parser.ypp"
 } // qb
-/* Line 36 of lalr1.cc  */
-#line 337 "/home/cai/projects/basic/compiler/parser.hpp"
+/* Line 267 of lalr1.cc  */
+#line 337 "/Users/kiyangqi/Desktop/llvm-qbasic/compiler/parser.hpp"
 
 
 
-#endif /* !YY_YY_HOME_CAI_PROJECTS_BASIC_COMPILER_PARSER_HPP_INCLUDED  */
+#endif /* !YY_USERS_KIYANGQI_DESKTOP_LLVM_QBASIC_COMPILER_PARSER_HPP  */
