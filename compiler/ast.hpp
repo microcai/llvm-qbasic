@@ -29,10 +29,10 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
 
-#include <llvm/Value.h>
-#include <llvm/Module.h>
-#include <llvm/Support/IRBuilder.h>
-#include <llvm/Type.h>
+#include <llvm/IR/Value.h>
+#include <llvm/IR/Module.h>
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/Type.h>
 #include "qbc.h"
 
 enum MathOperator {

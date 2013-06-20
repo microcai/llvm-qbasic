@@ -20,7 +20,7 @@
 #include <cstdio>
 #include <boost/make_shared.hpp>
 #include <boost/foreach.hpp>
-#include <llvm/Support/IRBuilder.h>
+#include <llvm/IR/IRBuilder.h>
 
 #include "ast.hpp"
 #include "type.hpp"
