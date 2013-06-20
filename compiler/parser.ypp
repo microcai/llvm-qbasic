@@ -313,6 +313,10 @@ expression: call_function
 		| tSTRING {
 			$$ = new ConstStringExprAST($1);
 		}
+		| '-' expression { 
+			ExprAST* zero = new ConstNumberExprAST(0);
+			$$ = new CalcExprAST(zero, OPERATOR_SUB, $2); 
+		}
 		;
 
 assigment: varref '=' expression {

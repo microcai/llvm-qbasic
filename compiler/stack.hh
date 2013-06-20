@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 2.7.  */
+/* A Bison parser, made by GNU Bison 2.7.12-4996.  */
 
 /* Stack handling for Bison parsers in C++
    
-      Copyright (C) 2002-2012 Free Software Foundation, Inc.
+      Copyright (C) 2002-2013 Free Software Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -90,6 +90,12 @@ namespace qb {
         seq_.pop_front ();
     }
 
+    void
+    clear ()
+    {
+      seq_.clear ();
+    }
+
     inline
     unsigned int
     height () const
@@ -101,6 +107,8 @@ namespace qb {
     inline const_iterator end () const { return seq_.rend (); }
 
   private:
+    stack (const stack&);
+    stack& operator= (const stack&);
     S seq_;
   };
 
@@ -126,10 +134,10 @@ namespace qb {
     const S& stack_;
     unsigned int range_;
   };
-/* Line 116 of stack.hh  */
+/* Line 124 of stack.hh  */
 #line 21 "parser.ypp"
 } // qb
-/* Line 116 of stack.hh  */
-#line 134 "/home/cai/projects/basic/compiler/stack.hh"
+/* Line 124 of stack.hh  */
+#line 142 "/home/cai/projects/basic/compiler/stack.hh"
 
 #endif /* !YY_YY_HOME_CAI_PROJECTS_BASIC_COMPILER_STACK_HH_INCLUDED  */
