@@ -22,7 +22,7 @@ IF(LLVM_CONFIG_EXECUTABLE)
   )
 
   if(UNIX)
-	SET(LLVM_LIBRARIES "${LLVM_LIBRARIES} -lpthread -lffi -ldl -lm")
+	SET(LLVM_LIBRARIES "${LLVM_LIBRARIES} -lpthread -lffi -ldl -lm -lncurses")
   endif()
 
 ENDIF()

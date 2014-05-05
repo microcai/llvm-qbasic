@@ -6,14 +6,14 @@
 namespace po = boost::program_options;
 #include <boost/filesystem.hpp>
 namespace fs=boost::filesystem;
-#include <llvm/PassManager.h>
-#include <llvm/PassManagers.h>
+#include <llvm/InitializePasses.h>
 #include <llvm/LinkAllPasses.h>
 #include <llvm/Support/TargetSelect.h>
 #include <llvm/Support/TargetRegistry.h>
 #include <llvm/Support/ToolOutputFile.h>
 #include <llvm/Support/FormattedStream.h>
 #include <llvm/Support/Host.h>
+#include <llvm/PassManager.h>
 
 #include "ast.hpp"
 #include "parser.hpp"
@@ -149,7 +149,7 @@ int main(int argc, char **argv)
 	std::string Err;
 
 	boost::shared_ptr<llvm::tool_output_file> Out( new
-		llvm::tool_output_file(outobjname.c_str(), Err, llvm::raw_fd_ostream::F_Binary) );
+		llvm::tool_output_file(outobjname.c_str(), Err, llvm::sys::fs::F_Binary) );
 
 	if(generateobj(Out,module)==0)
 		printf("======== object file writed to %s ===========\n", outobjname.c_str());
