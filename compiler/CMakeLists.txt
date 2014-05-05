@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 
-include(${PROJECT_SOURCE_DIR}/cmake/FindBISON.cmake)
-include(${PROJECT_SOURCE_DIR}/cmake/FindFLEX.cmake)
+find_package(BISON REQUIRED)
+find_package(FLEX REQUIRED)
+
 include(${PROJECT_SOURCE_DIR}/cmake/FindLLVM.cmake)
 
 if(NOT Boost_FOUND)
