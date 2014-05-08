@@ -18,7 +18,8 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 %skeleton "lalr1.cc"
-%define namespace qb
+%define api.namespace qb
+//%define api.position.type location
 
 %{
 
@@ -50,9 +51,9 @@ int unclosed_subs = 0;          /* unclosed subroutine count */
 int unclosed_switches = 0;      /* unclosed "switch" count */
 int unclosed_whiles = 0;        /* unclosed "while" count */
 
-void qb::parser::error(const parser::location_type& loc, const std::string& msg)
+void qb::parser::error(const std::string& msg)
 {
-	std::cerr << msg << " at line " << yylineno << std::endl ;
+	std::cerr << " at line " << yylineno << msg << std::endl ;
 	exit(1);
 }
 

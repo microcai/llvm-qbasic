@@ -45,7 +45,6 @@
 using namespace qb;
 
 typedef parser::semantic_type YYSTYPE;
-typedef location YYLTYPE;
 typedef parser::token token;
 
 #define error printf
