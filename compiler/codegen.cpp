@@ -209,7 +209,7 @@ llvm::BasicBlock* StrucDimAST::Codegen(ASTContext ctx)
 		selfsize += dimitem->type->size();
 	}
 
-	
+	return ctx.block;
 	//dynamic_cast<StructExprTypeAST*>(this->type.get())->size(selfsize);
 }
 
