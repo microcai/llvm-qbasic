@@ -1,69 +1,65 @@
 #llvm-qbc - llvm based qbasic compiler
 
-llvm-qbc is a QBASIC compiler as well as an runtime library ( statically linked )
+llvm-qbc is a QBASIC compiler as well as a statically linked runtime library.
 
 # Why BASIC ?
 
-To answer this questions, you must ask, why not BASIC?
-Because there is no BASIC compiler that is cross-platform, and feature complete.
-And basic interpreter is even worse, you can't distribute your program unless you
-distribute its interpreter first, but most commercial basic interpreter had limited
-premit for re-distribution. Then ? Compile ? You can't even find a compiler that supports
-calling C functions. What can we do with basic without the help of all avalable C libraries?
+To answer that question, you need to ask, why not BASIC? There are multiple reasons.
+For one, currenlty there is no cross-platform BASIC compiler that is feature complete.
+What's worse is that you cannot distribute your program without first
+distributing its interpreter. This problem is componded by the fact most commercial BASIC interpreters had limited
+allowance for re-distribution. What other options are there? Compile your program? None exist that allow calling C functions. What can we do with BASIC without the help of avalable C libraries?
 
-To make things even worse, BASIC have not standart that every compiler agree with.
+To make things even worse, there is no BASIC standard that all compilers agree with.
 
-# goal
-	[1]	complete QBASIC support
-	[3] pointer support
-	[2]	call C function as freely as possible
-	[4] highly optimized
-	[5] a builtin GUI facility
+# Goals
+	[1] Complete QBASIC support
+	[3] Pointer support
+	[2] Call C functions as easily as possible
+	[4] Highly optimized
+	[5] Built-in GUI facility
 
-# Status update
-	[*] dymanic array support, use arraydim to use that.
-	[*] for loop
-	[*] string is capable of doing "+" operation
-	[*]	string literal and string variable can assign to string variable
-	[*] deallocating function local string when the function returns
-	[*]	being able to print numbers and string literal to screen
-	[*] compare operation
-	[*] sub define and invoke
-	[*] function define and invoke
-	[*] if statement
-	[*] while statement
-	[*] basic mathmatical operation
-	[*] if statement
+# Status updates
+	[*] Dymanic array support, use arraydim to use that.
+	[*] For loop
+	[*] String concatenation
+	[*] String literals and string variables can assign to a string variable
+	[*] Free local strings on function return
+	[*] Able to print numbers and string literals to screen
+	[*] Comparison operators
+	[*] Subroutine definition and invokation
+	[*] Function definition and invokation
+	[*] If statements
+	[*] While statements
+	[*] Basic mathmatical operations
 
-# benchmark
-	see [ test/compare.txt  https://github.com/microcai/llvm-qbasic/blob/master/test/compare.txt ]
-# Implementation Detail
+# Benchmarks
+	See [ test/compare.txt  https://github.com/microcai/llvm-qbasic/blob/master/test/compare.txt ]
+	
+# Implementation Details
 
-	int/long is directly supported by LLVM, so , no discssiion needed.
+#### Numerical types
 
-####	for the type "string":
+`int` and `long` are directly supported by LLVM, so they are handled automatically.
 
- there are two types of string :
-		 C string (literal) and QBASIC string
+#### String types:
 
-C string is an NULL-Terminated char array. you can get a C string of an QBASIC string with
-	cstr(QBASIC string)
+We provide two types of strings, a C (literal) string and QBASIC string.
 
-	QBASIC string is an string which has memory automantically managed by compiler. the compiler
-	does this by calling helper functions defined in librt see  [ bre/README.md ]
+C strings are a NULL-Terminated char array. You can get a C string from a QBASIC string with `cstr(QBASIC string)`
 
-#### for the type "array":
+A QBASIC string has its memory automatically managed by the compiler. The compiler does this by calling the helper functions which are defined in librt (see [ bre/README.md ]).
 
-	array is an vector space managed by the compiler automantically. you can have C style array (read only) with CARRAY(array) 
+#### Array type:
 
-	but if you want to "write" to that array, please use another type for this kind of job: buffer.
+An `array` is a vector space managed by the compiler automatically. You can make use of C style arrays (read only) with `CARRAY(array)` but if you want to write to that array, please use a `buffer` type for the job.
 
-#### for the type buffer
+#### Buffer type
 
-	buffer is an vector byte stream managed by user program. it's infact just  byte* pointer and it's allocated space.
-	the space is fixed when you define it. to access individual byte, use [] operator. the use of buffer is only for calling C functions.
-	the space will be automantically freed when buffer leaves the function body. there is no need to manage the memory space. the compiller automanticall call free(3) to free the space.
+A `buffer` is a vector byte stream managed by the program. It's in fact just a `byte*` pointer along with its allocated space, with the space being fixed after you define it. To access an individual byte, use the `[]` operator. `buffer` only exists for calling external C functions.
 
-#### user defined structure
+Space is automantically freed when a `buffer` leaves the scope of the function. There is no need for manual memory management. The compiller will automantically call free(3) to clean up.
 
-	user is allow to define structures. 
+#### User defined structures
+
+User defined structures are allowed. 
