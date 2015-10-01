@@ -9,6 +9,6 @@ end function
 
 sub main()
 
-print  fibonacci(41)
+print "fibonacci(41) = " , fibonacci(41)
 
 End Sub
