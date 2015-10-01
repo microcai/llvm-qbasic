@@ -1,4 +1,4 @@
-﻿#line 2 "/home/cai/projects/basic/compiler/qblex.cpp"
+#line 2 "/home/cai/projects/basic/compiler/qblex.cpp"
 
 #line 4 "/home/cai/projects/basic/compiler/qblex.cpp"
 

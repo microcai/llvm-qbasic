@@ -34,6 +34,8 @@ if (NOT MSVC)
 endif(NOT MSVC)
 
 
+option(USE_BISON "run bison" TRUE)
+
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 
@@ -51,7 +53,9 @@ else()
 	message(FATAL_ERROR "boost not found! please set BOOST_ROOT if you install boost into non-standard location")
 endif()
 
-include_directories(${PROJECT_SOURCE_DIR}/include)
+find_package(LLVM REQUIRED CONFIG)
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 
 add_subdirectory(compiler)
 add_subdirectory(brt)

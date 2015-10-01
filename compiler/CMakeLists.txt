@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 2.8)
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
 
-include(${PROJECT_SOURCE_DIR}/cmake/FindLLVM.cmake)
-
 if(NOT Boost_FOUND)
 	set(Boost_USE_MULTITHREADED      OFF)
 	set(Boost_USE_STATIC_LIBS        ON)
@@ -17,7 +15,7 @@ if(NOT Boost_FOUND)
 	else()
 		message(FATAL_ERROR
 			"boost not found! please set BOOST_ROOT if you install boost into non-standard location")
-	endif()	
+	endif()
 endif()
 
 if( USE_BISON )
@@ -33,14 +31,22 @@ else()
 endif()
 
 
-link_directories(${LLVM_LIBDIR})
-link_libraries("${LLVM_LIBRARIES}")
+# Find the libraries that correspond to the LLVM components
+# that we wish to use
+llvm_map_components_to_libnames(llvm_libs all)
+
+# Link against LLVM libraries
+message(STATUS "Using LLVM libs: ${llvm_libs}")
 
 SET(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} ${LLVM_CPPFLAGS} ")
 
 add_executable(llvm-qbc type.cpp ast.cpp operator.cpp codegen.cpp llvmwrapper.cpp
 	${BISON_QBParse_OUTPUTS} ${FLEX_QBLex_OUTPUTS}
-	main.cpp 
+	main.cpp
 )
+
+target_include_directories(llvm-qbc PRIVATE ${LLVM_INCLUDE_DIRS})
+target_compile_definitions(llvm-qbc PRIVATE ${LLVM_DEFINITIONS})
+target_link_libraries(llvm-qbc ${llvm_libs})
 
 install(TARGETS llvm-qbc RUNTIME DESTINATION bin)
