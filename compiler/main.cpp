@@ -74,6 +74,7 @@ static int generateobj(boost::shared_ptr<llvm::tool_output_file> Out, llvm::Modu
       std::cerr << " target does not support generation of this"     << " file type!\n";
       return 1;
     }
+
 	PM.run(*module);
 	return 0;
 }
@@ -162,11 +163,13 @@ int main(int argc, char **argv)
 			% std::string(outfilename + ".exe") %  outobjname );
 #else
 		// invoke  gcc
-		std::string libdir = fs::path(argv[0]).parent_path().string();
-		std::string cmd = boost::str(boost::format("llvm-link -o %s %s -L%s -lbrt")
-							% outfilename %  (outfilename + ".o") % libdir.c_str());
+		boost::filesystem::path libdir = fs::path(argv[0]).parent_path().string();
+		boost::filesystem::path libbrt_a = libdir / "libbrt.a";
+		std::string linker_commandline = getenv("CC") ? getenv("CC") : "cc";
+		std::string cmd = boost::str(boost::format("%s -o %s %s %s") % linker_commandline
+							% outfilename %  (outfilename + ".o") % libbrt_a.string());
 #endif
-		printf("run linker: %s\n",cmd.c_str());
+		printf("run linker: %s\n", cmd.c_str());
 		if(std::system(cmd.c_str())==0)
 			Out->keep(); // keep the file if linker runs fine
 
