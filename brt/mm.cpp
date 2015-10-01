@@ -3,7 +3,7 @@
  */
 
 /*
-    print support for internal data struct
+    memory support for internal data struct
 
     Copyright (C) 2012  microcai <microcai@fedoraproject.org>
 
@@ -21,15 +21,19 @@
     License along with this library; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
-#include <stdio.h>
-#include <stdarg.h>
 
-void brt_print(int into, const char * fmt,...)
+#include <stdlib.h>
+
+extern "C" void * brt_operator_new(size_t );
+extern "C" void brt_operator_delete(void*);
+
+extern "C" void* brt_operator_new(size_t __size)
 {
-	int ret = 0;
-	va_list va;
-	va_start(va,fmt);
-	//fprintf(stdout)
-	ret = vprintf(fmt,va);
-	///return ret;
+	return malloc(__size);
 }
+
+extern "C" void brt_operator_delete(void* __ptr)
+{
+	free(__ptr);
+}
+

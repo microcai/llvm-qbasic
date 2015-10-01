@@ -79,7 +79,7 @@ llvm::Type * getplatformlongtype()
 
 #define GETBUILTINTYPE_ENTER()	\
 	llvm::IRBuilder<> builder(ctx.block); std::vector<llvm::Type *> args
-		
+
 #define	BUILTINTYPE_DEFINE(x ,  ret , block )	\
 	static llvm::Constant *getbuiltinprotype_##x(ASTContext ctx) \
 	{\
@@ -165,12 +165,12 @@ BUILTINTYPE_DEFINE(btr_qbarray_at , Int8Ptr , {
 #undef GETBUILTINTYPE_ENTER
 
 // 从字符串获得标准C库和内置BRT库的标准声明.
-llvm::Constant * getbuiltinprotype(ASTContext ctx,const std::string name)
+llvm::Constant * getbuiltinprotype(ASTContext ctx, const std::string name)
 {
 	llvm::Function * retfunc = ctx.module->getFunction(name);
 #define			RETURNBUILTINENTRY(x)	\
 	if(name == #x ) { return getbuiltinprotype_##x (ctx); }
-	
+
 	if(!retfunc){ // 根据函数名字生成.
 		RETURNBUILTINENTRY(printf)
 		RETURNBUILTINENTRY(brt_print)
