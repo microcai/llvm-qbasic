@@ -141,7 +141,7 @@ ExprASTPtr NumberExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr 
 ExprASTPtr StringExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr lval, ExprASTPtr rval)
 {
 	llvm::IRBuilder<> builder(ctx.block);
-	
+
 	llvm::Constant * llvmfunc_free =  qbc::getbuiltinprotype(ctx,"free");
 	llvm::Constant * llvmfunc_strdup = qbc::getbuiltinprotype(ctx,"strdup");
 
@@ -162,7 +162,7 @@ ExprASTPtr ArrayExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr l
 	debug("operator assign for array number %p\n",lval.get());
 
 	ArrayExprTypeAST * reallval =dynamic_cast<ArrayExprTypeAST*>(lval->type(ctx).get());
-	
+
 	//赋值也是很简单的, 要调用element类型的operator 就是了.
 	debug("assign to array element , %p \n" , reallval);
 
@@ -194,20 +194,19 @@ ExprASTPtr StringExprOperation::operator_add(ASTContext ctx, ExprASTPtr lval, Ex
 	llvm::Value * string_left_length = builder.CreateCall(llvmfunc_strlen,lval->getval(ctx));
 	llvm::Value * string_right_length = builder.CreateCall(llvmfunc_strlen,rval->getval(ctx));
 
-	llvm::Value * result_length = builder.CreateAdd(string_left_length,string_right_length);
+	llvm::Value * result_length = builder.CreateAdd(string_left_length, string_right_length);
 
-	llvm::Value * resultstring = builder.CreateCall(llvmfunc_calloc,
-												 qbc::getconstlong(1));
-	
-	builder.CreateCall2(llvmfunc_strcpy,resultstring,lval->getval(ctx));
-	builder.CreateCall2(llvmfunc_strcat,resultstring,rval->getval(ctx));
-	return 	lval->type(ctx)->createtemp(ctx,resultstring,NULL);
+	llvm::Value * resultstring = builder.CreateCall(llvmfunc_calloc,result_length);
+
+	builder.CreateCall(llvmfunc_strcpy, {resultstring, lval->getval(ctx)});
+	builder.CreateCall(llvmfunc_strcat, {resultstring, rval->getval(ctx)});
+	return 	lval->type(ctx)->createtemp(ctx, resultstring, NULL);
 }
 
 
 // 数字减法.
 ExprASTPtr NumberExprOperation::operator_sub(ASTContext ctx, ExprASTPtr lval, ExprASTPtr rval)
-{	
+{
 	llvm::Value * LHS =	lval->getval(ctx);
 	llvm::Value * RHS =	rval->getval(ctx);
 	llvm::IRBuilder<> builder(ctx.block);
@@ -224,7 +223,7 @@ ExprASTPtr NumberExprOperation::operator_mul(ASTContext ctx, ExprASTPtr lval, Ex
 	llvm::Value * RHS =	rval->getval(ctx);
 	llvm::IRBuilder<> builder(ctx.block);
 	llvm::Value * result;
-	
+
 	result = builder.CreateMul(LHS,RHS);
 	//TODO , 构造临时 Number 对象.
 	return lval->type(ctx)->createtemp(ctx,result,NULL);
@@ -248,7 +247,7 @@ ExprASTPtr NumberExprOperation::operator_comp(ASTContext ctx, MathOperator op, E
 	llvm::Value * RHS =	rval->getval(ctx);
 	llvm::IRBuilder<> builder(ctx.block);
 	llvm::Value * result;
-	
+
 	switch(op){
 		case OPERATOR_LESS:
 			result = builder.CreateICmpSLT(LHS,RHS);
@@ -266,7 +265,7 @@ ExprASTPtr NumberExprOperation::operator_comp(ASTContext ctx, MathOperator op, E
 			result = builder.CreateICmpEQ(LHS,RHS);
 			break;
 	}
-	
+
 	//TODO , 构造临时 Number 对象.
 	return lval->type(ctx)->createtemp(ctx,result,NULL);
 }
@@ -281,17 +280,17 @@ ExprASTPtr StringExprOperation::operator_comp(ASTContext ctx,MathOperator op, Ex
 	switch(op){
 		case OPERATOR_EQUL:{// call strcmp
 			llvm::Constant * func_strcmp = qbc::getbuiltinprotype(ctx,"strcmp");
-			
-			result = builder.CreateCall2(func_strcmp,LHS,RHS);
+
+			result = builder.CreateCall(func_strcmp, {LHS, RHS});
 			// 返回值是 int , not long , 执行转化.
-			result = builder.CreateIntCast(result,qbc::getplatformlongtype(),true);
-			result = builder.CreateICmpEQ(result,qbc::getconstlong(0)); 
+			result = builder.CreateIntCast(result, qbc::getplatformlongtype(), true);
+			result = builder.CreateICmpEQ(result, qbc::getconstlong(0));
 		}
 		break;
 		default:
 			debug("string comp not supported");
 			exit(1);
-	
+
 	}
 	//TODO , 构造临时 Number 对象.
 	return NumberExprTypeAST::GetNumberExprTypeAST()->createtemp(ctx,result,NULL);
@@ -311,7 +310,7 @@ ExprASTPtr ArrayExprOperation::operator_call(ASTContext ctx, NamedExprASTPtr tar
 	// 调用数组下标函数.
 	llvm::Constant * func_qb_array_at = qbc::getbuiltinprotype(ctx,"btr_qbarray_at");
 
-	llvm::Value * tmpval = builder.CreateCall2(func_qb_array_at,arrayptr,index);
+	llvm::Value * tmpval = builder.CreateCall(func_qb_array_at, {arrayptr, index});
 
 	ArrayExprTypeAST * realtarget =dynamic_cast<ArrayExprTypeAST*>(target->nameresolve(ctx)->type.get());
 
@@ -336,7 +335,7 @@ ExprASTPtr FunctionExprOperation::operator_call(ASTContext ctx,NamedExprASTPtr c
 	//获得函数定义.
 
 	DimAST * funcdim = calltarget->nameresolve(ctx);
-	
+
 	llvm::Value * llvmfunc =funcdim->getval(ctx);
 
 	if(!llvmfunc){ //有定义, 则直接调用, 无定义就 ... 呵呵.

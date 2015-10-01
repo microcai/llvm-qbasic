@@ -1,4 +1,4 @@
-
+﻿
 /*
     defination of QBASIC Abstruct Syntax Tree - The Type System
     Copyright (C) 2012  microcai <microcai@fedoraproject.org>
@@ -30,7 +30,7 @@
 #include <llvm/IR/Constant.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
-#include <llvm/Analysis/Verifier.h>
+#include <llvm/IR/Verifier.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/IRBuilder.h>
@@ -112,7 +112,7 @@ ExprTypeASTPtr CallExprAST::type(ASTContext ctx)
 	if(typeast){
 		debug("got type of function or array\n");
 	}
-	
+
 	ArrayExprTypeAST * arrayval =dynamic_cast<ArrayExprTypeAST*>(typeast.get());
 	CallableExprTypeAST* callval = dynamic_cast<CallableExprTypeAST*>(typeast.get());
 
@@ -125,7 +125,7 @@ ExprTypeASTPtr CallExprAST::type(ASTContext ctx)
 	}else
 	{
 		debug("operator () on non-function nor array");
-		exit(12);	
+		exit(12);
 	}
 }
 
@@ -179,7 +179,7 @@ llvm::Type* CallableExprTypeAST::llvm_type(ASTContext ctx)
 llvm::Type* StructExprTypeAST::llvm_type(ASTContext ctx)
 {
 	//TODO 获得子成员的类型，并依次堆叠
-	
+
 }
 
 llvm::Value* NumberExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
@@ -227,7 +227,7 @@ llvm::Value* ArrayExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
 	//call btr_qbarray_new()
 	llvm::Constant * btr_qbarray_new = qbc::getbuiltinprotype(ctx,"btr_qbarray_new");
 
-	builder.CreateCall2(btr_qbarray_new,newval,qbc::getconstlong(elementtype->size()));
+	builder.CreateCall(btr_qbarray_new, {newval, qbc::getconstlong(elementtype->size())});
 	return newval;
 }
 
@@ -332,7 +332,7 @@ llvm::Value* TempNumberExprAST::getval(ASTContext)
 {
 	if(this->ptr)
 	{
-		return this->type(ctx)->deref(ctx,this->ptr);		
+		return this->type(ctx)->deref(ctx,this->ptr);
 	}
 	return this->val;
 }
@@ -343,9 +343,9 @@ llvm::Value* VariableExprAST::getval(ASTContext ctx)
  	llvm::IRBuilder<> builder(ctx.block);
 
 	std::string desc = std::string("load local var ")+this->ID->ID;
-	
+
 	debug("%s\n",desc.c_str());
-	
+
 	return nameresolve(ctx)->getval(ctx);
 }
 
@@ -421,7 +421,7 @@ NumberExprTypeAST::NumberExprTypeAST() : ExprTypeAST(sizeof(long),"long")
 }
 
 StringExprTypeAST::StringExprTypeAST() :ExprTypeAST(sizeof(void*),"string")
-{	
+{
 }
 
 ConstStringExprAST::ConstStringExprAST(const std::string _str)
@@ -448,7 +448,7 @@ PointerTypeAST::PointerTypeAST(ExprTypeASTPtr _pointeetype)
 StructExprTypeAST::StructExprTypeAST(const std::string __typename)
 	:ExprTypeAST(0,__typename)
 {
-	
+
 }
 
 
@@ -476,7 +476,7 @@ CallExprAST::CallExprAST(NamedExprAST* _target, ExprListAST* exp_list)
 CalcExprAST::CalcExprAST(ExprAST* l, MathOperator _op, ExprAST* r)
 	:lval(l),rval(r),op(_op)
 {
-	
+
 }
 
 TempExprAST::TempExprAST(ASTContext _ctx, llvm::Value* _val , llvm::Value *_ptr, ExprTypeASTPtr type) :ctx(_ctx),val(_val),_type(type),ptr(_ptr) {}
@@ -490,7 +490,7 @@ TempNumberExprAST::TempNumberExprAST(ASTContext ctx,llvm::Value* numberresult, l
 TempStringExprAST::TempStringExprAST(ASTContext ctx,llvm::Value* result , llvm::Value *ptr)
 	:TempExprAST(ctx,result,ptr,  stringtype)
 {
-	
+
 }
 
 TempStringExprAST::~TempStringExprAST()

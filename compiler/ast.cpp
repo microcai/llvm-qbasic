@@ -1,4 +1,4 @@
-/*
+﻿/*
     defination of QBASIC Abstruct Syntax Tree
     Copyright (C) 2012  microcai <microcai@fedoraproject.org>
 
@@ -27,7 +27,7 @@
 #include <llvm/IR/Constant.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
-#include <llvm/Analysis/Verifier.h>
+#include <llvm/IR/Verifier.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/IRBuilder.h>
@@ -156,11 +156,11 @@ ForLoopAST::ForLoopAST(NamedExprAST* id, ExprAST* _start, ExprAST* _end, ExprAST
 	, refID(id)
 {
 	if(!step)
-		step.reset(new ConstNumberExprAST(1));	
+		step.reset(new ConstNumberExprAST(1));
 }
 
 StrucDimAST::StrucDimAST(const std::string _name,VariableDimList _members)
 {
 	this->Typename = _name;
-	this->members = _members;	
+	this->members = _members;
 }

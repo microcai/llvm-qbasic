@@ -8,12 +8,16 @@ namespace po = boost::program_options;
 namespace fs=boost::filesystem;
 #include <llvm/InitializePasses.h>
 #include <llvm/LinkAllPasses.h>
+#include <llvm/Support/FileSystem.h>
 #include <llvm/Support/TargetSelect.h>
 #include <llvm/Support/TargetRegistry.h>
 #include <llvm/Support/ToolOutputFile.h>
 #include <llvm/Support/FormattedStream.h>
 #include <llvm/Support/Host.h>
-#include <llvm/PassManager.h>
+#include <llvm/Pass.h>
+#include <llvm/Passes/PassBuilder.h>
+#include <llvm/IR/PassManager.h>
+#include <llvm/IR/LegacyPassManager.h>
 
 #include "ast.hpp"
 #include "parser.hpp"
@@ -44,18 +48,18 @@ static void generateIR(StatementAST * ast , llvm::Module * module )
 	((StatementAST*)(ast))->Codegen(ctx);
 }
 
-static int generateobj(boost::shared_ptr<llvm::tool_output_file> Out , llvm::Module * module)
+static int generateobj(boost::shared_ptr<llvm::tool_output_file> Out, llvm::Module * module)
 {
-	llvm::PassManager PM;
+	llvm::legacy::PassManager PM;
 
 	llvm::TargetOptions Options;
-  
+
 	std::string Err;
 
 	llvm::Triple TheTriple(module->getTargetTriple());
 	if (TheTriple.getTriple().empty())
 		TheTriple.setTriple(llvm::sys::getDefaultTargetTriple());
-	
+
 	const llvm::Target* TheTarget = llvm::TargetRegistry::lookupTarget(TheTriple.getTriple(), Err);
 
 	std::string MCPU,FeaturesStr;
@@ -65,10 +69,7 @@ static int generateobj(boost::shared_ptr<llvm::tool_output_file> Out , llvm::Mod
 
 	// Figure out where we are going to send the output...
 
-
-	llvm::formatted_raw_ostream FOS(Out->os());
-	
-    if (machineTarget->addPassesToEmitFile(PM, FOS, llvm::TargetMachine::CGFT_ObjectFile,true))
+    if (machineTarget->addPassesToEmitFile(PM, Out->os(), llvm::TargetMachine::CGFT_ObjectFile))
 	{
       std::cerr << " target does not support generation of this"     << " file type!\n";
       return 1;
@@ -104,12 +105,12 @@ int main(int argc, char **argv)
 	}
 
 	std::string input = inputs.begin()->c_str();
-	
+
 	// usage llvmqbc input.bas -o a.out
 	// ./a.out
 	std::cout << "openning: " << input << std::endl;
 	yyin = std::fopen(input.c_str(),"r");
-	
+
 	if(!yyin)
 	{
 		printf("open %s failed\n",input.c_str());
@@ -119,7 +120,7 @@ int main(int argc, char **argv)
 	qb::parser parser;
 
 	parser.parse();
-	
+
 	std::cout << "parse done, no errors, generating llvm IR..." << std::endl;
 
 	// Initialize targets first, so that --version shows registered targets.
@@ -140,18 +141,17 @@ int main(int argc, char **argv)
 		module->dump();
 		return 0;
 	}
-	
+
 #if _WIN32
 	std::string outobjname = outfilename + ".obj";
 #else
 	std::string outobjname = outfilename + ".o";
 #endif
-	std::string Err;
+	std::error_code Err;
 
-	boost::shared_ptr<llvm::tool_output_file> Out( new
-		llvm::tool_output_file(outobjname.c_str(), Err, llvm::sys::fs::F_Binary) );
+	boost::shared_ptr<llvm::tool_output_file> Out(new llvm::tool_output_file(outobjname.c_str(), Err, llvm::sys::fs::F_RW));
 
-	if(generateobj(Out,module)==0)
+	if(generateobj(Out, module)==0)
 		printf("======== object file writed to %s ===========\n", outobjname.c_str());
 
 	if(!vm.count("-c"))
@@ -163,7 +163,7 @@ int main(int argc, char **argv)
 #else
 		// invoke  gcc
 		std::string libdir = fs::path(argv[0]).parent_path().string();
-		std::string cmd = boost::str(boost::format("gcc -o %s %s -L%s -lbrt")
+		std::string cmd = boost::str(boost::format("llvm-link -o %s %s -L%s -lbrt")
 							% outfilename %  (outfilename + ".o") % libdir.c_str());
 #endif
 		printf("run linker: %s\n",cmd.c_str());

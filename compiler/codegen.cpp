@@ -1,5 +1,5 @@
 ﻿/*
-    Main Code Generation 
+    Main Code Generation
     Copyright (C) 2012  microcai <microcai@fedoraproject.org>
 
     This library is free software; you can redistribute it and/or
@@ -28,7 +28,7 @@
 #include <llvm/IR/Constant.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
-#include <llvm/Analysis/Verifier.h>
+#include <llvm/IR/Verifier.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/IRBuilder.h>
@@ -85,7 +85,7 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 		{
 			if(!argitem->type(ctx)){
 				printfmt +="\n"; // 很重要,呵呵
-				continue;				
+				continue;
 			}
 			switch(argitem->type(ctx)->size()){ //按照大小来啊,果然.
 				case sizeof(long): // 整数产量的类型.
@@ -172,7 +172,7 @@ llvm::BasicBlock* VariableDimAST::Codegen(ASTContext ctx)
 
 	//map type name to type
 	ExprTypeASTPtr exptype =  this->type;
-	
+
 	debug("allocate stack for var %s , type %s\n", name.c_str(), type->name(ctx).c_str());
 
 	alloca_var = exptype->Alloca(ctx,this->name);
@@ -209,7 +209,7 @@ llvm::BasicBlock* StrucDimAST::Codegen(ASTContext ctx)
 		selfsize += dimitem->type->size();
 	}
 
-	
+
 	//dynamic_cast<StructExprTypeAST*>(this->type.get())->size(selfsize);
 }
 
@@ -232,7 +232,7 @@ llvm::Value* ArgumentDimAST::getval(ASTContext ctx)
 }
 
 llvm::Value* ArgumentDimAST::getptr(ASTContext ctx)
-{	
+{
 	debug("set val for argument\n");
 
 	if(this->modified_stackvar){
@@ -256,7 +256,7 @@ llvm::BasicBlock* ArgumentDimAST::Codegen(ASTContext ctx)
 	// register on symbols table
 
 	ctx.codeblock->symbols.insert(std::make_pair(name,this));
-	
+
 	return ctx.block;
 }
 
@@ -269,12 +269,12 @@ llvm::Value* FunctionDimAST::getptr(ASTContext ctx)
 llvm::Value* FunctionDimAST::setret(ASTContext ctx,ExprASTPtr expr)
 {
 	llvm::IRBuilder<> builder(ctx.block);
-	
+
 	if(!retval)
 		retval = dynamic_cast<CallableExprTypeAST*>(type.get())->returntype->Alloca(ctx,"return value");
 
 	llvm::Value* ret = expr->getval(ctx);
-	
+
 	builder.CreateStore(ret,ctx.func->retval);
 
 	if(!returnblock)
@@ -314,7 +314,7 @@ llvm::BasicBlock* IFStmtAST::Codegen(ASTContext ctx)
 		cond_false = llvm::BasicBlock::Create(ctx.llvmfunc->getContext(), "cond_false",ctx.llvmfunc);
 	}
 	llvm::BasicBlock* cond_continue = llvm::BasicBlock::Create(ctx.llvmfunc->getContext(), "continue", ctx.llvmfunc);
-	
+
 	if(! this->_else){
 		cond_false = cond_continue;
 	}
@@ -324,7 +324,7 @@ llvm::BasicBlock* IFStmtAST::Codegen(ASTContext ctx)
 	llvm::Value * expcond = this->_expr->getval(ctx);
 
 	expcond = builder.CreateIntCast(expcond,qbc::getbooltype(),1);
-	
+
 	expcond = builder.CreateICmpNE(expcond, qbc::getconstfalse(), "tmp");
 	builder.CreateCondBr(expcond, cond_true, cond_false);
 
@@ -351,7 +351,7 @@ llvm::BasicBlock* IFStmtAST::Codegen(ASTContext ctx)
 llvm::BasicBlock* LoopAST::bodygen(ASTContext ctx)
 {
 	loopbody->parent = ctx.codeblock;
-	ctx.codeblock = loopbody.get();	
+	ctx.codeblock = loopbody.get();
     llvm::BasicBlock* newblo =  loopbody->Codegen(ctx);
 	return newblo;
 }
@@ -374,7 +374,7 @@ llvm::BasicBlock* WhileLoopAST::Codegen(ASTContext ctx)
 	//builder.SetInsertPoint(ctx.block);
 	builder.CreateBr(cond_while);
 
-	
+
 	builder.SetInsertPoint(cond_while);
 	ctx.block = cond_while;
 	llvm::Value * expcond = this->condition->getval(ctx);
@@ -388,8 +388,8 @@ llvm::BasicBlock* WhileLoopAST::Codegen(ASTContext ctx)
 	builder.CreateBr(cond_while);
 
 	cond_continue->moveAfter(while_body);
-	
-	return cond_continue;	
+
+	return cond_continue;
 }
 
 //TODO, 生成 for loop
@@ -399,7 +399,7 @@ llvm::BasicBlock* ForLoopAST::Codegen(ASTContext ctx)
 
 		// 变量赋予初始值.
 	exprtype->getop()->operator_assign(ctx,refID,start);
-	
+
 	llvm::IRBuilder<> builder(ctx.block);
 
 	llvm::BasicBlock* for_cond = llvm::BasicBlock::Create(ctx.llvmfunc->getContext(), "for", ctx.llvmfunc);
@@ -429,7 +429,7 @@ llvm::BasicBlock* ForLoopAST::Codegen(ASTContext ctx)
 
 	builder.CreateBr(for_cond);
 
-	
+
 	ctx.block = for_out;
 	return for_out;
 	debug("=========generating for loog======\n");
@@ -451,7 +451,7 @@ llvm::BasicBlock* CodeBlockAST::Codegen(ASTContext ctx)
 	{
 		if(stmt){
 			ctx.block =  stmt->Codegen(ctx);
-		}			
+		}
 		else
 			debug("strange, stmt is null\n");
 	}
@@ -481,7 +481,7 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 
 	ctx.func = this; // 设定当前函数.
 	llvm::BasicBlock * blockforret = ctx.block;
-	
+
 	debug("generating function %s and its body now\n", this->name.c_str());
 
 	//首先生成全局可用的外部辅助函数.
@@ -495,7 +495,7 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 
 	if(callargs){
 		std::vector< StatementASTPtr >::iterator it = callargs->statements.begin();
-		
+
 		for(; it != callargs->statements.end() ; it++)
 		{
 			StatementASTPtr stp = *it;
@@ -532,7 +532,7 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 	//now code up the function body
 	body->parent = ctx.codeblock;
 	llvm::BasicBlock * bodyblock = body->Codegen(ctx);
-	
+
 	if(bodyblock != ctx.block){
 		debug("body block changed!!!!\n");
 	}
