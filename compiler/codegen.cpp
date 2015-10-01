@@ -205,11 +205,10 @@ llvm::BasicBlock* StrucDimAST::Codegen(ASTContext ctx)
 	size_t	selfsize = 0;
 	BOOST_FOREACH(VariableDimASTPtr dimitem , this->members)
 	{
-// 		newtype->
 		selfsize += dimitem->type->size();
 	}
 
-
+	return ctx.block;
 	//dynamic_cast<StructExprTypeAST*>(this->type.get())->size(selfsize);
 }
 
