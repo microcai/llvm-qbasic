@@ -329,7 +329,6 @@ ExprASTPtr FunctionExprOperation::operator_call(ASTContext ctx,NamedExprASTPtr c
 	builder.SetInsertPoint(ctx.block);
 
 	// call functions TODO
-    debug("sigfault herekkk?\n");
 	llvm::Value * ret = NULL;
 
 	//获得函数定义.
@@ -346,9 +345,8 @@ ExprASTPtr FunctionExprOperation::operator_call(ASTContext ctx,NamedExprASTPtr c
 	std::vector<llvm::Value*> args;
 	if(callargs && callargs->expression_list.size() )
 	{
-		BOOST_FOREACH( ExprASTPtr expr , callargs->expression_list)
+		for(ExprASTPtr expr : callargs->expression_list)
 		{
-			debug("pusing args \n");
 			args.push_back( expr->getval(ctx) );
 		}
 	}

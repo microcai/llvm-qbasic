@@ -1054,7 +1054,7 @@ case 3:
 YY_RULE_SETUP
 #line 75 "qblex.ll"
 /* eat comment */ {
-   
+
 }
 	YY_BREAK
 case 4:
@@ -1151,7 +1151,7 @@ return token::tELSE;
 case 21:
 YY_RULE_SETUP
 #line 104 "qblex.ll"
-{printf("if begin ! ======\n"); return token::tIF;}
+{/*printf("if begin ! ======\n"); */return token::tIF;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
@@ -1348,50 +1348,44 @@ YY_RULE_SETUP
 #line 182 "qblex.ll"
 {
    yylval->integer = atol (yytext);
-   printf("got %d\n",yylval->integer);
    return token::tInteger;
 }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 188 "qblex.ll"
+#line 187 "qblex.ll"
 {
    yylval->integer = atol (yytext);
-   printf("got %d\n",yylval->integer);
    return token::tInteger;
 }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 195 "qblex.ll"
+#line 193 "qblex.ll"
 {
    yylval->integer = atol (yytext);
-   printf("got %d\n",yylval->integer);
    return token::tInteger;
 }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 201 "qblex.ll"
+#line 198 "qblex.ll"
 {
    yylval->number = strtod (yytext, NULL);
-    printf("got %f\n",yylval->number);
-
    return token::tNUMBER;
 }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 208 "qblex.ll"
+#line 203 "qblex.ll"
 {
    yylval->id = new std::string (yytext);
-//   printf("got %s\n", yytext);
    return token::tID;
 }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 214 "qblex.ll"
+#line 208 "qblex.ll"
 {
    yylval->id = new std::string (yytext);
    return token::tID;
@@ -1400,7 +1394,7 @@ YY_RULE_SETUP
 case 62:
 /* rule 62 can match eol */
 YY_RULE_SETUP
-#line 220 "qblex.ll"
+#line 214 "qblex.ll"
 {
    if (yytext[yyleng - 1] == '\n') {
       printf ("string not terminated");
@@ -1420,7 +1414,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 237 "qblex.ll"
+#line 231 "qblex.ll"
 {
    return yytext[1 - 1];
 }
@@ -1428,44 +1422,44 @@ YY_RULE_SETUP
 
 case 64:
 YY_RULE_SETUP
-#line 243 "qblex.ll"
+#line 237 "qblex.ll"
 BEGIN (INITIAL);
 	YY_BREAK
 case YY_STATE_EOF(block_comment):
-#line 245 "qblex.ll"
+#line 239 "qblex.ll"
 error ("block comment not terminated");
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 247 "qblex.ll"
+#line 241 "qblex.ll"
 
 	YY_BREAK
 case 66:
 /* rule 66 can match eol */
 YY_RULE_SETUP
-#line 248 "qblex.ll"
+#line 242 "qblex.ll"
 yylineno ++;
 	YY_BREAK
 
 
 case 67:
 YY_RULE_SETUP
-#line 253 "qblex.ll"
+#line 247 "qblex.ll"
 
 	YY_BREAK
 case 68:
 /* rule 68 can match eol */
 YY_RULE_SETUP
-#line 255 "qblex.ll"
+#line 249 "qblex.ll"
 BEGIN(INITIAL);
 	YY_BREAK
 
 case 69:
 YY_RULE_SETUP
-#line 258 "qblex.ll"
+#line 252 "qblex.ll"
 ECHO;
 	YY_BREAK
-#line 1469 "/home/cai/projects/basic/compiler/qblex.cpp"
+#line 1463 "/home/cai/projects/basic/compiler/qblex.cpp"
 case YY_STATE_EOF(remark):
 case YY_STATE_EOF(documentation):
 	yyterminate();
@@ -2424,7 +2418,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 258 "qblex.ll"
+#line 252 "qblex.ll"
 
 
 

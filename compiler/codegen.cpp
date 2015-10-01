@@ -38,7 +38,8 @@
 #include "ast.hpp"
 #include "type.hpp"
 
-#define debug	std::printf
+//#define debug	std::printf
+#define debug(...)
 
 llvm::BasicBlock* EmptyStmtAST::Codegen(ASTContext ctx)
 {

@@ -39,7 +39,8 @@
 #include "ast.hpp"
 #include "type.hpp"
 
-#define debug std::printf
+//#define debug std::printf
+#define debug(...) do{}while(0)
 
 //static map of the internal type system
 static	ExprTypeASTPtr numbertype(new NumberExprTypeAST);

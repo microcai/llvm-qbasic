@@ -56,7 +56,7 @@ int count = 0;                  /* for strings */
 name [_a-z][_a-z0-9]*
 whitespace [ \r\t\f\v]
 lcchar [\\_]
- 
+
 
 %%
 
@@ -73,7 +73,7 @@ rem {
 }
 
 "//".* /* eat comment */ {
-   
+
 }
 
 "'".* /* eat comment */ {
@@ -101,7 +101,7 @@ function			return token::tFUNCTION;
 sub|subroutine		return token::tSUB;
 then				return token::tTHEN;
 else				return token::tELSE;
-if					{printf("if begin ! ======\n"); return token::tIF;}
+if					{/*printf("if begin ! ======\n"); */return token::tIF;}
 
 elif|elseif			return token::tELSEIF;
 return				return token::tRETURN;
@@ -181,33 +181,27 @@ false {
 
 -[0-9]* {
    yylval->integer = atol (yytext);
-   printf("got %d\n",yylval->integer);
    return token::tInteger;
 }
 
 \+[0-9]* {
    yylval->integer = atol (yytext);
-   printf("got %d\n",yylval->integer);
    return token::tInteger;
 }
 
 
 [0-9]* {
    yylval->integer = atol (yytext);
-   printf("got %d\n",yylval->integer);
    return token::tInteger;
 }
 
 (([0-9]+|([0-9]*\.[0-9]+))([eE][-+]?[0-9]+)?) {
    yylval->number = strtod (yytext, NULL);
-    printf("got %f\n",yylval->number);
-
    return token::tNUMBER;
 }
 
 {name} {
    yylval->id = new std::string (yytext);
-//   printf("got %s\n", yytext);
    return token::tID;
 }
 

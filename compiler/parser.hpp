@@ -124,7 +124,7 @@ namespace qb {
     /// Symbol semantic values.
     union semantic_type
     {
-    #line 62 "parser.ypp" // lalr1.cc:377
+    #line 63 "parser.ypp" // lalr1.cc:377
 
 	char *				string;         /* quoted string */
 	std::string *		id;         /* general symbol */
@@ -136,8 +136,8 @@ namespace qb {
 	ExprListAST*		expression_list;
 
 	PrintIntroAST*		printinto;
-	
-	
+
+
 	ExprType *  		exprtype; // name of the type
 	ConstNumberExprAST* number_expression;
 	CallExprAST*		call_function;
@@ -148,14 +148,14 @@ namespace qb {
 	AssigmentAST*		variable_assignment;
 	CodeBlockAST*		codeblocks;
 	IFStmtAST * 		if_clause;
-	
+
 	WhileLoopAST* 		while_loop;
 	ForLoopAST*			for_loop;
 
 	VariableDimAST*		dim_item;
 	VariableDimList*	struct_item_list;
 	StrucDimAST*		structdim;
-	
+
 	ArgumentDimsAST*	arg_list;
 	FunctionDimAST*		function_definition;
 

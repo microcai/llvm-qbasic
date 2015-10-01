@@ -34,7 +34,8 @@ extern int yylex(qb::parser::semantic_type * yylval_param );
 
 extern int yylineno;
 
-#define debug printf
+//#define debug printf
+#define debug(...)
 
 /* Global variables. */
 bool useDefautSubMain = true;	/* shall we treat the while file as an sub main ? */
@@ -70,8 +71,8 @@ void qb::parser::error(const std::string& msg)
 	ExprListAST*		expression_list;
 
 	PrintIntroAST*		printinto;
-	
-	
+
+
 	ExprType *  		exprtype; // name of the type
 	ConstNumberExprAST* number_expression;
 	CallExprAST*		call_function;
@@ -82,14 +83,14 @@ void qb::parser::error(const std::string& msg)
 	AssigmentAST*		variable_assignment;
 	CodeBlockAST*		codeblocks;
 	IFStmtAST * 		if_clause;
-	
+
 	WhileLoopAST* 		while_loop;
 	ForLoopAST*			for_loop;
 
 	VariableDimAST*		dim_item;
 	VariableDimList*	struct_item_list;
 	StrucDimAST*		structdim;
-	
+
 	ArgumentDimsAST*	arg_list;
 	FunctionDimAST*		function_definition;
 
@@ -138,7 +139,7 @@ void qb::parser::error(const std::string& msg)
 %token tFOR tENDFOR tTO tSTEP
 
 // datatype built-in
-%token tLONG tSTR 
+%token tLONG tSTR
 
 // misc
 %token <id>		tID
@@ -193,7 +194,7 @@ program: lines tEOPROG {
 				program = $1;
 				debug("module ended\n");
 			}
-			YYACCEPT;			
+			YYACCEPT;
 		}
 		;
 
@@ -267,7 +268,7 @@ printstatement:
 
 		$3->Append( new EmptyExprAST );
 		$$ = new PrintStmtAST( $2, $3 );
-		
+
 		debug("got print1 done\n");
 	}
 	|tPRINT printinto  expression_list ',' {
@@ -286,14 +287,14 @@ printstatement:
 printinto: '#' tInteger ','  { debug("print has got itger\n") ;}
 	| /*empty*/	{ $$ = 0;}
 	;
-	
+
 expression_list: expression_list ',' expression { $$ = $1 ; $$->Append($3); }
 	| expression {
 		$$ =  new ExprListAST;
 		$$->Append($1);
 	}
 	;
-	
+
 expression: call_function
 		| '(' expression ')' { $$ = $2 ;}
 		| expression '+' expression {   $$ = new CalcExprAST( $1, OPERATOR_ADD , $3 );  }
@@ -314,9 +315,9 @@ expression: call_function
 		| tSTRING {
 			$$ = new ConstStringExprAST($1);
 		}
-		| '-' expression { 
+		| '-' expression {
 			ExprAST* zero = new ConstNumberExprAST(0);
-			$$ = new CalcExprAST(zero, OPERATOR_SUB, $2); 
+			$$ = new CalcExprAST(zero, OPERATOR_SUB, $2);
 		}
 		;
 
@@ -336,9 +337,9 @@ call_function:
 
 varref:	expression '.' tID {
 		debug("ref menber %s . %s , not supported yet\n" );
-		exit(1); 
+		exit(1);
 	}
-	| expression tDREF  tID  { exit(1); } 
+	| expression tDREF  tID  { exit(1); }
 	| tID {
 		$$ = new VariableExprAST(  new ReferenceAST( $1 ));
 	}
@@ -392,7 +393,7 @@ function_definition: tFUNCTION tID '(' arg_list ')' tAS exprtype tNEWLINE
 						lines
 				tFUNCTIONEND {
 					useDefautSubMain = false;
-					
+
 					$$ = new FunctionDimAST(*$2,
 											ExprTypeASTPtr(new CallableExprTypeAST(*$7)),
 											$4);
@@ -443,7 +444,7 @@ arg_list:{ $$ = 0; }
 //*****************************************/
 
 		//*****************************************/
-		//* if 
+		//* if
 		//*****************************************/
 if_clause: tIF  expression tTHEN statement {
 			$$ = new IFStmtAST( ExprASTPtr($2));
@@ -467,7 +468,7 @@ if_clause: tIF  expression tTHEN statement {
 ;
 
 		//*****************************************/
-		//* While 
+		//* While
 		//*****************************************/
 
 while_loop: tWHILE expression seperator
@@ -477,7 +478,7 @@ while_loop: tWHILE expression seperator
 		};
 
 		//*****************************************/
-		//* For 
+		//* For
 		//*****************************************/
 for_loop: tFOR varref tEQU expression tTO expression optstep  tNEWLINE
 				lines

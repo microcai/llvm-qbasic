@@ -46,7 +46,8 @@ extern int yylex(qb::parser::semantic_type * yylval_param );
 
 extern int yylineno;
 
-#define debug printf
+//#define debug printf
+#define debug(...)
 
 /* Global variables. */
 bool useDefautSubMain = true;	/* shall we treat the while file as an sub main ? */
@@ -70,7 +71,7 @@ void qb::parser::error(const std::string& msg)
 }
 
 
-#line 74 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:404
+#line 75 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:404
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -84,7 +85,7 @@ void qb::parser::error(const std::string& msg)
 
 // User implementation prologue.
 
-#line 88 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:412
+#line 89 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:412
 
 
 #ifndef YY_
@@ -151,7 +152,7 @@ void qb::parser::error(const std::string& msg)
 
 #line 21 "parser.ypp" // lalr1.cc:479
 namespace qb {
-#line 155 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:479
+#line 156 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:479
 
   /// Build a parser object.
   parser::parser ()
@@ -574,7 +575,7 @@ namespace qb {
           switch (yyn)
             {
   case 2:
-#line 176 "parser.ypp" // lalr1.cc:859
+#line 177 "parser.ypp" // lalr1.cc:859
     {
 			if(useDefautSubMain){
 				debug("program ended , no main()\n");
@@ -585,11 +586,11 @@ namespace qb {
 			}
 			YYACCEPT;
 		}
-#line 589 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 590 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 3:
-#line 186 "parser.ypp" // lalr1.cc:859
+#line 187 "parser.ypp" // lalr1.cc:859
     {
 
 			debug("!!!no new line at the end of file!!!\n"); exit(1);
@@ -600,13 +601,13 @@ namespace qb {
 				program = (yystack_[2].value.codeblocks);
 				debug("module ended\n");
 			}
-			YYACCEPT;			
+			YYACCEPT;
 		}
-#line 606 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 607 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 4:
-#line 200 "parser.ypp" // lalr1.cc:859
+#line 201 "parser.ypp" // lalr1.cc:859
     {
 					(yylhs.value.codeblocks) = (yystack_[1].value.codeblocks);
 					if(!(yystack_[1].value.codeblocks)){
@@ -617,412 +618,412 @@ namespace qb {
 					}else{
 					}
 	}
-#line 621 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 622 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 5:
-#line 210 "parser.ypp" // lalr1.cc:859
+#line 211 "parser.ypp" // lalr1.cc:859
     {
 		(yylhs.value.codeblocks) = 0;
 		if((yystack_[0].value.statement_list)){
 			(yylhs.value.codeblocks) = new CodeBlockAST; 	(yylhs.value.codeblocks)->addchild((yystack_[0].value.statement_list));
 		}
 	}
-#line 632 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 633 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 6:
-#line 217 "parser.ypp" // lalr1.cc:859
+#line 218 "parser.ypp" // lalr1.cc:859
     { (yylhs.value.statement_list)=(yystack_[1].value.statement_list);  }
-#line 638 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 639 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 7:
-#line 218 "parser.ypp" // lalr1.cc:859
+#line 219 "parser.ypp" // lalr1.cc:859
     {
 		if(!(yystack_[1].value.statement)){debug("statement nil\n");}
 		(yylhs.value.statement_list) = new StatementsAST ; (yylhs.value.statement_list)->push_back(StatementASTPtr((yystack_[1].value.statement)));
 	}
-#line 647 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 648 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 8:
-#line 222 "parser.ypp" // lalr1.cc:859
+#line 223 "parser.ypp" // lalr1.cc:859
     { (yylhs.value.statement_list) = 0;}
-#line 653 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 654 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 9:
-#line 223 "parser.ypp" // lalr1.cc:859
+#line 224 "parser.ypp" // lalr1.cc:859
     {
 			ExprStmtAST * callstmt =  new ExprStmtAST( (yystack_[1].value.expression) );
 			(yylhs.value.statement_list) = new StatementsAST ;
 			(yylhs.value.statement_list)->push_back( StatementASTPtr(callstmt)  );
 	}
-#line 663 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 664 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 10:
-#line 230 "parser.ypp" // lalr1.cc:859
+#line 231 "parser.ypp" // lalr1.cc:859
     {  (yylhs.value.statement_list) = (yystack_[2].value.statement_list); (yylhs.value.statement_list)->push_back(StatementASTPtr((yystack_[0].value.statement))); }
-#line 669 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 670 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 11:
-#line 231 "parser.ypp" // lalr1.cc:859
+#line 232 "parser.ypp" // lalr1.cc:859
     {
 				(yylhs.value.statement_list) = new StatementsAST ;
 				(yylhs.value.statement_list)->push_back(StatementASTPtr((yystack_[2].value.statement)));
 				(yylhs.value.statement_list)->push_back(StatementASTPtr((yystack_[0].value.statement)));
 		}
-#line 679 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 680 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 12:
-#line 238 "parser.ypp" // lalr1.cc:859
+#line 239 "parser.ypp" // lalr1.cc:859
     { (yylhs.value.statement) = (yystack_[0].value.printstatement); }
-#line 685 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 686 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 13:
-#line 239 "parser.ypp" // lalr1.cc:859
+#line 240 "parser.ypp" // lalr1.cc:859
     { (yylhs.value.statement) = (yystack_[0].value.dim_item); }
-#line 691 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 692 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 14:
-#line 240 "parser.ypp" // lalr1.cc:859
+#line 241 "parser.ypp" // lalr1.cc:859
     { (yylhs.value.statement) = (yystack_[0].value.dim_item); }
-#line 697 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 698 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 15:
-#line 241 "parser.ypp" // lalr1.cc:859
+#line 242 "parser.ypp" // lalr1.cc:859
     {(yylhs.value.statement)= (yystack_[0].value.variable_assignment);}
-#line 703 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 704 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 16:
-#line 242 "parser.ypp" // lalr1.cc:859
+#line 243 "parser.ypp" // lalr1.cc:859
     { (yylhs.value.statement) = (yystack_[0].value.variable_assignment);}
-#line 709 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 710 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 17:
-#line 243 "parser.ypp" // lalr1.cc:859
+#line 244 "parser.ypp" // lalr1.cc:859
     { (yylhs.value.statement) = new ReturnAST((yystack_[0].value.expression));}
-#line 715 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 716 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 18:
-#line 244 "parser.ypp" // lalr1.cc:859
+#line 245 "parser.ypp" // lalr1.cc:859
     {(yylhs.value.statement)= (yystack_[0].value.if_clause);}
-#line 721 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 722 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 19:
-#line 245 "parser.ypp" // lalr1.cc:859
+#line 246 "parser.ypp" // lalr1.cc:859
     {(yylhs.value.statement)= (yystack_[0].value.while_loop);}
-#line 727 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 728 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 20:
-#line 246 "parser.ypp" // lalr1.cc:859
+#line 247 "parser.ypp" // lalr1.cc:859
     {(yylhs.value.statement)= (yystack_[0].value.for_loop);}
-#line 733 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 734 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 21:
-#line 247 "parser.ypp" // lalr1.cc:859
+#line 248 "parser.ypp" // lalr1.cc:859
     {(yylhs.value.statement)= (yystack_[0].value.function_definition);}
-#line 739 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 740 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 22:
-#line 248 "parser.ypp" // lalr1.cc:859
+#line 249 "parser.ypp" // lalr1.cc:859
     {(yylhs.value.statement)= (yystack_[0].value.function_definition);}
-#line 745 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 746 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 23:
-#line 250 "parser.ypp" // lalr1.cc:859
+#line 251 "parser.ypp" // lalr1.cc:859
     { /*TODO*/debug("here====3====\n"); exit(1);	}
-#line 751 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 752 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 24:
-#line 253 "parser.ypp" // lalr1.cc:859
+#line 254 "parser.ypp" // lalr1.cc:859
     {
 		(yylhs.value.exprtype) = new ExprType (NumberExprTypeAST::GetNumberExprTypeAST());
 	}
-#line 759 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 760 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 25:
-#line 256 "parser.ypp" // lalr1.cc:859
+#line 257 "parser.ypp" // lalr1.cc:859
     {
 		(yylhs.value.exprtype) = new ExprType (StringExprTypeAST::GetStringExprTypeAST());
 	}
-#line 767 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 768 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 26:
-#line 259 "parser.ypp" // lalr1.cc:859
+#line 260 "parser.ypp" // lalr1.cc:859
     {
 		debug("define as user type not supported\n");
 		exit(1);
 	}
-#line 776 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 777 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 27:
-#line 266 "parser.ypp" // lalr1.cc:859
+#line 267 "parser.ypp" // lalr1.cc:859
     {
 
 		(yystack_[0].value.expression_list)->Append( new EmptyExprAST );
 		(yylhs.value.printstatement) = new PrintStmtAST( (yystack_[1].value.printinto), (yystack_[0].value.expression_list) );
-		
+
 		debug("got print1 done\n");
 	}
-#line 788 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 789 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 28:
-#line 273 "parser.ypp" // lalr1.cc:859
+#line 274 "parser.ypp" // lalr1.cc:859
     {
 		(yylhs.value.printstatement) = new PrintStmtAST( (yystack_[2].value.printinto), (yystack_[1].value.expression_list) );
 	}
-#line 796 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 797 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 29:
-#line 276 "parser.ypp" // lalr1.cc:859
+#line 277 "parser.ypp" // lalr1.cc:859
     {
 		(yylhs.value.printstatement) = new PrintStmtAST( (yystack_[2].value.printinto), (yystack_[1].value.expression_list) );
 	}
-#line 804 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 805 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 30:
-#line 279 "parser.ypp" // lalr1.cc:859
+#line 280 "parser.ypp" // lalr1.cc:859
     {
 		ExprListAST * exprList = new ExprListAST;
 		exprList->Append( new EmptyExprAST );
 		(yylhs.value.printstatement) = new PrintStmtAST( (yystack_[0].value.printinto), exprList );
 	}
-#line 814 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 815 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 31:
-#line 286 "parser.ypp" // lalr1.cc:859
+#line 287 "parser.ypp" // lalr1.cc:859
     { debug("print has got itger\n") ;}
-#line 820 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 821 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 32:
-#line 287 "parser.ypp" // lalr1.cc:859
+#line 288 "parser.ypp" // lalr1.cc:859
     { (yylhs.value.printinto) = 0;}
-#line 826 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 827 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 33:
-#line 290 "parser.ypp" // lalr1.cc:859
+#line 291 "parser.ypp" // lalr1.cc:859
     { (yylhs.value.expression_list) = (yystack_[2].value.expression_list) ; (yylhs.value.expression_list)->Append((yystack_[0].value.expression)); }
-#line 832 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 833 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 34:
-#line 291 "parser.ypp" // lalr1.cc:859
+#line 292 "parser.ypp" // lalr1.cc:859
     {
 		(yylhs.value.expression_list) =  new ExprListAST;
 		(yylhs.value.expression_list)->Append((yystack_[0].value.expression));
 	}
-#line 841 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 842 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 36:
-#line 298 "parser.ypp" // lalr1.cc:859
+#line 299 "parser.ypp" // lalr1.cc:859
     { (yylhs.value.expression) = (yystack_[1].value.expression) ;}
-#line 847 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 848 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 37:
-#line 299 "parser.ypp" // lalr1.cc:859
+#line 300 "parser.ypp" // lalr1.cc:859
     {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_ADD , (yystack_[0].value.expression) );  }
-#line 853 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 854 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 38:
-#line 300 "parser.ypp" // lalr1.cc:859
+#line 301 "parser.ypp" // lalr1.cc:859
     {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_SUB , (yystack_[0].value.expression) );  }
-#line 859 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 860 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 39:
-#line 301 "parser.ypp" // lalr1.cc:859
+#line 302 "parser.ypp" // lalr1.cc:859
     {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_MUL , (yystack_[0].value.expression) );  }
-#line 865 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 866 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 40:
-#line 302 "parser.ypp" // lalr1.cc:859
+#line 303 "parser.ypp" // lalr1.cc:859
     {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_DIV , (yystack_[0].value.expression) );  }
-#line 871 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 872 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 41:
-#line 303 "parser.ypp" // lalr1.cc:859
+#line 304 "parser.ypp" // lalr1.cc:859
     {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_LESS , (yystack_[0].value.expression) );  }
-#line 877 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 878 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 42:
-#line 304 "parser.ypp" // lalr1.cc:859
+#line 305 "parser.ypp" // lalr1.cc:859
     {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_LESSEQU , (yystack_[0].value.expression) );  }
-#line 883 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 884 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 43:
-#line 305 "parser.ypp" // lalr1.cc:859
+#line 306 "parser.ypp" // lalr1.cc:859
     {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_GREATER , (yystack_[0].value.expression) );  }
-#line 889 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 890 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 44:
-#line 306 "parser.ypp" // lalr1.cc:859
+#line 307 "parser.ypp" // lalr1.cc:859
     {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_GREATEREQUL , (yystack_[0].value.expression) );  }
-#line 895 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 896 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 45:
-#line 307 "parser.ypp" // lalr1.cc:859
+#line 308 "parser.ypp" // lalr1.cc:859
     {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_EQUL , (yystack_[0].value.expression) );  }
-#line 901 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 902 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 46:
-#line 308 "parser.ypp" // lalr1.cc:859
+#line 309 "parser.ypp" // lalr1.cc:859
     {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_EQUL , (yystack_[0].value.expression) );  }
-#line 907 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 908 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 48:
-#line 311 "parser.ypp" // lalr1.cc:859
+#line 312 "parser.ypp" // lalr1.cc:859
     {
 			(yylhs.value.expression) = new ConstNumberExprAST( (yystack_[0].value.integer) );
 		}
-#line 915 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 916 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 49:
-#line 314 "parser.ypp" // lalr1.cc:859
+#line 315 "parser.ypp" // lalr1.cc:859
     {
 			(yylhs.value.expression) = new ConstStringExprAST((yystack_[0].value.string));
 		}
-#line 923 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 924 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 50:
-#line 317 "parser.ypp" // lalr1.cc:859
-    { 
+#line 318 "parser.ypp" // lalr1.cc:859
+    {
 			ExprAST* zero = new ConstNumberExprAST(0);
-			(yylhs.value.expression) = new CalcExprAST(zero, OPERATOR_SUB, (yystack_[0].value.expression)); 
+			(yylhs.value.expression) = new CalcExprAST(zero, OPERATOR_SUB, (yystack_[0].value.expression));
 		}
-#line 932 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 933 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 51:
-#line 323 "parser.ypp" // lalr1.cc:859
+#line 324 "parser.ypp" // lalr1.cc:859
     {
 		//VariableExprAST * varref = new VariableExprAST($1);
 		(yylhs.value.variable_assignment) = new AssigmentAST((yystack_[2].value.varref), (yystack_[0].value.expression));
 	}
-#line 941 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 942 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 52:
-#line 329 "parser.ypp" // lalr1.cc:859
+#line 330 "parser.ypp" // lalr1.cc:859
     {
 			(yylhs.value.call_function) = new CallExprAST((yystack_[2].value.varref));
 			debug("functioncall %s with no arg\n", (yystack_[2].value.varref)->ID->ID.c_str());
 		}
-#line 950 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 951 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 53:
-#line 333 "parser.ypp" // lalr1.cc:859
+#line 334 "parser.ypp" // lalr1.cc:859
     {
 			 (yylhs.value.call_function) = new CallExprAST((yystack_[3].value.varref) , (yystack_[1].value.expression_list) );
 		}
-#line 958 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 959 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 54:
-#line 337 "parser.ypp" // lalr1.cc:859
+#line 338 "parser.ypp" // lalr1.cc:859
     {
 		debug("ref menber %s . %s , not supported yet\n" );
-		exit(1); 
+		exit(1);
 	}
-#line 967 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 968 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 55:
-#line 341 "parser.ypp" // lalr1.cc:859
+#line 342 "parser.ypp" // lalr1.cc:859
     { exit(1); }
-#line 973 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 974 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 56:
-#line 342 "parser.ypp" // lalr1.cc:859
+#line 343 "parser.ypp" // lalr1.cc:859
     {
 		(yylhs.value.varref) = new VariableExprAST(  new ReferenceAST( (yystack_[0].value.id) ));
 	}
-#line 981 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 982 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 62:
-#line 355 "parser.ypp" // lalr1.cc:859
+#line 356 "parser.ypp" // lalr1.cc:859
     {
 
 		debug("definning %s as array\n",(yystack_[2].value.id)->c_str());
 
 		(yylhs.value.dim_item) = new VariableDimAST( *(yystack_[2].value.id)  , ArrayExprTypeAST::create(* (yystack_[0].value.exprtype)) );
 	}
-#line 992 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 993 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 63:
-#line 373 "parser.ypp" // lalr1.cc:859
+#line 374 "parser.ypp" // lalr1.cc:859
     {
 		(yylhs.value.dim_item) = new VariableDimAST( *(yystack_[2].value.id)  , * (yystack_[0].value.exprtype) );
 	}
-#line 1000 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1001 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 64:
-#line 376 "parser.ypp" // lalr1.cc:859
+#line 377 "parser.ypp" // lalr1.cc:859
     {
 		(yylhs.value.dim_item) = new VariableDimAST( *(yystack_[0].value.id)  , NumberExprTypeAST::GetNumberExprTypeAST() );
 	}
-#line 1008 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1009 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 65:
-#line 393 "parser.ypp" // lalr1.cc:859
+#line 394 "parser.ypp" // lalr1.cc:859
     {
 					useDefautSubMain = false;
-					
+
 					(yylhs.value.function_definition) = new FunctionDimAST(*(yystack_[8].value.id),
 											ExprTypeASTPtr(new CallableExprTypeAST(*(yystack_[3].value.exprtype))),
 											(yystack_[6].value.arg_list));
 
 					(yylhs.value.function_definition)->body = CodeBlockASTPtr((yystack_[1].value.codeblocks));
 				}
-#line 1022 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1023 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 66:
-#line 404 "parser.ypp" // lalr1.cc:859
+#line 405 "parser.ypp" // lalr1.cc:859
     {
 					useDefautSubMain = false;
 					(yylhs.value.function_definition) = new FunctionDimAST(*(yystack_[6].value.id),
@@ -1031,11 +1032,11 @@ namespace qb {
 
 					(yylhs.value.function_definition)->body = CodeBlockASTPtr((yystack_[1].value.codeblocks));
 				}
-#line 1035 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1036 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 67:
-#line 416 "parser.ypp" // lalr1.cc:859
+#line 417 "parser.ypp" // lalr1.cc:859
     {
 				useDefautSubMain = false;
 				debug("!!SUB %s defined with arg !!\n",(yystack_[5].value.id)->c_str());
@@ -1046,87 +1047,87 @@ namespace qb {
 				(yystack_[1].value.codeblocks)->parent = (yystack_[3].value.arg_list);
 				(yylhs.value.function_definition)->body = CodeBlockASTPtr((yystack_[1].value.codeblocks));
 			}
-#line 1050 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1051 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 68:
-#line 428 "parser.ypp" // lalr1.cc:859
+#line 429 "parser.ypp" // lalr1.cc:859
     { (yylhs.value.arg_list) = 0; }
-#line 1056 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1057 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 69:
-#line 429 "parser.ypp" // lalr1.cc:859
+#line 430 "parser.ypp" // lalr1.cc:859
     {
 		(yylhs.value.arg_list) = (yystack_[4].value.arg_list);
 		(yylhs.value.arg_list)->addchild( new ArgumentDimAST( *(yystack_[2].value.id)  , * (yystack_[0].value.exprtype) ) );
 	}
-#line 1065 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1066 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 70:
-#line 433 "parser.ypp" // lalr1.cc:859
+#line 434 "parser.ypp" // lalr1.cc:859
     {
 		debug("definning %s is type %p as arg\n",(yystack_[2].value.id)->c_str(), (yystack_[0].value.exprtype));
 		(yylhs.value.arg_list) = new ArgumentDimsAST ;
 		(yylhs.value.arg_list)->addchild(new ArgumentDimAST( *(yystack_[2].value.id)  , * (yystack_[0].value.exprtype) ));
 	}
-#line 1075 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1076 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 71:
-#line 448 "parser.ypp" // lalr1.cc:859
+#line 449 "parser.ypp" // lalr1.cc:859
     {
 			(yylhs.value.if_clause) = new IFStmtAST( ExprASTPtr((yystack_[2].value.expression)));
 			(yylhs.value.if_clause)->_then = CodeBlockASTPtr(new CodeBlockAST((yystack_[0].value.statement)));
 	}
-#line 1084 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1085 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 72:
-#line 454 "parser.ypp" // lalr1.cc:859
+#line 455 "parser.ypp" // lalr1.cc:859
     {
 			(yylhs.value.if_clause) = new IFStmtAST( ExprASTPtr((yystack_[4].value.expression)));
 			(yylhs.value.if_clause)->_then = CodeBlockASTPtr((yystack_[1].value.codeblocks));
 		}
-#line 1093 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1094 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 73:
-#line 462 "parser.ypp" // lalr1.cc:859
+#line 463 "parser.ypp" // lalr1.cc:859
     {
 			(yylhs.value.if_clause) = new IFStmtAST( ExprASTPtr((yystack_[6].value.expression)));
 			(yylhs.value.if_clause)->_then = CodeBlockASTPtr((yystack_[3].value.codeblocks));
 			(yylhs.value.if_clause)->_else = CodeBlockASTPtr((yystack_[1].value.codeblocks));
 		}
-#line 1103 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1104 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 74:
-#line 475 "parser.ypp" // lalr1.cc:859
+#line 476 "parser.ypp" // lalr1.cc:859
     {
 			(yylhs.value.while_loop) = new WhileLoopAST( ExprASTPtr((yystack_[3].value.expression)) , (yystack_[1].value.codeblocks));
 		}
-#line 1111 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1112 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 75:
-#line 484 "parser.ypp" // lalr1.cc:859
+#line 485 "parser.ypp" // lalr1.cc:859
     {
 				debug("got for loop");
 				(yylhs.value.for_loop) = new ForLoopAST((yystack_[8].value.varref), (yystack_[6].value.expression),(yystack_[4].value.expression), 0 ,(yystack_[1].value.codeblocks));
 			}
-#line 1120 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1121 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
   case 77:
-#line 491 "parser.ypp" // lalr1.cc:859
+#line 492 "parser.ypp" // lalr1.cc:859
     { debug("step");}
-#line 1126 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1127 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
     break;
 
 
-#line 1130 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1131 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
             default:
               break;
             }
@@ -1578,14 +1579,14 @@ namespace qb {
   const unsigned short int
   parser::yyrline_[] =
   {
-       0,   176,   176,   186,   200,   210,   217,   218,   222,   223,
-     230,   231,   238,   239,   240,   241,   242,   243,   244,   245,
-     246,   247,   248,   250,   253,   256,   259,   266,   273,   276,
-     279,   286,   287,   290,   291,   297,   298,   299,   300,   301,
-     302,   303,   304,   305,   306,   307,   308,   310,   311,   314,
-     317,   323,   329,   333,   337,   341,   342,   345,   348,   348,
-     351,   352,   355,   373,   376,   391,   402,   414,   428,   429,
-     433,   448,   452,   458,   473,   482,   490,   491
+       0,   177,   177,   187,   201,   211,   218,   219,   223,   224,
+     231,   232,   239,   240,   241,   242,   243,   244,   245,   246,
+     247,   248,   249,   251,   254,   257,   260,   267,   274,   277,
+     280,   287,   288,   291,   292,   298,   299,   300,   301,   302,
+     303,   304,   305,   306,   307,   308,   309,   311,   312,   315,
+     318,   324,   330,   334,   338,   342,   343,   346,   349,   349,
+     352,   353,   356,   374,   377,   392,   403,   415,   429,   430,
+     434,   449,   453,   459,   474,   483,   491,   492
   };
 
   // Print the state stack on the debug stream.
@@ -1671,4 +1672,4 @@ namespace qb {
 
 #line 21 "parser.ypp" // lalr1.cc:1167
 } // qb
-#line 1675 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:1167
+#line 1676 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:1167
