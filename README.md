@@ -2,7 +2,7 @@
 
 llvm-qbc is a QBASIC compiler as well as a statically linked runtime library.
 
-# Why BASIC ?
+##Why BASIC ?
 
 To answer that question, you need to ask, why not BASIC? There are multiple reasons.
 For one, currenlty there is no cross-platform BASIC compiler that is feature complete.
