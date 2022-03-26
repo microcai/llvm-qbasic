@@ -480,7 +480,7 @@ while_loop: tWHILE expression seperator
 		//*****************************************/
 		//* For
 		//*****************************************/
-for_loop: tFOR varref tEQU expression tTO expression optstep  tNEWLINE
+for_loop: tFOR varref '=' expression tTO expression optstep  tNEWLINE
 				lines
 			tENDFOR {
 				debug("got for loop");

@@ -272,11 +272,11 @@ class VariableExprAST : public NamedExprAST
 public:
     VariableExprAST(ReferenceAST* ID);
 	virtual llvm::Value* getval(ASTContext );
-	
+
     virtual llvm::Value* getptr(ASTContext );
 
     virtual DimAST* nameresolve(ASTContext ctx);
-	
+
 	virtual ExprTypeASTPtr type(ASTContext ctx);
     virtual ~VariableExprAST(){}
 };

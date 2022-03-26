@@ -21,6 +21,7 @@
 #include <boost/make_shared.hpp>
 #include <boost/foreach.hpp>
 #include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/Type.h>
 
 #include "ast.hpp"
 #include "type.hpp"
@@ -245,7 +246,15 @@ ExprASTPtr NumberExprOperation::operator_comp(ASTContext ctx, MathOperator op, E
 {
 	llvm::Value * LHS =	lval->getval(ctx);
 	llvm::Value * RHS =	rval->getval(ctx);
+	auto t1 = LHS->getType();
+	auto t2 = RHS->getType();
+
 	llvm::IRBuilder<> builder(ctx.block);
+	if (t1 != t2)
+	{
+		LHS = builder.CreateBitCast(LHS,qbc::getplatformlongtype()->getPointerTo());
+		RHS = builder.CreateBitCast(RHS,qbc::getplatformlongtype()->getPointerTo());
+	}
 	llvm::Value * result;
 
 	switch(op){
