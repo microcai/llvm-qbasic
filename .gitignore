@@ -2,4 +2,9 @@ test*
 !test*.bas
 !test/
 .kdev*
+doc/html/
 build/
+.cache/
+test/*.o
+test/a.out
+test/

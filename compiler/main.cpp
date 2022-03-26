@@ -70,7 +70,7 @@ static int generateobj(boost::shared_ptr<llvm::ToolOutputFile> Out, llvm::Module
 	std::string MCPU,FeaturesStr;
 
 	llvm::TargetMachine * machineTarget =
-		TheTarget->createTargetMachine(TheTriple.getTriple(), MCPU, FeaturesStr, Options, {});
+		TheTarget->createTargetMachine(TheTriple.getTriple(), MCPU, FeaturesStr, Options, llvm::Reloc::Model::PIC_);
 
 	// Figure out where we are going to send the output...
 
@@ -176,7 +176,7 @@ int main(int argc, char **argv)
 		boost::filesystem::path libdir = fs::path(argv[0]).parent_path().string();
 		boost::filesystem::path libbrt_a = libdir / "libbrt.a";
 		std::string linker_commandline = getenv("CC") ? getenv("CC") : "cc";
-		std::string cmd = boost::str(boost::format("%s -o %s %s %s") % linker_commandline
+		std::string cmd = boost::str(boost::format("%s -fuse-ld=lld -o %s %s %s") % linker_commandline
 							% outfilename %  (outfilename + ".o") % libbrt_a.string());
 #endif
 		printf("run linker: %s\n", cmd.c_str());
