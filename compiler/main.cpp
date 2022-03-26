@@ -10,10 +10,15 @@ namespace fs=boost::filesystem;
 #include <llvm/LinkAllPasses.h>
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/TargetSelect.h>
-#include <llvm/Support/TargetRegistry.h>
+#include <llvm/Support/TargetParser.h>
 #include <llvm/Support/ToolOutputFile.h>
 #include <llvm/Support/FormattedStream.h>
 #include <llvm/Support/Host.h>
+#include <llvm/Support/CodeGen.h>
+#include <llvm/MC/TargetRegistry.h>
+#include "llvm/Target/TargetOptions.h"
+#include "llvm/Target/TargetMachine.h"
+
 #include <llvm/Pass.h>
 #include <llvm/Passes/PassBuilder.h>
 #include <llvm/IR/PassManager.h>
@@ -48,7 +53,7 @@ static void generateIR(StatementAST * ast , llvm::Module * module )
 	((StatementAST*)(ast))->Codegen(ctx);
 }
 
-static int generateobj(boost::shared_ptr<llvm::tool_output_file> Out, llvm::Module * module)
+static int generateobj(boost::shared_ptr<llvm::ToolOutputFile> Out, llvm::Module * module)
 {
 	llvm::legacy::PassManager PM;
 
@@ -65,11 +70,11 @@ static int generateobj(boost::shared_ptr<llvm::tool_output_file> Out, llvm::Modu
 	std::string MCPU,FeaturesStr;
 
 	llvm::TargetMachine * machineTarget =
-		TheTarget->createTargetMachine(TheTriple.getTriple(), MCPU, FeaturesStr, Options);
+		TheTarget->createTargetMachine(TheTriple.getTriple(), MCPU, FeaturesStr, Options, {});
 
 	// Figure out where we are going to send the output...
 
-    if (machineTarget->addPassesToEmitFile(PM, Out->os(), llvm::TargetMachine::CGFT_ObjectFile))
+    if (machineTarget->addPassesToEmitFile(PM, Out->os(), nullptr, llvm::CodeGenFileType::CGFT_ObjectFile))
 	{
       std::cerr << " target does not support generation of this"     << " file type!\n";
       return 1;
@@ -77,6 +82,10 @@ static int generateobj(boost::shared_ptr<llvm::tool_output_file> Out, llvm::Modu
 
 	PM.run(*module);
 	return 0;
+}
+
+namespace qbc {
+extern llvm::LLVMContext getGlobalContext;
 }
 
 int main(int argc, char **argv)
@@ -129,17 +138,18 @@ int main(int argc, char **argv)
 	llvm::InitializeAllTargetMCs();
 	llvm::InitializeAllAsmPrinters();
 	llvm::InitializeAllAsmParsers();
+	llvm::InitializeAllAsmParsers();
 
 	// 如果没有指定输出文件路径, 设置输出文件的路径为输入文件相同的路径下.
 	if(outfilename.empty())
 		outfilename = (fs::path(input).parent_path() / fs::basename(fs::path(input))).string();
 
-	llvm::Module *module = new llvm::Module( fs::basename(fs::path(input)).c_str(), llvm::getGlobalContext());
+	llvm::Module *module = new llvm::Module( fs::basename(fs::path(input)).c_str(), qbc::getGlobalContext);
 	generateIR(program,module);
 
 	// ir to generate llvm IR
 	if(vm.count("ir")){
-		module->dump();
+//		module->dump();
 		return 0;
 	}
 
@@ -150,7 +160,7 @@ int main(int argc, char **argv)
 #endif
 	std::error_code Err;
 
-	boost::shared_ptr<llvm::tool_output_file> Out(new llvm::tool_output_file(outobjname.c_str(), Err, llvm::sys::fs::F_RW));
+	boost::shared_ptr<llvm::ToolOutputFile> Out(new llvm::ToolOutputFile(outobjname.c_str(), Err, llvm::sys::fs::OF_None));
 
 	if(generateobj(Out, module)==0)
 		printf("======== object file writed to %s ===========\n", outobjname.c_str());

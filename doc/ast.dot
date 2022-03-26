@@ -29,10 +29,9 @@ DimAST -> FunctionDimAST ->DefaultMainFunctionAST;
 
 
 	subgraph type_hpp {
-	    
+
 	      label="type.hpp";
-	      
-	      
+
 	      ExprAST;
 	       EmptyExprAST;
 	      TempExprAST ;
@@ -41,33 +40,29 @@ DimAST -> FunctionDimAST ->DefaultMainFunctionAST;
 	      ExprAST-> ConstStringExprAST;
 	      ExprAST -> NamedExprAST -> VariableExprAST;
 	      ExprAST -> CalcExprAST ;
-	      
+
 	     NamedExprAST -> CallOrArrayExprAST ->CallExprAST;
-	      
+
 	    CallOrArrayExprAST->  ArrayExprTypeAST;
-	    
+
 	     ExprAST -> AssignmentExprAST;
-	      
 	      AST -> ExprListAST;
-	      
-	      
+
 	      ExprTypeAST -> VoidExprTypeAST;
-	      
+
 	    ExprTypeAST ->  NumberExprTypeAST
 	    ExprTypeAST ->  StringExprTypeAST
-	    
-	    
+
 	    ExprOperation  -> NumberExprOperation;
 	    	    ExprOperation  -> StringExprOperation;
 
-	    
-	    
+
 	};
-	
+
 	      ExprAST -> EmptyExprAST;
 	      ExprAST -> TempExprAST ->TempNumberExprAST;
 	      TempExprAST ->TempStringExprAST ;
-	      
+
 	      ExprAST -> ConstNumberExprAST	;
 
 }

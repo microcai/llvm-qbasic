@@ -132,7 +132,7 @@ public:
 
 	virtual	llvm::Value*	getptr(ASTContext ctx) = 0; // the location for the allocated value
 	virtual	llvm::Value*	getval(ASTContext ctx) = 0;
-	
+
     virtual ~DimAST() {}
 };
 typedef boost::shared_ptr<DimAST>	DimASTPtr;
@@ -291,7 +291,7 @@ private:
 	llvm::Value*			retval; // allocated for return value, should use that for return.
 	llvm::Value*			setret(ASTContext ctx, ExprASTPtr expr);
 public:
-	
+
 	Linkage		linkage; //链接类型。static? extern ?
 	std::list<VariableDimASTPtr> args_type; //checked by CallExpr.
 	ArgumentDimsASTPtr	callargs; // 加到 body 这个 codeblock 符号表,这样 body 能访问到.

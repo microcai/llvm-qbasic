@@ -1,8 +1,8 @@
-// A Bison parser, made by GNU Bison 3.0.4.
+// A Bison parser, made by GNU Bison 3.8.2.
 
 // Skeleton implementation for Bison LALR(1) parsers in C++
 
-// Copyright (C) 2002-2015 Free Software Foundation, Inc.
+// Copyright (C) 2002-2015, 2018-2021 Free Software Foundation, Inc.
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // As a special exception, you may create a larger work that contains
 // part or all of the Bison parser skeleton and distribute that work
@@ -30,9 +30,14 @@
 // This special exception was added by the Free Software Foundation in
 // version 2.2 of Bison.
 
+// DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+// especially those whose name start with YY_ or yy_.  They are
+// private implementation details that can be changed or removed.
 
-// First part of user declarations.
-#line 24 "parser.ypp" // lalr1.cc:404
+
+
+// First part of user prologue.
+#line 24 "/home/cai/projects/basic/compiler/parser.ypp"
 
 
 /* Include main header file. */
@@ -71,21 +76,12 @@ void qb::parser::error(const std::string& msg)
 }
 
 
-#line 75 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:404
+#line 80 "/home/cai/projects/basic/compiler/parser.cpp"
 
-# ifndef YY_NULLPTR
-#  if defined __cplusplus && 201103L <= __cplusplus
-#   define YY_NULLPTR nullptr
-#  else
-#   define YY_NULLPTR 0
-#  endif
-# endif
 
 #include "parser.hpp"
 
-// User implementation prologue.
 
-#line 89 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:412
 
 
 #ifndef YY_
@@ -101,9 +97,16 @@ void qb::parser::error(const std::string& msg)
 #endif
 
 
+// Whether we are compiled with exception support.
+#ifndef YY_EXCEPTIONS
+# if defined __GNUC__ && !defined __EXCEPTIONS
+#  define YY_EXCEPTIONS 0
+# else
+#  define YY_EXCEPTIONS 1
+# endif
+#endif
 
-// Suppress unused-variable warnings by "using" E.
-#define YYUSE(E) ((void) (E))
+
 
 // Enable debugging if requested.
 #if YYDEBUG
@@ -117,7 +120,7 @@ void qb::parser::error(const std::string& msg)
     {                                           \
       *yycdebug_ << Title << ' ';               \
       yy_print_ (*yycdebug_, Symbol);           \
-      *yycdebug_ << std::endl;                  \
+      *yycdebug_ << '\n';                       \
     }                                           \
   } while (false)
 
@@ -130,15 +133,15 @@ void qb::parser::error(const std::string& msg)
 # define YY_STACK_PRINT()               \
   do {                                  \
     if (yydebug_)                       \
-      yystack_print_ ();                \
+      yy_stack_print_ ();                \
   } while (false)
 
 #else // !YYDEBUG
 
 # define YYCDEBUG if (false) std::cerr
-# define YY_SYMBOL_PRINT(Title, Symbol)  YYUSE(Symbol)
-# define YY_REDUCE_PRINT(Rule)           static_cast<void>(0)
-# define YY_STACK_PRINT()                static_cast<void>(0)
+# define YY_SYMBOL_PRINT(Title, Symbol)  YY_USE (Symbol)
+# define YY_REDUCE_PRINT(Rule)           static_cast<void> (0)
+# define YY_STACK_PRINT()                static_cast<void> (0)
 
 #endif // !YYDEBUG
 
@@ -150,154 +153,141 @@ void qb::parser::error(const std::string& msg)
 #define YYERROR         goto yyerrorlab
 #define YYRECOVERING()  (!!yyerrstatus_)
 
-#line 21 "parser.ypp" // lalr1.cc:479
+#line 21 "/home/cai/projects/basic/compiler/parser.ypp"
 namespace qb {
-#line 156 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:479
+#line 159 "/home/cai/projects/basic/compiler/parser.cpp"
 
   /// Build a parser object.
   parser::parser ()
 #if YYDEBUG
-     :yydebug_ (false),
+    : yydebug_ (false),
       yycdebug_ (&std::cerr)
+#else
+
 #endif
   {}
 
   parser::~parser ()
   {}
 
-
-  /*---------------.
-  | Symbol types.  |
-  `---------------*/
-
-  inline
-  parser::syntax_error::syntax_error (const std::string& m)
-    : std::runtime_error (m)
+  parser::syntax_error::~syntax_error () YY_NOEXCEPT YY_NOTHROW
   {}
+
+  /*---------.
+  | symbol.  |
+  `---------*/
 
   // basic_symbol.
   template <typename Base>
-  inline
-  parser::basic_symbol<Base>::basic_symbol ()
-    : value ()
-  {}
-
-  template <typename Base>
-  inline
-  parser::basic_symbol<Base>::basic_symbol (const basic_symbol& other)
-    : Base (other)
-    , value ()
-  {
-    value = other.value;
-  }
-
-
-  template <typename Base>
-  inline
-  parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const semantic_type& v)
-    : Base (t)
-    , value (v)
+  parser::basic_symbol<Base>::basic_symbol (const basic_symbol& that)
+    : Base (that)
+    , value (that.value)
   {}
 
 
   /// Constructor for valueless symbols.
   template <typename Base>
-  inline
   parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t)
     : Base (t)
     , value ()
   {}
 
   template <typename Base>
-  inline
-  parser::basic_symbol<Base>::~basic_symbol ()
-  {
-    clear ();
-  }
+  parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, YY_RVREF (value_type) v)
+    : Base (t)
+    , value (YY_MOVE (v))
+  {}
+
 
   template <typename Base>
-  inline
-  void
-  parser::basic_symbol<Base>::clear ()
+  parser::symbol_kind_type
+  parser::basic_symbol<Base>::type_get () const YY_NOEXCEPT
   {
-    Base::clear ();
+    return this->kind ();
   }
 
+
   template <typename Base>
-  inline
   bool
-  parser::basic_symbol<Base>::empty () const
+  parser::basic_symbol<Base>::empty () const YY_NOEXCEPT
   {
-    return Base::type_get () == empty_symbol;
+    return this->kind () == symbol_kind::S_YYEMPTY;
   }
 
   template <typename Base>
-  inline
   void
   parser::basic_symbol<Base>::move (basic_symbol& s)
   {
-    super_type::move(s);
-    value = s.value;
+    super_type::move (s);
+    value = YY_MOVE (s.value);
   }
 
-  // by_type.
-  inline
-  parser::by_type::by_type ()
-    : type (empty_symbol)
+  // by_kind.
+  parser::by_kind::by_kind () YY_NOEXCEPT
+    : kind_ (symbol_kind::S_YYEMPTY)
   {}
 
-  inline
-  parser::by_type::by_type (const by_type& other)
-    : type (other.type)
-  {}
-
-  inline
-  parser::by_type::by_type (token_type t)
-    : type (yytranslate_ (t))
-  {}
-
-  inline
-  void
-  parser::by_type::clear ()
+#if 201103L <= YY_CPLUSPLUS
+  parser::by_kind::by_kind (by_kind&& that) YY_NOEXCEPT
+    : kind_ (that.kind_)
   {
-    type = empty_symbol;
+    that.clear ();
+  }
+#endif
+
+  parser::by_kind::by_kind (const by_kind& that) YY_NOEXCEPT
+    : kind_ (that.kind_)
+  {}
+
+  parser::by_kind::by_kind (token_kind_type t) YY_NOEXCEPT
+    : kind_ (yytranslate_ (t))
+  {}
+
+
+
+  void
+  parser::by_kind::clear () YY_NOEXCEPT
+  {
+    kind_ = symbol_kind::S_YYEMPTY;
   }
 
-  inline
   void
-  parser::by_type::move (by_type& that)
+  parser::by_kind::move (by_kind& that)
   {
-    type = that.type;
+    kind_ = that.kind_;
     that.clear ();
   }
 
-  inline
-  int
-  parser::by_type::type_get () const
+  parser::symbol_kind_type
+  parser::by_kind::kind () const YY_NOEXCEPT
   {
-    return type;
+    return kind_;
   }
 
 
+  parser::symbol_kind_type
+  parser::by_kind::type_get () const YY_NOEXCEPT
+  {
+    return this->kind ();
+  }
+
+
+
   // by_state.
-  inline
-  parser::by_state::by_state ()
+  parser::by_state::by_state () YY_NOEXCEPT
     : state (empty_state)
   {}
 
-  inline
-  parser::by_state::by_state (const by_state& other)
-    : state (other.state)
+  parser::by_state::by_state (const by_state& that) YY_NOEXCEPT
+    : state (that.state)
   {}
 
-  inline
   void
-  parser::by_state::clear ()
+  parser::by_state::clear () YY_NOEXCEPT
   {
     state = empty_state;
   }
 
-  inline
   void
   parser::by_state::move (by_state& that)
   {
@@ -305,36 +295,39 @@ namespace qb {
     that.clear ();
   }
 
-  inline
-  parser::by_state::by_state (state_type s)
+  parser::by_state::by_state (state_type s) YY_NOEXCEPT
     : state (s)
   {}
 
-  inline
-  parser::symbol_number_type
-  parser::by_state::type_get () const
+  parser::symbol_kind_type
+  parser::by_state::kind () const YY_NOEXCEPT
   {
     if (state == empty_state)
-      return empty_symbol;
+      return symbol_kind::S_YYEMPTY;
     else
-      return yystos_[state];
+      return YY_CAST (symbol_kind_type, yystos_[+state]);
   }
 
-  inline
   parser::stack_symbol_type::stack_symbol_type ()
   {}
 
-
-  inline
-  parser::stack_symbol_type::stack_symbol_type (state_type s, symbol_type& that)
-    : super_type (s)
+  parser::stack_symbol_type::stack_symbol_type (YY_RVREF (stack_symbol_type) that)
+    : super_type (YY_MOVE (that.state), YY_MOVE (that.value))
   {
-    value = that.value;
+#if 201103L <= YY_CPLUSPLUS
     // that is emptied.
-    that.type = empty_symbol;
+    that.state = empty_state;
+#endif
   }
 
-  inline
+  parser::stack_symbol_type::stack_symbol_type (state_type s, YY_MOVE_REF (symbol_type) that)
+    : super_type (s, YY_MOVE (that.value))
+  {
+    // that is emptied.
+    that.kind_ = symbol_kind::S_YYEMPTY;
+  }
+
+#if YY_CPLUSPLUS < 201103L
   parser::stack_symbol_type&
   parser::stack_symbol_type::operator= (const stack_symbol_type& that)
   {
@@ -343,9 +336,18 @@ namespace qb {
     return *this;
   }
 
+  parser::stack_symbol_type&
+  parser::stack_symbol_type::operator= (stack_symbol_type& that)
+  {
+    state = that.state;
+    value = that.value;
+    // that is emptied.
+    that.state = empty_state;
+    return *this;
+  }
+#endif
 
   template <typename Base>
-  inline
   void
   parser::yy_destroy_ (const char* yymsg, basic_symbol<Base>& yysym) const
   {
@@ -353,49 +355,50 @@ namespace qb {
       YY_SYMBOL_PRINT (yymsg, yysym);
 
     // User destructor.
-    YYUSE (yysym.type_get ());
+    YY_USE (yysym.kind ());
   }
 
 #if YYDEBUG
   template <typename Base>
   void
-  parser::yy_print_ (std::ostream& yyo,
-                                     const basic_symbol<Base>& yysym) const
+  parser::yy_print_ (std::ostream& yyo, const basic_symbol<Base>& yysym) const
   {
     std::ostream& yyoutput = yyo;
-    YYUSE (yyoutput);
-    symbol_number_type yytype = yysym.type_get ();
-    // Avoid a (spurious) G++ 4.8 warning about "array subscript is
-    // below array bounds".
+    YY_USE (yyoutput);
     if (yysym.empty ())
-      std::abort ();
-    yyo << (yytype < yyntokens_ ? "token" : "nterm")
-        << ' ' << yytname_[yytype] << " (";
-    YYUSE (yytype);
-    yyo << ')';
+      yyo << "empty symbol";
+    else
+      {
+        symbol_kind_type yykind = yysym.kind ();
+        yyo << (yykind < YYNTOKENS ? "token" : "nterm")
+            << ' ' << yysym.name () << " (";
+        YY_USE (yykind);
+        yyo << ')';
+      }
   }
 #endif
 
-  inline
   void
-  parser::yypush_ (const char* m, state_type s, symbol_type& sym)
-  {
-    stack_symbol_type t (s, sym);
-    yypush_ (m, t);
-  }
-
-  inline
-  void
-  parser::yypush_ (const char* m, stack_symbol_type& s)
+  parser::yypush_ (const char* m, YY_MOVE_REF (stack_symbol_type) sym)
   {
     if (m)
-      YY_SYMBOL_PRINT (m, s);
-    yystack_.push (s);
+      YY_SYMBOL_PRINT (m, sym);
+    yystack_.push (YY_MOVE (sym));
   }
 
-  inline
   void
-  parser::yypop_ (unsigned int n)
+  parser::yypush_ (const char* m, state_type s, YY_MOVE_REF (symbol_type) sym)
+  {
+#if 201103L <= YY_CPLUSPLUS
+    yypush_ (m, stack_symbol_type (s, std::move (sym)));
+#else
+    stack_symbol_type ss (s, sym);
+    yypush_ (m, ss);
+#endif
+  }
+
+  void
+  parser::yypop_ (int n) YY_NOEXCEPT
   {
     yystack_.pop (n);
   }
@@ -427,32 +430,37 @@ namespace qb {
   }
 #endif // YYDEBUG
 
-  inline parser::state_type
+  parser::state_type
   parser::yy_lr_goto_state_ (state_type yystate, int yysym)
   {
-    int yyr = yypgoto_[yysym - yyntokens_] + yystate;
+    int yyr = yypgoto_[yysym - YYNTOKENS] + yystate;
     if (0 <= yyr && yyr <= yylast_ && yycheck_[yyr] == yystate)
       return yytable_[yyr];
     else
-      return yydefgoto_[yysym - yyntokens_];
+      return yydefgoto_[yysym - YYNTOKENS];
   }
 
-  inline bool
-  parser::yy_pact_value_is_default_ (int yyvalue)
+  bool
+  parser::yy_pact_value_is_default_ (int yyvalue) YY_NOEXCEPT
   {
     return yyvalue == yypact_ninf_;
   }
 
-  inline bool
-  parser::yy_table_value_is_error_ (int yyvalue)
+  bool
+  parser::yy_table_value_is_error_ (int yyvalue) YY_NOEXCEPT
   {
     return yyvalue == yytable_ninf_;
   }
 
   int
+  parser::operator() ()
+  {
+    return parse ();
+  }
+
+  int
   parser::parse ()
   {
-    // State.
     int yyn;
     /// Length of the RHS of the rule being reduced.
     int yylen = 0;
@@ -467,11 +475,11 @@ namespace qb {
     /// The return value of parse ().
     int yyresult;
 
-    // FIXME: This shoud be completely indented.  It is not yet to
-    // avoid gratuitous conflicts when merging into the master branch.
+#if YY_EXCEPTIONS
     try
+#endif // YY_EXCEPTIONS
       {
-    YYCDEBUG << "Starting parse" << std::endl;
+    YYCDEBUG << "Starting parse\n";
 
 
     /* Initialize the stack.  The initial state will be set in
@@ -479,47 +487,69 @@ namespace qb {
        location values to have been already stored, initialize these
        stacks with a primary value.  */
     yystack_.clear ();
-    yypush_ (YY_NULLPTR, 0, yyla);
+    yypush_ (YY_NULLPTR, 0, YY_MOVE (yyla));
 
-    // A new symbol was pushed on the stack.
+  /*-----------------------------------------------.
+  | yynewstate -- push a new symbol on the stack.  |
+  `-----------------------------------------------*/
   yynewstate:
-    YYCDEBUG << "Entering state " << yystack_[0].state << std::endl;
+    YYCDEBUG << "Entering state " << int (yystack_[0].state) << '\n';
+    YY_STACK_PRINT ();
 
     // Accept?
     if (yystack_[0].state == yyfinal_)
-      goto yyacceptlab;
+      YYACCEPT;
 
     goto yybackup;
 
-    // Backup.
-  yybackup:
 
+  /*-----------.
+  | yybackup.  |
+  `-----------*/
+  yybackup:
     // Try to take a decision without lookahead.
-    yyn = yypact_[yystack_[0].state];
+    yyn = yypact_[+yystack_[0].state];
     if (yy_pact_value_is_default_ (yyn))
       goto yydefault;
 
     // Read a lookahead token.
     if (yyla.empty ())
       {
-        YYCDEBUG << "Reading a token: ";
+        YYCDEBUG << "Reading a token\n";
+#if YY_EXCEPTIONS
         try
+#endif // YY_EXCEPTIONS
           {
-            yyla.type = yytranslate_ (yylex (&yyla.value));
+            yyla.kind_ = yytranslate_ (yylex (&yyla.value));
           }
+#if YY_EXCEPTIONS
         catch (const syntax_error& yyexc)
           {
+            YYCDEBUG << "Caught exception: " << yyexc.what() << '\n';
             error (yyexc);
             goto yyerrlab1;
           }
+#endif // YY_EXCEPTIONS
       }
     YY_SYMBOL_PRINT ("Next token is", yyla);
 
+    if (yyla.kind () == symbol_kind::S_YYerror)
+    {
+      // The scanner already issued an error message, process directly
+      // to error recovery.  But do not keep the error token as
+      // lookahead, it is too special and may lead us to an endless
+      // loop in error recovery. */
+      yyla.kind_ = symbol_kind::S_YYUNDEF;
+      goto yyerrlab1;
+    }
+
     /* If the proper action on seeing token YYLA.TYPE is to reduce or
        to detect an error, take that action.  */
-    yyn += yyla.type_get ();
-    if (yyn < 0 || yylast_ < yyn || yycheck_[yyn] != yyla.type_get ())
-      goto yydefault;
+    yyn += yyla.kind ();
+    if (yyn < 0 || yylast_ < yyn || yycheck_[yyn] != yyla.kind ())
+      {
+        goto yydefault;
+      }
 
     // Reduce or error.
     yyn = yytable_[yyn];
@@ -536,26 +566,28 @@ namespace qb {
       --yyerrstatus_;
 
     // Shift the lookahead token.
-    yypush_ ("Shifting", yyn, yyla);
+    yypush_ ("Shifting", state_type (yyn), YY_MOVE (yyla));
     goto yynewstate;
+
 
   /*-----------------------------------------------------------.
   | yydefault -- do the default action for the current state.  |
   `-----------------------------------------------------------*/
   yydefault:
-    yyn = yydefact_[yystack_[0].state];
+    yyn = yydefact_[+yystack_[0].state];
     if (yyn == 0)
       goto yyerrlab;
     goto yyreduce;
 
+
   /*-----------------------------.
-  | yyreduce -- Do a reduction.  |
+  | yyreduce -- do a reduction.  |
   `-----------------------------*/
   yyreduce:
     yylen = yyr2_[yyn];
     {
       stack_symbol_type yylhs;
-      yylhs.state = yy_lr_goto_state_(yystack_[yylen].state, yyr1_[yyn]);
+      yylhs.state = yy_lr_goto_state_ (yystack_[yylen].state, yyr1_[yyn]);
       /* If YYLEN is nonzero, implement the default value of the
          action: '$$ = $1'.  Otherwise, use the top of the stack.
 
@@ -570,13 +602,15 @@ namespace qb {
 
       // Perform the reduction.
       YY_REDUCE_PRINT (yyn);
+#if YY_EXCEPTIONS
       try
+#endif // YY_EXCEPTIONS
         {
           switch (yyn)
             {
-  case 2:
-#line 177 "parser.ypp" // lalr1.cc:859
-    {
+  case 2: // program: lines tEOPROG
+#line 177 "/home/cai/projects/basic/compiler/parser.ypp"
+                       {
 			if(useDefautSubMain){
 				debug("program ended , no main()\n");
 				program = new DefaultMainFunctionAST( (yystack_[1].value.codeblocks) );
@@ -586,12 +620,12 @@ namespace qb {
 			}
 			YYACCEPT;
 		}
-#line 590 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 624 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 3:
-#line 187 "parser.ypp" // lalr1.cc:859
-    {
+  case 3: // program: lines statements tEOPROG
+#line 187 "/home/cai/projects/basic/compiler/parser.ypp"
+                                           {
 
 			debug("!!!no new line at the end of file!!!\n"); exit(1);
 			if(useDefautSubMain){
@@ -603,12 +637,12 @@ namespace qb {
 			}
 			YYACCEPT;
 		}
-#line 607 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 641 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 4:
-#line 201 "parser.ypp" // lalr1.cc:859
-    {
+  case 4: // lines: lines line
+#line 201 "/home/cai/projects/basic/compiler/parser.ypp"
+                  {
 					(yylhs.value.codeblocks) = (yystack_[1].value.codeblocks);
 					if(!(yystack_[1].value.codeblocks)){
 						(yystack_[1].value.codeblocks) = (yylhs.value.codeblocks) = new CodeBlockAST;
@@ -618,399 +652,399 @@ namespace qb {
 					}else{
 					}
 	}
-#line 622 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 656 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 5:
-#line 211 "parser.ypp" // lalr1.cc:859
-    {
+  case 5: // lines: line
+#line 211 "/home/cai/projects/basic/compiler/parser.ypp"
+               {
 		(yylhs.value.codeblocks) = 0;
 		if((yystack_[0].value.statement_list)){
 			(yylhs.value.codeblocks) = new CodeBlockAST; 	(yylhs.value.codeblocks)->addchild((yystack_[0].value.statement_list));
 		}
 	}
-#line 633 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 667 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 6:
-#line 218 "parser.ypp" // lalr1.cc:859
-    { (yylhs.value.statement_list)=(yystack_[1].value.statement_list);  }
-#line 639 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 6: // line: statements tNEWLINE
+#line 218 "/home/cai/projects/basic/compiler/parser.ypp"
+                          { (yylhs.value.statement_list)=(yystack_[1].value.statement_list);  }
+#line 673 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 7:
-#line 219 "parser.ypp" // lalr1.cc:859
-    {
+  case 7: // line: statement tNEWLINE
+#line 219 "/home/cai/projects/basic/compiler/parser.ypp"
+                             {
 		if(!(yystack_[1].value.statement)){debug("statement nil\n");}
 		(yylhs.value.statement_list) = new StatementsAST ; (yylhs.value.statement_list)->push_back(StatementASTPtr((yystack_[1].value.statement)));
 	}
-#line 648 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 682 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 8:
-#line 223 "parser.ypp" // lalr1.cc:859
-    { (yylhs.value.statement_list) = 0;}
-#line 654 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 8: // line: tNEWLINE
+#line 223 "/home/cai/projects/basic/compiler/parser.ypp"
+                   { (yylhs.value.statement_list) = 0;}
+#line 688 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 9:
-#line 224 "parser.ypp" // lalr1.cc:859
-    {
+  case 9: // line: expression tNEWLINE
+#line 224 "/home/cai/projects/basic/compiler/parser.ypp"
+                              {
 			ExprStmtAST * callstmt =  new ExprStmtAST( (yystack_[1].value.expression) );
 			(yylhs.value.statement_list) = new StatementsAST ;
 			(yylhs.value.statement_list)->push_back( StatementASTPtr(callstmt)  );
 	}
-#line 664 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 698 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 10:
-#line 231 "parser.ypp" // lalr1.cc:859
-    {  (yylhs.value.statement_list) = (yystack_[2].value.statement_list); (yylhs.value.statement_list)->push_back(StatementASTPtr((yystack_[0].value.statement))); }
-#line 670 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 10: // statements: statements comma_or_colon statement
+#line 231 "/home/cai/projects/basic/compiler/parser.ypp"
+                                                 {  (yylhs.value.statement_list) = (yystack_[2].value.statement_list); (yylhs.value.statement_list)->push_back(StatementASTPtr((yystack_[0].value.statement))); }
+#line 704 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 11:
-#line 232 "parser.ypp" // lalr1.cc:859
-    {
+  case 11: // statements: statement comma_or_colon statement
+#line 232 "/home/cai/projects/basic/compiler/parser.ypp"
+                                                     {
 				(yylhs.value.statement_list) = new StatementsAST ;
 				(yylhs.value.statement_list)->push_back(StatementASTPtr((yystack_[2].value.statement)));
 				(yylhs.value.statement_list)->push_back(StatementASTPtr((yystack_[0].value.statement)));
 		}
-#line 680 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 714 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 12:
-#line 239 "parser.ypp" // lalr1.cc:859
-    { (yylhs.value.statement) = (yystack_[0].value.printstatement); }
-#line 686 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 12: // statement: printstatement
+#line 239 "/home/cai/projects/basic/compiler/parser.ypp"
+                          { (yylhs.value.statement) = (yystack_[0].value.printstatement); }
+#line 720 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 13:
-#line 240 "parser.ypp" // lalr1.cc:859
-    { (yylhs.value.statement) = (yystack_[0].value.dim_item); }
-#line 692 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 13: // statement: dim_item
+#line 240 "/home/cai/projects/basic/compiler/parser.ypp"
+                           { (yylhs.value.statement) = (yystack_[0].value.dim_item); }
+#line 726 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 14:
-#line 241 "parser.ypp" // lalr1.cc:859
-    { (yylhs.value.statement) = (yystack_[0].value.dim_item); }
-#line 698 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 14: // statement: array_dim
+#line 241 "/home/cai/projects/basic/compiler/parser.ypp"
+                            { (yylhs.value.statement) = (yystack_[0].value.dim_item); }
+#line 732 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 15:
-#line 242 "parser.ypp" // lalr1.cc:859
-    {(yylhs.value.statement)= (yystack_[0].value.variable_assignment);}
-#line 704 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 15: // statement: assigment
+#line 242 "/home/cai/projects/basic/compiler/parser.ypp"
+                            {(yylhs.value.statement)= (yystack_[0].value.variable_assignment);}
+#line 738 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 16:
-#line 243 "parser.ypp" // lalr1.cc:859
-    { (yylhs.value.statement) = (yystack_[0].value.variable_assignment);}
-#line 710 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 16: // statement: tLET assigment
+#line 243 "/home/cai/projects/basic/compiler/parser.ypp"
+                                 { (yylhs.value.statement) = (yystack_[0].value.variable_assignment);}
+#line 744 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 17:
-#line 244 "parser.ypp" // lalr1.cc:859
-    { (yylhs.value.statement) = new ReturnAST((yystack_[0].value.expression));}
-#line 716 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 17: // statement: tRETURN expression
+#line 244 "/home/cai/projects/basic/compiler/parser.ypp"
+                                     { (yylhs.value.statement) = new ReturnAST((yystack_[0].value.expression));}
+#line 750 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 18:
-#line 245 "parser.ypp" // lalr1.cc:859
-    {(yylhs.value.statement)= (yystack_[0].value.if_clause);}
-#line 722 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 18: // statement: if_clause
+#line 245 "/home/cai/projects/basic/compiler/parser.ypp"
+                            {(yylhs.value.statement)= (yystack_[0].value.if_clause);}
+#line 756 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 19:
-#line 246 "parser.ypp" // lalr1.cc:859
-    {(yylhs.value.statement)= (yystack_[0].value.while_loop);}
-#line 728 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 19: // statement: while_loop
+#line 246 "/home/cai/projects/basic/compiler/parser.ypp"
+                             {(yylhs.value.statement)= (yystack_[0].value.while_loop);}
+#line 762 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 20:
-#line 247 "parser.ypp" // lalr1.cc:859
-    {(yylhs.value.statement)= (yystack_[0].value.for_loop);}
-#line 734 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 20: // statement: for_loop
+#line 247 "/home/cai/projects/basic/compiler/parser.ypp"
+                           {(yylhs.value.statement)= (yystack_[0].value.for_loop);}
+#line 768 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 21:
-#line 248 "parser.ypp" // lalr1.cc:859
-    {(yylhs.value.statement)= (yystack_[0].value.function_definition);}
-#line 740 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 21: // statement: sub_definition
+#line 248 "/home/cai/projects/basic/compiler/parser.ypp"
+                                  {(yylhs.value.statement)= (yystack_[0].value.function_definition);}
+#line 774 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 22:
-#line 249 "parser.ypp" // lalr1.cc:859
-    {(yylhs.value.statement)= (yystack_[0].value.function_definition);}
-#line 746 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 22: // statement: function_definition
+#line 249 "/home/cai/projects/basic/compiler/parser.ypp"
+                                       {(yylhs.value.statement)= (yystack_[0].value.function_definition);}
+#line 780 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 23:
-#line 251 "parser.ypp" // lalr1.cc:859
-    { /*TODO*/debug("here====3====\n"); exit(1);	}
-#line 752 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 23: // statement: expression comma_or_colon
+#line 251 "/home/cai/projects/basic/compiler/parser.ypp"
+                                            { /*TODO*/debug("here====3====\n"); exit(1);	}
+#line 786 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 24:
-#line 254 "parser.ypp" // lalr1.cc:859
-    {
+  case 24: // exprtype: tLONG
+#line 254 "/home/cai/projects/basic/compiler/parser.ypp"
+                {
 		(yylhs.value.exprtype) = new ExprType (NumberExprTypeAST::GetNumberExprTypeAST());
 	}
-#line 760 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 794 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 25:
-#line 257 "parser.ypp" // lalr1.cc:859
-    {
+  case 25: // exprtype: tSTR
+#line 257 "/home/cai/projects/basic/compiler/parser.ypp"
+               {
 		(yylhs.value.exprtype) = new ExprType (StringExprTypeAST::GetStringExprTypeAST());
 	}
-#line 768 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 802 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 26:
-#line 260 "parser.ypp" // lalr1.cc:859
-    {
+  case 26: // exprtype: tID
+#line 260 "/home/cai/projects/basic/compiler/parser.ypp"
+              {
 		debug("define as user type not supported\n");
 		exit(1);
 	}
-#line 777 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 811 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 27:
-#line 267 "parser.ypp" // lalr1.cc:859
-    {
+  case 27: // printstatement: tPRINT printinto expression_list
+#line 267 "/home/cai/projects/basic/compiler/parser.ypp"
+                                            {
 
 		(yystack_[0].value.expression_list)->Append( new EmptyExprAST );
 		(yylhs.value.printstatement) = new PrintStmtAST( (yystack_[1].value.printinto), (yystack_[0].value.expression_list) );
 
 		debug("got print1 done\n");
 	}
-#line 789 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 823 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 28:
-#line 274 "parser.ypp" // lalr1.cc:859
-    {
+  case 28: // printstatement: tPRINT printinto expression_list ','
+#line 274 "/home/cai/projects/basic/compiler/parser.ypp"
+                                               {
 		(yylhs.value.printstatement) = new PrintStmtAST( (yystack_[2].value.printinto), (yystack_[1].value.expression_list) );
 	}
-#line 797 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 831 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 29:
-#line 277 "parser.ypp" // lalr1.cc:859
-    {
+  case 29: // printstatement: tPRINT printinto expression_list ';'
+#line 277 "/home/cai/projects/basic/compiler/parser.ypp"
+                                                {
 		(yylhs.value.printstatement) = new PrintStmtAST( (yystack_[2].value.printinto), (yystack_[1].value.expression_list) );
 	}
-#line 805 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 839 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 30:
-#line 280 "parser.ypp" // lalr1.cc:859
-    {
+  case 30: // printstatement: tPRINT printinto
+#line 280 "/home/cai/projects/basic/compiler/parser.ypp"
+                           {
 		ExprListAST * exprList = new ExprListAST;
 		exprList->Append( new EmptyExprAST );
 		(yylhs.value.printstatement) = new PrintStmtAST( (yystack_[0].value.printinto), exprList );
 	}
-#line 815 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 849 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 31:
-#line 287 "parser.ypp" // lalr1.cc:859
-    { debug("print has got itger\n") ;}
-#line 821 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 31: // printinto: '#' tInteger ','
+#line 287 "/home/cai/projects/basic/compiler/parser.ypp"
+                             { debug("print has got itger\n") ;}
+#line 855 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 32:
-#line 288 "parser.ypp" // lalr1.cc:859
-    { (yylhs.value.printinto) = 0;}
-#line 827 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 32: // printinto: %empty
+#line 288 "/home/cai/projects/basic/compiler/parser.ypp"
+                        { (yylhs.value.printinto) = 0;}
+#line 861 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 33:
-#line 291 "parser.ypp" // lalr1.cc:859
-    { (yylhs.value.expression_list) = (yystack_[2].value.expression_list) ; (yylhs.value.expression_list)->Append((yystack_[0].value.expression)); }
-#line 833 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 33: // expression_list: expression_list ',' expression
+#line 291 "/home/cai/projects/basic/compiler/parser.ypp"
+                                                { (yylhs.value.expression_list) = (yystack_[2].value.expression_list) ; (yylhs.value.expression_list)->Append((yystack_[0].value.expression)); }
+#line 867 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 34:
-#line 292 "parser.ypp" // lalr1.cc:859
-    {
+  case 34: // expression_list: expression
+#line 292 "/home/cai/projects/basic/compiler/parser.ypp"
+                     {
 		(yylhs.value.expression_list) =  new ExprListAST;
 		(yylhs.value.expression_list)->Append((yystack_[0].value.expression));
 	}
-#line 842 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 876 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 36:
-#line 299 "parser.ypp" // lalr1.cc:859
-    { (yylhs.value.expression) = (yystack_[1].value.expression) ;}
-#line 848 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 36: // expression: '(' expression ')'
+#line 299 "/home/cai/projects/basic/compiler/parser.ypp"
+                                     { (yylhs.value.expression) = (yystack_[1].value.expression) ;}
+#line 882 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 37:
-#line 300 "parser.ypp" // lalr1.cc:859
-    {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_ADD , (yystack_[0].value.expression) );  }
-#line 854 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 37: // expression: expression '+' expression
+#line 300 "/home/cai/projects/basic/compiler/parser.ypp"
+                                            {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_ADD , (yystack_[0].value.expression) );  }
+#line 888 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 38:
-#line 301 "parser.ypp" // lalr1.cc:859
-    {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_SUB , (yystack_[0].value.expression) );  }
-#line 860 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 38: // expression: expression '-' expression
+#line 301 "/home/cai/projects/basic/compiler/parser.ypp"
+                                            {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_SUB , (yystack_[0].value.expression) );  }
+#line 894 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 39:
-#line 302 "parser.ypp" // lalr1.cc:859
-    {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_MUL , (yystack_[0].value.expression) );  }
-#line 866 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 39: // expression: expression '*' expression
+#line 302 "/home/cai/projects/basic/compiler/parser.ypp"
+                                            {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_MUL , (yystack_[0].value.expression) );  }
+#line 900 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 40:
-#line 303 "parser.ypp" // lalr1.cc:859
-    {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_DIV , (yystack_[0].value.expression) );  }
-#line 872 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 40: // expression: expression '/' expression
+#line 303 "/home/cai/projects/basic/compiler/parser.ypp"
+                                            {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_DIV , (yystack_[0].value.expression) );  }
+#line 906 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 41:
-#line 304 "parser.ypp" // lalr1.cc:859
-    {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_LESS , (yystack_[0].value.expression) );  }
-#line 878 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 41: // expression: expression tLTN expression
+#line 304 "/home/cai/projects/basic/compiler/parser.ypp"
+                                             {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_LESS , (yystack_[0].value.expression) );  }
+#line 912 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 42:
-#line 305 "parser.ypp" // lalr1.cc:859
-    {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_LESSEQU , (yystack_[0].value.expression) );  }
-#line 884 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 42: // expression: expression tLEQ expression
+#line 305 "/home/cai/projects/basic/compiler/parser.ypp"
+                                             {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_LESSEQU , (yystack_[0].value.expression) );  }
+#line 918 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 43:
-#line 306 "parser.ypp" // lalr1.cc:859
-    {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_GREATER , (yystack_[0].value.expression) );  }
-#line 890 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 43: // expression: expression tGTN expression
+#line 306 "/home/cai/projects/basic/compiler/parser.ypp"
+                                             {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_GREATER , (yystack_[0].value.expression) );  }
+#line 924 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 44:
-#line 307 "parser.ypp" // lalr1.cc:859
-    {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_GREATEREQUL , (yystack_[0].value.expression) );  }
-#line 896 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 44: // expression: expression tGEQ expression
+#line 307 "/home/cai/projects/basic/compiler/parser.ypp"
+                                             {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_GREATEREQUL , (yystack_[0].value.expression) );  }
+#line 930 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 45:
-#line 308 "parser.ypp" // lalr1.cc:859
-    {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_EQUL , (yystack_[0].value.expression) );  }
-#line 902 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 45: // expression: expression tEQU expression
+#line 308 "/home/cai/projects/basic/compiler/parser.ypp"
+                                             {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_EQUL , (yystack_[0].value.expression) );  }
+#line 936 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 46:
-#line 309 "parser.ypp" // lalr1.cc:859
-    {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_EQUL , (yystack_[0].value.expression) );  }
-#line 908 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 46: // expression: expression '=' expression
+#line 309 "/home/cai/projects/basic/compiler/parser.ypp"
+                                            {   (yylhs.value.expression) = new CalcExprAST( (yystack_[2].value.expression), OPERATOR_EQUL , (yystack_[0].value.expression) );  }
+#line 942 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 48:
-#line 312 "parser.ypp" // lalr1.cc:859
-    {
+  case 48: // expression: tInteger
+#line 312 "/home/cai/projects/basic/compiler/parser.ypp"
+                            {
 			(yylhs.value.expression) = new ConstNumberExprAST( (yystack_[0].value.integer) );
 		}
-#line 916 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 950 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 49:
-#line 315 "parser.ypp" // lalr1.cc:859
-    {
+  case 49: // expression: tSTRING
+#line 315 "/home/cai/projects/basic/compiler/parser.ypp"
+                          {
 			(yylhs.value.expression) = new ConstStringExprAST((yystack_[0].value.string));
 		}
-#line 924 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 958 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 50:
-#line 318 "parser.ypp" // lalr1.cc:859
-    {
+  case 50: // expression: '-' expression
+#line 318 "/home/cai/projects/basic/compiler/parser.ypp"
+                                 {
 			ExprAST* zero = new ConstNumberExprAST(0);
 			(yylhs.value.expression) = new CalcExprAST(zero, OPERATOR_SUB, (yystack_[0].value.expression));
 		}
-#line 933 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 967 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 51:
-#line 324 "parser.ypp" // lalr1.cc:859
-    {
+  case 51: // assigment: varref '=' expression
+#line 324 "/home/cai/projects/basic/compiler/parser.ypp"
+                                 {
 		//VariableExprAST * varref = new VariableExprAST($1);
 		(yylhs.value.variable_assignment) = new AssigmentAST((yystack_[2].value.varref), (yystack_[0].value.expression));
 	}
-#line 942 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 976 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 52:
-#line 330 "parser.ypp" // lalr1.cc:859
-    {
+  case 52: // call_function: varref '(' ')'
+#line 330 "/home/cai/projects/basic/compiler/parser.ypp"
+                                {
 			(yylhs.value.call_function) = new CallExprAST((yystack_[2].value.varref));
 			debug("functioncall %s with no arg\n", (yystack_[2].value.varref)->ID->ID.c_str());
 		}
-#line 951 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 985 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 53:
-#line 334 "parser.ypp" // lalr1.cc:859
-    {
+  case 53: // call_function: varref '(' expression_list ')'
+#line 334 "/home/cai/projects/basic/compiler/parser.ypp"
+                                                  {
 			 (yylhs.value.call_function) = new CallExprAST((yystack_[3].value.varref) , (yystack_[1].value.expression_list) );
 		}
-#line 959 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 993 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 54:
-#line 338 "parser.ypp" // lalr1.cc:859
-    {
+  case 54: // varref: expression '.' tID
+#line 338 "/home/cai/projects/basic/compiler/parser.ypp"
+                           {
 		debug("ref menber %s . %s , not supported yet\n" );
 		exit(1);
 	}
-#line 968 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1002 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 55:
-#line 342 "parser.ypp" // lalr1.cc:859
-    { exit(1); }
-#line 974 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 55: // varref: expression tDREF tID
+#line 342 "/home/cai/projects/basic/compiler/parser.ypp"
+                                 { exit(1); }
+#line 1008 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 56:
-#line 343 "parser.ypp" // lalr1.cc:859
-    {
+  case 56: // varref: tID
+#line 343 "/home/cai/projects/basic/compiler/parser.ypp"
+              {
 		(yylhs.value.varref) = new VariableExprAST(  new ReferenceAST( (yystack_[0].value.id) ));
 	}
-#line 982 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1016 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 62:
-#line 356 "parser.ypp" // lalr1.cc:859
-    {
+  case 62: // array_dim: tARRAYDIM tID tAS exprtype
+#line 356 "/home/cai/projects/basic/compiler/parser.ypp"
+                                       {
 
 		debug("definning %s as array\n",(yystack_[2].value.id)->c_str());
 
 		(yylhs.value.dim_item) = new VariableDimAST( *(yystack_[2].value.id)  , ArrayExprTypeAST::create(* (yystack_[0].value.exprtype)) );
 	}
-#line 993 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1027 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 63:
-#line 374 "parser.ypp" // lalr1.cc:859
-    {
+  case 63: // dim_item: tDIM tID tAS exprtype
+#line 374 "/home/cai/projects/basic/compiler/parser.ypp"
+                                {
 		(yylhs.value.dim_item) = new VariableDimAST( *(yystack_[2].value.id)  , * (yystack_[0].value.exprtype) );
 	}
-#line 1001 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1035 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 64:
-#line 377 "parser.ypp" // lalr1.cc:859
-    {
+  case 64: // dim_item: tDIM tID
+#line 377 "/home/cai/projects/basic/compiler/parser.ypp"
+                  {
 		(yylhs.value.dim_item) = new VariableDimAST( *(yystack_[0].value.id)  , NumberExprTypeAST::GetNumberExprTypeAST() );
 	}
-#line 1009 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1043 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 65:
-#line 394 "parser.ypp" // lalr1.cc:859
-    {
+  case 65: // function_definition: tFUNCTION tID '(' arg_list ')' tAS exprtype tNEWLINE lines tFUNCTIONEND
+#line 394 "/home/cai/projects/basic/compiler/parser.ypp"
+                                             {
 					useDefautSubMain = false;
 
 					(yylhs.value.function_definition) = new FunctionDimAST(*(yystack_[8].value.id),
@@ -1019,12 +1053,12 @@ namespace qb {
 
 					(yylhs.value.function_definition)->body = CodeBlockASTPtr((yystack_[1].value.codeblocks));
 				}
-#line 1023 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1057 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 66:
-#line 405 "parser.ypp" // lalr1.cc:859
-    {
+  case 66: // function_definition: tFUNCTION tID '(' arg_list ')' tNEWLINE lines tFUNCTIONEND
+#line 405 "/home/cai/projects/basic/compiler/parser.ypp"
+                                             {
 					useDefautSubMain = false;
 					(yylhs.value.function_definition) = new FunctionDimAST(*(yystack_[6].value.id),
 											ExprTypeASTPtr(new CallableExprTypeAST(NumberExprTypeAST::GetNumberExprTypeAST())),
@@ -1032,12 +1066,12 @@ namespace qb {
 
 					(yylhs.value.function_definition)->body = CodeBlockASTPtr((yystack_[1].value.codeblocks));
 				}
-#line 1036 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1070 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 67:
-#line 417 "parser.ypp" // lalr1.cc:859
-    {
+  case 67: // sub_definition: tSUB tID '(' arg_list ')' lines tSUBEND
+#line 417 "/home/cai/projects/basic/compiler/parser.ypp"
+                                {
 				useDefautSubMain = false;
 				debug("!!SUB %s defined with arg !!\n",(yystack_[5].value.id)->c_str());
 
@@ -1047,105 +1081,109 @@ namespace qb {
 				(yystack_[1].value.codeblocks)->parent = (yystack_[3].value.arg_list);
 				(yylhs.value.function_definition)->body = CodeBlockASTPtr((yystack_[1].value.codeblocks));
 			}
-#line 1051 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1085 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 68:
-#line 429 "parser.ypp" // lalr1.cc:859
-    { (yylhs.value.arg_list) = 0; }
-#line 1057 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 68: // arg_list: %empty
+#line 429 "/home/cai/projects/basic/compiler/parser.ypp"
+         { (yylhs.value.arg_list) = 0; }
+#line 1091 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 69:
-#line 430 "parser.ypp" // lalr1.cc:859
-    {
+  case 69: // arg_list: arg_list ',' tID tAS exprtype
+#line 430 "/home/cai/projects/basic/compiler/parser.ypp"
+                                       {
 		(yylhs.value.arg_list) = (yystack_[4].value.arg_list);
 		(yylhs.value.arg_list)->addchild( new ArgumentDimAST( *(yystack_[2].value.id)  , * (yystack_[0].value.exprtype) ) );
 	}
-#line 1066 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1100 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 70:
-#line 434 "parser.ypp" // lalr1.cc:859
-    {
+  case 70: // arg_list: tID tAS exprtype
+#line 434 "/home/cai/projects/basic/compiler/parser.ypp"
+                           {
 		debug("definning %s is type %p as arg\n",(yystack_[2].value.id)->c_str(), (yystack_[0].value.exprtype));
 		(yylhs.value.arg_list) = new ArgumentDimsAST ;
 		(yylhs.value.arg_list)->addchild(new ArgumentDimAST( *(yystack_[2].value.id)  , * (yystack_[0].value.exprtype) ));
 	}
-#line 1076 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1110 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 71:
-#line 449 "parser.ypp" // lalr1.cc:859
-    {
+  case 71: // if_clause: tIF expression tTHEN statement
+#line 449 "/home/cai/projects/basic/compiler/parser.ypp"
+                                           {
 			(yylhs.value.if_clause) = new IFStmtAST( ExprASTPtr((yystack_[2].value.expression)));
 			(yylhs.value.if_clause)->_then = CodeBlockASTPtr(new CodeBlockAST((yystack_[0].value.statement)));
 	}
-#line 1085 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1119 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 72:
-#line 455 "parser.ypp" // lalr1.cc:859
-    {
+  case 72: // if_clause: tIF expression tTHEN seperator lines tENDIF
+#line 455 "/home/cai/projects/basic/compiler/parser.ypp"
+                       {
 			(yylhs.value.if_clause) = new IFStmtAST( ExprASTPtr((yystack_[4].value.expression)));
 			(yylhs.value.if_clause)->_then = CodeBlockASTPtr((yystack_[1].value.codeblocks));
 		}
-#line 1094 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1128 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 73:
-#line 463 "parser.ypp" // lalr1.cc:859
-    {
+  case 73: // if_clause: tIF expression tTHEN seperator lines tELSE lines tENDIF
+#line 463 "/home/cai/projects/basic/compiler/parser.ypp"
+                        {
 			(yylhs.value.if_clause) = new IFStmtAST( ExprASTPtr((yystack_[6].value.expression)));
 			(yylhs.value.if_clause)->_then = CodeBlockASTPtr((yystack_[3].value.codeblocks));
 			(yylhs.value.if_clause)->_else = CodeBlockASTPtr((yystack_[1].value.codeblocks));
 		}
-#line 1104 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1138 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 74:
-#line 476 "parser.ypp" // lalr1.cc:859
-    {
+  case 74: // while_loop: tWHILE expression seperator lines tENDWHILE
+#line 476 "/home/cai/projects/basic/compiler/parser.ypp"
+                          {
 			(yylhs.value.while_loop) = new WhileLoopAST( ExprASTPtr((yystack_[3].value.expression)) , (yystack_[1].value.codeblocks));
 		}
-#line 1112 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1146 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 75:
-#line 485 "parser.ypp" // lalr1.cc:859
-    {
+  case 75: // for_loop: tFOR varref tEQU expression tTO expression optstep tNEWLINE lines tENDFOR
+#line 485 "/home/cai/projects/basic/compiler/parser.ypp"
+                                {
 				debug("got for loop");
 				(yylhs.value.for_loop) = new ForLoopAST((yystack_[8].value.varref), (yystack_[6].value.expression),(yystack_[4].value.expression), 0 ,(yystack_[1].value.codeblocks));
 			}
-#line 1121 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1155 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
-  case 77:
-#line 492 "parser.ypp" // lalr1.cc:859
-    { debug("step");}
-#line 1127 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+  case 77: // optstep: tSTEP expression
+#line 492 "/home/cai/projects/basic/compiler/parser.ypp"
+                                  { debug("step");}
+#line 1161 "/home/cai/projects/basic/compiler/parser.cpp"
     break;
 
 
-#line 1131 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:859
+#line 1165 "/home/cai/projects/basic/compiler/parser.cpp"
+
             default:
               break;
             }
         }
+#if YY_EXCEPTIONS
       catch (const syntax_error& yyexc)
         {
+          YYCDEBUG << "Caught exception: " << yyexc.what() << '\n';
           error (yyexc);
           YYERROR;
         }
+#endif // YY_EXCEPTIONS
       YY_SYMBOL_PRINT ("-> $$ =", yylhs);
       yypop_ (yylen);
       yylen = 0;
-      YY_STACK_PRINT ();
 
       // Shift the result of the reduction.
-      yypush_ (YY_NULLPTR, yylhs);
+      yypush_ (YY_NULLPTR, YY_MOVE (yylhs));
     }
     goto yynewstate;
+
 
   /*--------------------------------------.
   | yyerrlab -- here on detecting error.  |
@@ -1155,7 +1193,8 @@ namespace qb {
     if (!yyerrstatus_)
       {
         ++yynerrs_;
-        error (yysyntax_error_ (yystack_[0].state, yyla));
+        std::string msg = YY_("syntax error");
+        error (YY_MOVE (msg));
       }
 
 
@@ -1165,7 +1204,7 @@ namespace qb {
            error, discard it.  */
 
         // Return failure if at end of input.
-        if (yyla.type_get () == yyeof_)
+        if (yyla.kind () == symbol_kind::S_YYEOF)
           YYABORT;
         else if (!yyla.empty ())
           {
@@ -1182,65 +1221,78 @@ namespace qb {
   | yyerrorlab -- error raised explicitly by YYERROR.  |
   `---------------------------------------------------*/
   yyerrorlab:
-
-    /* Pacify compilers like GCC when the user code never invokes
-       YYERROR and the label yyerrorlab therefore never appears in user
-       code.  */
+    /* Pacify compilers when the user code never invokes YYERROR and
+       the label yyerrorlab therefore never appears in user code.  */
     if (false)
-      goto yyerrorlab;
+      YYERROR;
+
     /* Do not reclaim the symbols of the rule whose action triggered
        this YYERROR.  */
     yypop_ (yylen);
     yylen = 0;
+    YY_STACK_PRINT ();
     goto yyerrlab1;
+
 
   /*-------------------------------------------------------------.
   | yyerrlab1 -- common code for both syntax error and YYERROR.  |
   `-------------------------------------------------------------*/
   yyerrlab1:
     yyerrstatus_ = 3;   // Each real token shifted decrements this.
+    // Pop stack until we find a state that shifts the error token.
+    for (;;)
+      {
+        yyn = yypact_[+yystack_[0].state];
+        if (!yy_pact_value_is_default_ (yyn))
+          {
+            yyn += symbol_kind::S_YYerror;
+            if (0 <= yyn && yyn <= yylast_
+                && yycheck_[yyn] == symbol_kind::S_YYerror)
+              {
+                yyn = yytable_[yyn];
+                if (0 < yyn)
+                  break;
+              }
+          }
+
+        // Pop the current state because it cannot handle the error token.
+        if (yystack_.size () == 1)
+          YYABORT;
+
+        yy_destroy_ ("Error: popping", yystack_[0]);
+        yypop_ ();
+        YY_STACK_PRINT ();
+      }
     {
       stack_symbol_type error_token;
-      for (;;)
-        {
-          yyn = yypact_[yystack_[0].state];
-          if (!yy_pact_value_is_default_ (yyn))
-            {
-              yyn += yyterror_;
-              if (0 <= yyn && yyn <= yylast_ && yycheck_[yyn] == yyterror_)
-                {
-                  yyn = yytable_[yyn];
-                  if (0 < yyn)
-                    break;
-                }
-            }
-
-          // Pop the current state because it cannot handle the error token.
-          if (yystack_.size () == 1)
-            YYABORT;
-
-          yy_destroy_ ("Error: popping", yystack_[0]);
-          yypop_ ();
-          YY_STACK_PRINT ();
-        }
 
 
       // Shift the error token.
-      error_token.state = yyn;
-      yypush_ ("Shifting", error_token);
+      error_token.state = state_type (yyn);
+      yypush_ ("Shifting", YY_MOVE (error_token));
     }
     goto yynewstate;
 
-    // Accept.
+
+  /*-------------------------------------.
+  | yyacceptlab -- YYACCEPT comes here.  |
+  `-------------------------------------*/
   yyacceptlab:
     yyresult = 0;
     goto yyreturn;
 
-    // Abort.
+
+  /*-----------------------------------.
+  | yyabortlab -- YYABORT comes here.  |
+  `-----------------------------------*/
   yyabortlab:
     yyresult = 1;
     goto yyreturn;
 
+
+  /*-----------------------------------------------------.
+  | yyreturn -- parsing is finished, return the result.  |
+  `-----------------------------------------------------*/
   yyreturn:
     if (!yyla.empty ())
       yy_destroy_ ("Cleanup: discarding lookahead", yyla);
@@ -1248,6 +1300,7 @@ namespace qb {
     /* Do not reclaim the symbols of the rule whose action triggered
        this YYABORT or YYACCEPT.  */
     yypop_ (yylen);
+    YY_STACK_PRINT ();
     while (1 < yystack_.size ())
       {
         yy_destroy_ ("Cleanup: popping", yystack_[0]);
@@ -1256,12 +1309,12 @@ namespace qb {
 
     return yyresult;
   }
+#if YY_EXCEPTIONS
     catch (...)
       {
-        YYCDEBUG << "Exception caught: cleaning lookahead and stack"
-                 << std::endl;
+        YYCDEBUG << "Exception caught: cleaning lookahead and stack\n";
         // Do not try to display the values of the reclaimed symbols,
-        // as their printer might throw an exception.
+        // as their printers might throw an exception.
         if (!yyla.empty ())
           yy_destroy_ (YY_NULLPTR, yyla);
 
@@ -1272,27 +1325,36 @@ namespace qb {
           }
         throw;
       }
+#endif // YY_EXCEPTIONS
   }
 
   void
   parser::error (const syntax_error& yyexc)
   {
-    error (yyexc.what());
+    error (yyexc.what ());
   }
 
-  // Generate an error message.
-  std::string
-  parser::yysyntax_error_ (state_type, const symbol_type&) const
+#if YYDEBUG || 0
+  const char *
+  parser::symbol_name (symbol_kind_type yysymbol)
   {
-    return YY_("syntax error");
+    return yytname_[yysymbol];
   }
+#endif // #if YYDEBUG || 0
+
+
+
+
+
+
+
 
 
   const signed char parser::yypact_ninf_ = -80;
 
   const signed char parser::yytable_ninf_ = -58;
 
-  const short int
+  const short
   parser::yypact_[] =
   {
      641,    38,   -80,   -26,    -1,    38,    38,     8,    41,    51,
@@ -1313,7 +1375,7 @@ namespace qb {
      -80,   327,   641,   577,   609,   -80,   -80
   };
 
-  const unsigned char
+  const signed char
   parser::yydefact_[] =
   {
        0,     0,     8,     0,     0,     0,     0,    32,     0,     0,
@@ -1334,7 +1396,7 @@ namespace qb {
       73,    77,     0,     0,     0,    65,    75
   };
 
-  const short int
+  const short
   parser::yypgoto_[] =
   {
      -80,   -80,    21,   -17,   130,     9,   -79,   -80,   -80,    77,
@@ -1342,15 +1404,15 @@ namespace qb {
       92,   -80,   -80,   -80,   -80
   };
 
-  const short int
+  const unsigned char
   parser::yydefgoto_[] =
   {
-      -1,    17,    18,    19,    20,    21,   116,    22,    42,    78,
+       0,    17,    18,    19,    20,    21,   116,    22,    42,    78,
       23,    24,    25,    35,    56,    85,    27,    28,    29,    30,
      108,    31,    32,    33,   146
   };
 
-  const short int
+  const short
   parser::yytable_[] =
   {
       26,    51,   117,     1,    88,    86,    26,    66,    67,   111,
@@ -1428,7 +1490,7 @@ namespace qb {
        0,     0,    13,    14,    15,     0,     0,     0,     0,    16
   };
 
-  const short int
+  const short
   parser::yycheck_[] =
   {
        0,    18,    81,    13,     3,    12,     6,    15,    16,    53,
@@ -1506,7 +1568,7 @@ namespace qb {
       -1,    -1,    49,    50,    51,    -1,    -1,    -1,    -1,    56
   };
 
-  const unsigned char
+  const signed char
   parser::yystos_[] =
   {
        0,    13,    23,    25,    27,    29,    30,    31,    32,    33,
@@ -1527,7 +1589,7 @@ namespace qb {
       38,    70,    23,    62,    62,    28,    44
   };
 
-  const unsigned char
+  const signed char
   parser::yyr1_[] =
   {
        0,    60,    61,    61,    62,    62,    63,    63,    63,    63,
@@ -1540,7 +1602,7 @@ namespace qb {
       80,    81,    81,    81,    82,    83,    84,    84
   };
 
-  const unsigned char
+  const signed char
   parser::yyr2_[] =
   {
        0,     2,     2,     3,     2,     1,     2,     2,     1,     2,
@@ -1556,27 +1618,30 @@ namespace qb {
 
 #if YYDEBUG
   // YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
-  // First, the terminals, then, starting at \a yyntokens_, nonterminals.
+  // First, the terminals, then, starting at \a YYNTOKENS, nonterminals.
   const char*
   const parser::yytname_[] =
   {
-  "$end", "error", "$undefined", "tEOPROG", "tOR", "tAND", "tNOT", "tNEQ",
-  "tGEQ", "tLEQ", "tLTN", "tGTN", "tEQU", "'-'", "'+'", "'*'", "'/'",
-  "tMOD", "UMINUS", "UPLUS", "tPOW", "tDREF", "'.'", "tNEWLINE", "tAS",
-  "tSUB", "tSUBEND", "tFUNCTION", "tFUNCTIONEND", "tRETURN", "tLET",
-  "tPRINT", "tARRAYDIM", "tDIM", "tSTRUCTDIM", "tENDSTRUCDIM", "tIF",
-  "tTHEN", "tENDIF", "tELSE", "tELSEIF", "tWHILE", "tENDWHILE", "tFOR",
-  "tENDFOR", "tTO", "tSTEP", "tLONG", "tSTR", "tID", "tInteger", "tSTRING",
-  "tNUMBER", "','", "';'", "'#'", "'('", "')'", "'='", "':'", "$accept",
-  "program", "lines", "line", "statements", "statement", "exprtype",
-  "printstatement", "printinto", "expression_list", "expression",
-  "assigment", "call_function", "varref", "comma_or_colon", "seperator",
-  "array_dim", "dim_item", "function_definition", "sub_definition",
-  "arg_list", "if_clause", "while_loop", "for_loop", "optstep", YY_NULLPTR
+  "\"end of file\"", "error", "\"invalid token\"", "tEOPROG", "tOR",
+  "tAND", "tNOT", "tNEQ", "tGEQ", "tLEQ", "tLTN", "tGTN", "tEQU", "'-'",
+  "'+'", "'*'", "'/'", "tMOD", "UMINUS", "UPLUS", "tPOW", "tDREF", "'.'",
+  "tNEWLINE", "tAS", "tSUB", "tSUBEND", "tFUNCTION", "tFUNCTIONEND",
+  "tRETURN", "tLET", "tPRINT", "tARRAYDIM", "tDIM", "tSTRUCTDIM",
+  "tENDSTRUCDIM", "tIF", "tTHEN", "tENDIF", "tELSE", "tELSEIF", "tWHILE",
+  "tENDWHILE", "tFOR", "tENDFOR", "tTO", "tSTEP", "tLONG", "tSTR", "tID",
+  "tInteger", "tSTRING", "tNUMBER", "','", "';'", "'#'", "'('", "')'",
+  "'='", "':'", "$accept", "program", "lines", "line", "statements",
+  "statement", "exprtype", "printstatement", "printinto",
+  "expression_list", "expression", "assigment", "call_function", "varref",
+  "comma_or_colon", "seperator", "array_dim", "dim_item",
+  "function_definition", "sub_definition", "arg_list", "if_clause",
+  "while_loop", "for_loop", "optstep", YY_NULLPTR
   };
+#endif
 
 
-  const unsigned short int
+#if YYDEBUG
+  const short
   parser::yyrline_[] =
   {
        0,   177,   177,   187,   201,   211,   218,   219,   223,   224,
@@ -1589,28 +1654,26 @@ namespace qb {
      434,   449,   453,   459,   474,   483,   491,   492
   };
 
-  // Print the state stack on the debug stream.
   void
-  parser::yystack_print_ ()
+  parser::yy_stack_print_ () const
   {
     *yycdebug_ << "Stack now";
     for (stack_type::const_iterator
            i = yystack_.begin (),
            i_end = yystack_.end ();
          i != i_end; ++i)
-      *yycdebug_ << ' ' << i->state;
-    *yycdebug_ << std::endl;
+      *yycdebug_ << ' ' << int (i->state);
+    *yycdebug_ << '\n';
   }
 
-  // Report on the debug stream that the rule \a yyrule is going to be reduced.
   void
-  parser::yy_reduce_print_ (int yyrule)
+  parser::yy_reduce_print_ (int yyrule) const
   {
-    unsigned int yylno = yyrline_[yyrule];
+    int yylno = yyrline_[yyrule];
     int yynrhs = yyr2_[yyrule];
     // Print the symbols being reduced, and their result.
     *yycdebug_ << "Reducing stack by rule " << yyrule - 1
-               << " (line " << yylno << "):" << std::endl;
+               << " (line " << yylno << "):\n";
     // The symbols being reduced.
     for (int yyi = 0; yyi < yynrhs; yyi++)
       YY_SYMBOL_PRINT ("   $" << yyi + 1 << " =",
@@ -1618,16 +1681,16 @@ namespace qb {
   }
 #endif // YYDEBUG
 
-  // Symbol number corresponding to token number t.
-  inline
-  parser::token_number_type
-  parser::yytranslate_ (int t)
+  parser::symbol_kind_type
+  parser::yytranslate_ (int t) YY_NOEXCEPT
   {
+    // YYTRANSLATE[TOKEN-NUM] -- Symbol number corresponding to
+    // TOKEN-NUM as returned by yylex.
     static
-    const token_number_type
+    const signed char
     translate_table[] =
     {
-     0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,    55,     2,     2,     2,     2,
@@ -1659,17 +1722,18 @@ namespace qb {
       40,    41,    42,    43,    44,    45,    46,    47,    48,    49,
       50,    51,    52
     };
-    const unsigned int user_token_number_max_ = 302;
-    const token_number_type undef_token_ = 2;
+    // Last valid token kind.
+    const int code_max = 302;
 
-    if (static_cast<int>(t) <= yyeof_)
-      return yyeof_;
-    else if (static_cast<unsigned int> (t) <= user_token_number_max_)
-      return translate_table[t];
+    if (t <= 0)
+      return symbol_kind::S_YYEOF;
+    else if (t <= code_max)
+      return static_cast <symbol_kind_type> (translate_table[t]);
     else
-      return undef_token_;
+      return symbol_kind::S_YYUNDEF;
   }
 
-#line 21 "parser.ypp" // lalr1.cc:1167
+#line 21 "/home/cai/projects/basic/compiler/parser.ypp"
 } // qb
-#line 1676 "/home/cai/projects/basic/compiler/parser.cpp" // lalr1.cc:1167
+#line 1739 "/home/cai/projects/basic/compiler/parser.cpp"
+

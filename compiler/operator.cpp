@@ -142,8 +142,8 @@ ExprASTPtr StringExprOperation::operator_assign(ASTContext ctx, NamedExprASTPtr 
 {
 	llvm::IRBuilder<> builder(ctx.block);
 
-	llvm::Constant * llvmfunc_free =  qbc::getbuiltinprotype(ctx,"free");
-	llvm::Constant * llvmfunc_strdup = qbc::getbuiltinprotype(ctx,"strdup");
+	llvm::FunctionCallee llvmfunc_free =  qbc::getbuiltinprotype(ctx,"free");
+	llvm::FunctionCallee llvmfunc_strdup = qbc::getbuiltinprotype(ctx,"strdup");
 
 	builder.CreateCall(llvmfunc_free,lval->getval(ctx));
 
@@ -186,10 +186,10 @@ ExprASTPtr StringExprOperation::operator_add(ASTContext ctx, ExprASTPtr lval, Ex
 {
 	llvm::IRBuilder<> builder(ctx.block);
 
-	llvm::Constant * llvmfunc_calloc =  qbc::getbuiltinprotype(ctx,"malloc");
-	llvm::Constant * llvmfunc_strlen =  qbc::getbuiltinprotype(ctx,"strlen");
-	llvm::Constant * llvmfunc_strcpy = qbc::getbuiltinprotype(ctx,"strcpy");
-	llvm::Constant * llvmfunc_strcat = qbc::getbuiltinprotype(ctx,"strcat");
+	auto llvmfunc_calloc =  qbc::getbuiltinprotype(ctx,"malloc");
+	auto llvmfunc_strlen =  qbc::getbuiltinprotype(ctx,"strlen");
+	auto llvmfunc_strcpy = qbc::getbuiltinprotype(ctx,"strcpy");
+	auto llvmfunc_strcat = qbc::getbuiltinprotype(ctx,"strcat");
 
 	llvm::Value * string_left_length = builder.CreateCall(llvmfunc_strlen,lval->getval(ctx));
 	llvm::Value * string_right_length = builder.CreateCall(llvmfunc_strlen,rval->getval(ctx));
@@ -279,7 +279,7 @@ ExprASTPtr StringExprOperation::operator_comp(ASTContext ctx,MathOperator op, Ex
 
 	switch(op){
 		case OPERATOR_EQUL:{// call strcmp
-			llvm::Constant * func_strcmp = qbc::getbuiltinprotype(ctx,"strcmp");
+			llvm::FunctionCallee func_strcmp = qbc::getbuiltinprotype(ctx,"strcmp");
 
 			result = builder.CreateCall(func_strcmp, {LHS, RHS});
 			// 返回值是 int , not long , 执行转化.
@@ -308,7 +308,7 @@ ExprASTPtr ArrayExprOperation::operator_call(ASTContext ctx, NamedExprASTPtr tar
 	llvm::Value * index = callargslist->expression_list.begin()->get()->getval(ctx);
 
 	// 调用数组下标函数.
-	llvm::Constant * func_qb_array_at = qbc::getbuiltinprotype(ctx,"btr_qbarray_at");
+	llvm::FunctionCallee func_qb_array_at = qbc::getbuiltinprotype(ctx,"btr_qbarray_at");
 
 	llvm::Value * tmpval = builder.CreateCall(func_qb_array_at, {arrayptr, index});
 
@@ -335,11 +335,9 @@ ExprASTPtr FunctionExprOperation::operator_call(ASTContext ctx,NamedExprASTPtr c
 
 	DimAST * funcdim = calltarget->nameresolve(ctx);
 
-	llvm::Value * llvmfunc =funcdim->getval(ctx);
+	llvm::FunctionCallee llvmfunc;
 
-	if(!llvmfunc){ //有定义, 则直接调用, 无定义就 ... 呵呵.
-		llvmfunc = dynamic_cast<CallableExprTypeAST*>(funcdim)->defaultprototype(ctx,calltarget->ID->ID);
-	}
+	llvmfunc = dynamic_cast<CallableExprTypeAST*>(funcdim)->defaultprototype(ctx,calltarget->ID->ID);
 
 	//构建参数列表.
 	std::vector<llvm::Value*> args;

@@ -17,6 +17,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/IRBuilder.h>
 #include "qbc.h"
 #include "ast.hpp"
@@ -35,45 +36,47 @@ static unsigned sizeoflong()
 	return sizeof(long)*8;
 }
 
+llvm::LLVMContext getGlobalContext;
+
 llvm::Value * getnull()
 {
-	return llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(llvm::getGlobalContext()));
+	return llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(getGlobalContext));
 }
 
 llvm::Value * getconstfalse()
 {
-	return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(1,0,true));
+	return llvm::ConstantInt::get(getGlobalContext,llvm::APInt(1,0,true));
 }
 
 llvm::Value * getconsttrue()
 {
-	return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(1,1,true));
+	return llvm::ConstantInt::get(getGlobalContext,llvm::APInt(1,1,true));
 }
 
 llvm::Value * getconstint(int v)
 {
-	return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(sizeofint(),(uint64_t)v,true));
+	return llvm::ConstantInt::get(getGlobalContext,llvm::APInt(sizeofint(),(uint64_t)v,true));
 }
 
 llvm::Value * getconstlong(long v)
 {
-	return llvm::ConstantInt::get(llvm::getGlobalContext(),llvm::APInt(sizeoflong(),(uint64_t)v,true));
+	return llvm::ConstantInt::get(getGlobalContext,llvm::APInt(sizeoflong(),(uint64_t)v,true));
 }
 
 llvm::Type * getbooltype()
 {
-	return llvm::Type::getInt1Ty(llvm::getGlobalContext());
+	return llvm::Type::getInt1Ty(getGlobalContext);
 }
 
 llvm::Type * getplatformlongtype()
 {
 	switch(sizeof(long)){
 		case 8:
-			return llvm::Type::getInt64Ty(llvm::getGlobalContext());
+			return llvm::Type::getInt64Ty(getGlobalContext);
 		case 4:
-			return llvm::Type::getInt32Ty(llvm::getGlobalContext());
+			return llvm::Type::getInt32Ty(getGlobalContext);
 		case 2:
-			return llvm::Type::getInt16Ty(llvm::getGlobalContext());
+			return llvm::Type::getInt16Ty(getGlobalContext);
 	}
 }
 
@@ -81,33 +84,33 @@ llvm::Type * getplatformlongtype()
 	llvm::IRBuilder<> builder(ctx.block); std::vector<llvm::Type *> args
 
 #define	BUILTINTYPE_DEFINE(x ,  ret , block )	\
-	static llvm::Constant *getbuiltinprotype_##x(ASTContext ctx) \
+	static llvm::FunctionCallee getbuiltinprotype_##x(ASTContext ctx) \
 	{\
 		GETBUILTINTYPE_ENTER(); \
 		block \
-		llvm::Constant *func = ctx.module->getOrInsertFunction(#x, \
-		llvm::FunctionType::get(builder.get##ret##Ty(), args,false)); \
+		llvm::FunctionCallee func = ctx.module->getOrInsertFunction(#x, \
+			llvm::FunctionType::get(builder.get##ret##Ty(), args,false)); \
 		return func; \
 	}
 
-static llvm::Constant *getbuiltinprotype_printf(ASTContext ctx)
+static llvm::FunctionCallee getbuiltinprotype_printf(ASTContext ctx)
 {
 	GETBUILTINTYPE_ENTER();
 	args.push_back(builder.getInt8PtrTy());
 
-	llvm::Constant *printf_func = ctx.module->getOrInsertFunction("printf",
+	auto printf_func = ctx.module->getOrInsertFunction("printf",
 										llvm::FunctionType::get(builder.getInt32Ty(), args,
 		/*必须为true, 这样才能接受可变参数*/true));
 
 	return printf_func;
 }
 
-static llvm::Constant *getbuiltinprotype_brt_print(ASTContext ctx)
+static llvm::FunctionCallee getbuiltinprotype_brt_print(ASTContext ctx)
 {
 	GETBUILTINTYPE_ENTER();
 	args.push_back(getplatformlongtype());
 
-	llvm::Constant *brt_print =
+	auto brt_print =
 			ctx.module->getOrInsertFunction("brt_print",
 										llvm::FunctionType::get(builder.getInt32Ty(), args,
 		/*必须为true, 这样才能接受可变参数*/true));
@@ -126,13 +129,13 @@ BUILTINTYPE_DEFINE(free , Void , {args.push_back(builder.getInt8PtrTy());}  )
 
 BUILTINTYPE_DEFINE(strdup , Int8Ptr , {args.push_back(builder.getInt8PtrTy());}  )
 
-static llvm::Constant *getbuiltinprotype_strlen(ASTContext ctx)
+static llvm::FunctionCallee getbuiltinprotype_strlen(ASTContext ctx)
 {
 	GETBUILTINTYPE_ENTER();
 
 	args.push_back(builder.getInt8PtrTy());
 
-	llvm::Constant *func = ctx.module->getOrInsertFunction("strlen",
+	llvm::FunctionCallee func = ctx.module->getOrInsertFunction("strlen",
 										llvm::FunctionType::get(getplatformlongtype(), args,false));
 	return func;
 }
@@ -165,9 +168,9 @@ BUILTINTYPE_DEFINE(btr_qbarray_at , Int8Ptr , {
 #undef GETBUILTINTYPE_ENTER
 
 // 从字符串获得标准C库和内置BRT库的标准声明.
-llvm::Constant * getbuiltinprotype(ASTContext ctx, const std::string name)
+llvm::FunctionCallee getbuiltinprotype(ASTContext ctx, const std::string name)
 {
-	llvm::Function * retfunc = ctx.module->getFunction(name);
+	llvm::FunctionCallee retfunc = ctx.module->getFunction(name);
 #define			RETURNBUILTINENTRY(x)	\
 	if(name == #x ) { return getbuiltinprotype_##x (ctx); }
 

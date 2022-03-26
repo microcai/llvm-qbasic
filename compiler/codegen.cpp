@@ -127,12 +127,12 @@ llvm::BasicBlock* PrintStmtAST::Codegen(ASTContext ctx)
 	if(need_brt){
 		args.insert(args.begin(), qbc::getconstint(0) );
 
-		llvm::Constant *brt_print =qbc::getbuiltinprotype(ctx,"brt_print");
+		auto brt_print =qbc::getbuiltinprotype(ctx,"brt_print");
 
 		builder.CreateCall(brt_print,args ,"PRINT");
 	}
 	else{
-		llvm::Constant *printf_func =qbc::getbuiltinprotype(ctx,"printf");
+		auto printf_func =qbc::getbuiltinprotype(ctx,"printf");
 
 		builder.CreateCall(printf_func,args ,"PRINT_via_printf");
 	}
@@ -156,7 +156,9 @@ llvm::Value* VariableDimAST::getval(ASTContext ctx)
 {
 	llvm::IRBuilder<> builder(ctx.block);
 
-	return builder.CreateLoad(getptr(ctx));
+	auto v = getptr(ctx);
+
+	return builder.CreateLoad(v->getType(), v);
 
 #ifdef WIN32
 	printf("%s\n", __FUNCTION__);
@@ -219,7 +221,8 @@ llvm::Value* ArgumentDimAST::getval(ASTContext ctx)
 
 	if(modified_stackvar){ // have local copy now
 		llvm::IRBuilder<>	builder(ctx.block);
-		return builder.CreateLoad(getptr(ctx));
+		auto v = getptr(ctx);
+		return builder.CreateLoad(v->getType(), v);
 	}
 	// geting value from argument
 	llvm::Function::arg_iterator arg_it =ctx.llvmfunc->arg_begin();
@@ -485,7 +488,7 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 	debug("generating function %s and its body now\n", this->name.c_str());
 
 	//首先生成全局可用的外部辅助函数.
-	llvm::IRBuilder<> builder(llvm::getGlobalContext());
+	llvm::IRBuilder<> builder(qbc::getGlobalContext);
 
 	// 参数生成 args
 	//为 ARG 生成代码!.
@@ -550,7 +553,7 @@ llvm::BasicBlock* FunctionDimAST::Codegen(ASTContext ctx)
 	builder.SetInsertPoint(ctx.block);
 
 	if(retval)
-		builder.CreateRet(builder.CreateLoad(retval));
+		builder.CreateRet(builder.CreateLoad(retval->getType(), retval));
 	else if(type)
 		builder.CreateRet(qbc::getconstlong(0)); // 返回 0.
 	else

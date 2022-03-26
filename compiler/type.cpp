@@ -141,14 +141,14 @@ llvm::Type* NumberExprTypeAST::llvm_type(ASTContext ctx)
 		case 8:
 			return llvm::Type::getInt64Ty(ctx.module->getContext());
 		case 4:
-			return llvm::Type::getInt32Ty(llvm::getGlobalContext());
+			return llvm::Type::getInt32Ty(qbc::getGlobalContext);
 	}
-	return llvm::Type::getInt32Ty(llvm::getGlobalContext());
+	return llvm::Type::getInt32Ty(qbc::getGlobalContext);
 }
 
 llvm::Type* StringExprTypeAST::llvm_type(ASTContext ctx)
 {
-	return llvm::Type::getInt8PtrTy(llvm::getGlobalContext());
+	return llvm::Type::getInt8PtrTy(qbc::getGlobalContext);
 }
 
 // the llvm_type of array is in fact QBArray
@@ -226,7 +226,7 @@ llvm::Value* ArrayExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
 	llvm::Value * newval = builder.CreateAlloca(this->llvm_type(ctx),0,_name);
 
 	//call btr_qbarray_new()
-	llvm::Constant * btr_qbarray_new = qbc::getbuiltinprotype(ctx,"btr_qbarray_new");
+	auto btr_qbarray_new = qbc::getbuiltinprotype(ctx,"btr_qbarray_new");
 
 	builder.CreateCall(btr_qbarray_new, {newval, qbc::getconstlong(elementtype->size())});
 	return newval;
@@ -235,7 +235,7 @@ llvm::Value* ArrayExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
 llvm::Value* CallableExprTypeAST::Alloca(ASTContext ctx, const std::string _name)
 {
     ::printf("alloca function?\n");
-    *((char*)0) = 0;
+    __builtin_trap();
     exit(0);
 
 }
@@ -248,7 +248,7 @@ llvm::Value* NumberExprTypeAST::deref(ASTContext ctx, llvm::Value* v)
 
 	llvm::Value * ptr = builder.CreateBitCast(v,qbc::getplatformlongtype()->getPointerTo());
 
-	return builder.CreateLoad(ptr);
+	return builder.CreateLoad(ptr->getType(), ptr);
 }
 
 void StringExprTypeAST::destory(ASTContext ctx, llvm::Value* Ptr)
@@ -257,9 +257,9 @@ void StringExprTypeAST::destory(ASTContext ctx, llvm::Value* Ptr)
 
 	llvm::IRBuilder<>	builder(ctx.block);
 
-	llvm::Constant * func_free = qbc::getbuiltinprotype(ctx,"free");
+	auto func_free = qbc::getbuiltinprotype(ctx,"free");
 
-	builder.CreateCall(func_free,builder.CreateLoad(Ptr));
+	builder.CreateCall(func_free,builder.CreateLoad(Ptr->getType(), Ptr));
 }
 
 void ArrayExprTypeAST::destory(ASTContext ctx, llvm::Value* Ptr)
@@ -268,12 +268,12 @@ void ArrayExprTypeAST::destory(ASTContext ctx, llvm::Value* Ptr)
 
 	llvm::IRBuilder<>	builder(ctx.block);
 
-	llvm::Constant * func_btr_qbarray_free = qbc::getbuiltinprotype(ctx,"btr_qbarray_free");
+	auto func_btr_qbarray_free = qbc::getbuiltinprotype(ctx,"btr_qbarray_free");
 
 	builder.CreateCall(func_btr_qbarray_free,Ptr);
 }
 
-llvm::Value* CallableExprTypeAST::defaultprototype(ASTContext ctx, std::string functionname)
+llvm::FunctionCallee CallableExprTypeAST::defaultprototype(ASTContext ctx, std::string functionname)
 {
     //build default function type
     llvm::IRBuilder<>	builder(ctx.block);
@@ -497,6 +497,6 @@ TempStringExprAST::TempStringExprAST(ASTContext ctx,llvm::Value* result , llvm::
 TempStringExprAST::~TempStringExprAST()
 {
 	llvm::IRBuilder<>	builder(ctx.block);
-	llvm::Constant * func_free = qbc::getbuiltinprotype(ctx,"free");
+	auto func_free = qbc::getbuiltinprotype(ctx,"free");
 	builder.CreateCall(func_free,this->val);
 }

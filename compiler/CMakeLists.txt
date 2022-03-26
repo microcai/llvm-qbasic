@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.18)
 
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
@@ -33,7 +33,7 @@ endif()
 
 # Find the libraries that correspond to the LLVM components
 # that we wish to use
-llvm_map_components_to_libnames(llvm_libs all)
+llvm_map_components_to_libnames(llvm_libs support)
 
 # Link against LLVM libraries
 message(STATUS "Using LLVM libs: ${llvm_libs}")
@@ -47,6 +47,7 @@ add_executable(llvm-qbc type.cpp ast.cpp operator.cpp codegen.cpp llvmwrapper.cp
 
 target_include_directories(llvm-qbc PRIVATE ${LLVM_INCLUDE_DIRS})
 target_compile_definitions(llvm-qbc PRIVATE ${LLVM_DEFINITIONS})
-target_link_libraries(llvm-qbc ${llvm_libs})
+target_link_libraries(llvm-qbc LLVM ${llvm_libs})
+#llvm_config(llvm-qbc support tablegen)
 
 install(TARGETS llvm-qbc RUNTIME DESTINATION bin)

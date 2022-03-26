@@ -439,10 +439,10 @@ class CallableExprTypeAST : public ExprTypeAST{
 	friend class CallExprAST;
 public:
     CallableExprTypeAST(ExprTypeASTPtr	_returntype);
-	static	llvm::Value * defaultprototype(ASTContext ctx,std::string functionname);
+	static	llvm::FunctionCallee defaultprototype(ASTContext ctx,std::string functionname);
     virtual ExprOperation* getop();
 	virtual PointerTypeASTPtr getpointetype(){::printf("get pointer to function\n");exit(1);};
-	
+
     virtual llvm::Type* llvm_type(ASTContext ctx);
     virtual llvm::Value* Alloca(ASTContext ctx, const std::string _name);
     virtual ExprASTPtr createtemp(ASTContext , llvm::Value*  , llvm::Value *ptr);
@@ -470,9 +470,9 @@ public:
 	size_t size(size_t newsize){_size = newsize;return _size;} // set size
 
 public:
-	ExprASTPtr createtemp(ASTContext , llvm::Value* , llvm::Value* ptr){}
+	ExprASTPtr createtemp(ASTContext , llvm::Value* , llvm::Value* ptr){ return {}; }
 	ExprOperation* getop();
-	PointerTypeASTPtr getpointetype(){}
+	PointerTypeASTPtr getpointetype(){ return {}; }
 	llvm::Type* llvm_type(ASTContext ctx);
 
 public:
