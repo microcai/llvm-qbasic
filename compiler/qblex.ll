@@ -36,6 +36,8 @@
 #endif
 
 /* Include main header file. */
+#include <cstring>
+
 #include "qbc.h"
 #include "ast.hpp"
 
@@ -268,7 +270,7 @@ void yyerror (char *msg) {
 /* Replace escape characters. */
 char *replace (char *string) {
    char *from, *to, *pointer;
-   char *hexdigits = "0123456789abcdef";
+   char hexdigits[] = "0123456789abcdef";
    int value;
 
    /* Initialise. */
@@ -316,12 +318,12 @@ char *replace (char *string) {
             case 'x':
                value = 0;
                if ((pointer =
-                    strchr (hexdigits, tolower (*(from + 1))))
+                    std::strchr (hexdigits, tolower (*(from + 1))))
                    && pointer - hexdigits < 16) {
                   from++;
                   value = pointer - hexdigits;
                   if ((pointer =
-                       strchr (hexdigits, tolower (*(from + 1))))
+                       std::strchr (hexdigits, tolower (*(from + 1))))
                       && pointer - hexdigits < 16) {
                      from++;
                      value *= 16;
